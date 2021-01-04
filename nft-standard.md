@@ -20,7 +20,9 @@ This SIP is made available under the terms of the Creative Commons CC0 1.0 Unive
 This SIP’s copyright is held by the Stacks Open Internet Foundation.
 
 ## Introduction
+Tokens are digital assets that are registered on the Stacks blockchain through a smart contract. A non-fungible token (NFT) is a token that is globally unique and that users can identify through its identifier. The smart contract that registers the NFTs defines a name for the group of NFTs.
 
+NFTs are enumerated, the id starts at 1 and the current last id is provided by the smart contract.
 
 ## Specification
 
@@ -31,8 +33,11 @@ This SIP’s copyright is held by the Stacks Open Internet Foundation.
     ;; Name, limited to 32 chars
     (name () (string-ascii 32)) 
 
-    ;; Icon URL, limited to 2048 chars
+    ;; Icon URL for group of NFTs, limited to 2048 chars
     (icon-url () (string-ascii 2048))
+    
+    ;; Icon URL per NFT , limited to 2048 chars
+    (icon-url (uint) (string-ascii 2048))
 
     ;; Token ID, limited to uint range
     (last-token-id () uint) 
@@ -57,7 +62,13 @@ This SIP’s copyright is held by the Stacks Open Internet Foundation.
 ```
 ## Related Work
 
+https://eips.ethereum.org/EIPS/eip-721
+https://www.ledger.com/academy/what-are-nft
+
+
 ## Backwards Compatibility
+
+Not applicable
 
 ## Activation
 

@@ -46,16 +46,16 @@ NFTs are enumerated, the id starts at 1 and the current last id is provided by t
     (get-balance (principal) uint)
 
     ;; Owner of given token identifier
-    (get-owner? (uint) (response principal (tuple (kind (string-ascii 32)))))
+    (get-owner? (uint) (response principal (tuple (kind (string-ascii 32)) (code uint))))
 
     ;; Transfer from to
-    (transfer? (principal principal uint) (response bool (tuple (kind (string-ascii 32)))))
+    (transfer? (principal principal uint) (response bool (tuple (kind (string-ascii 32)) (code uint))))
 
     ;; Approve
-    (approve (principal uint) (response bool (tuple (kind (string-ascii 32)))))
+    (approve (principal uint) (response bool (tuple (kind (string-ascii 32)) (code uint))))
 
     ;; Set approval for all
-    (set-approval-for-all (principal bool) (response bool (tuple (kind (string-ascii 32)))))
+    (set-approval-for-all (principal bool) (response bool (tuple (kind (string-ascii 32)) (code uint))))
 
   )
 )

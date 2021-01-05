@@ -29,6 +29,10 @@ NFTs are enumerated, the id starts at 1 and the current last id is provided by t
 
 ## Specification
 
+NFT smart contract shall implement the trait defined at `ST2NM3E9MAWWRNGFEKW75QR4XXVA856N4MHNMYA3T.stacks-token-nft-standard-v1` as well as satisfy the additional conditions.
+
+### Trait
+
 ```
 
 (define-trait stacks-token-nft-standard-v1
@@ -45,6 +49,12 @@ NFTs are enumerated, the id starts at 1 and the current last id is provided by t
 )
 ```
 
+### Implementation rules
+
+1. Contracts must use a least one nft asset. A post condition with deny mode and without any nft condition about a changed owner must fail for `transfer?` function calls.
+1. After a successfull call to function `transfer?` the function `get-owner?` must return the recipient of the `transfer?` call as the new owner.
+1. If a call to function `get-owner?` returns some principal `A` value then it must return the same value until `transfer?` is called with principal `A` as a sender
+
 ## Related Work
 
 https://eips.ethereum.org/EIPS/eip-721
@@ -56,6 +66,6 @@ Not applicable
 
 ## Activation
 
-This SIP is activated as soon as 5 contracts are using the same trait that follows this specification.
+This SIP is activated as soon as 5 contracts are deployed that are using the same trait that follows this specification.
 
 ## Reference Implementations

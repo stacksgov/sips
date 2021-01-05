@@ -40,7 +40,7 @@ NFTs are enumerated, the id starts at 1 and the current last id is provided by t
     (get-owner? (uint) (optional principal))
 
     ;; Transfer from to
-    (transfer? (principal principal uint) (response bool (tuple (kind (string-ascii 32)) (code uint))))
+    (transfer? (uint principal principal) (response bool (tuple (kind (string-ascii 32)) (code uint))))
   )
 )
 ```

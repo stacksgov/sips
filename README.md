@@ -1,4 +1,4 @@
-# SIPs
+# Stacks Improvement Proposals (SIPs)
 
 The SIPs describe the design, implementation, and governance
 of the Stacks 2.0 blockchain.  The SIP process

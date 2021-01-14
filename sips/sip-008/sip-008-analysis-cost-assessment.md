@@ -30,7 +30,7 @@ associated with those asymptotic cost functions. Those constants will
 necessarily be measured via benchmark harnesses and regression
 analyses.
 
-# Measurements for Execution Cost
+# Introduction
 
 The cost of analyzing Clarity code is measured using the same 5 categories
 described in SIP-006 for the measurement of execution costs:
@@ -63,9 +63,11 @@ less than the work performed during type checking, and therefore, the
 cost assessment can safely fold any costs that would be incurred during
 those passes into the type checking pass.
 
-# Common Analysis Metrics and Costs
+# Specification
 
-## AST Parsing
+## Common Analysis Metrics and Costs
+
+### AST Parsing
 
 The Clarity parser has a runtime that is linear with respect to the Clarity
 program length.
@@ -78,7 +80,7 @@ where a and b are constants, and
 
 X := the program length in bytes
 
-## Dependency cycle detection
+### Dependency cycle detection
 
 Clarity performs cycle detection for intra-contract dependencies (e.g.,
 functions that depend on one another). This detection is linear in the
@@ -94,7 +96,7 @@ X := the total number of dependency edges in the smart contract
 Dependency edges are created anytime a top-level definition refers 
 to another top-level definition.
 
-## Type signature size
+### Type signature size
 
 Types in Clarity may be described using type signatures. For example,
 `(tuple (a int) (b int))` describes a tuple with two keys `a` and `b`
@@ -121,7 +123,7 @@ type_signature_size(x) :=
                    + sum(len(key_name) for each entry)
 ```
 
-## Type annotation
+### Type annotation
 
 Each node in a Clarity contract's AST is annotated with the type value
 for that node during the type checking analysis pass.
@@ -135,7 +137,7 @@ a + b*X
 where a and b are constants, and X is the type signature size of the
 type being annotated.
 
-## Variable lookup
+### Variable lookup
 
 Looking up variables during static analysis incurs a non-constant cost -- the stack
 depth _and_ the length of the variable name affect this cost. However,
@@ -156,7 +158,7 @@ where a, b, and c are constants,
 X := stack depth
 Y := the type size of the looked up variable
 
-## Function Lookup
+### Function Lookup
 
 Looking up a function incurs a constant cost with respect
 to name length (for the same reason as variable lookup). However,
@@ -173,7 +175,7 @@ where a and b are constants,
 X := the sum of the type sizes for the function signature (each argument's type size, as well
     as the function's return type)
 
-## Name Binding
+### Name Binding
 
 The cost of binding a name in Clarity -- in either a local or the contract
 context is _constant_ with respect to the length of the name, but linear in
@@ -186,7 +188,7 @@ binding_cost = a + b*X
 where a and b are constants, and
 X := the size of the bound type signature
 
-## Type check cost
+### Type check cost
 
 The cost of a static type check is _linear_ in the size of the type signature:
 
@@ -199,7 +201,7 @@ where a and b are constants, and
 
 X := `max(type_signature_size(expected), type_signature_size(actual))`
 
-## Function Application
+### Function Application
 
 Static analysis of a function application in Clarity requires
 type checking the function's expected arguments against the
@@ -217,18 +219,18 @@ where a is a constant.
 This is also the _entire_ cost of type analysis for most function calls
 (e.g., intra-contract function calls, most simple native functions). 
 
-## Iterating the AST
+### Iterating the AST
 
 Static analysis iterates over the entire program's AST in the type checker,
 the trait checker, and in the read-only checker. This cost is assessed
 as a constant cost for each node visited in the AST during the type
 checking pass.
 
-# Special Function Costs
+## Special Function Costs
 
 Some functions require additional work from the static analysis system.
 
-## Functions on sequences (e.g., map, filter, fold)
+### Functions on sequences (e.g., map, filter, fold)
 
 Functions on sequences need to perform an additional check that the
 supplied type is a list or buffer before performing the normal
@@ -240,7 +242,7 @@ a
 
 where a is a constant.
 
-## Functions on options/responses
+### Functions on options/responses
 
 Similarly to the functions on sequences, option/response functions
 must perform a simple check to see if the supplied input is an option or
@@ -251,14 +253,14 @@ assessed as:
 a
 ```
 
-## Data functions (ft balance checks, nft lookups, map-get?, ...)
+### Data functions (ft balance checks, nft lookups, map-get?, ...)
 
 Static checks on intra-contract data functions do not require database lookups
 (unlike the runtime costs of these functions). Rather, these functions
 incur normal type lookup (i.e., fetching the type of an NFT, data map, or data var)
 and type checking costs.
 
-## get
+### get
 
 Checking a tuple _get_ requires accessing the tuple's signature
 for the specific field. This has runtime cost:
@@ -270,7 +272,7 @@ where a and b are constants, and
 
 N := the number of fields in the tuple type
 
-## tuple
+### tuple
 
 Constructing a tuple requires building the tuple's BTree for
 accessing fields. This has runtime cost:
@@ -283,7 +285,7 @@ where a and b are constants, and
 
 N := the number of fields in the tuple type
 
-## use-trait
+### use-trait
 
 Importing a trait imposes two kinds of costs on the analysis.
 First, the import requires a database read. Second, the imported
@@ -305,7 +307,7 @@ where a, b, c, and d are constants, and
 X := the total type size of the trait (i.e., the sum of the
     type sizes of each function signature).
 
-## contract-call?
+### contract-call?
 
 Checking a contract call requires a database lookup to inspect
 the function signature of a prior smart contract.
@@ -322,7 +324,7 @@ where a, b, c, and d are constants, and
 
 X := the total type size of the function signature
 
-## let
+### let
 
 Let bindings require the static analysis system to iterate over
 each let binding and ensure that they are syntactically correct.

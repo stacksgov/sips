@@ -220,15 +220,15 @@ RUNTIME_COST = c*X+d
 
 where a, b, c, and d, are constants.
 
-# Initial Native Function Costs
+## Initial Native Function Costs
 
 These are the initial set values for native function costs, however, these
 can be changed as described below in the [Cost Upgrades](#cost-upgrades)
 section of this document.
 
-## Data, Token, Contract-Calls ##
+### Data, Token, Contract-Calls
 
-### Data Lookup Costs
+#### Data Lookup Costs
 
 Fetching data from the datastore requires hashing the key to be looked up.
 That cost is linear in the key size:
@@ -239,7 +239,7 @@ data_hash_cost(X) = a*X+b
 
 X := size of the key
 
-### Data Fetching Costs
+#### Data Fetching Costs
 
 Fetching data from the datastore incurs a runtime cost, in addition to
 any costs associated with MARF accesses (which are simply counted as the
@@ -252,7 +252,7 @@ read_data_cost = a*X+b
 
 X := size of the fetched value.
 
-### Data Writing Costs
+#### Data Writing Costs
 
 Writing data to the datastore incurs a runtime cost, in addition to
 any costs associated with MARF writes (which are simply counted as the
@@ -265,7 +265,7 @@ write_data_cost = a*X+b
 
 X := size of the stored value.
 
-### contract-call
+#### contract-call
 
 Contract calls incur the cost of a normal function lookup and
 application, plus the cost of loading that contract into memory from
@@ -288,7 +288,7 @@ looking up the trait variable (assessed as a variable lookup), and the cost
 of validating any supplied trait implementors is assessed during a transaction's
 argument validation.
 
-### map-get
+#### map-get
 
 ```
 RUNTIME_COST: data_hash_cost(X+Y) + read_data_cost(Z)
@@ -299,7 +299,7 @@ X := size of the map's _key_ tuple
 Z := the size of the map's _value_ tuple
 
 
-### contract-map-get
+#### contract-map-get
 
 ```
 RUNTIME_COST: data_hash_cost(X) + read_data_cost(Z)
@@ -309,7 +309,7 @@ READ_LENGTH:  Z
 X := size of the map's _key_ tuple
 Z := the size of the map's _value_ tuple
 
-### map-set
+#### map-set
 
 ```
 RUNTIME_COST: data_hash_cost(X+Y) + write_data_cost(Z)
@@ -319,7 +319,7 @@ WRITE_LENGTH:  Z
 X := size of the map's _key_ tuple
 Z := the size of the map's _value_ tuple
 
-### map-insert
+#### map-insert
 
 ```
 RUNTIME_COST: data_hash_cost(X+Y) + write_data_cost(Z)
@@ -329,7 +329,7 @@ WRITE_LENGTH:  Z
 X := size of the map's _key_ tuple
 Z := the size of the map's _value_ tuple
 
-### map-delete
+#### map-delete
 
 ```
 RUNTIME_COST: data_hash_cost(X+Y) + write_data_cost(1)
@@ -339,7 +339,7 @@ WRITE_LENGTH:  1
 X := size of the map's _key_ tuple
 Y := the length of the map's name
 
-### var-get
+#### var-get
 
 ```
 RUNTIME_COST: data_hash_cost(1) + read_data_cost(Y)
@@ -348,7 +348,7 @@ READ_LENGTH: Y
 
 Y := the size of the variable's _value_ type
 
-### var-set
+#### var-set
 
 ```
 RUNTIME_COST: data_hash_cost(1) + write_data_cost(Y)
@@ -357,7 +357,7 @@ WRITE_LENGTH: Y
 
 Y := the size of the variable's _value_ type
 
-### nft-mint
+#### nft-mint
 
 ```
 RUNTIME_COST: data_hash_cost(Y) + write_data_cost(a) + b
@@ -369,7 +369,7 @@ Y := size of the NFT type
 a is a constant: the size of a token owner
 b is a constant cost (for tracking the asset in the assetmap)
 
-### nft-get-owner
+#### nft-get-owner
 
 ```
 RUNTIME_COST: data_hash_cost(Y) + read_data_cost(a)
@@ -381,7 +381,7 @@ Y := size of the NFT type
 a is a constant: the size of a token owner
 
 
-### nft-transfer
+#### nft-transfer
 
 ```
 RUNTIME_COST: data_hash_cost(Y) + write_data_cost(a) + write_data_cost(a) + b
@@ -394,7 +394,7 @@ Y := size of the NFT type
 a is a constant: the size of a token owner
 b is a constant cost (for tracking the asset in the assetmap)
 
-### ft-mint
+#### ft-mint
  
 Minting a token is a constant-time operation that performs a constant
 number of reads and writes (to check the total supply of tokens and
@@ -407,7 +407,7 @@ WRITE_LENGTH: c
 ```
 a, b, and c are all constants.
 
-### ft-transfer
+#### ft-transfer
 
 Transfering a token is a constant-time operation that performs a constant
 number of reads and writes (to check the token balances).
@@ -419,7 +419,7 @@ WRITE_LENGTH: c
 ```
 a, b, and c are all constants.
 
-### ft-get-balance
+#### ft-get-balance
 
 Getting a token balance is a constant-time operation that performs a
 constant number of reads.
@@ -430,7 +430,7 @@ READ_LENGTH: b
 ```
 a and b are constants.
 
-### get-block-info
+#### get-block-info
 
 ```
 RUNTIME: a
@@ -681,7 +681,7 @@ hashed, the longer the hashing function takes.
 where X is the size of the input.
 
 
-# Memory Model and Limits
+## Memory Model and Limits
 
 Clarity contract execution imposes a maximum memory usage limit for applications.
 For any given Clarity value, the memory usage of that value is counted using
@@ -703,7 +703,7 @@ though they consume a constant amount:
 * `as-contract`
 * `at-block`
 
-## Type signature size
+### Type signature size
 
 Types in Clarity may be described using type signatures. For example,
 `(tuple (a int) (b int))` describes a tuple with two keys `a` and `b`
@@ -730,7 +730,7 @@ type_size(x) :=
                      + sum(size(z) for each value z in tuple)
 ```
 
-## Contract Memory Consumption
+### Contract Memory Consumption
 
 Contract execution requires loading the contract's program state in
 memory. That program state counts towards the memory limit when
@@ -747,7 +747,7 @@ That is, a contract consumes memory which is linear in the contract's
 length _plus_ the amount of memory consumed by any constants defined
 using `define-constant`.
 
-## Database Writes
+### Database Writes
 
 While data stored in the database itself does _not_ count against the
 memory limit, supporting public function abort/commit behavior requires
@@ -763,7 +763,7 @@ types is defined as:
 * `nft`: the size of the NFT key
 * `ft`: the size of a Clarity uint value.
 
-# Cost Upgrades
+## Cost Upgrades
 
 In order to enable the addition of new native functions to the Clarity
 language, there is a mechanism for voting on and changing a function's
@@ -786,7 +786,7 @@ prior Clarity implementation, so a new cost-assessment function may need
 to be chosen for its evaluation. Until a new cost-assessment function is
 agreed upon, the cost of the Clarity implementation will continue to be used.
 
-## Voting on the Cost of Clarity Functions
+### Voting on the Cost of Clarity Functions
 
 New and more accurate cost-assessment functions can be agreed upon as
 follows:
@@ -800,7 +800,7 @@ the **Clarity Cost Voting Contract**, and the function is either
 selected as a replacement for the existing cost-assessment function,
 or ignored.
 
-### Publishing a Cost-Assessment Function
+#### Publishing a Cost-Assessment Function
 
 Cost-assessment functions to be included in proposals can be published
 in Clarity contracts. They must be written precisely as follows:
@@ -848,7 +848,7 @@ Here's another example where the cost function contains constant factors:
    })
 ```
 
-### Making a Cost-Assessment Function Proposal
+#### Making a Cost-Assessment Function Proposal
 
 Stacks holders can propose cost-assessment functions by calling the
 `submit-proposal` function in the **Clarity Cost Voting Contract**.
@@ -891,7 +891,7 @@ Usage:
 )
 ```
 
-### Viewing a Proposal
+#### Viewing a Proposal
 
 To view cost-assessment function proposals, you can use the 
 `get-proposal` function in the **Clarity Cost Voting Contract**:

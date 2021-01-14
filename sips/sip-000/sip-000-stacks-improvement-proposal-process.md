@@ -1,22 +1,24 @@
-# SIP-000 Stacks Improvement Proposal Process
-
 # Preamble
+
+SIP Number: 000
 
 Title: Stacks Improvement Proposal Process
 
-Author: Ken Liao <yukanliao@gmail.com>, Jude Nelson <jude@blockstack.com>
-
-Status: Draft 
+Author: Jude Nelson <jude@stacks.org>, Ken Liao <yukanliao@gmail.com>
 
 Consideration: Governance 
 
 Type: Meta 
 
+Status: Ratified 
+
 Created: 2020-06-23 
 
 License: BSD-2-Clause 
 
-Sign-off: 
+Sign-off: Jude Nelson <jude@stacks.org>, Technical Steering Committee Chair
+
+Discussions-To: https://github.com/stacksgov/sips 
 
 # Abstract
 
@@ -757,11 +759,15 @@ date. SIP Editors may decide how often to re-consider rejected SIPs as an
 anti-spam measure, but the Steering Committee and Consideration Advisory Boards
 may opt to independently re-consider rejected SIPs at their own discretion.
 
+Once a SIP has been moved to Ratified status, the only changes that may be made
+to it are fixing errata and adding supplementary materials.  Substantial changes
+to the SIP's body should be done as a separate SIP.
+
 ## Public Venues for Conducting Business
 
 The canonical set of SIPs in all state shall be recorded in the same medium that
 the canonical copy of this SIP is.  Right now, this is in the Github repository
-https://github.com/stacksorg/sips, but may be changed before this SIP is
+`https://github.com/stacksgov/sips`, but may be changed before this SIP is
 ratified.  New SIPs, edits to SIPs, comments on SIPs, and so on shall be
 conducted through Github's facilities for the time being.
 
@@ -843,6 +849,3 @@ This SIP activates once following tasks have been carried out:
 
 Not applicable.
 
-# Frequently Asked Questions
-
-NOTE: this section will be expanded as necessary before ratification

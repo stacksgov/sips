@@ -1,20 +1,26 @@
-# SIP 004 Cryptographic Committment to Materialized Views
+# Preamble
 
-## Preamble
+SIP Number: 004
 
-Title: Cryptograhpic Commitment to Materialized Views
+Title: Cryptographic Commitment to Materialized Views
 
-Author: Jude Nelson <jude@blockstack.com>
+Author: Jude Nelson <jude@stacks.org>
 
-Status: Draft
+Consideration: Technical
 
-Type: Standard
+Type: Consensus
 
-Created: 7/15/2019
+Status: Ratified
+
+Created: 15 July 2019
 
 License: BSD 2-Clause
 
-## Abstract
+Sign-off: Jude Nelson <jude@stacks.org>, Technical Steering Committee Chair
+
+Discussions-To: https://github.com/stacksgov/sips
+
+# Abstract
 
 Blockchain peers are replicated state machines, and as such, must maintain a
 materialized view of all of the state the transaction log represents in order to
@@ -43,7 +49,7 @@ The MARF proof allows a light client to determine:
 * How much cumulative energy has been spent to produce the key/value pair,
 * How many confirmations the key/value pair has.
 
-## Rationale
+# Introduction
 
 In order to generate a valid transaction, a blockchain client needs to be able
 to query the current state of the blockchain.  For example, in Bitcoin, a client
@@ -87,7 +93,7 @@ high probability, will also calculate a different state view hash.  This makes
 it easy for a blockchain's peers to reject a block produced in this manner
 outright, without having to replay its transactions.
 
-### Design Considerations
+## Design Considerations
 
 Committing to the materialized view in each block has a non-zero cost in terms
 of time and space complexity.  Given that Stacks miners use PoW to increase
@@ -127,7 +133,7 @@ significantly slow down the peer network by maliciously varying either schedule.
 This has non-trivial consequences for the design of the data structures for
 encoding materialized views.
 
-## Specification
+# Specification
 
 The Stacks peer's materialized view is realized as a flat key/value store.
 Transactions encode zero or more creates, inserts, updates, and deletes on this
@@ -149,7 +155,7 @@ for each block and a _merklized skip-list_ that
 cryptographically links merklized adaptive radix tries in prior blocks to the
 current block.
 
-### Merklized Adaptive Radix Tries (ARTs)
+## Merklized Adaptive Radix Tries (ARTs)
 
 An _adaptive radix trie_ (ART) is a prefix tree where each node's branching
 factor varies with the number of children.  In particular, a node's branching
@@ -346,7 +352,7 @@ The resulting trie now encodes the following:
    * `aabbccddeeff02778899=abcdef`
    * `aabbccddeeff99887766=9876`
 
-### Back-pointers
+## Back-pointers
 
 The materialized view of a fork will hold key/value pairs for data produced by
 applying _all transactions_ in that fork, not just the ones in the last block.  As such,
@@ -469,7 +475,7 @@ ART (and it often takes more than one seek). This does not sacrifice the securit
 of a Merkle proof of `aabbccddeeff99887766=98765`, but it does alter the mechanics
 of calculating and verifying it.
 
-### Merklized Skip-list
+## Merklized Skip-list
 
 The second principal data structure in a MARF is a Merklized skip-list encoded
 from the block header hashes and ART root hashes in each block.  The hash of the
@@ -488,7 +494,7 @@ chain and its underlying burn chain.  Having (2) allows the client to determine
 (1), but calculating (2) is expensive for a client doing a small number of
 queries.  For this reason, both options are supported.
 
-#### Resolving Block Height Queries
+### Resolving Block Height Queries
 
 For a variety of reasons, the MARF structure must be able to resolve
 queries mapping from block heights (or relative block heights) to
@@ -515,7 +521,7 @@ into the block's trie two entries:
 
 This mapping allows the ancestor hash calculation to proceed.
 
-### MARF Merkle Proofs
+## MARF Merkle Proofs
 
 A Merkle proof for a MARF is constructed using a combination of two types of
 sub-proofs:  _segment proofs_, and _shunt proofs_.  A _segment proof_ is a proof
@@ -671,7 +677,7 @@ has, the usual security assumptions about confirmation depth apply -- a proof
 that a key maps to a given value is valid only if the transaction that set
 it is unlikely to be reversed by a chain reorg.
 
-### Performance
+## Performance
 
 The time and space complexity of a MARF is as follows:
 
@@ -694,7 +700,7 @@ The time and space complexity of a MARF is as follows:
   where each node has a constant size.  It has _O(log B)_ hashes across all of
   its shunt proofs.
 
-### Consensus Details
+## Consensus Details
 
 The hash function used to generate a path from a key, as well as the hash
 function used to generate a node hash, is SHA2-512/256.  This was chosen because
@@ -730,21 +736,24 @@ mapping hashes of values (leaves in the MARF) to the values themselves, are both
 unspecified by the consensus rules.  Any mechanism or representation is
 permitted.
 
-## Implementation
+# Related Work
 
-The implementation is in Rust, and is about 4,400 lines of code.  It stores each
-ART in a separate file, where each ART file contains the hash of the previous
-block's ART's root hash and the locally-defined block identifiers.
-
-The implementation is crash-consistent.  It builds up the ART for block _N_ in
-RAM, dumps it to disk, and then `rename(2)`s it into place.
-
-The implementation uses a Sqlite3 database to map values to their hashes.  A
-read on a given key will first pass through the ART to find hash(value), and
-then query the Sqlite3 database for the value.  Similarly, a write will first
-insert hash(value) and value into the Sqlite3 database, and then insert
-hash(key) to hash(value) in the MARF.
-
-## References
+This section will be expanded upon after this SIP is ratified.
 
 [1] https://db.in.tum.de/~leis/papers/ART.pdf
+
+# Backwards Compatibility
+
+Not applicable
+
+# Activation
+
+At least 20 miners must register a name in the `.miner` namespace in Stacks 1.0.
+Once the 20th miner has registered, the state of Stacks 1.0 will be snapshotted.
+300 Bitcoin blocks later, the Stacks 2.0 blockchain will launch.  Stacks 2.0
+implements the MARF internally.
+
+# Reference Implementations
+
+Implemented in Rust.  See https://github.com/blockstack/stacks-blockchain.
+

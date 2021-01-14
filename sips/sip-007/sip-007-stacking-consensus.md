@@ -1,11 +1,10 @@
-# SIP-007: Stacking Consensus
-
 # Preamble
+
+SIP Number: 007
 
 Title: Stacking Consensus
 
-Authors:
-
+Author:
     Muneeb Ali <muneeb@blockstack.com>,
     Aaron Blankstein <aaron@blockstack.com>,
     Michael J. Freedman <mfreed@cs.princeton.edu>,
@@ -14,11 +13,19 @@ Authors:
     Jesse Soslow <jesse@blockstack.com>, 
     Patrick Stanley <patrick@blockstack.com>
 
-Status: Draft
+Consideration: Technical
 
-Type: Standard
+Type: Consensus
 
-Created: 01/14/2020
+Status: Ratified
+
+Created: 14 January 2020
+
+License: BSD 2-Clause
+
+Sign-off: Jude Nelson <jude@stacks.org>, Technical Steering Committee Chair
+
+Discussions-To: https://github.com/stacksgov/sips
 
 # Abstract
 
@@ -103,7 +110,9 @@ owners of Stacks tokens in order for miners to receive newly-minted
 Stacks tokens. The security properties of proof-of-transfer are
 comparable to proof-of-burn.
 
-# Stacking with Bitcoin
+# Specification
+
+## Stacking with Bitcoin
 
 In the Stacking consensus protocol, we require the base cryptocurrency
 to be a proof-of-work blockchain. In this proposed implementation of
@@ -123,7 +132,7 @@ consumed in the mining process go to productive Stacks holders as a
 reward based on their holdings of Stacks and participation in the
 Stacking algorithm.
 
-# Stacking Consensus Algorithm
+## Stacking Consensus Algorithm
 
 In addition to the normal tasks of PoB mining
 (see [SIP-001](./sip-001-burn-election.md)), the Stacking consensus
@@ -215,7 +224,7 @@ in miner commitments at fixed intervals (e.g, if there are 1000 burn
 addresses for a reward cycle, then each miner commitment would have
 1 burn address as an output).
 
-## Adjusting Reward Threshold Based on Participation
+### Adjusting Reward Threshold Based on Participation
 
 Each reward cycle may transfer miner funds to up to 4000 Bitcoin
 addresses (2 addresses in a 2000 burn block cycle). To ensure that
@@ -244,7 +253,7 @@ In the event that a Stacker signals and locks up enough STX to submit
 multiple reward addresses, but only submits one reward address, that
 reward address will be included in the reward set multiple times.
 
-## Submitting Reward Address and Chain Tip Signaling
+### Submitting Reward Address and Chain Tip Signaling
 
 Stacking participants must broadcast signed messages for three purposes:
 
@@ -267,7 +276,7 @@ participation for `floor(x / 2100)` reward cycles (the minimum participation
 length is one cycle: 2100 blocks).
 
 
-# Anchor Blocks and Reward Consensus
+## Anchor Blocks and Reward Consensus
 
 In the **prepare** phase of the Stacking algorithm, miners and network
 participants determine the anchor block and the reward set. The
@@ -326,7 +335,7 @@ valid block commitments. A high threshold for `F` ensures that a large
 fraction of the Stacks mining power has confirmed the receipt of the
 data associated with the anchor block.
 
-## Recovery from Missing Data
+### Recovery from Missing Data
 
 In the extreme event that a malicious miner *is* able to get a hidden
 or invalid block accepted as an anchor block, Stacks nodes must be
@@ -351,7 +360,7 @@ amongst such a large fraction of the Stacks mining power is possible,
 we contend that the security of the Stacks chain would be compromised
 through other means beyond attacking anchor blocks.
 
-## Anchoring with Stacker Support.
+### Anchoring with Stacker Support.
 
 The security of anchor block selection is further increased through
 Stacker support transactions. In this protocol, when Stacking
@@ -368,7 +377,7 @@ block attack --- not only must the attacker collude amongst a large
 fraction of mining power, but they must also collude amongst a
 majority of the Stacking participants in their block.
 
-# Stacker Delegation
+## Stacker Delegation
 
 The process of delegation allows a Stacks wallet address (the
 represented address) to designate another address (the delegate
@@ -432,7 +441,7 @@ delegate for many represented Stacks addresses, the delegate address
 must broadcast a Stacking message for each of the represented
 addresses.
 
-# Adressing Miner Consolidation in Stacking
+## Adressing Miner Consolidation in Stacking
 
 PoX when used for Stacking rewards could lead to miner
 consolidation. Because miners that _also_ participate as Stackers
@@ -490,7 +499,7 @@ Due to the costs of remaining vigilent, this proposal recomments _R = 0.25_.
 At the time of this writing, this is higher than any single STX allocation, but
 not so high that large-scale cooperation is needed to stop a mining cartel.
 
-# Bitcoin Wire Formats
+## Bitcoin Wire Formats
 
 Supporting PoX in the Stacks blockchain requires modifications to the
 wire format for leader block commitments, and the introduction of new
@@ -498,7 +507,7 @@ wire formats for burnchain PoX participation (e.g., performing the STX
 lockup on the burnchain).
 
 
-## Leader Block Commits
+### Leader Block Commits
 
 For PoX, leader block commitments are similar to PoB block commits: the constraints on the
 BTC transaction's inputs are the same, and the `OP_RETURN` output is identical. However,
@@ -534,7 +543,7 @@ Where `total_block_commit_amount` is equal to the sum of outputs [1, M+1].
 After the sunset phase _ends_ (i.e., blocks >= 500,000th burn block), block commits are _only_ burns, with
 a single burn output at index 1.
 
-## STX Operations on Bitcoin
+### STX Operations on Bitcoin
 
 As described above, PoX allows stackers to submit `stack-stx`
 operations on Bitcoin as well as on the Stacks blockchain. The Stacks
@@ -553,7 +562,7 @@ In order to submit on the Bitcoin chain, stackers must submit two Bitcoin transa
 
 The wire formats for the above operations are as follows:
 
-### PreStxOp
+#### PreStxOp
 
 This operation includes an `OP_RETURN` output for the first Bitcoin output that looks as follows:
 
@@ -568,7 +577,7 @@ Where `op = p` (ascii encoded).
 Then, the second Bitcoin output _must_ be Stacker address that will be used in a `StackStxOp`. This
 address must be a standard address type parseable by the stacks-blockchain node.
 
-### StackStxOp
+#### StackStxOp
 
 The first input to the Bitcoin operation _must_ consume a UTXO that is
 the second output of a `PreStxOp`. This validates that the `StackStxOp` was signed
@@ -588,7 +597,7 @@ Where the unsigned integer is big-endian encoded.
 
 The second Bitcoin output will be used as the reward address for any stacking rewards.
 
-### TransferStxOp
+#### TransferStxOp
 
 The first input to the Bitcoin operation _must_ consume a UTXO that is
 the second output of a `PreStxOp`. This validates that the `TransferStxOp` was signed
@@ -609,3 +618,23 @@ Where the unsigned integer is big-endian encoded.
 The second Bitcoin output is either a `p2pkh` or `p2sh` output such
 that the recipient Stacks address can be derived from the
 corresponding 20-byte hash (hash160).
+
+# Related Work
+
+This section will be expanded upon after this SIP is ratified.
+
+# Backwards Compatibility
+
+Not applicable.
+
+# Activation
+
+At least 20 miners must register a name in the `.miner` namespace in Stacks 1.0.
+Once the 20th miner has registered, the state of Stacks 1.0 will be snapshotted.
+300 Bitcoin blocks later (Bitcoin block 666050), the Stacks 2.0 blockchain will launch.  Stacks 2.0
+implements this SIP.
+
+# Reference Implementations
+
+Implemented in Rust.  See https://github.com/blockstack/stacks-blockchain.
+

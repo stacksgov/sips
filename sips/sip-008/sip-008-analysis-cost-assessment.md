@@ -1,18 +1,24 @@
-# SIP 008 Clarity Parsing and Analysis Cost Assessment
+# Preamble
 
-## Preamble
+SIP Number: 008
 
 Title: Clarity Parsing and Analysis Cost Assessment
 
 Author: Aaron Blankstein <aaron@blockstack.com>
 
-Status: Draft
+Consideration: Technical
 
-Type: Standard
+Type: Consensus
 
-Created: 03/05/2020
+Status: Ratified
+
+Created: 5 March 2020
 
 License: BSD 2-Clause
+
+Sign-off: Jude Nelson <jude@stacks.org>, Technical Steering Committee Chair
+
+Discussions-To: https://github.com/stacksgov/sips
 
 # Abstract
 
@@ -330,4 +336,22 @@ where a and b are constants, and
 
 X := the number of entries in the let binding.
 
+# Related Work
+
+This section will be expanded upon after this SIP is ratified.
+
+# Backwards Compatibility
+
+Not applicable.
+
+# Activation
+
+At least 20 miners must register a name in the `.miner` namespace in Stacks 1.0.
+Once the 20th miner has registered, the state of Stacks 1.0 will be snapshotted.
+300 Bitcoin blocks later (Bitcoin block 666050), the Stacks 2.0 blockchain will launch.  Stacks 2.0
+implements this SIP.
+
+# Reference Implementations
+
+Implemented in Rust.  See https://github.com/blockstack/stacks-blockchain.
 

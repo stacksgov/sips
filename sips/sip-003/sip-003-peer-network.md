@@ -1,27 +1,39 @@
-# SIP 003 Peer Network
+# Preamble
 
-## Preamble
+SIP number: 003
 
-Title: Peer Network
+Title: Stacks P2P Network
 
-Author: Jude Nelson <jude@blockstack.com>
+Author: Jude Nelson <jude@stacks.org>
 
-Status: Draft
+Consideration: Technical
 
 Type: Standard
 
-Created: 2/27/2018 
+Status: Ratified
+
+Created: 28 February 2019
 
 License: BSD 2-Clause
 
-## Abstract
+Sign-off: Jude Nelson <jude@stacks.org>, Technical Steering Committee Chair
+
+Discussions-To: https://github.com/stacksgov/sips
+
+# Abstract
 
 This SIP describes the design of the Stacks peer network, used for relaying
 blocks, transactions, and routing information.  The document describes both the
 overall protocol design and rationale, and provides descriptions of each
 message's wire format (where applicable).
 
-## Rationale
+# License and Copyright
+
+This SIP is made available under the terms of the BSD-2-Clause license,
+available at https://opensource.org/licenses/BSD-2-Clause.  This SIP's copyright
+is held by the Stacks Open Internet Foundation.
+
+# Introduction
 
 The Stacks blockchain implements a peer-to-peer _reachability network_ in order
 to ensure that each Stacks peer has a full copy of all blocks committed to on
@@ -51,14 +63,14 @@ will prefer to maximize the number of _distinct_ autonomous systems represented
 in its frontier in order to help keep as many networks on the Internet connected
 to the Stacks peer network.
 
-## Specification
+# Specification
 
 The following subsections describe the data structures and protocols for the
 Stacks peer network.  In particular, this document discusses _only_ the peer
 network message structure and protocols.  It does _not_ document the structure
 of Stacks transactions and blocks.  These structures are defined in SIP 005.
 
-### Encoding Conventions
+## Encoding Conventions
 
 This section explains how this document will describe the Stacks messages, and
 explains the conventions used to encode Stacks messages as a sequence of bytes.
@@ -169,7 +181,7 @@ cc dd                            # msg.payload_list[0].aa, where msg.payload_lis
 00 11 22 33                      # msg.payload_list[1].0, where msg.payload_list[1] is a PayloadVariant::Bar(u32) in network byte order
 ```
 
-### Byte Buffer Types
+## Byte Buffer Types
 
 The following byte buffers are used within Stacks peer messsages:
 
@@ -283,7 +295,7 @@ pub struct RelayData {
 }
 ```
 
-### Messages
+## Messages
 
 All Stacks messages have three components:
 
@@ -381,7 +393,7 @@ pub enum StacksMessageType {
 }
 ```
 
-### Payloads
+## Payloads
 
 **Handshake**
 
@@ -1346,11 +1358,29 @@ It is predicted that there will be more NAT'ed peers than public peers.
 Therefore, when forwarding a message, a peer will select more inbound peers
 (e.g. 16) than outbound peers (e.g. 8) when forwarding a new message.
 
-## Reference Implementation
+# Related Work
 
-Implemented in Rust.  The neighbor set size K is set to 16.  The frontier set size
-is set to hold 2^24 peers (with evictions becoming likely after insertions once
-it has 32768 entries).
+This section will be expanded upon after this SIP is ratified.
 
 [1] See https://arxiv.org/abs/1204.4140 for details on the MHRWDA algorithm.
 [2] https://stuff.mit.edu/people/medard/rls.pdf
+
+# Backwards Compatibility
+
+Not applicable
+
+# Activation
+
+At least 20 miners must register a name in the `.miner` namespace in Stacks 1.0.
+Once the 20th miner has registered, the state of Stacks 1.0 will be snapshotted.
+300 Bitcoin blocks later, the Stacks 2.0 blockchain will launch.  With Stacks
+2.0 will come the Clarity VM.
+
+# Reference Implementations
+
+Implemented in Rust.  See https://github.com/blockstack/stacks-blockchain.
+
+The neighbor set size K is set to 16.  The frontier set size
+is set to hold 2^24 peers (with evictions becoming likely after insertions once
+it has 32768 entries).
+

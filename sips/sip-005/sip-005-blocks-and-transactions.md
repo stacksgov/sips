@@ -1,21 +1,26 @@
-# SIP 005 Blocks, Transactions, and Accounts
+# Preamble
 
-## Preamble
+SIP Number: 005
 
 Title: Blocks, Transactions, and Accounts
 
-Authors: Jude Nelson <jude@blockstack.com>, Aaron Blankstein
-<aaron@blockstack.com>
+Author: Jude Nelson <jude@stacks.org>, Aaron Blankstein <aaron@blockstack.com>
 
-Status: Draft
+Consideration: Technical
 
-Type: Standard
+Type: Consensus
 
-Created: 7/23/2019
+Status: Ratified
+
+Created: 23 July 2019
 
 License: BSD 2-Clause
 
-## Abstract
+Sign-off: Jude Nelson <jude@stacks.org>, Technical Steering Committee Chair
+
+Discussions-To: https://github.com/stacksgov/sips
+
+# Abstract
 
 This SIP describes the structure, validation, and lifecycle for transactions and blocks in
 the Stacks blockchain, and describes how each peer maintains a materialized view
@@ -24,7 +29,7 @@ transactions.  It presents the account model for the Stacks blockchain, and
 describes how accounts authorize and pay for processing transactions on the
 network.
 
-## Rationale
+# Introduction
 
 The Stacks blockchain is a replicated state machine.
 A _transaction_ encodes a single state-transition on the
@@ -74,6 +79,7 @@ data goes into the transaction, as well as the data that goes into a block.
 As such, understanding blocks and transactions in the Stacks blockchain first
 requires understanding accounts.
 
+# Specification
 ## Accounts
 
 Transactions in the Stacks blockchain originate from, are paid for by, and
@@ -1001,34 +1007,12 @@ each transaction iteratively.  To do so, it will first:
 1. Verify that each transaction authorization is valid.  If not, then the block
    and any of its descendent microblocks will be rejected, and the leader
 punished by forfeiting the block reward.
-2. Verify that each paying account has sufficient assets to pay their advertised
+2. Verify that each paying account has sufficient STX to pay their advertised
    fees.  If one or more do not, then reject the block and its descendent
 microblocks and punish the leader.
-3. Determine the *K*-highest offerred _STX fee rate per computation_ from all
-   transactions in the parent microblock stream and the anchored block, as
-measured by computational work.  Use the *K+1*-highest rate to find the price paid by
-these top-*K* transactions, and debit each spending account by this rate
-multiplied by amount of computation used by the transaction.  All other
-transactions' spending accounts are not debited any fee.
-
-A Stacks epoch has a fixed budget of "compute units" which the leader fills up.
-The fee mechanism is designed to encourage leaders to fill up their epochs with
-transactions while also encouraging users to bid their honest valuation of the
-compute units (see [1] for details).  To do so, the Stacks peer measures a block
-as *F%* full, where *F* is the fraction of compute units consumed in its epoch.
-If the block consumes less than some protocol-defined fraction of
-the compute units, the block is considered "under-full."
-
-Leaders who produce under-full blocks are not given the full coinbase, but
-instead given a fraction of the coinbase determined by how under-full the block
-was (where an empty block receives 0 STX).  In addition, the fee rate assessed
-to each transaction in the epoch is set to a protocol-defined minimum rate,
-equal to the minimum-relay fee rate.  This is to encourage leaders to fill
-up their epochs with unconfirmed transactions, even if they have low fees.
-
-Stacks leaders receive all anchored block transaction fees exclusively, as well
-as 40% of the microblock transaction fees they produce, as well as 60% of the
-microblock transaction fees they validate by building upon. 
+3. For each transaction in block order, debit the paying account and process the
+   payload.  If the paying account becomes negative, then reject the block as
+invalid.
 
 Leaders do not receive their block rewards immediately.  Instead, they must
 mature for 100 Stacks epochs before they become spendable.
@@ -1391,6 +1375,24 @@ and so it will not have height-to-hash mappings for one.
 When processing a subsequent block that builds directly on top of the boot
 block, the parent Stacks block header hash should be all 0's.
 
-### References
+# Related Work
 
-[1] Basu, Easley, O'Hara, Sirer. [Towards a Functional Fee Market for Cryptocurrencies](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3318327)
+This section will be expanded upon after this SIP is ratified.
+
+# Backwards Compatibility
+
+All Stacks accounts from Stacks 1.0 will be imported into Stacks 2.0 when it
+launches.  The state of the Stacks 1.0 chain will be snapshotted at Bitcoin
+block 665750.
+
+# Activation
+
+At least 20 miners must register a name in the `.miner` namespace in Stacks 1.0.
+Once the 20th miner has registered, the state of Stacks 1.0 will be snapshotted.
+300 Bitcoin blocks later (Bitcoin block 666050), the Stacks 2.0 blockchain will launch.  Stacks 2.0
+implements this SIP.
+
+# Reference Implementations
+
+Implemented in Rust.  See https://github.com/blockstack/stacks-blockchain.
+

@@ -1,3 +1,26 @@
+# Preamble
+
+SIP Number: 002
+
+Title: The Clarity Smart Contract Language
+
+Author: Aaron Blankstein <aaron@blockstack.com>, Ludo Galabru
+<ludo@blockstack.com>
+
+Consideration: Technical
+
+Type: Consensus
+
+Status: Ratified
+
+Created: 29 November 2018
+
+License: BSD 2-Clause
+
+Sign-off: Jude Nelson <jude@stacks.org>, Technical Steering Committee Chair
+
+Discussions-To: https://github.com/stacksgov/sips
+
 # Abstract
 
 In order to support applications which require validation of some
@@ -19,7 +42,13 @@ language is not only Turing-incomplete (a requirement for such static
 analysis to be guaranteed successful), but readily permits other kinds
 of proofs to be made about the code as well.
 
-# Design
+# License and Copyright
+
+This SIP is made available under the terms of the BSD-2-Clause license,
+available at https://opensource.org/licenses/BSD-2-Clause.  This SIP's copyright
+is held by the Stacks Open Internet Foundation.
+
+# Introduction
 
 A smart contract is composed of two parts:
 
@@ -40,6 +69,8 @@ contracting languages in two important ways:
 2. The language _is not_ Turing complete. This allows us to guarantee
    that static analysis of programs to determine properties like
    runtime cost and data usage can complete successfully.
+
+# Specification
 
 ## Specifying Contracts
 
@@ -373,7 +404,7 @@ of those improvements we should support. Any such synactic changes
 will appear in an eventual language specification, but we believe
 them to be out of scope for this proposal.
 
-# Static Analysis
+## Static Analysis
 
 One of the design goals of our smart contracting language was the
 ability to statically analyze smart contracts to obtain accurate
@@ -403,7 +434,7 @@ are functions of _input length_ means the following things:
    do not need to reason about different cases in which a given
    function may cost more or less to execute.
 
-## Bounding Function Output Length
+### Bounding Function Output Length
 
 Importantly, our smart contracting language does not allow the
 creation of variable length lists: there are no `list` or
@@ -429,7 +460,7 @@ to the specified value type of the map.
 A complete proof for the static runtime analysis of smart contracts
 will be included with the implementation of the language.
 
-# Deploying the Smart Contract
+## Deploying the Smart Contract
 
 Smart contracts on the Stacks blockchain will be deployed directly as
 source code. The goal of the smart contracting language is that the
@@ -448,7 +479,7 @@ itself present a more clear case for a hard fork: the smart contract
 was defined correctly, as everyone can see directly on the chain, but
 illegal transactions were incorrectly marked as valid.
 
-# Virtual Machine API
+## Virtual Machine API
 
 From the perspective of other components of `blockstack-core`, the
 smart contracting VM will provide the following interface:
@@ -557,9 +588,9 @@ be expanded in a future SIP to require the database to store enough
 information to reconstruct each block, such that the blocks can be
 relayed to bootstrapping peers.
 
-# Clarity Type System
+## Clarity Type System
 
-## Types
+### Types
 
 The Clarity language uses a strong static type system. Function arguments
 and database schemas require specified types, and use of types is checked
@@ -582,7 +613,7 @@ super type. The type system contains the following types:
 * `int`  := signed 128-bit integer
 * `uint` := unsigned 128-bit integer
 
-## Type Admission
+### Type Admission
 
 **UnknownType**. The Clarity type system does not allow for specifying
 an "unknown" type, however, in type analysis, unknown types may be
@@ -628,7 +659,7 @@ Clarity _does not_ have a universal supertype, it may be impossible to
 determine such a type. In these cases, the functions are illegal, and
 will be rejected during type analysis.
 
-# Measuring Transaction Costs for Fee Collection
+## Measuring Transaction Costs for Fee Collection
 
 Our smart contracting language admits static analysis to determine
 many properties of transactions _before_ executing those
@@ -668,7 +699,7 @@ production of a prototype. However, we should note that we do intend
 to set such limits.
 
 
-# Example: Simple Naming System
+## Example: Simple Naming System
 
 To demonstrate the expressiveness of this smart contracting language,
 let's look at an example smart contract which implements a simple
@@ -745,3 +776,46 @@ desirable properties hold (e.g. "names are globally unique", "a
 revoked name cannot be updated or transferred", "names cost stacks
 based on their namespace price function", "only the principal can
 reveal a name on registration", etc.).
+
+# Related Work
+
+Smart contract languages are not new at the time of this writing.  By far the
+most well-known one at this time is Solidity [1], a Turing-complete smart
+contract programming language for the Ethereum blockchain [2].  Solidity is
+compiled, which makes it hard to determine whether or not any differences
+between the contract's behavior and its expected behavior are due to bugs in the
+source code, the compiler, or the EVM itself.  Clarity is interpreted, so any
+bugs that cannot be attributed to a Clarity contract's source code must be due
+to bugs in the blockchain itself.  Removing this ambiguity is important for
+determining how to triage such problems.  A bug in the runtime system would
+justifiably be fixed with a backwards-incompatible change, whereas a bug in the
+compiler may not be.
+
+Clarity is decidable, which removes the need for implementing an "out-of-gas"
+error condition that is common in Turing-complete smart contract languages.
+Clarity programs either run to completion if they do not fail static analysis
+checks, or the blockchain transactions that invoke them are never mined in the
+first place.
+
+There are many other smart contract programming languages with different design
+goals than Clarity.  This section deserves future expansion, and may be added to
+after this SIP is ratified.  
+
+[1] Solidity Language.  https://docs.soliditylang.org/en/v0.8.0/
+[2] Ethereum blockchain.  https://ethereum.github.io/yellowpaper/paper.pdf
+
+# Backwards Compatibility
+
+Not applicable
+
+# Activation
+
+At least 20 miners must register a name in the `.miner` namespace in Stacks 1.0.
+Once the 20th miner has registered, the state of Stacks 1.0 will be snapshotted.
+300 Bitcoin blocks later, the Stacks 2.0 blockchain will launch.  With Stacks
+2.0 will come the Clarity VM.
+
+# Reference Implementations
+
+The frst reference implementation can be found at
+https://github.com/blockstack/stacks-blockchain.

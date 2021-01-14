@@ -46,12 +46,7 @@ This SIP is made available under the terms of the BSD-2-Clause license,
 available at https://opensource.org/licenses/BSD-2-Clause.  This SIP’s copyright
 is held by the Stacks Open Internet Foundation.
 
-# Specification
-
-Each SIP shall adhere to the same general formatting and shall be ratified
-through the processes described by this document.
-
-## Introduction
+# Introduction
 
 Blockchains are unique among distributed systems in that they also
 happen to encode a social contract. By running a blockchain node, a user
@@ -99,6 +94,11 @@ to, people who mine blocks, people who contribute code, people who run nodes,
 people who develop applications that rely on the Stacks blockchain, people who
 use such applications, people involved in the project governance, and people
 involved in operating software deployments.
+
+# Specification
+
+Each SIP shall adhere to the same general formatting and shall be ratified
+through the processes described by this document.
 
 ## SIP Format
 

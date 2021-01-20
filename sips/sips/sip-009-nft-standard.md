@@ -34,14 +34,13 @@ NFT smart contract shall implement the trait defined at `ST2NM3E9MAWWRNGFEKW75QR
 ### Trait
 
 ```
-
 (define-trait stacks-token-nft-standard-v1
   (
     ;; Token ID, limited to uint range
-    (last-token-id () uint)
+    (last-token-id () (response uint uint))
 
     ;; Owner of given token identifier
-    (get-owner? (uint) (optional principal))
+    (get-owner? (uint) (response (optional principal) uint))
 
     ;; Transfer from to
     (transfer? (uint principal principal) (response bool (tuple (kind (string-ascii 32)) (code uint))))
@@ -54,6 +53,11 @@ NFT smart contract shall implement the trait defined at `ST2NM3E9MAWWRNGFEKW75QR
 1. Contracts must use a least one nft asset. A post condition with deny mode and without any nft condition about a changed owner must fail for `transfer?` function calls.
 1. After a successfull call to function `transfer?` the function `get-owner?` must return the recipient of the `transfer?` call as the new owner.
 1. If a call to function `get-owner?` returns some principal `A` value then it must return the same value until `transfer?` is called with principal `A` as a sender
+1. The following error codes are defined
+
+| function | error | description |
+|----------|-------|-------------| 
+|`transfer?`|`{kind: "nft-transfer-failed", code: from-nft-transfer}`| Error if the call failed due to the underlying asset transfer. The code `from-nft-transfer` is the error code from the native asset transfer function|
 
 ## Related Work
 
@@ -69,3 +73,5 @@ Not applicable
 This SIP is activated as soon as 5 contracts are deployed that are using the same trait that follows this specification.
 
 ## Reference Implementations
+
+https://github.com/friedger/clarity-smart-contracts/blob/master/contracts/sips/nft-trait.clar

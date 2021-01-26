@@ -32,8 +32,8 @@ NFTs are enumerated, the id starts at 1 and the current last id is provided by t
 NFT smart contract shall implement the trait defined at `ST314JC8J24YWNVAEJJHQXS5Q4S9DX1FW5Z9DK9NT.nft-trait` as well as satisfy the additional conditions.
 The trait has three functions:
 * `last-token-id` does not take any arguments and returns the highest number that is used as an identifier for any nft. This is the upper limit when iterating through all nfts.
-* `get-owner?` takes an nft identifier and returns a response containing the principal owning the nft for the given identifier. The principal is wrapped as an optional, that means if the corresponding nft does not exists the response is `(ok none)`, otherwise, e.g. `(ok (some 'ST12...))`. The owner can be a contract principal.
-* `transfer?` takes an nft identifier, a sender principal and a receiver principal. The function changes the ownership of the nft for the given identifier. The change has to be reflected in the `get-owner?` function, for details see implementation rules.
+* `get-owner` takes an nft identifier and returns a response containing the principal owning the nft for the given identifier. The principal is wrapped as an optional, that means if the corresponding nft does not exists the response is `(ok none)`, otherwise, e.g. `(ok (some 'ST12...))`. The owner can be a contract principal.
+* `transfer` takes an nft identifier, a sender principal and a receiver principal. The function changes the ownership of the nft for the given identifier. The change has to be reflected in the `get-owner` function, for details see implementation rules.
 
 ### Trait
 
@@ -44,25 +44,25 @@ The trait has three functions:
     (last-token-id () (response uint uint))
 
     ;; Owner of given token identifier
-    (get-owner? (uint) (response (optional principal) uint))
+    (get-owner (uint) (response (optional principal) uint))
 
     ;; Transfer from to
-    (transfer? (uint principal principal) (response bool (tuple (kind (string-ascii 32)) (code uint))))
+    (transfer (uint principal principal) (response bool (tuple (kind (string-ascii 32)) (code uint))))
   )
 )
 ```
 
 ### Implementation rules
 
-1. Contracts must use a least one nft asset. A post condition with deny mode and without any nft condition about a changed owner must fail for `transfer?` function calls.
-1. After a successfull call to function `transfer?` the function `get-owner?` must return the recipient of the `transfer?` call as the new owner.
-1. If a call to function `get-owner?` returns some principal `A` value then it must return the same value until `transfer?` is called with principal `A` as a sender
-1. For any call to `get-owner?`, resp. `transfer` with an id greater than `last-token-id`, the call should return a response `none`, resp. failed transfer. 
+1. Contracts must use a least one nft asset. A post condition with deny mode and without any nft condition about a changed owner must fail for `transfer` function calls.
+1. After a successfull call to function `transfer` the function `get-owner` must return the recipient of the `transfer` call as the new owner.
+1. If a call to function `get-owner` returns some principal `A` value then it must return the same value until `transfer` is called with principal `A` as a sender
+1. For any call to `get-owner`, resp. `transfer` with an id greater than `last-token-id`, the call should return a response `none`, resp. failed transfer. 
 1. The following error codes are defined
 
 | function | error | description |
 |----------|-------|-------------| 
-|`transfer?`|`{kind: "nft-transfer-failed", code: from-nft-transfer}`| Error if the call failed due to the underlying asset transfer. The code `from-nft-transfer` is the error code from the native asset transfer function|
+|`transfer`|`{kind: "nft-transfer-failed", code: from-nft-transfer}`| Error if the call failed due to the underlying asset transfer. The code `from-nft-transfer` is the error code from the native asset transfer function|
 
 ## Related Work
 
@@ -82,6 +82,4 @@ This SIP is activated as soon as 5 contracts are deployed that are using the sam
 Source code
 https://github.com/friedger/clarity-smart-contracts/blob/master/contracts/sips/nft-trait.clar
 
-Deployment on testnet
-
-https://explorer.stacks.co/txid/0x071d557c0edcb118203d2900b81aaf5bd9e5f52ec002b305ea34a13d419c7441?chain=testnet
+Deployment on testnet: TODO

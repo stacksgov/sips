@@ -35,17 +35,23 @@ The fungible token trait, `ft-trait`, has a few methods:
 
 Transfer the fungible token from the sender of this transaction to the recipient. The `amount` is an unsigned integer. It is recommended that implementing contracts use the built-in `ft-transfer` Clarity method. If the sender does not have enough tokens to complete the transaction, the transaction should abort and return an `(err uint)`.
 
+This method must be defined with `define-public`, as it alters state, and should be externally callable.
+
 ### Name
 
 `(name () (response (string-ascii 32) uint))`
 
 Return a human-readable name for the contract, such as "CoolPoints", etc.
 
+This method should be defined as read-only, i.e. `define-read-only`.
+
 ### Symbol
 
 `(symbol () (response (string-ascii 32) uint))`
 
 Return a symbol that allows for a shorter representation of your token. This is sometimes referred to as a "ticker". Examples: "STX", "COOL", etc. Typically, your token could be referred to as $SYMBOL when referencing it in writing.
+
+This method should be defined as read-only, i.e. `define-read-only`.
 
 ### Decimals
 
@@ -55,17 +61,23 @@ The number of decimal places in your token. All fungible token balances must be 
 
 As another example, if your token has 4 decimals, and the `balance-of` a particular user returns `100345000`, wallets and exchanges would likely represent that value as `10034.5`.
 
+This method should be defined as read-only, i.e. `define-read-only`.
+
 ### Balance of
 
 `(balance-of (principal) (response uint uint))`
 
 Return the balance of a particular principal (also known as "address" or "account"). Implementations should typically use the built-in Clarity method `ft-get-balance`.
 
+This method should be defined as read-only, i.e. `define-read-only`.
+
 ### Total supply
 
 `(total-supply () (response uint uint))`
 
 Return the total supply of this token. Implementations should typically use the built-in Clarity method `ft-get-supply`.
+
+This method should be defined as read-only, i.e. `define-read-only`.
 
 ## Trait implementation
 
@@ -105,7 +117,7 @@ Credit for the work behind this proposal belongs to [@psq](https://github.com/ps
 
 ## Implementing in wallets and other applications
 
-Developers who with to interact with a fungible token contract should first be provided, or keep track of, various different fungible token implementations. When validating a fungible token contract, they should fetch the interface and/or source code for that contract. If the contract implements the trait, then the wallet can use this standard's contract interface for making transfers and getting balances.
+Developers who wish to interact with a fungible token contract should first be provided, or keep track of, various different fungible token implementations. When validating a fungible token contract, they should fetch the interface and/or source code for that contract. If the contract implements the trait, then the wallet can use this standard's contract interface for making transfers and getting balances.
 
 ### Use of post conditions
 

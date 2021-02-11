@@ -612,9 +612,9 @@ token is owned by the account.  It can take the following values:
 * `0x10`: "The account does NOT own this non-fungible token"
 * `0x11`: "The account owns this non-fungible token"
 
-Post-conditions are defined in terms of which assets the origin account sends or
+Post-conditions are defined in terms of which assets each account sends or
 does not send during the transaction's execution.  To enforce post-conditions,
-the Clarity VM records which assets the origin account sends as the transaction
+the Clarity VM records which assets each account sends as the transaction
 is evaluated to produce an "asset map."  The asset map is used to evaluate the post-conditions.
 
 #### Transaction Payloads

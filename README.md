@@ -6,6 +6,24 @@ of the Stacks 2.0 blockchain.  The SIP process
 describes how to make a SIP and get it ratified.  Anyone in the Stacks community
 may submit a SIP.
 
+## Ratified SIPs
+
+* [SIP-000](./sips/sip-000/sip-000-stacks-improvement-proposal-process.md): The
+  Stacks Improvement Proposal Process
+* [SIP-001](./sips/sip-001/sip-001-burn-election.md): Burn Election
+* [SIP-002](./sips/sip-002/sip-002-smart-contract-language.md): The Clarity
+  Smart Contract Language
+* [SIP-003](./sips/sip-003/sip-003-peer-network.md): Stacks P2P Network
+* [SIP-004](./sips/sip-004/sip-004-materialized-view.md): Cryptographic
+  Commitment to Materialized Views
+* [SIP-005](./sips/sip-005/sip-005-blocks-and-transactions.md): Blocks,
+  Transactions, and Accounts
+* [SIP-006](./sips/sip-006/sip-006-runtime-cost-assessment.md): Clarity Cost
+  Execution Assessment
+* [SIP-007](./sips/sip-007/sip-007-stacking-consensus.md): Stacking Consensus
+* [SIP-008](./sips/sip-008/sip-008-analysis-cost-assessment.md): Clarity Parsing
+  and Analysis Cost Assessment
+
 ## How to Get Involved
 
 There are several ways you can get involved with the SIP process:

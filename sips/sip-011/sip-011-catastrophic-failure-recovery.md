@@ -147,7 +147,7 @@ Once the vulnerability no longer poses a systemic threat to the Stacks ecosystem
 pushing out a critical bugfix point-release will be followed.
 
 To encourage users who discover such sensitive blockchain bugs to report them
-while keeping them secret, the Stacks Foundation will a bug-bounty program that
+while keeping them secret, the Stacks Foundation will start a bug-bounty program that
 will be set up once this SIP activates.
 
 ## Procedure for Altering Network Protocols
@@ -244,13 +244,13 @@ version.
 in burnchain block heights, at which point any legacy support for the old,
 replaced networking code paths will be dropped.  This deadline will be no longer
 than six months into the future.  The exact block height is chosen at the
-discression of the Foundation, with advice from affected ecosystem entities.
+discretion of the Foundation, with advice from affected ecosystem entities.
 
 The Foundation will keep its old nodes online as long as it believes that there
 is a systemic risk to shutting them down, and will send an email to
 announce@stacks.org to indicate when support for the old network version will be
 terminated.  This deadline may exceed the built-in deadline, at the Foundation's
-discression.
+discretion.
 
 Note that if this procedure is used, ecosystem participants should expect no
 fewer than three separate emails from announce@stacks.org -- one in step 2, one
@@ -319,7 +319,7 @@ a pending soft fork.
 A miner-activated soft fork procedure for healing a catastrophic failure works
 as follows:
 
-1. The Foundation and one other significant ecosystem entity will approve and
+1. The Foundation and at least one other significant ecosystem entity will approve and
 sign a Stacks node software release that implements the soft fork rules.  This
 is the first step in this process because this new node software must address
 whatever catastrophic bug that led to the need to follow this procedure.  The
@@ -420,6 +420,11 @@ determined by the burnchain block height).
 
 Step 3 should be executed if possible, because it gives the network a chance to
 vote on the new rules.
+
+Note that in this procedure, at least two emails from announce@stacks.org will
+be sent -- one in step 1 and one in step 4.  However, given the severity of any
+bug that can only be resolved with a hard fork, there may be many more
+communications sent.
 
 # Related Work
 

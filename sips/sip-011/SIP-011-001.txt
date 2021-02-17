@@ -1,0 +1,11 @@
+# Stacks Core Developers
+
+The following is a list of software developers who are largely responsible for maintaining the Stacks reference implementation, to the point where they are trusted to be able to carry out the catastrophic bug recovery procedures described in SIP 011.
+
+Inclusion in this list is subject to review by the SIP Steering Committee, its superiors, or its successor organizations.  Names are alphabetical by last name.
+
+* Aaron Blankstein (aaron@hiro.so), @kantai
+* Ludo Galabru (ludovic@hiro.so), @lgalabru
+* Jude Nelson (jude@stacks.org), @jcnelson
+
+This SIP must be cryptographically signed by each Stacks Core Developer and the Stacks Foundation in order to be ratified.  These signatures are included below:

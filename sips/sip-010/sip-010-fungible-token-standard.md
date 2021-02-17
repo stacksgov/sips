@@ -2,7 +2,7 @@
 
 Sip Number: 010
 
-Title: Standard Trait Definition for Non-Fungibe Tokens
+Title: Standard Trait Definition for Fungible Tokens
 
 Author: Hank Stoever (hstove@gmail.com)
 
@@ -24,7 +24,7 @@ Discussions-To: https://github.com/stacksgov/sips
 
 # Abstract
 
-Fungible tokens are digital assets that can be sent, received, combined, and divided. Most forms of currency and cryptocurrencies are fungible tokens. They have become a building block of almost all blockchains. This SIP aims to provide a flexible and easy-to-implement standard that can be used by developers on the Stacks blockchain when creating their own tokens.
+Fungible tokens are digital assets that can be sent, received, combined, and divided. Most forms of cryptocurrencies are fungible tokens. They have become a building block of almost all blockchains. This SIP aims to provide a flexible and easy-to-implement standard that can be used by developers on the Stacks blockchain when creating their own tokens.
 
 # License and Copyright
 
@@ -33,15 +33,17 @@ This SIP’s copyright is held by the Stacks Open Internet Foundation.
 
 # Introduction
 
-Digital assets can be divided into two categories, based on the token's fungibility. A _fungible_ token can be broken down into small units and added together. An owner of a fungible asset only needs to care about their balance, that is, the total amount of a particular fungible asset that they own. Most well-known currencies are fungible.
+Digital assets can have the property to be fungible. A _fungible_ token can be broken down into small units and added together. An owner of a fungible asset only needs to care about their balance, that is, the total amount of a particular fungible asset that they own. Most well-known currencies are fungible. For fungible tokens, there is no difference between any two different amounts of the fungible token.
 
-For example, if a user owns 10 units of a fungible asset, they may send 2 units to a different user. At this point, their balance is 8 units. If they later receive more units, their total balance will be updated. For fungible tokens, there is no difference between any two different amounts of the fungible token.
+For example, if a user owns 10 units of a fungible asset, they may send 2 units to a different user. At this point, their balance is 8 units. If they later receive more units, their total balance will be updated.
 
 On blockchains, fungible tokens are a core component. Blockchains with smart contracts, including the Stacks blockchain, allow developers and users to create and interact with smart contracts that use fungible tokens.
 
+The Stacks blockchain has a native fungible token: the Stacks token (STX). In addition to the native STX token, the Stacks blockchain's programming language for developing smart contracts, Clarity, has built-in language primitives to define and use fungible tokens. Although those primitives exists, there is value in defining a common interface (known in Clarity as a "trait") that allows different smart contracts to interoperate with fungible token contracts in a reusable way. This SIP defines that trait.
+
 # Specification
 
-The fungible token trait, `ft-trait`, has a few functions:
+The fungible token trait, `ft-trait`, has a 6 functions:
 
 ## Trait functions
 
@@ -53,7 +55,7 @@ Transfer the fungible token from the sender of this transaction to the recipient
 
 This method must be defined with `define-public`, as it alters state, and should be externally callable.
 
-Contract implementers should take note to perform authorization of the `transfer` method. For example, most fungible token contracts should enforce that the `sender` argument is equal to the `tx-sender` keyword in Clarity.
+Contract implementers should take note to perform authorization of the `transfer` method. For example, a fungible token contract that wants to make sure that only the transaction's sender is able to move the requested tokens might first check that the sender argument is equal to tx-sender.
 
 When returning an error in this function, the error codes should follow the same patterns as the built-in `ft-transfer?` and `stx-transfer?` functions.
 
@@ -61,7 +63,7 @@ When returning an error in this function, the error codes should follow the same
 | ---------- | ----------------------------------------------- |
 | u1         | `sender` does not have enough balance           |
 | u2         | `sender` and `recipient` are the same principal |
-| u3         | `sender` and `recipient` are the same principal |
+| u3         | `amount` is non-positive                        |
 | u4         | `sender` is not the same as `tx-sender`         |
 
 ### Name
@@ -76,7 +78,7 @@ This method should be defined as read-only, i.e. `define-read-only`.
 
 `(symbol () (response (string-ascii 32) uint))`
 
-Return a symbol that allows for a shorter representation of your token. This is sometimes referred to as a "ticker". Examples: "STX", "COOL", etc. Typically, your token could be referred to as $SYMBOL when referencing it in writing.
+Return a symbol that allows for a shorter representation of a token. This is sometimes referred to as a "ticker". Examples: "STX", "COOL", etc. Typically, a token could be referred to as $SYMBOL when referencing it in writing.
 
 This method should be defined as read-only, i.e. `define-read-only`.
 
@@ -84,9 +86,9 @@ This method should be defined as read-only, i.e. `define-read-only`.
 
 `(decimals () (response uint uint))`
 
-The number of decimal places in your token. All fungible token balances must be represented as integers, but providing the number of decimals provides for an abstraction of your token that humans are more familiar dealing with. For example, the US Dollar has 2 decimals, if the base unit is "cents", as is typically done in accounting. Stacks has 6 decimals, Bitcoin has 8 decimals, and so on.
+The number of decimal places in a token. All fungible token balances must be represented as integers, but providing the number of decimals provides for an abstraction of a token that humans are more familiar dealing with. For example, the US Dollar has 2 decimals, if the base unit is "cents", as is typically done in accounting. Stacks has 6 decimals, Bitcoin has 8 decimals, and so on.
 
-As another example, if your token has 4 decimals, and the `balance-of` a particular user returns `100345000`, wallets and exchanges would likely represent that value as `10034.5`.
+As another example, if a token has 4 decimals, and the `balance-of` a particular user returns `100345000`, wallets and exchanges would likely represent that value as `10034.5`.
 
 This method should be defined as read-only, i.e. `define-read-only`.
 
@@ -138,6 +140,8 @@ An implementation of the proposed trait is provided below.
 
 Developers who wish to interact with a fungible token contract should first be provided, or keep track of, various different fungible token implementations. When validating a fungible token contract, they should fetch the interface and/or source code for that contract. If the contract implements the trait, then the wallet can use this standard's contract interface for making transfers and getting balances.
 
+Downstream consumers of contracts that implement this trait should be aware that the `name` and `symbol` function are not guaranteed to be globally unique. Because of this, consumers should be advised that `name` and `token` are only hints to provide a more human-readable experience. Care should always be taken to verify that a contract's identifier matches that of the token a client is intending to interact with.
+
 ## Use of post conditions
 
 In addition to built-in methods for fungible token contracts, the Stacks blockchain includes a feature known as Post Conditions. By defining post conditions, users can create transactions that include pre-defined guarantees about what might happen in that contract.
@@ -160,7 +164,7 @@ Not applicable
 
 # Activation
 
-This trait will be considered activated when this trait is deployed to mainnet, and 3 contracts from different developers on implement this trait on mainnet.
+This trait will be considered activated when this trait is deployed to mainnet, and 3 different implementations of the trait have been deployed to mainnet, no later than Bitcoin block 680000.
 
 # Reference Implementations
 

@@ -68,7 +68,7 @@ This document describes the ways in which Stacks ecosystem participants can
 coordinate to recover from various instances of these failure modes, and when it
 is appropriate to use them.  These procedures include:
 
-* Announcing a new point-release of the Foundation's reference implementation of
+* Announcing a new point-release of the Stacks Open Internet Foundation's reference implementation of
   the Stacks node software
 * Covertly fixing systemically-important nodes to fix security-sensitive bugs
 * Altering or extending the p2p network protocol
@@ -84,6 +84,18 @@ failure, even if the behavior is not desired.  This SIP does not describe how to
 remedy these situations; it is only concerned with manual recovery procedures
 and guidelines for restoring the network after a network-wide safety or liveness
 failure is discovered.
+
+## Terminology
+
+In the remainder of this document, the following words refer to the following
+things:
+
+* "Foundation" refers to the Stacks Open Internet Foundation unless otherwise specified.
+* "Stacks Core Developers" refers to the set of blockchain developers who are
+  largely responsible for maintaining the Stacks blockchain reference
+implementation.  A list of these developers can be found in the supplemental
+file `SIP-011-001.txt` that comes with this SIP.  This list will be 
+maintained by the SIP Steering Committee, its superiors, or its successors.
 
 # Specification
 
@@ -105,12 +117,12 @@ the following procedure will be carried out:
 with `fix/` to the Stacks Blockchain reference implementation, hosted at
 https://github.com/blockstack/stacks-blockchain.
 2. The branch will be submitted as a pull-request to the `master` branch, and
-will be reviewed and approved by at least two blockchain engineers, representing
-both the Stacks Foundation and at least one other major Stacks ecosystem entity.
+will be reviewed and approved by at least two members of the Stacks Core
+Developers group.
 3. If warranted, an unofficial announcement will be made to various public
 avenues where Stacks miners are known to gather, such as the Stacks Discord
 server or the Stacks forum (https://forum.stacks.org), in order to inform them
-that the source code to the fix is available to be built.
+that the source code to the fix is available to be inspected, built, and tested.
 4. A build process will be triggered to produce pre-built binaries for users to
 download.
 5. Once the binaries are available, a cryptographically-signed email will be
@@ -226,9 +238,9 @@ means operating the blockchain in a degraded state), the Foundation will procure
 a _testnet_ release of the node software with the incompatible fix applied.
 Power users and ecosystem entities are encouraged to run this testnet release in
 order to verify that it solves the problem and works correctly.
-4. Once the Foundation and at least one other significant ecosystem entity are
-satisfied that the new network version solves the problem, they will produce a
-second critical bugfix point-release for mainnet.  To the greatest extent
+4. Once the Foundation and the participating ecosystem entities from step 2
+are satisfied that the new network version solves the problem, the Foundation
+will execute a second critical bugfix point-release for mainnet.  To the greatest extent
 possible, the new networking code will remain compatible with the old but broken
 network's message formats and interfaces.  The Foundation will provide a
 detailed explanation of how old nodes will interact with new nodes as part of
@@ -258,7 +270,7 @@ in step 4, and one in step 5.  The email in step 5 will list the burnchain block
 height at which support for any legacy, broken networking code will be dropped
 (if applicable).
 
-The engineers who procure the new incompatible network version should take steps
+The developers who procure the new incompatible network version should take steps
 to retain backwards-compatibility with old clients and old nodes to the greatest
 extent possible until the upgrade deadline passes.  This is because at a
 minimum, the new incompatible node code will need to boot off of an old node's
@@ -319,7 +331,7 @@ a pending soft fork.
 A miner-activated soft fork procedure for healing a catastrophic failure works
 as follows:
 
-1. The Foundation and at least one other significant ecosystem entity will approve and
+1. A majority of the Stacks Core Developers group will approve and
 sign a Stacks node software release that implements the soft fork rules.  This
 is the first step in this process because this new node software must address
 whatever catastrophic bug that led to the need to follow this procedure.  The
@@ -336,8 +348,8 @@ process to "activation-in-progress" status by the relevant advisory boards and
 technical steering committee.  Among other things, this SIP's activation
 criteria must require the following:
 
-   * At least 80% of all miners must _explicitly and continuously vote to
-     accept_ the soft fork rules for at least _two consecutive_ whole PoX reawrd
+   * At least 80% of all mined blocks must _explicitly and continuously vote to
+     accept_ the soft fork rules for at least _two consecutive_ whole PoX reward
 cycles. Additional, stricter criteria are permitted.
    * An _activation window_, defined by a _start activation height_ and an _end
      activation height_, represented as burnchain block heights, must be
@@ -355,8 +367,8 @@ written and adequately tested (possibly including rolling it out to one or more
 public testnets first), it will be announced via a signed email from
 announce@stacks.org.  This release announcement must occur before the activation
 window begins.
-4. If at least 80% of all miners vote to accept the soft fork rules for two
-consecutive, whole reward cycles within the activation window, then the new
+4. If at least 80% of all blocks produced in two consecutive, whole reward
+   cycles vote to accept the soft fork rules within the activation window, then the new
 rules will take effect starting in the next whole reward cycle.  All new
 releases of the Stacks node will adhere to the soft fork rules, since they are
 now part of the block validation rules.
@@ -366,6 +378,9 @@ new rules.
 
 Note that in this procedure, at least three emails from announce@stacks.org will
 be sent -- one in step 1, one in step 3, and one in step 5.
+
+Multiple soft forks may be processed in parallel, as long as their activations
+do not conflict or depend on one another.
 
 ## Procedure for Hard Forks
 
@@ -440,24 +455,18 @@ willy-nilly once enough "core developers" are on board.
 
 # Activation
 
-This section is a work in progress.  Feedback is welcome.
+This SIP codifies the behaviors of the Stacks Core Developers and the Stacks
+Open Internet Foundation in the event of a catastrophic blockchain failure.  It
+also serves to inform all ecosystem participants on what to expect should such a
+failure occur, and how it will be handled.
 
-## Option 1
-
-A majority of the following ecosystem entities must write a blog post announcing
-support for these upgrade procedures by the end of year 2021.
-
-* The Stacks Foundation (stacks.org)
-* Hiro PBC (hiro.so)
-* Daemon Technologies (daemontechnologies.co)
-* Secret Key Labs (secretkeylabs.com)
-* Freehold (www.joinfreehold.com)
-* TBD
-
-## Option 2
-
-A smart contract shall be created on the Stacks chain, and at least 15% of the
-total liquid STX must execute a coin vote for it by the end of year 2021.
+Because this SIP cannot be legally or programmatically enforced, a legal or
+programmatic ratification process would be meaningless.  Therefore, it is
+sufficient that the two affected parties -- the Stacks Open Internet Foundation
+and teh Stacks Core Developers -- both unanimously approve this SIP by
+cryptographically signing it an attaching their signatures as supplementary
+files (in `SIP-011-001.txt`).  This must be carried out on or before 31 December 2021
+at 23:59:59 UTC.
 
 # Reference Implementation
 

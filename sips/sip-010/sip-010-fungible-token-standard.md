@@ -142,6 +142,8 @@ Developers who wish to interact with a fungible token contract should first be p
 
 Downstream consumers of contracts that implement this trait should be aware that the `name` and `symbol` function are not guaranteed to be globally unique. Because of this, consumers should be advised that `name` and `token` are only hints to provide a more human-readable experience. Care should always be taken to verify that a contract's identifier matches that of the token a client is intending to interact with.
 
+All of the functions in this trait return the `response` type, which is a requirement of trait definitions in Clarity. However, some of these functions should be "fail-proof", in the sense that they should never return an error. These "fail-proof" functions are those that have been recommended as read-only. If a contract that implements this trait returns an error for these functions, it may be an indication of a faulty contract, and consumers of those contracts should proceed with caution.
+
 ## Use of post conditions
 
 In addition to built-in methods for fungible token contracts, the Stacks blockchain includes a feature known as Post Conditions. By defining post conditions, users can create transactions that include pre-defined guarantees about what might happen in that contract.
@@ -164,7 +166,7 @@ Not applicable
 
 # Activation
 
-This trait will be considered activated when this trait is deployed to mainnet, and 3 different implementations of the trait have been deployed to mainnet, no later than Bitcoin block 680000.
+This trait will be considered activated when this trait is deployed to mainnet, and 3 different implementations of the trait have been deployed to mainnet, no later than Bitcoin block 700000.
 
 # Reference Implementations
 

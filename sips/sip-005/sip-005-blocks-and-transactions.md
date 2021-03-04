@@ -34,7 +34,7 @@ network.
 The Stacks blockchain is a replicated state machine.
 A _transaction_ encodes a single state-transition on the
 Stacks blockchain.  The Stacks blockchain's state evolves by materializing the
-effects of a sequence of transactions -- i.e. by applying each transaction's encoded
+effects of a sequence of transactions -- i.e., by applying each transaction's encoded
 state-transitions to the blockchain's state.
 
 Transactions in the Stacks blockchain encode various kinds of state-transitions,
@@ -68,7 +68,7 @@ the originating account are the same account.
   change during the course of transaction execution via the Clarity
   function `as-contract`, which executes the provided code block as
   the _current contract's_ account. Each transaction's initial sending
-  account is its originating account -- i.e. the account that
+  account is its originating account -- i.e., the account that
   authorizes the transaction.  Smart contracts determine the sending
   account's principal using the `tx-sender` built-in function.
 
@@ -110,7 +110,7 @@ nonce is incremented in the materialized view of this account.
 
 * **Assets**.  This is a mapping between all Stacks asset types and the
   quantities of each type owned by the account.  This includes the STX token, as
-well as any other on-chain assets declared by a Clarity smart contract (i.e.
+well as any other on-chain assets declared by a Clarity smart contract (i.e.,
 fungible and non-fungible tokens).
 
 All accounts for all possible addresses are said to exist, but nearly all of
@@ -157,7 +157,7 @@ As described in SIP 002, the Stacks blockchain supports on-chain assets as a
 first-class data type -- in particular, _fungible_ and _non-fungible_ assets are
 supported.  All assets (besides STX) are scoped to a particular contract, since 
 they are created by contracts.  Within a contract, asset types are unique.
-Therefore, all asset types are globally addressible via their identifier in the
+Therefore, all asset types are globally-addressable via their identifier in the
 contract and their fully-qualified contract names.
 
 Regardless of where asset types are declared, a particular instance of an asset 
@@ -206,7 +206,7 @@ The intended use-case for sponsored authorizations is to enable developers
 and/or infrastructure operators to pay for users to call into their
 smart contracts, even if users do not have the STX to do so.  The signing flow
 for sponsored transactions would be to have the user first sign the transaction
-with their origin account with the intent of it being sponsored (i.e. the user
+with their origin account with the intent of it being sponsored (i.e., the user
 must explicitly allow a sponsor to sign), and then have the sponsor sign with their paying
 account to pay for the user's transaction fee.
 
@@ -289,7 +289,7 @@ that must all be true when the transaction finishes running.  Each
 post-condition is a quad that encodes the following information:
 
 * The **principal** that sent the asset.  It can be a standard or contract address.
-* The **asset name**, i.e. the name of one of the assets in the originating
+* The **asset name**, i.e., the name of one of the assets in the originating
   account's asset map.
 * The **comparator**, described below.
 * The **literal**, an integer or boolean value used to compare instances of the
@@ -328,7 +328,7 @@ Post-conditions do not consider who _currently owns_ an asset when the
 transaction finishes, nor do they consider the sequence of owners an asset
 had during its execution.  It only encodes who _sent_ an asset, and how much.
 This information is much cheaper to track, and requires no
-I/O to process (rocessing time is _O(n)_ in the number of post-conditions).
+I/O to process (processing time is _O(n)_ in the number of post-conditions).
 Users who want richer post-conditions are encouraged to deploy their own
 proxy contracts for making such queries.
 
@@ -369,7 +369,7 @@ encoded as big-endian.
 
 The version number identifies whether or not the transaction is a mainnet or
 testnet transaction.  A mainnet transaction MUST have its highest bit cleared, and a
-testnet transaction MUST have the highest bit set (i.e. `version & 0x80` must be
+testnet transaction MUST have the highest bit set (i.e., `version & 0x80` must be
 non-zero for testnet, and zero for mainnet).  The lower 7 bits are ignored for
 now.
 
@@ -418,7 +418,7 @@ derive the appropriate account version number.
 * An 8-byte **fee rate**.
 * Either a **single-signature spending condition** or a **multisig spending
   condition**, described below.  If the hash mode byte is either `0x00` or
-`0x02`, then a signle-signature spending condition follows.  Otherwise, a
+`0x02`, then a single-signature spending condition follows.  Otherwise, a
 multisig spending condition follows.
 
 A _single-signature spending condition_ is encoded as follows:
@@ -499,7 +499,7 @@ hash of the 32-byte
 _Bitcoin P2PKH_:  This algorithm takes the ECDSA recoverable signature and
 public key encoding byte from the single-signature spending condition, converts them to 
 a public key, and then calculates the Hash160 of the key's byte representation
-(i.e. by serializing the key as a compressed or uncompressed secp256k1 public
+(i.e., by serializing the key as a compressed or uncompressed secp256k1 public
 key).
 
 _Bitcoin redeem script P2SH_:  This algorithm converts a multisig spending
@@ -516,7 +516,7 @@ script, and finally the Hash160 of the redeem script to get the address's public
 key hash.
 
 _Bitcoin P2WSH-P2SH_:  This algorithm takes the ECDSA recoverable signatures and
-pbulic key encoding bytes, as well as any given public keys, and converts them
+public key encoding bytes, as well as any given public keys, and converts them
 into a multisig P2WSH witness program.  It then generates a P2SH redeem script
 from the witness program, and obtains the address's public key hash from the
 Hash160 of the redeem script.
@@ -576,7 +576,7 @@ An **asset info** structure identifies a token type declared somewhere in an
 earlier-processed Clarity smart contract.  It contains the following fields:
 * An **address**, which identifies the standard account that created the
   contract that declared the token.  This is encoded as a 1-byte version,
-  followed by a 20-byte public key hash (i.e. a standard account address).
+  followed by a 20-byte public key hash (i.e., a standard account address).
 * A **contract name**, a length-prefixed Clarity string that encodes the
   human-readable part of the contract's name.
 * An **asset name**, a length-prefixed Clarity string that encodes the name of
@@ -650,7 +650,7 @@ The _STX token-transfer_ structure is encoded as follows:
 Note that if a transaction contains a token-transfer payload, it MUST
 have only a standard authorization field. It cannot be sponsored. The
 recipient principal does not need to be a materialized account -- STX
-may be transfered to an account which has not been used in any prior
+may be transferred to an account which has not been used in any prior
 transactions. In the case of a contract principal, the unmaterialized
 contract principal will receive the funds and maintain a balance in
 the STX holdings map. If and when that contract is published, the contract
@@ -721,7 +721,7 @@ condition structure is as follows:
 0. Set the spending condition address, and optionally, its signature count.
 1. Clear the other spending condition fields, using the appropriate algorithm below.
    If this is a sponsored transaction, and the signer is the origin, then set the sponsor spending condition
-   to the "signing sentinal" value (see below).
+   to the "signing sentinel" value (see below).
 2. Serialize the transaction into a byte sequence, and hash it to form an
    initial `sighash`.
 3. Calculate the `presign-sighash` over the `sighash` by hashing the 
@@ -753,7 +753,7 @@ spending conditions, the implementation returns the sequence of public keys and
 (public key encoding byte, ECDSA recoverable signature) pairs that make up the condition's authorization fields.
 The implementation must take care to preserve the order of public keys and
 (encoding-byte, signature) pairs in the multisig spending condition, so that
-the verifying algorith will hash them all in the right order when verifying the
+the verifying algorithm will hash them all in the right order when verifying the
 address.
 
 When signing a sponsored transaction, the origin spending condition signatures
@@ -792,7 +792,7 @@ recovers public keys.
 
 When verifying a sponsored transaction, the sponsor's signatures are verified
 first.  Once verified, the sponsor spending condition is set to the "signing
-sentinal" value in order to verify the origin spending condition.
+sentinel" value in order to verify the origin spending condition.
 
 ## Blocks
 
@@ -802,11 +802,11 @@ _mempool_), selects the ones they wish to package together into the next block
 ("mines" them), and then announces the block to the rest of the peer network.
 
 A block is considered valid if (1) it is well-formed, (2) it contains a valid
-sequence of transactions -- i.e. each transaction's state-transitions are
+sequence of transactions -- i.e., each transaction's state-transitions are
 permitted, and (3) it follows the rules described in this document below.
 
 Per SIP 001, there are two kinds of blocks: anchored blocks, and streamed
-microblcoks.  An anchored block is comprised of the following two fields:
+microblocks.  An anchored block is comprised of the following two fields:
 
 * A **block header**
 * A list of one or more **transactions**, encoded as:
@@ -841,7 +841,7 @@ The _VRF proof_ field contains the following fields:
 
 The _cumulative work score_ contains the following two fields:
 * An 8-byte unsigned integer that encodes the sum of all burnchain tokens
-  burned or transferred in this fork of the Stacks blockchain (i.e. by means of
+  burned or transferred in this fork of the Stacks blockchain (i.e., by means of
   proof-of-burn or proof-of-transfer, whichever is in effect).
 * An 8-byte unsigned integer that encodes the total proof-of-work done in this
   fork of the burn chain.
@@ -896,7 +896,7 @@ network, the peer must confirm that:
 If any of the above are false, then there is _no way_ that the block can be
 valid, and it is dropped.
 
-Once an block passes this initial test, it is queued up for processing in a
+Once a block passes this initial test, it is queued up for processing in a
 "staging" database.  Blocks remain in this staging database
 until there exists a chain tip to which to append
 the block (where the chain tip in this case refers both to the parent anchored
@@ -938,7 +938,7 @@ This will be evidenced by the discovery of either of the following:
 If such a discovery is made, the microblock stream is truncated to the last
 microblock before the height in the microblock stream of the equivocation, and
 this microblock (or any of its predecessor microblocks in the stream) remain
-viable chain tips for subsequent leaders to build off of.  In the mean time,
+viable chain tips for subsequent leaders to build off of.  In the meantime,
 anyone can submit a poison-microblock transaction with both signed headers in
 order to (1) destroy the equivocating leader's coinbase and fees, and (2) receive
 5% of the destroyed tokens as a reward, provided that the poison-microblock
@@ -950,14 +950,14 @@ arrive in order, and may even arrive before their parent microblock.  Peers are
 expected to cache well-formed microblocks for some time, in order to help ensure that
 they are eventually enqueued for processing if they are legitimate.
 
-Valid microblocks in the parent stream may be orphaned by the child anchored block, i.e. 
+Valid microblocks in the parent stream may be orphaned by the child anchored block
 because the leader didn't see them in time to build off of them.
 If this happens, then the orphaned microblocks are dropped.
 
 ## Block Processing
 
 Block processing is the act of calculating the next materialized view of the
-blockchain, using both the anchored block and the parent microblcok stream
+blockchain, using both the anchored block and the parent microblock stream
 that connects it to its parent anchored block.
 Processing the anchored block entails applying all of the transactions of its ancestor
 microblocks, applying all of the anchored transactions,
@@ -992,7 +992,7 @@ microblock:
 2. Verify that each paying account has sufficient STX to pay their transaction
    fees.  If not, then reject and punish the previous Stacks leader.
 3. For each transaction, grant the previous Stacks leader 40% of the transaction
-   fee, and the current leader 60% of the tranasction fee.  This encourages the
+   fee, and the current leader 60% of the transaction fee.  This encourages the
 leader that produced the current anchored block to build on top of as many
 of the parent's microblocks as possible.
 
@@ -1056,7 +1056,7 @@ fully-qualified smart contract names are globally unique -- the same standard
 account cannot create two smart contracts with the same name.
 
 The third set of key/value pairs is the **smart contract data state**.
-It maps the _fully-qualified_ data keys to their values. This stores
+It maps the _fully-qualified_ data keys to their values. These store
 all data related to a smart contract: the values associated with data
 map keys, the current value of any data variables, and the ownership
 of fungible and non-fungible tokens. The construction of these keys and
@@ -1278,7 +1278,7 @@ peer will:
   thereby adding all keys and values described above to the materialized view.
 * Process all transactions in the anchored block, thereby adding all keys and
   values described above to the materialized view.
-* Insert the rewards from the latest now-matured block (i.e. the
+* Insert the rewards from the latest now-matured block (i.e., the
   leader reward for the Stacks block 100 epochs ago in this fork) into the
 leader rewards contract in the Stacks chain boot code.  This rewards the leader
 and all users that burned in support of the leader's block.
@@ -1302,10 +1302,10 @@ For example, if an anchored block's header's hash is
 `7f3f0c0d5219f51459578305ed2bbc198588758da85d08024c79c1195d1cd611`, and the
 underlying burn chain's block header hash is
 `e258d248fda94c63753607f7c4494ee0fcbe92f1a76bfdac795c9d84101eb317`, then the
-(litte-endian) anchor hash would be
+(little-endian) anchor hash would be
 `7fbeb26cae32d96dbc1329f7e59f821b2c99b0a71943e153c071906ca7205f5f`.  In the case
 where Bitcoin is the burn chain, the block's header hash is the double-SHA256 of
-its header, in little-endian byte order (i.e. the 0's are trailing).
+its header, in little-endian byte order (i.e., the 0's are trailing).
 
 When beginning to process the anchored block (and similarly, when a leader
 begins to produce its anchored block), the peer adds the following key/value
@@ -1395,4 +1395,3 @@ implements this SIP.
 # Reference Implementations
 
 Implemented in Rust.  See https://github.com/blockstack/stacks-blockchain.
-

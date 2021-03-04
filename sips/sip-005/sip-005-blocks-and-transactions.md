@@ -448,8 +448,8 @@ A _spending authorization field_ is encoded as follows:
      secp256k1 public key.  If it is `0x01`, then the key will be loaded as
      an uncompressed secp256k1 public key.
    * `0x02` or `0x03`:  The next 65 bytes are a recoverable secp256k1 ECDSA
-     signature.  If the field ID is `0x03`, then the recovered public
-     key will be loaded as a compressed public key.  If it is `0x04`,
+     signature.  If the field ID is `0x02`, then the recovered public
+     key will be loaded as a compressed public key.  If it is `0x03`,
      then the recovered public key will be loaded as an uncompressed
      public key.
 

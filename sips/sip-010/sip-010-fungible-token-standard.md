@@ -68,7 +68,7 @@ When returning an error in this function, the error codes should follow the same
 
 ### Name
 
-`(name () (response (string-ascii 32) uint))`
+`(get-name () (response (string-ascii 32) uint))`
 
 Return a human-readable name for the contract, such as "CoolPoints", etc.
 
@@ -76,7 +76,7 @@ This method should be defined as read-only, i.e. `define-read-only`.
 
 ### Symbol
 
-`(symbol () (response (string-ascii 32) uint))`
+`(get-symbol () (response (string-ascii 32) uint))`
 
 Return a symbol that allows for a shorter representation of a token. This is sometimes referred to as a "ticker". Examples: "STX", "COOL", etc. Typically, a token could be referred to as $SYMBOL when referencing it in writing.
 
@@ -84,17 +84,17 @@ This method should be defined as read-only, i.e. `define-read-only`.
 
 ### Decimals
 
-`(decimals () (response uint uint))`
+`(get-decimals () (response uint uint))`
 
 The number of decimal places in a token. All fungible token balances must be represented as integers, but providing the number of decimals provides for an abstraction of a token that humans are more familiar dealing with. For example, the US Dollar has 2 decimals, if the base unit is "cents", as is typically done in accounting. Stacks has 6 decimals, Bitcoin has 8 decimals, and so on.
 
-As another example, if a token has 4 decimals, and the `balance-of` a particular user returns `100345000`, wallets and exchanges would likely represent that value as `10034.5`.
+As another example, if a token has 4 decimals, and the `get-balance-of` method a particular user returns `100345000`, wallets and exchanges would likely represent that value as `10034.5`.
 
 This method should be defined as read-only, i.e. `define-read-only`.
 
 ### Balance of
 
-`(balance-of (principal) (response uint uint))`
+`(get-balance-of (principal) (response uint uint))`
 
 Return the balance of a particular principal (also known as "address" or "account"). Implementations should typically use the built-in Clarity method `ft-get-balance`.
 
@@ -102,11 +102,42 @@ This method should be defined as read-only, i.e. `define-read-only`.
 
 ### Total supply
 
-`(total-supply () (response uint uint))`
+`(get-total-supply () (response uint uint))`
 
 Return the total supply of this token. Implementations should typically use the built-in Clarity method `ft-get-supply`.
 
 This method should be defined as read-only, i.e. `define-read-only`.
+
+### Token URI
+
+`(get-token-uri () (response (optional (string-utf8 256)) uint))`
+
+Returns an optional string that is a valid URI which resolves to this token's metadata. This allows your token to provide off-chain metadata about the contract, such as a description and an image icon.
+
+The JSON schema for this metadata is as follows:
+
+```json
+{
+  "title": "Asset Metadata",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Identifies the asset to which this token represents"
+    },
+    "description": {
+      "type": "string",
+      "description": "Describes the asset to which this token represents"
+    },
+    "image": {
+      "type": "string",
+      "description": "A URI pointing to a resource with mime type image/* representing the asset to which this token represents. Consider making any images at a width between 320 and 1080 pixels and aspect ratio between 1.91:1 and 4:5 inclusive."
+    }
+  }
+}
+```
+
+Clients that fetch this data should prefer any on-chain data, such as the name of the token, over metadata provided in `get-token-uri`.
 
 ## Trait implementation
 
@@ -119,19 +150,22 @@ An implementation of the proposed trait is provided below.
     (transfer (uint principal principal) (response bool uint))
 
     ;; the human readable name of the token
-    (name () (response (string-ascii 32) uint))
+    (get-name () (response (string-ascii 32) uint))
 
     ;; the ticker symbol, or empty if none
-    (symbol () (response (string-ascii 32) uint))
+    (get-symbol () (response (string-ascii 32) uint))
 
     ;; the number of decimals used, e.g. 6 would mean 1_000_000 represents 1 token
-    (decimals () (response uint uint))
+    (get-decimals () (response uint uint))
 
     ;; the balance of the passed principal
-    (balance-of (principal) (response uint uint))
+    (get-balance-of (principal) (response uint uint))
 
     ;; the current total supply (which does not need to be a constant)
-    (total-supply () (response uint uint))
+    (get-total-supply () (response uint uint))
+
+    ;; an optional URI that represents metadata of this token
+    (get-token-uri () (response (optional (string-utf8 256)) uint))
   )
 )
 ```
@@ -140,9 +174,22 @@ An implementation of the proposed trait is provided below.
 
 Developers who wish to interact with a fungible token contract should first be provided, or keep track of, various different fungible token implementations. When validating a fungible token contract, they should fetch the interface and/or source code for that contract. If the contract implements the trait, then the wallet can use this standard's contract interface for making transfers and getting balances.
 
-Downstream consumers of contracts that implement this trait should be aware that the `name` and `symbol` function are not guaranteed to be globally unique. Because of this, consumers should be advised that `name` and `token` are only hints to provide a more human-readable experience. Care should always be taken to verify that a contract's identifier matches that of the token a client is intending to interact with.
+Downstream consumers of contracts that implement this trait should be aware that the `get-name` and `get-symbol` function are not guaranteed to be globally unique. Because of this, consumers should be advised that `get-name` and `get-token` are only hints to provide a more human-readable experience. Care should always be taken to verify that a contract's identifier matches that of the token a client is intending to interact with.
 
 All of the functions in this trait return the `response` type, which is a requirement of trait definitions in Clarity. However, some of these functions should be "fail-proof", in the sense that they should never return an error. These "fail-proof" functions are those that have been recommended as read-only. If a contract that implements this trait returns an error for these functions, it may be an indication of a faulty contract, and consumers of those contracts should proceed with caution.
+
+## Use of native asset functions
+
+Although it is not possible to mandate in a Clarity trait, contract implementers should always use the built-in native assets that are provided as Clarity primitives. This allows clients to use Post Conditions (explained below), and takes advantages of other benefits, like native support for these asset balances and transfers through `stacks-blockchain-api`. The reference implementations included in this SIP use the native asset primitives, and provide a good boilerplate for their usage.
+
+The native asset primitives include:
+
+- `define-fungible-token`
+- `ft-burn?`
+- `ft-get-balance`
+- `ft-get-supply`
+- `ft-mint?`
+- `ft-transfer?`
 
 ## Use of post conditions
 

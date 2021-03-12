@@ -1,6 +1,6 @@
 # Preamble
 
-Sip Number: 010
+SIP Number: 010
 
 Title: Standard Trait Definition for Fungible Tokens
 
@@ -10,7 +10,7 @@ Consideration: Technical
 
 Type: Standard
 
-Status: Draft
+Status: Activation-in-Progress
 
 Created: 25 January 2021
 

@@ -6,6 +6,10 @@ of the Stacks 2.0 blockchain.  The SIP process
 describes how to make a SIP and get it ratified.  Anyone in the Stacks community
 may submit a SIP.
 
+## SIPs in the Process of Being Activated
+
+* [SIP-011](https://github.com/stacksgov/sips/pull/5): Standard Trait Definition for Fungible Tokens
+
 ## Ratified SIPs
 
 * [SIP-000](./sips/sip-000/sip-000-stacks-improvement-proposal-process.md): The

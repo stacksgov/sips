@@ -359,8 +359,10 @@ heights _must_ correspond to the beginnings of PoX reward cycles, and must be
 between 14 reward cycles (1 maximum Stacking period plus two reward cycles) and
 25 reward cycles (about 1 year) apart.
    * A soft-fork-specific bit pattern must be specificied, which miners _must_
-     include in their coinbase transactions in order to indicate unambiguous
-support for activating the new rules.
+     include in the unused `memo` bits in their block-commit transactions on the
+burnchain in order to unambiguously signal support for activating the new rules.
+Different soft forks may (re)use the same bit pattern only if they have
+non-overlapping activation windows.
 
 3. Once a release with the soft fork voting rules and activation window is
 written and adequately tested (possibly including rolling it out to one or more
@@ -443,15 +445,43 @@ communications sent.
 
 # Related Work
 
-This section is a work in process.
+Bitcoin has a codified process for soft forks in BIP 009 [1].  The soft-fork
+procedure described here represents a similar effort by representing soft fork
+signals as bit patterns in block header information over time, but is tailored
+specifically to the unique properties of the Stacks blockchain.  In addition,
+this SIP only proposes soft forks of this nature as a catastrophic recovery
+tool, such as when the contents of Stacks blocks themselves may not be available
+or reliable.
 
-Bitcoin has a codified process for soft fork votes.  It should be cited here.
+Tezos has an in-band procedure for changing the consensus rules directly [2] via
+an amendment process.  While superficially similar in spirit to this SIP, this
+SIP is only concerned with altering the Stacks blockchain consensus rules in
+order to recover from failures.  A separate SIP may be written later to provide
+a way to carry out non-breaking consensus changes for other purposes (and may
+opt to re-use the procedures described in this SIP if appropriate).
 
-Tezos has an even more extreme version of soft-forking than we support, but it's
-still a related concept to be cited.
+Ethereum famously does _not_ rely on any sort of in-band signaling for changing
+consensus rules [3], and instead relies on both ratification from an "All
+Core Devs" meeting and individual miners' and clients' choices to upgrade.
+This SIP takes the position that such a procedure would be inappropriate
+for changing the Stacks blockchain's consensus rules, even in
+the narrow sense of recovering from a catastrophic failure.  This is because the
+Stacks blockchain uniquely (1) permits Stacks miners to identify and avoid
+problematic transations (a property bequeathed to them by Clarity's decidability),
+and (2) permits in-band signaling between miners through a
+_separate blockchain_ via block-commit transactions, thereby obviating the need
+to decide when changes happen out-of-band.  It is the opinion of this SIP's authors
+that the approach of using Stacks block-commit transactions, as opposed to
+having in-person meetings, makes the Stacks blockchain _more receptive_ to
+users' needs and _less reliant upon_ a specific set of people to meet them,
+because sending burnchain transactions has a lower barrier to entry for
+participation.
 
-Ethereum is a good example of how _not_ to do hard forks -- they just happen
-willy-nilly once enough "core developers" are on board.
+[1] https://github.com/bitcoin/bips/blob/master/bip-0009.mediawiki
+
+[2] https://tezos.com/static/white_paper-2dc8c02267a8fb86bd67a108199441bf.pdf
+
+[3] https://eth.wiki/en/governance/governance-compendium
 
 # Activation
 
@@ -463,7 +493,7 @@ failure occur, and how it will be handled.
 Because this SIP cannot be legally or programmatically enforced, a legal or
 programmatic ratification process would be meaningless.  Therefore, it is
 sufficient that the two affected parties -- the Stacks Open Internet Foundation
-and teh Stacks Core Developers -- both unanimously approve this SIP by
+and the Stacks Core Developers -- both unanimously approve this SIP by
 cryptographically signing it an attaching their signatures as supplementary
 files (in `SIP-011-001.txt`).  This must be carried out on or before 31 December 2021
 at 23:59:59 UTC.

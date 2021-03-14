@@ -4,7 +4,7 @@ Sip Number: 010
 
 Title: Standard Trait Definition for Fungible Tokens
 
-Author: Hank Stoever (hstove@gmail.com)
+Author: Hank Stoever (hstove@gmail.com), Pascal Belloncle (psq@nanorails.com)
 
 Consideration: Technical
 

@@ -21,8 +21,7 @@ Sign-off:
 # Abstract
 
 Non-fungible token are unique digital assets that are registered on the Stacks blockchain through a smart contract with certain properties.
-Users should be able to identify a single non-fungible token. Users should be able to own it and transfer it. Non-fungible tokens can have more properties
-that are not specified in this standard.
+Users should be able to identify a single non-fungible token. Users should be able to own it and transfer it. Non-fungible tokens can have more properties that are not specified in this standard.
 
 # License and Copyright
 
@@ -40,7 +39,7 @@ NFTs are enumerated, the id starts at 1 and the current last id is provided by t
 NFT smart contract shall implement the trait defined at `ST314JC8J24YWNVAEJJHQXS5Q4S9DX1FW5Z9DK9NT.nft-trait` as well as satisfy the additional conditions.
 The trait has three functions:
 * `last-token-id` does not take any arguments and returns the highest number that is used as an identifier for any NFT. This is the upper limit when iterating through all NFTs.
-* `get-owner` takes an NFT identifier and returns a response containing the principal owning the NFT for the given identifier. The principal is wrapped as an optional, that means if the corresponding NFT does not exists the response is `(ok none)`, otherwise, e.g. `(ok (some 'ST12...))`. The owner can be a contract principal.
+* `get-owner` takes an NFT identifier and returns a response containing the principal owning the NFT for the given identifier. The principal is wrapped as an optional, which means if the corresponding NFT does not exists the response is `(ok none)`, otherwise, e.g. `(ok (some 'ST12...))`. The owner can be a contract principal.
 * `transfer` takes an NFT identifier, a sender principal and a receiver principal. The function changes the ownership of the NFT for the given identifier. The change has to be reflected in the `get-owner` function, for details see implementation rules.
 
 ## Trait
@@ -63,7 +62,7 @@ The trait has three functions:
 ## Implementation rules
 
 1. Contracts must use a least one NFT asset. A post condition with deny mode and without any NFT condition about a changed owner must fail for `transfer` function calls.
-1. After a successful call to function `transfer` the function `get-owner` must return the recipient of the `transfer` call as the new owner.
+1. After a successful call to function `transfer`, the function `get-owner` must return the recipient of the `transfer` call as the new owner.
 1. If a call to function `get-owner` returns some principal `A` value then it must return the same value until `transfer` is called with principal `A` as a sender
 1. For any call to `get-owner`, resp. `transfer` with an id greater than `last-token-id`, the call should return a response `none`, resp. failed transfer. 
 1. The following error codes are defined
@@ -83,7 +82,7 @@ Not applicable
 
 # Activation
 
-This SIP is activated if 5 contracts are deployed that are using the same trait that follows this specification. This has to happen before Stacks tip #5000.
+This SIP is activated if 5 contracts are deployed that are using the same trait that follows this specification. This has to happen before Bitcoin tip #700,000.
 
 # Reference Implementations
 

@@ -38,7 +38,8 @@ NFTs are enumerated, the id starts at 1 and the current last id is provided by t
 
 NFT smart contract shall implement the trait defined at `ST314JC8J24YWNVAEJJHQXS5Q4S9DX1FW5Z9DK9NT.nft-trait` as well as satisfy the additional conditions.
 The trait has three functions:
-* `last-token-id` does not take any arguments and returns the highest number that is used as an identifier for any NFT. This is the upper limit when iterating through all NFTs.
+* `get-last-token-id` does not take any arguments and returns the highest number that is used as an identifier for any NFT. This is the upper limit when iterating through all NFTs.
+* `get-token-uri` takes an NFT identifier and returns a response containg a URI pointing to meta data of the given identifier. The URI is wrapped as an optional, which means if the corresponding NFT exists or the contract does not maintain meta data the response is `(ok none)`, otherwise, e.g. `(ok (some "https://example.com"))`. The length of the returned uri is limited to 256. The specification of the meta data should be covered in a separate SIP.
 * `get-owner` takes an NFT identifier and returns a response containing the principal owning the NFT for the given identifier. The principal is wrapped as an optional, which means if the corresponding NFT does not exists the response is `(ok none)`, otherwise, e.g. `(ok (some 'ST12...))`. The owner can be a contract principal.
 * `transfer` takes an NFT identifier, a sender principal and a receiver principal. The function changes the ownership of the NFT for the given identifier. The change has to be reflected in the `get-owner` function, for details see implementation rules.
 
@@ -48,9 +49,12 @@ The trait has three functions:
 (define-trait stacks-token-nft-standard-v1
   (
     ;; Token ID, limited to uint range
-    (last-token-id () (response uint uint))
+    (get-last-token-id () (response uint uint))
 
-    ;; Owner of given token identifier
+    ;; URI for meta data about the token 
+    (get-token-uri (uint) (response (optional (string-ascii 256)) uint))
+
+     ;; Owner of given token identifier
     (get-owner (uint) (response (optional principal) uint))
 
     ;; Transfer from to
@@ -70,6 +74,8 @@ The trait has three functions:
 | function | error | description |
 |----------|-------|-------------| 
 |`transfer`|`{kind: "nft-transfer-failed", code: from-nft-transfer}`| Error if the call failed due to the underlying asset transfer. The code `from-nft-transfer` is the error code from the native asset transfer function|
+
+1. The methods `get-last-token-id`. `get-token-uri` and `get-owner` can be implemented as read-only functions.
 
 # Related Work
 

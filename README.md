@@ -8,7 +8,7 @@ may submit a SIP.
 
 ## SIPs in the Process of Being Activated
 
-* [SIP-011](https://github.com/stacksgov/sips/pull/5): Standard Trait Definition for Fungible Tokens
+* [SIP-010](https://github.com/stacksgov/sips/pull/5): Standard Trait Definition for Fungible Tokens
 
 ## Ratified SIPs
 

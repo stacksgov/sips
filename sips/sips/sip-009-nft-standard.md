@@ -79,8 +79,11 @@ The trait has three functions:
 
 # Related Work
 
-https://eips.ethereum.org/EIPS/eip-721
-https://www.ledger.com/academy/what-are-nft
+NFTs are an established asset class on blockchains. Read for example [here](https://www.ledger.com/academy/what-are-nft).
+
+## EIP 721
+Ethereum has [ERP 721](https://eips.ethereum.org/EIPS/eip-721) that defined non-fungible tokens on the Ethereum blockchain. Notable differences are that the transfer function in EIP 721 uses a different ordering of the arguments ending with the token id. This SIP uses the token id as the first argument which is in line with all transfer functions in Clarity. Furthermore, this SIP only defines a URI pointing to meta data. There are not specifications about schema or other properties of token meta data. These should be specified in a separate SIP.
+
 
 # Backwards Compatibility
 

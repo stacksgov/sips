@@ -149,7 +149,7 @@ Not applicable
 
 This SIP is activated if 5 contracts are deployed that use the same trait that follows this specification. This must happen before Bitcoin tip #700,000.
 
-A trait that follows this specification is available on mainnet as [`SP1JSH2FPE8BWNTP228YZ1AZZ0HE0064PS6RXRAY4.nft-trait`](https://explorer.stacks.co/txid/0xe547bca01878eaaf4758a067d3f522691a8928fcade0b0a4930a825c10d082bc?chain=mainnet) and on testnet as [`ST1JSH2FPE8BWNTP228YZ1AZZ0HE0064PS54Q30F0.nft-trait.nft-trait`](https://explorer.stacks.co/txid/0x07922820aca1ef6bbadddd1a19212befe11c9dc5da9bce0248d93915e2fb80d4?chain=testnet).
+A trait that follows this specification is available on mainnet as [`SP1JSH2FPE8BWNTP228YZ1AZZ0HE0064PS6RXRAY4.nft-trait.nft-trait`](https://explorer.stacks.co/txid/0xe547bca01878eaaf4758a067d3f522691a8928fcade0b0a4930a825c10d082bc?chain=mainnet) and on testnet as [`ST1JSH2FPE8BWNTP228YZ1AZZ0HE0064PS54Q30F0.nft-trait.nft-trait`](https://explorer.stacks.co/txid/0x07922820aca1ef6bbadddd1a19212befe11c9dc5da9bce0248d93915e2fb80d4?chain=testnet).
 
 # Reference Implementations
 

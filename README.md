@@ -8,7 +8,8 @@ may submit a SIP.
 
 ## SIPs in the Process of Being Activated
 
-* [SIP-010](https://github.com/stacksgov/sips/pull/5): Standard Trait Definition for Fungible Tokens
+* [SIP-010](https://github.com/stacksgov/sips/blob/hstove-feat/sip-10-ft/sips/sip-010/sip-010-fungible-token-standard.md): Standard Trait Definition for Fungible Tokens
+* [SIP-011](https://github.com/stacksgov/sips/blob/friedger-main/sips/sip-009/sip-009-nft-standard.md): Standard Trait Definition for Non-Fungible Tokens
 
 ## Ratified SIPs
 

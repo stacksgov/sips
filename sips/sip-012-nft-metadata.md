@@ -47,9 +47,11 @@ This function must never return an error response. It can be defined as read-onl
 
 ### Metadata of NFT
 
-`(get-meta (uint) (response (optional {name: (string-uft8 30), image: (string-ascii 255)}) uint))` 
+`(get-meta (uint) (response (optional {name: (string-uft8 32), image: (string-ascii 256)}) uint))` 
 
-`(get-meta-ext (uint) (response (optional {name: (string-uft8 32), uri: (string-ascii 256), mime-type: (string-ascii 129)}) uint))`
+alternative:
+
+`(get-meta (uint) (response (optional {name: (string-uft8 32), uri: (string-ascii 256), mime-type: (string-ascii 129)}) uint))`
 
 Takes no arguments and returns a response containing the name and URL of an image representing the class of NFTs defined by this contract. The data uple must be wrapped in an `optional`. If the corresponding NFT doesn't exist or the contract doesn't maintain metadata, the response must be `(ok none)`. If a valid URI exists for the NFT, the response must be `(ok (some metadata))`.
 
@@ -63,12 +65,11 @@ This function must never return an error response. It can be defined as read-onl
     ;; Metadata of NFT class
     (get-nft-meta (response (optional {name: (string-uft8 32), image: (string-ascii 256)}) uint))
 
-
     ;; Metadata of individual NFT
-    (get-meta (uint) (response (optional {name: (string-uft8 32), image: (string-ascii 256)}) uint))
+    (get-meta (uint) (response (optional {name: (string-uft8 32), uri: (string-ascii 256), mime-type: (string-ascii 129)}) uint))
 
     ;; Metadata of individual NFT (alternative version - to be discussed)
-    (get-meta-ext (uint) (response (optional {name: (string-uft8 32), uri: (string-ascii 256), mime-type: (string-ascii 129)}) uint))
+    (get-meta (uint) (response (optional {name: (string-uft8 32), image: (string-ascii 256)}) uint))
   )
 )
 ```

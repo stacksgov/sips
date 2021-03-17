@@ -94,6 +94,10 @@ Metadata for NFTs on Ethereum are defined in [EIP 721](https://eips.ethereum.org
 ## Boom 
 The NFT contract for Boom implements a variation of this trait using similar naming, but returning other types than response types: https://explorer.stacks.co/txid/0x423d113e14791f5d60f5efbee19bbb05cf5e68d84bcec4e611f2c783b08d05aa?chain=mainnet
 
+The function signatures for metadata are:
+* `(get-boom-meta () {uri: (string-ascii 35), name: (string-ascii 16), mime-type: (string-ascii 9)})` and 
+* `(get-meta? uint {series-id: uint, number: uint, name: (string-utf8 80), uri: (string-ascii 2048), mime-type: (string-ascii 129), hash: (buff 64)})`
+
 # Activation
 
 This SIP is activated if 5 contracts are deployed that use the same trait that follows this specification. This must happen before Bitcoin tip #700,000.

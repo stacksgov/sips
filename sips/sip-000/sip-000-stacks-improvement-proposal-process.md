@@ -599,9 +599,9 @@ appropriate feedback.
 The description shall be provided and updated by the chairperson to the SC so
 that the SC can provide a public index of all considerations a SIP may possess.
 
-##### Feedback
+##### Feedback to SIP Authors
 
-to SIP Authors Each Consideration Advisory Board shall provide a full,
+Each Consideration Advisory Board shall provide a full,
 fair, public, and timely evaluation of any Accepted-status SIP that lists the
 Board's consideration in its preamble. The Board may decide to move each SIP to
 a Recommended status or a Rejected status based on whether or not the Board

@@ -4,19 +4,19 @@ SIP Number: 009
 
 Title: Standard Trait Definition for Non-Fungible Tokens
 
-Author: Friedger Müffke (mail@friedger.de), Muneeb Majeed
+Author: Friedger Müffke <mail@friedger.de>, Muneeb Majeed
 
 Consideration: Technical
 
 Type: Standard
 
-Status: Draft
+Status: Activation-in-Progress
 
 Created: 10 December 2020
 
 License: CC0-1.0
 
-Sign-off:
+Sign-off: Jude Nelson <jude@stacks.org>, Technical Steering Committee Chair
 
 # Abstract
 

@@ -59,11 +59,11 @@ This function must never return an error response. It can be defined as read-onl
 (define-trait nft-meta
   (
     ;; Metadata of NFT class
-    (get-nft-meta (response (optional {name: (string-uft8 30), image: (string-ascii 255)}) uint))
+    (get-nft-meta (response (optional {name: (string-uft8 32), image: (string-ascii 256)}) uint))
 
 
     ;; Metadata of individual NFT
-    (get-meta (uint) (response (optional {name: (string-uft8 30), image: (string-ascii 255)}) uint))
+    (get-meta (uint) (response (optional {name: (string-uft8 32), image: (string-ascii 256)}) uint))
   )
 )
 ```

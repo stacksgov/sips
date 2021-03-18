@@ -71,7 +71,7 @@ This function must never return an error response. It can be defined as read-onl
 
 ### Transfer
 
-`(transfer (uint principal principal) (response bool (tuple (kind (string-ascii 32)) (code uint))))` 
+`(transfer (uint principal principal) (response bool uint))`
 
 The function changes the ownership of the NFT for the given identifier from the sender principal to the recipient principal.
 
@@ -81,11 +81,7 @@ After a successful call to `transfer`, the function `get-owner` must return the 
 
 For any call to `transfer` with an ID greater than the last token ID returned by the `get-last-token-id` function, the call must return an error response.
 
-When returning an error from this function, the error must follow the pattern defined below:
-
-| error | description |
-|-------|-------------| 
-|`{kind: "nft-transfer-failed", code: from-nft-transfer}`| Error if the call failed due to the underlying asset transfer. The code `from-nft-transfer` is the error code from the native asset transfer function|
+It is recommended to use error codes from standardized list of codes and implement the function for converting the error codes to messages function that are defined in a separate SIP.
 ## Trait
 
 ```
@@ -101,7 +97,7 @@ When returning an error from this function, the error must follow the pattern de
     (get-owner (uint) (response (optional principal) uint))
 
     ;; Transfer from the sender to a new principal
-    (transfer (uint principal principal) (response bool (tuple (kind (string-ascii 32)) (code uint))))
+    (transfer (uint principal principal) (response bool uint))
   )
 )
 ```
@@ -149,7 +145,7 @@ Not applicable
 
 This SIP is activated if 5 contracts are deployed that use the same trait that follows this specification. This must happen before Bitcoin tip #700,000.
 
-A trait that follows this specification is available on mainnet as [`SP1JSH2FPE8BWNTP228YZ1AZZ0HE0064PS6RXRAY4.nft-trait.nft-trait`](https://explorer.stacks.co/txid/0xe547bca01878eaaf4758a067d3f522691a8928fcade0b0a4930a825c10d082bc?chain=mainnet) and on testnet as [`ST1JSH2FPE8BWNTP228YZ1AZZ0HE0064PS54Q30F0.nft-trait.nft-trait`](https://explorer.stacks.co/txid/0x07922820aca1ef6bbadddd1a19212befe11c9dc5da9bce0248d93915e2fb80d4?chain=testnet).
+A trait that follows this specification is available on mainnet as [`SP2PABAF9FTAJYNFZH93XENAJ8FVY99RRM50D2JG9.nft-trait.nft-trait`](https://explorer.stacks.co/txid/0x80eb693e5e2a9928094792080b7f6d69d66ea9cc881bc465e8d9c5c621bd4d07?chain=mainnet).
 
 # Reference Implementations
 

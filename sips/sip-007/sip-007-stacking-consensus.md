@@ -495,7 +495,7 @@ tokens vote to disable PoX, it is disabled
 only for the next reward cycle.  To continuously deactivate PoX, the STX
 holders must continuously vote to disable it.
 
-Due to the costs of remaining vigilent, this proposal recomments _R = 0.25_.
+Due to the costs of remaining vigilent, this proposal recommends _R = 0.25_.
 At the time of this writing, this is higher than any single STX allocation, but
 not so high that large-scale cooperation is needed to stop a mining cartel.
 

@@ -560,6 +560,7 @@ pub struct PoxInvData {
     /// but the node does not have a copy if it does).
     pub pox_bitvec: Vec<u8>
 }
+```
 
 Notes:
 * `bitlen` should be at most `num_cycles` from the corresponding `GetPoxInv`.

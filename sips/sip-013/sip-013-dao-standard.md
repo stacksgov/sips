@@ -6,7 +6,7 @@ SIP Number: 013
 
 Title: Standard for smart contract-controlled decentralised autonomous organisations on Stacks
 
-Author: @pxydn (pxydn@pm.me), on behalf of the labs³ DAO & the @labs3/daoos team. PGP Key: A303 BCFE CA30 DDF9
+Author: @pxydn (pxydn@pm.me), on behalf of the Syvita Guild & the @syvita/daoos team. PGP Key: A303 BCFE CA30 DDF9
 
 Consideration: Technical
 

@@ -43,15 +43,15 @@ The Stacks blockchain has a native fungible token: the Stacks token (STX). In ad
 
 # Specification
 
-The fungible token trait, `ft-trait`, has a 6 functions:
+The fungible token trait, `sip10-trait`, has 7 functions:
 
 ## Trait functions
 
 ### Transfer
 
-`(transfer ((amount uint) (sender principal) (recipient principal)) (response bool uint))`
+`(transfer ((amount uint) (sender principal) (recipient principal) (memo (optional (buff 34)))) (response bool uint))`
 
-Transfer the fungible token from the sender of this transaction to the recipient. The `amount` is an unsigned integer. It is recommended that implementing contracts use the built-in `ft-transfer` Clarity method. If the sender does not have enough tokens to complete the transaction, the transaction should abort and return an `(err uint)`.
+Transfer the fungible token from the sender of this transaction to the recipient. The `amount` is an unsigned integer. It is recommended that implementing contracts use the built-in `ft-transfer?` Clarity method. If the sender does not have enough tokens to complete the transaction, the transaction should abort and return an `(err uint)`.
 
 This method must be defined with `define-public`, as it alters state, and should be externally callable.
 
@@ -65,6 +65,18 @@ When returning an error in this function, the error codes should follow the same
 | u2         | `sender` and `recipient` are the same principal |
 | u3         | `amount` is non-positive                        |
 | u4         | `sender` is not the same as `tx-sender`         |
+
+
+Contract implementers should take note that in Stacks 2.0, the memo field won't be included in the event emitted by successful `ft-transfer?` operations. As a consequence, if compliance with exchanges is a requirement, it is recommended to emit an event including the memo, by adding a `print` statement if the `ft-transfer?` is successful.
+
+Exemple:
+
+```
+  ...
+  (try! (ft-transfer? token amount sender recipient))
+  (print memo)
+  ...
+```
 
 ### Name
 
@@ -144,10 +156,10 @@ Clients that fetch this data should prefer any on-chain data, such as the name o
 An implementation of the proposed trait is provided below.
 
 ```clarity
-(define-trait ft-trait
+(define-trait sip10-trait
   (
     ;; Transfer from the caller to a new principal
-    (transfer (uint principal principal) (response bool uint))
+    (transfer (uint principal principal (optional (buff 34))) (response bool uint))
 
     ;; the human readable name of the token
     (get-name () (response (string-ascii 32) uint))

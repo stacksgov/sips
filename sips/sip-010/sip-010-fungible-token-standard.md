@@ -43,7 +43,7 @@ The Stacks blockchain has a native fungible token: the Stacks token (STX). In ad
 
 # Specification
 
-The fungible token trait, `sip10-trait`, has 7 functions:
+The fungible token trait, `sip-010-trait`, has 7 functions:
 
 ## Trait functions
 
@@ -156,7 +156,7 @@ Clients that fetch this data should prefer any on-chain data, such as the name o
 An implementation of the proposed trait is provided below.
 
 ```clarity
-(define-trait sip10-trait
+(define-trait sip-010-trait
   (
     ;; Transfer from the caller to a new principal
     (transfer (uint principal principal (optional (buff 34))) (response bool uint))

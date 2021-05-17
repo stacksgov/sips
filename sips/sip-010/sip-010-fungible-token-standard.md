@@ -69,7 +69,7 @@ When returning an error in this function, the error codes should follow the same
 
 Contract implementers should take note that in Stacks 2.0, the memo field won't be included in the event emitted by successful `ft-transfer?` operations. As a consequence, if compliance with exchanges is a requirement, it is recommended to emit an event including the memo, by adding a `print` statement if the `ft-transfer?` is successful.
 
-Exemple:
+Example:
 
 ```
   ...

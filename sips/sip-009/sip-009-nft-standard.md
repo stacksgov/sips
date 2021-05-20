@@ -10,13 +10,13 @@ Consideration: Technical
 
 Type: Standard
 
-Status: Draft
+Status: Ratified
 
 Created: 10 December 2020
 
 License: CC0-1.0
 
-Sign-off:
+Sign-off: Jude Nelson <jude@stacks.org>, Technical Steering Committee Chair
 
 # Abstract
 

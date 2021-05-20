@@ -8,7 +8,6 @@ may submit a SIP.
 
 ## SIPs in the Process of Being Activated
 
-* [SIP-009](https://github.com/stacksgov/sips/blob/friedger-main/sips/sip-009/sip-009-nft-standard.md): Standard Trait Definition for Non-Fungible Tokens
 * [SIP-010](https://github.com/stacksgov/sips/blob/hstove-feat/sip-10-ft/sips/sip-010/sip-010-fungible-token-standard.md): Standard Trait Definition for Fungible Tokens
 
 ## Ratified SIPs
@@ -28,6 +27,8 @@ may submit a SIP.
 * [SIP-007](./sips/sip-007/sip-007-stacking-consensus.md): Stacking Consensus
 * [SIP-008](./sips/sip-008/sip-008-analysis-cost-assessment.md): Clarity Parsing
   and Analysis Cost Assessment
+* [SIP-009](./sips/sip-009/sip-009-nft-standard.md): Standard Trait Definition
+  for Non-Fungible Tokens
 
 ## How to Get Involved
 

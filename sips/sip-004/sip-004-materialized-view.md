@@ -96,16 +96,12 @@ outright, without having to replay its transactions.
 ## Design Considerations
 
 Committing to the materialized view in each block has a non-zero cost in terms
-of time and space complexity.  Given that Stacks miners use PoW to increase
-their chances of winning a block race, the time required to calculate
-the materialized view necessarily cuts into the time
-required to solve the PoW puzzle -- it is part of the block validation logic.
-While this is a cost borne by each miner, the fact that PoW mining is a zero-sum game
-means that miners that are able to calculate the materialized view the fastest will have a
-better chance of winning a block race than those who do not.  This means that it
+of time and space complexity.  This cost is paid for by the transaction fee, but
+it effectively sets an upper bound on how many key/value insertions can happen
+per block -- in particular, generating and validating the block must be faster
+than the underlying burnchain block times. This means that it
 is of paramount importance to keep the materialized view digest calculation as
-fast as possible, just as it is of paramount importance to make block
-validation as fast and cheap as possible.
+fast as possible.
 
 The following considerations have a non-trivial impact on the design of the
 MARF:

@@ -1,8 +1,11 @@
 # Consideration for Ethics SIPs
 
 Chairperson: Jude Nelson <jude@stacks.org>
-Members: Jude Nelson <jude@stacks.org>
+
+Members: Jude Nelson <jude@stacks.org>, Juliet Oberding <juliet.oberding@gmail.com> 
+
 Discussions-to: https://github.com/stacksgov/sips
+
 Created-by: SIP-000
 
 ## About

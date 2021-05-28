@@ -213,7 +213,8 @@ Not applicable
 
 # Activation
 
-This trait has been deployed to mainnet: [SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-10-ft-standard](https://explorer.stacks.co/txid/SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-10-ft-standard?chain=mainnet)
+This trait has been deployed to mainnet: [SP1X6M947Z7E58CNE0H8YJVJTVKS9VW0PHD4Q0A5F.sip-010](https://explorer.stacks.co/txid/SP1X6M947Z7E58CNE0H8YJVJTVKS9VW0PHD4Q0A5F.sip-010?chain=mainnet)
+testnet: [ST1X6M947Z7E58CNE0H8YJVJTVKS9VW0PHEG3NHN3.sip-010](https://explorer.stacks.co/txid/ST1X6M947Z7E58CNE0H8YJVJTVKS9VW0PHEG3NHN3.sip-010?chain=testnet)
 
 This trait will be considered activated when this trait is deployed to mainnet, and 3 different implementations of the trait have been deployed to mainnet, no later than Bitcoin block 700000.
 

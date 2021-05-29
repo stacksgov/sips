@@ -99,13 +99,13 @@ This method should be defined as read-only, i.e. `define-read-only`.
 
 The number of decimal places in a token. All fungible token balances must be represented as integers, but providing the number of decimals provides for an abstraction of a token that humans are more familiar dealing with. For example, the US Dollar has 2 decimals, if the base unit is "cents", as is typically done in accounting. Stacks has 6 decimals, Bitcoin has 8 decimals, and so on.
 
-As another example, if a token has 4 decimals, and the `get-balance-of` method a particular user returns `100345000`, wallets and exchanges would likely represent that value as `10034.5`.
+As another example, if a token has 4 decimals, and the `get-balance` method a particular user returns `100345000`, wallets and exchanges would likely represent that value as `10034.5`.
 
 This method should be defined as read-only, i.e. `define-read-only`.
 
 ### Balance of
 
-`(get-balance-of (principal) (response uint uint))`
+`(get-balance (principal) (response uint uint))`
 
 Return the balance of a particular principal (also known as "address" or "account"). Implementations should typically use the built-in Clarity method `ft-get-balance`.
 
@@ -170,7 +170,7 @@ An implementation of the proposed trait is provided below.
     (get-decimals () (response uint uint))
 
     ;; the balance of the passed principal
-    (get-balance-of (principal) (response uint uint))
+    (get-balance (principal) (response uint uint))
 
     ;; the current total supply (which does not need to be a constant)
     (get-total-supply () (response uint uint))
@@ -224,8 +224,8 @@ Not applicable
 
 # Activation
 
-This trait has been deployed to mainnet: [SP1X6M947Z7E58CNE0H8YJVJTVKS9VW0PHD4Q0A5F.sip-010](https://explorer.stacks.co/txid/SP1X6M947Z7E58CNE0H8YJVJTVKS9VW0PHD4Q0A5F.sip-010?chain=mainnet)
-testnet: [ST1X6M947Z7E58CNE0H8YJVJTVKS9VW0PHEG3NHN3.sip-010](https://explorer.stacks.co/txid/ST1X6M947Z7E58CNE0H8YJVJTVKS9VW0PHEG3NHN3.sip-010?chain=testnet)
+This trait has been deployed to mainnet: [SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard](https://explorer.stacks.co/txid/0x99e01721e57adc2c24f7d371b9d302d581dba1d27250c7e25ea5f241af14c387?chain=mainnet)
+testnet: [STR8P3RD1EHA8AA37ERSSSZSWKS9T2GYQFGXNA4C.sip-010-trait-ft-standard](https://explorer.stacks.co/txid/0xef2ac1126e16f4706843228b14830e19eb7599129edff392cab9e65ae83a45c0?chain=testnet)
 
 This trait will be considered activated when this trait is deployed to mainnet, and 3 different implementations of the trait have been deployed to mainnet, no later than Bitcoin block 700000.
 

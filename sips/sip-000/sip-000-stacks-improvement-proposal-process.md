@@ -559,7 +559,7 @@ consideration.
 
 #### Members
 
-shall serve on their respective Consideration Advisory Boards so long as
+Members shall serve on their respective Consideration Advisory Boards so long as
 they are in good standing with the SIP Code of Conduct and in accordance to the
 individual Board’s bylaws.  A user may serve on at most three Consideration
 Advisory Boards concurrently.
@@ -601,7 +601,7 @@ that the SC can provide a public index of all considerations a SIP may possess.
 
 ##### Feedback
 
-to SIP Authors Each Consideration Advisory Board shall provide a full,
+Feedback to SIP Authors Each Consideration Advisory Board shall provide a full,
 fair, public, and timely evaluation of any Accepted-status SIP that lists the
 Board's consideration in its preamble. The Board may decide to move each SIP to
 a Recommended status or a Rejected status based on whether or not the Board

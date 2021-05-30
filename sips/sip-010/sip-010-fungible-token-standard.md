@@ -159,7 +159,7 @@ An implementation of the proposed trait is provided below.
     (get-decimals () (response uint uint))
 
     ;; the balance of the passed principal
-    (get-balance-of (principal) (response uint uint))
+    (get-balance (principal) (response uint uint))
 
     ;; the current total supply (which does not need to be a constant)
     (get-total-supply () (response uint uint))
@@ -213,7 +213,8 @@ Not applicable
 
 # Activation
 
-This trait has been deployed to mainnet: [SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-10-ft-standard](https://explorer.stacks.co/txid/SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-10-ft-standard?chain=mainnet)
+This trait has been deployed to mainnet: [SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard](https://explorer.stacks.co/txid/SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard?chain=mainnet)
+And testnet: [STR8P3RD1EHA8AA37ERSSSZSWKS9T2GYQFGXNA4C.sip-010-trait-ft-standard](https://explorer.stacks.co/txid/SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard?chain=mainnet)
 
 This trait will be considered activated when this trait is deployed to mainnet, and 3 different implementations of the trait have been deployed to mainnet, no later than Bitcoin block 700000.
 

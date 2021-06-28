@@ -1,9 +1,9 @@
 # Consideration for Governance SIPs
 
-Chairperson: Jude Nelson <jude@stacks.org>
+Chairperson: Jason Schrader <jason@joinfreehold.com>
 
-Members: Jude Nelson <jude@stacks.org>, Juliet Oberding
-<juliet.oberding@gmail.com>
+Members: Harold Davis <recursive3@gmail.com>, Juliet Oberding
+<juliet.oberding@gmail.com>, Jason Schrader <jason@joinfreehold.com>,
 
 Discussions-to: https://github.com/stacksgov/sips
 

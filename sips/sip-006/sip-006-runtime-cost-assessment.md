@@ -102,8 +102,8 @@ Cost Function:
 a*X+b*Y+c
 ```
 
-where a, b, and c are constants,
-X := stack depth
+a, b, and c are constants \
+X := stack depth \
 Y := variable size
 
 ### Function Lookup
@@ -119,7 +119,7 @@ Cost Function:
 a
 ```
 
-where a is a constant.
+a is a constant.
 
 ### Name Binding
 
@@ -130,7 +130,7 @@ context is _constant_ with respect to the length of the name:
 binding_cost = a
 ```
 
-where a is a constant
+a is a constant
 
 ### Function Application
 
@@ -147,9 +147,9 @@ The cost of applying a function is:
 (a*X+b) + costEval(body)
 ```
 
-where a and b are constants,
-X := the cumulative size of the argument types,
-costEval(body) := the cost of executing the body of the function
+a and b are constants \
+X := the cumulative size of the argument types \
+`costEval(body)` := the cost of executing the body of the function
 
 ### contract-call Transactions
 
@@ -180,7 +180,7 @@ AST describing the type:
 type_parsing_cost(X) = (a*X+b)
 ```
 
-where a, b, are constants,
+a, b, are constants \
 X := the number of elements in the type description AST
 
 The type description AST is the tree of Clarity language elements used
@@ -204,9 +204,9 @@ function name and argument names.
 binding_cost + sum(a + type_parsing_cost(Y) for Y in ARG_TYPES)
 ```
 
-`type_parsing_cost(Y)` := the cost of parsing argument Y
-ARG_TYPES := the function definition's argument type signatures
-and a is a constant associated with the binding of argument types.
+`type_parsing_cost(Y)` := the cost of parsing argument Y \
+ARG_TYPES := the function definition's argument type signatures \
+a is a constant associated with the binding of argument types
 
 ### Contract Storage Cost
 
@@ -218,7 +218,7 @@ WRITE_LENGTH = a*X+b
 RUNTIME_COST = c*X+d
 ```
 
-where a, b, c, and d, are constants.
+a, b, c, and d, are constants.
 
 ## Initial Native Function Costs
 
@@ -276,8 +276,8 @@ RUNTIME_COST: (a*Y+b) + func_lookup_apply_eval(X)
 READ_LENGTH: Y
 ```
 
-where a and b are constants,
-Y := called contract size
+a and b are constants \
+Y := called contract size \
 `func_lookup_apply_eval(X)` := the cost of looking up, applying, and
 evaluating the body of the function
 
@@ -295,7 +295,8 @@ RUNTIME_COST: data_hash_cost(X+Y) + read_data_cost(Z)
 READ_LENGTH:  Z
 ```
 
-X := size of the map's _key_ tuple
+X := size of the map's _key_ tuple \
+Y := the length of the map's name \
 Z := the size of the map's _value_ tuple
 
 
@@ -306,7 +307,7 @@ RUNTIME_COST: data_hash_cost(X) + read_data_cost(Z)
 READ_LENGTH:  Z
 ```
 
-X := size of the map's _key_ tuple
+X := size of the map's _key_ tuple \
 Z := the size of the map's _value_ tuple
 
 #### map-set
@@ -316,7 +317,8 @@ RUNTIME_COST: data_hash_cost(X+Y) + write_data_cost(Z)
 WRITE_LENGTH:  Z
 ```
 
-X := size of the map's _key_ tuple
+X := size of the map's _key_ tuple \
+Y := the length of the map's name \
 Z := the size of the map's _value_ tuple
 
 #### map-insert
@@ -326,7 +328,8 @@ RUNTIME_COST: data_hash_cost(X+Y) + write_data_cost(Z)
 WRITE_LENGTH:  Z
 ```
 
-X := size of the map's _key_ tuple
+X := size of the map's _key_ tuple \
+Y := the length of the map's name \
 Z := the size of the map's _value_ tuple
 
 #### map-delete
@@ -336,7 +339,8 @@ RUNTIME_COST: data_hash_cost(X+Y) + write_data_cost(1)
 WRITE_LENGTH:  1
 ```
 
-X := size of the map's _key_ tuple
+X := size of the map's _key_ tuple \
+Y := the length of the map's name \
 Y := the length of the map's name
 
 #### var-get
@@ -364,9 +368,8 @@ RUNTIME_COST: data_hash_cost(Y) + write_data_cost(a) + b
 WRITE_LENGTH: a
 ```
 
-Y := size of the NFT type
-
-a is a constant: the size of a token owner
+Y := size of the NFT type \
+a is a constant: the size of a token owner \
 b is a constant cost (for tracking the asset in the assetmap)
 
 #### nft-get-owner
@@ -376,8 +379,7 @@ RUNTIME_COST: data_hash_cost(Y) + read_data_cost(a)
 READ_LENGTH: a
 ```
 
-Y := size of the NFT type
-
+Y := size of the NFT type \
 a is a constant: the size of a token owner
 
 
@@ -389,9 +391,8 @@ READ_LENGTH: a
 WRITE_LENGTH: a
 ```
 
-Y := size of the NFT type
-
-a is a constant: the size of a token owner
+Y := size of the NFT type \
+a is a constant: the size of a token owner \
 b is a constant cost (for tracking the asset in the assetmap)
 
 #### ft-mint
@@ -453,10 +454,10 @@ to the cost of function evaluation, without the cost of type checks).
 a + b * Y + costEval(body) + costEval(bindings)
 ```
 
-where a and b are constants,
-Y := the number of let arguments
-costEval(body) := the cost of executing the body of the let
-costEval(bindings) := the cost of evaluating the value of each let binding
+a and b are constants \
+Y := the number of let arguments \
+`costEval(body)` := the cost of executing the body of the let \
+`costEval(bindings)` := the cost of evaluating the value of each let binding
 
 ### if
 
@@ -464,9 +465,9 @@ costEval(bindings) := the cost of evaluating the value of each let binding
 a + costEval(condition) + costEval(chosenBranch)
 ```
 
-where a is a constant
-costEval(condition) := the cost of evaluating the if condition
-costEval(chosenBranch) := the cost of evaluating the chosen branch
+a is a constant \
+`costEval(condition)` := the cost of evaluating the if condition \
+`costEval(chosenBranch)` := the cost of evaluating the chosen branch
 
 if computed during _static analysis_, the chosen branch cost is the
 `max` of the two possible branches.
@@ -477,9 +478,9 @@ if computed during _static analysis_, the chosen branch cost is the
 a + costEval(condition) + costEval(throwBranch)
 ```
 
-where a is a constant
-costEval(condition) := the cost of evaluating the asserts condition
-costEval(throwBranch) := the cost of evaluating the throw branch in
+a is a constant \
+`costEval(condition)` := the cost of evaluating the asserts condition \
+`costEval(throwBranch)` := the cost of evaluating the throw branch in
 the event that condition is false
 
 if computed during _static analysis_, the thrown branch cost is always
@@ -495,7 +496,7 @@ type of the added item, plus some fixed cost.
 a + b * X
 ```
 
-where a and b is a constant
+a and b is a constant \
 X := the size of the list _entry_ type
 
 ### concat
@@ -507,8 +508,8 @@ the size of the two sequences:
 a + b * (X+Y)
 ```
 
-where a and b are constants
-X := the size of the right-hand iterable
+a and b are constants \
+X := the size of the right-hand iterable \
 Y := the size of the left-hand iterable
 
 ### as-max-len?
@@ -525,13 +526,13 @@ and the cost of each iterated function application
 a + func_lookup_cost(F) + L * apply_eval_cost(F, i)
 ```
 
-where a is a constant,
-`func_lookup_cost(F)` := the cost of looking up the function name F
-`apply_eval_cost(F, i)` := the cost of applying and evaluating the body of F on type i
-`i` := the list _item_ type
-`L` := the list length
+a is a constant \
+`func_lookup_cost(F)` := the cost of looking up the function name F \
+`apply_eval_cost(F, i)` := the cost of applying and evaluating the body of F on type i \
+`i` := the list _item_ type \
+`L` := the list length 
 
-if computed during _static analysis_, L is the maximum length of the list
+If computed during _static analysis_, L is the maximum length of the list
 as specified by it's type.
 
 ### filter
@@ -543,13 +544,13 @@ and the cost of each iterated filter application
 a + func_lookup_cost(F) + L * apply_eval_cost(F, i)
 ```
 
-where a is a constant,
-`func_lookup_cost(F)` := the cost of looking up the function name F
-`apply_eval_cost(F, i)` := the cost of applying and evaluating the body of F on type i
-`i` := the list _item_ type
+a is a constant \
+`func_lookup_cost(F)` := the cost of looking up the function name F \
+`apply_eval_cost(F, i)` := the cost of applying and evaluating the body of F on type i \
+`i` := the list _item_ type \
 `L` := the list length
 
-if computed during _static analysis_, L is the maximum length of the list
+If computed during _static analysis_, L is the maximum length of the list
 as specified by it's type.
 
 ### fold
@@ -562,14 +563,14 @@ and the cost of each iterated application
 a + func_lookup_cost(F) + (L) * apply_eval_cost(F, i, j)
 ```
 
-where a is a constant,
-`func_lookup_cost(F)` := the cost of looking up the function name F
-`apply_eval_cost(F, i, j)` := the cost of applying and evaluating the body of F on types i, j
-`j` := the accumulator type
-`i` := the list _item_ type
-`L` := the list length
+a is a constant \
+`func_lookup_cost(F)` := the cost of looking up the function name F \
+`apply_eval_cost(F, i, j)` := the cost of applying and evaluating the body of F on types i, j \
+`j` := the accumulator type \
+`i` := the list _item_ type \
+`L` := the list length 
 
-if computed during _static analysis_, L is the maximum length of the list
+If computed during _static analysis_, L is the maximum length of the list
 as specified by it's type.
 
 ### len
@@ -586,7 +587,7 @@ each item in the list is of a matching type.
 a*X+b
 ```
 
-where a and b are constants,
+a and b are constants \
 X := the total size of all arguments to the list constructor
 
 ### tuple
@@ -598,7 +599,7 @@ keys in the tuple (because tuples are represented as BTrees).
 a*(X*log(X)) + b
 ```
 
-where a and b are constants,
+a and b are constants \
 X := the number of keys in the tuple
 
 ### get
@@ -610,7 +611,7 @@ keys in the tuple (because tuples are represented as BTrees).
 a*(X*log(X)) + b
 ```
 
-where a and b are constants,
+a and b are constants \
 X := the number of keys in the tuple
 
 ## Option/Response Operations
@@ -648,7 +649,7 @@ in the _number_ of arguments supplied
 (a*X+b)
 ```
 
-where X is the number of arguments
+X := the number of arguments
 
 ### Binary/Unary operators
 
@@ -678,7 +679,7 @@ hashed, the longer the hashing function takes.
 (a*X+b)
 ```
 
-where X is the size of the input.
+X := the size of the input.
 
 
 ## Memory Model and Limits

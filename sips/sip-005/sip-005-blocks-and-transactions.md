@@ -1290,7 +1290,7 @@ accepted into the chain state.  If they do not match, then the block is invalid.
 #### Measuring Block Height
 
 Stacks counts its forks' lengths on a per-fork basis within each fork's MARF.
-To do so, a leader always inserts four key/value pairs into the MARF when it
+To do so, a leader always inserts five key/value pairs into the MARF when it
 starts processing the next cryptographic commitment:  two to map the block's parent's height to
 its anchor hash and vice versa, two to map this block's height to a sentinel 
 anchor hash (and vice versa), and one to represent this block's height.

@@ -517,18 +517,16 @@ the second through nth outputs:
 1. If the block commitment is in a reward cycle, with a chosen anchor block, and this block
    commitment builds off a descendant of the PoX anchor block (or the anchor block itself),
    then the commitment must use the chosen PoX recipients for the current block.
-    <ol type="a">
-      <li>PoX recipients are chosen as described in "Stacking Consensus Algorithm": addresses
+      * PoX recipients are chosen as described in "Stacking Consensus Algorithm": addresses
         are chosen without replacement, by using the previous burn block's sortition hash,
         mixed with the previous burn block's burn header hash as the seed for the ChaCha12
         pseudorandom function to select M addresses.</li>
-      <li>The leader block commit transaction must use the selected M addresses as outputs [1, M]
+      * The leader block commit transaction must use the selected M addresses as outputs [1, M]
         That is, the second through (M+1)th output correspond to the select PoX addresses.
         The order of these addresses does not matter. Each of these outputs must receive the
         same amount of BTC.</li>
-      <li>If the number of remaining addresses in the reward set N is less than M, then the leader
+      * If the number of remaining addresses in the reward set N is less than M, then the leader
         block commit transaction must burn BTC by including (M-N) burn outputs.</li>
-    </ol>
 2. Otherwise, the second through (M+1)th output must be burn addresses, and the amount burned by
    these outputs will be counted as the amount committed to by the block commit.
 

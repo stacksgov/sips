@@ -11,9 +11,17 @@ Created-by: SIP-000
 
 ## About
 
-This consideration advisory board is a place-holder for advancing SIPs from
-Recommended status.  Until there are at least three members of this board who
-are not on the steering committee, it shall be run by the steering committee.
+The governance CAB concerns the governance of the Stacks blockchain, including the SIP process. This includes amendments to the SIP Ratification Process, as well as structural considerations such as the creation (or removal) of various committees, editorial bodies, and formally recognized special interest groups. In addition, governance SIPs may propose changes to the way by which committee members are selected.
 
-Please reach out if you are interested in serving on this consideration advisory
-board!  We ask that you please read SIP-000 first if you choose to do so.
+## Considerations
+
+The following items would be considered in-scope for this CAB:
+
+- changes to the SIP process
+- changes to the way we represent blockchain stakeholders
+- changes to the code of conduct
+- changes to the way we organize Stacks chapters
+- changes to voting/decision making processes
+- changes to community representative to board
+- changes that impact community members
+- changes that impact all STX holders/investors

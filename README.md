@@ -29,7 +29,7 @@ None right now
   and Analysis Cost Assessment
 * [SIP-009](./sips/sip-009/sip-009-nft-standard.md): Standard Trait Definition
   for Non-Fungible Tokens
-* [SIP-010](https://github.com/stacksgov/sips/blob/hstove-feat/sip-10-ft/sips/sip-010/sip-010-fungible-token-standard.md): Standard Trait Definition for Fungible Tokens
+* [SIP-010](./sips/sip-010/sip-010-fungible-token-standard.md): Standard Trait Definition for Fungible Tokens
 
 ## How to Get Involved
 

@@ -66,14 +66,14 @@ When returning an error in this function, the error codes should follow the same
 | u3         | `amount` is non-positive                        |
 | u4         | `sender` is not the same as `tx-sender`         |
 
-Contract implementers should take note that in Stacks 2.0, the memo field won't be included in the event emitted by successful `ft-transfer?` operations. As a consequence, if compliance with exchanges is a requirement, it is recommended to emit an event including the memo, by adding a `print` statement if the `ft-transfer?` is successful.
+Contract implementers should take note that in Stacks 2.0, the memo field won't be included in the event emitted by successful `ft-transfer?` operations. As a consequence, the implementer has to make sure that the memo is emitted by adding a `print` statement if the `ft-transfer?` is successful. The memo should be upwrapped and emitted after the `ft-transfer?` operation.
 
 Example:
 
 ```
   ...
   (try! (ft-transfer? token amount sender recipient))
-  (print memo)
+  (print (default-to 0x memo))
   ...
 ```
 

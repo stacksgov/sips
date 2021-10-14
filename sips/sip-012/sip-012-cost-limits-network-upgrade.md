@@ -5,9 +5,13 @@ SIP Number: 012
 Title: Burn height selection for network-upgrade to introduce new cost-limits
 
 Authors:
-* Diwaker Gupta <diwaker@hiro.so>
+* 0xAsteria <asteria@syvita.org>
 * Aaron Blankstein <aaron@hiro.so>
+* Diwaker Gupta <diwaker@hiro.so>
+* Jason Lau <jason@okcoin.com>
 * Ludovic Galabru <ludo@hiro.so>
+* Trevor Owens <trevor@stacks.ac>
+* Xan Ditkoff <xan@daemontechnologies.co>
 
 Consideration: Governance, Technical
 
@@ -143,11 +147,13 @@ The SIP will be considered Active once:
 * A new release of stacks-blockchain is available with the updated cost-limits and a mechanism to use the new cost-limits beyond a pre-determined Bitcoin block height
 * This new release is deployed by independent miners, as determined by the continued operation of the Stacks blockchain beyond the Bitcoin block height selected for the network-upgrade. 
 
-# Appendix A
+# Appendices
+
+## Appendix A
 
 The new proposed `costs-2.05.clar`:
 
-```
+```lisp
 (define-read-only (cost_analysis_type_annotate (n uint))
     (runtime (linear n u3 u12)))
 
@@ -644,4 +650,25 @@ The new proposed `costs-2.05.clar`:
         read_count: u1,
         read_length: u1
     })
+```
+## Appendix B
+
+Initial sketch of a simply Clarity contract to tally up support for the network-upgrade from STX holders. This version does not call into the PoX contract to separately aggregate Stacked STX -- the contract can be modified to do that or that can be    computed offline.
+
+
+```lisp
+(define-data-var signaled-support uint u0)
+
+(define-map known-tx-senders principal bool)
+
+(define-public (in-favor-of-cost-upgrade)
+    (let ((existing-entry (map-get? known-tx-senders tx-sender)))
+    (asserts! (is-none existing-entry) (err u0))
+    (var-set signaled-support (+ (stx-get-balance tx-sender) (var-get signaled-support)))
+    (map-set known-tx-senders tx-sender true)
+    (ok true))
+)
+
+(define-read-only (get-signaled-support)
+    (var-get signaled-support))
 ```

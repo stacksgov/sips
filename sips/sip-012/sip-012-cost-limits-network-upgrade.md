@@ -2,7 +2,7 @@
 
 SIP Number: 012
 
-Title: Burn height selection for network-upgrade to introduce new cost-limits
+Title: Burn Height Selection for a Network Upgrade to Introduce New Cost-Limits
 
 Authors:
 * 0xAsteria <asteria@syvita.org>
@@ -68,8 +68,8 @@ more accurate cost-limits, with a focus on the `runtime` limits. The updated
 cost-limits are described in detail in [this forum
 post](https://forum.stacks.org/t/more-accurate-cost-functions-for-clarity-native-functions/12386).
 
-Any modification of cost-limits is a consensus-breaking change. There seems to
-be broad community support for changing the cost-limits, the question is exactly
+Any modification of cost-limits is a consensus-breaking change. We believe that
+there is broad community support for changing the cost-limits, the question is exactly
 how and when they go into effect. A previous proposal suggested using a voting
 contract to determine the block height at which a network-upgrade, described in
 detail in [this Github
@@ -78,52 +78,52 @@ Unfortunately, this path would take at least 4 months in the best-case scenario.
 
 This SIP posits that the ongoing network congestion warrants a more expedient
 route to change the cost-limits, one that does not rely on an on-chain voting
-contract.
+contract. Equally of note, we consider this SIP as a method of last resort but
+that considering the circumstances an exception is justified. All future network
+upgrades should use the voting contract (if appropriate); all hard-forks must
+follow the processes described in SIP-000 and SIP-011.
 
 
 # Specification
 
 ## Assumptions
 
-This SIP is a method of last resort, considering the circumstances an exception
-is justified. All future network upgrades should use the voting contract (if
-appropriate); all hard-forks must follow the process described in SIP-000.
+
 
 ## Proposal
 
 The Stacks Foundation or the governance group should choose a Bitcoin block
-height for the network upgrade. The block number should be at least 3 calendar
-weeks out from when this SIP transitions into “Accepted” state, so as to provide
-sufficient heads up to node operators.
+height for the network upgrade. The block number should be at least two calendar
+weeks from when this SIP transitions into “Accepted” state, so as to provide
+sufficient time for node operators to upgrade.
 
 Miners, developers, Stackers and community members can demonstrate their support
 for this network upgrade in one of the following two ways:
 
 * _Send a contract-call transaction to indicate support for the upgrade_: The
-  contract would aggregate the STX balance on the tx-sender account. It could
+  contract would aggregate the STX balance on the `tx-sender` account. It could
   additionally call into the PoX contract to separately aggregate the total
   Stacked STX amount. See the Appendix for an initial draft of such a contract.
 * _Send a BTC transaction to indicate support_: Many large STX holders are on
   multi-sig BTC wallets unable to issue contract-calls. Such wallets could
-  instead send a pure BTC transaction to indicate their support for the vote; it
-  would be a no-op for the Stacks chain, but can be verified off-chain see
+  instead send a pure BTC transaction to indicate their support for the vote. It
+  would be a no-op for the Stacks chain, but can be verified off-chain -- see
   [Bitcoin support indication](#bitcoin-support-indication) for details.
 
 The SIP will be considered Recommended if wallets indicating support for the
-upgrade (through either mechanism) add up to > 10% of circulating supply of STX
-(approx 120M).
+upgrade (through either mechanism) add up to greater than 120M STX (approx 10%
+of circulating supply of STX as of this writing).
 
 In terms of how these cost-limits would actually be applied, this SIP proposes
 the following:
-* Add new functionality to stacks-blockchain that uses the current cost-limits
+* Add new functionality to Stacks blockchain that uses the current cost-limits
   by default and uses new cost-limits if the burn block height exceeds a
   configurable parameter (could be a compile time configuration to avoid runtime
   issues)
-* Once a BTC block number has been determined, ship a new stacks-blockchain
+* Once a Bitcoin block number has been determined, ship a new stacks-blockchain
   release at least one week before to give miners and node operators time to
   upgrade before the upgrade block height is reached
-* In the subsequent release, remove all usage of the old cost-limits and just
-  use the new cost-limits by default
+
 
 ### Default Cost Functions
 
@@ -203,9 +203,10 @@ That is, the `OP_RETURN` output will be a 9-byte field with content equal to
 
 The SIP will be considered Active once:
 
-* A new release of stacks-blockchain is available with the updated cost-limits
-  and a mechanism to use the new cost-limits beyond a pre-determined Bitcoin
-  block height
+* A new release of Stacks blockchain (available at
+  https://github.com/blockstack/stacks-blockchain/releases) contains the updated
+  cost-limits and a mechanism to use the new cost-limits beyond a pre-determined
+  Bitcoin block height
 * This new release is deployed by independent miners, as determined by the
   continued operation of the Stacks blockchain beyond the Bitcoin block height
   selected for the network-upgrade. 
@@ -214,7 +215,8 @@ The SIP will be considered Active once:
 
 ## Appendix A
 
-The new proposed `costs-2.05.clar`:
+The new proposed cost functions, which will be instantiated at
+`SP000000000000000000002Q6VF78.costs-2.05.clar`:
 
 ```lisp
 (define-read-only (cost_analysis_type_annotate (n uint))

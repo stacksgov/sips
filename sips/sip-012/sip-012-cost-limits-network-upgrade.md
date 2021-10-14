@@ -29,60 +29,116 @@ Discussions-To: https://github.com/stacksgov/sips
 
 # Abstract
 
-The current Clarity cost limits were set very conservatively in Stacks 2.0: transactions with contract-calls frequently exceed these limits, which negatively affects transaction throughput. This SIP proposes an update to these cost-limits via a network upgrade and further, that the network upgrade be executed at a block height chosen by an off-chain process described in this SIP.
+The current Clarity cost limits were set very conservatively in Stacks 2.0:
+transactions with contract-calls frequently exceed these limits, which
+negatively affects transaction throughput. This SIP proposes an update to these
+cost-limits via a network upgrade and further, that the network upgrade be
+executed at a block height chosen by an off-chain process described in this SIP.
 
 
 # License and Copyright
 
-This SIP is made available under the terms of the Creative Commons CC0 1.0 Universal license, available at https://creativecommons.org/publicdomain/zero/1.0/ This SIP’s copyright is held by the Stacks Open Internet Foundation.
+This SIP is made available under the terms of the Creative Commons CC0 1.0
+Universal license, available at
+https://creativecommons.org/publicdomain/zero/1.0/ This SIP’s copyright is held
+by the Stacks Open Internet Foundation.
 
 
 # Introduction
 
-Blocks on the Stacks blockchain tend to have anywhere between 10 to 50 transactions per block -- this is lower than the demands of many workloads and also lower than the theoretical maximum one would expect. On the other hand, the mempool consistently has hundreds of valid transactions pending at any given time; at peak there have been several thousand pending transactions. So what is preventing more transactions from being included in blocks?
+Blocks on the Stacks blockchain tend to have anywhere between 10 to 50
+transactions per block -- this is lower than the demands of many workloads and
+also lower than the theoretical maximum one would expect. On the other hand, the
+mempool consistently has hundreds of valid transactions pending at any given
+time; at peak there have been several thousand pending transactions. So what is
+preventing more transactions from being included in blocks?
 
-The answer is cost-limits. An analysis of “full blocks” (meaning blocks where at least one cost dimension exceeds the block limit -- see SIP-006 for a description of all cost dimensions) found that roughly 72% of those blocks hit the `runtime` limit and ~27% hit the `read_count` limit. Another analysis of all transactions rejected due to cost limits found that 90% of those transactions exceeded the `runtime` limit. So the `runtime` limits are the primary bottleneck right now.
+The answer is cost-limits. An analysis of “full blocks” (meaning blocks where at
+least one cost dimension exceeds the block limit -- see SIP-006 for a
+description of all cost dimensions) found that roughly 72% of those blocks hit
+the `runtime` limit and ~27% hit the `read_count` limit. Another analysis of all
+transactions rejected due to cost limits found that 90% of those transactions
+exceeded the `runtime` limit. So the `runtime` limits are the primary bottleneck
+right now.
 
-In the last few months, the [clarity-benchmarking](https://github.com/blockstack/clarity-benchmarking) project has done rigorous benchmarking on contemporary hardware to come up with more accurate cost-limits, with a focus on the `runtime` limits. The updated cost-limits are described in detail in [this forum post](https://forum.stacks.org/t/more-accurate-cost-functions-for-clarity-native-functions/12386).
+In the last few months, the
+[clarity-benchmarking](https://github.com/blockstack/clarity-benchmarking)
+project has done rigorous benchmarking on contemporary hardware to come up with
+more accurate cost-limits, with a focus on the `runtime` limits. The updated
+cost-limits are described in detail in [this forum
+post](https://forum.stacks.org/t/more-accurate-cost-functions-for-clarity-native-functions/12386).
 
-Any modification of cost-limits is a consensus-breaking change. There seems to be broad community support for changing the cost-limits, the question is exactly how and when they go into effect. A previous proposal suggested using a voting contract to determine the block height at which a network-upgrade, described in detail in [this Github discussion](https://github.com/blockstack/stacks-blockchain/discussions/2845). Unfortunately, this path would take at least 4 months in the best-case scenario.
+Any modification of cost-limits is a consensus-breaking change. There seems to
+be broad community support for changing the cost-limits, the question is exactly
+how and when they go into effect. A previous proposal suggested using a voting
+contract to determine the block height at which a network-upgrade, described in
+detail in [this Github
+discussion](https://github.com/blockstack/stacks-blockchain/discussions/2845).
+Unfortunately, this path would take at least 4 months in the best-case scenario.
 
-This SIP posits that the ongoing network congestion warrants a more expedient route to change the cost-limits, one that does not rely on an on-chain voting contract.
+This SIP posits that the ongoing network congestion warrants a more expedient
+route to change the cost-limits, one that does not rely on an on-chain voting
+contract.
 
 
 # Specification
 
 ## Assumptions
 
-This SIP is a method of last resort, considering the circumstances an exception is justified. All future network upgrades should use the voting contract (if appropriate); all hard-forks must follow the process described in SIP-000.
+This SIP is a method of last resort, considering the circumstances an exception
+is justified. All future network upgrades should use the voting contract (if
+appropriate); all hard-forks must follow the process described in SIP-000.
 
 ## Proposal
 
-The Stacks Foundation or the governance group should choose a Bitcoin block height for the network upgrade. The block number should be at least 3 calendar weeks out from when this SIP transitions into “Accepted” state, so as to provide sufficient heads up to node operators.
+The Stacks Foundation or the governance group should choose a Bitcoin block
+height for the network upgrade. The block number should be at least 3 calendar
+weeks out from when this SIP transitions into “Accepted” state, so as to provide
+sufficient heads up to node operators.
 
-Miners, developers, Stackers and community members can demonstrate their support for this network upgrade in one of the following two ways:
+Miners, developers, Stackers and community members can demonstrate their support
+for this network upgrade in one of the following two ways:
 
-* _Send a contract-call transaction to indicate support for the upgrade_: The contract would aggregate the STX balance on the tx-sender account. It could additionally call into the PoX contract to separately aggregate the total Stacked STX amount. See the Appendix for an initial draft of such a contract.
-* _Send a BTC transaction to indicate support_: Many large STX holders are on multi-sig BTC wallets unable to issue contract-calls. Such wallets could instead send a pure BTC transaction to indicate their support for the vote; it would be a no-op for the Stacks chain, but can be verified off-chain see [Bitcoin support indication](#bitcoin-support-indication) for details.
+* _Send a contract-call transaction to indicate support for the upgrade_: The
+  contract would aggregate the STX balance on the tx-sender account. It could
+  additionally call into the PoX contract to separately aggregate the total
+  Stacked STX amount. See the Appendix for an initial draft of such a contract.
+* _Send a BTC transaction to indicate support_: Many large STX holders are on
+  multi-sig BTC wallets unable to issue contract-calls. Such wallets could
+  instead send a pure BTC transaction to indicate their support for the vote; it
+  would be a no-op for the Stacks chain, but can be verified off-chain see
+  [Bitcoin support indication](#bitcoin-support-indication) for details.
 
-The SIP will be considered Recommended if wallets indicating support for the upgrade (through either mechanism) add up to > 10% of circulating supply of STX (approx 120M).
+The SIP will be considered Recommended if wallets indicating support for the
+upgrade (through either mechanism) add up to > 10% of circulating supply of STX
+(approx 120M).
 
-In terms of how these cost-limits would actually be applied, this SIP proposes the following:
-* Add new functionality to stacks-blockchain that uses the current cost-limits by default and uses new cost-limits if the burn block height exceeds a configurable parameter (could be a compile time configuration to avoid runtime issues)
-* Once a BTC block number has been determined, ship a new stacks-blockchain release at least one week before to give miners and node operators time to upgrade before the upgrade block height is reached
-* In the subsequent release, remove all usage of the old cost-limits and just use the new cost-limits by default
+In terms of how these cost-limits would actually be applied, this SIP proposes
+the following:
+* Add new functionality to stacks-blockchain that uses the current cost-limits
+  by default and uses new cost-limits if the burn block height exceeds a
+  configurable parameter (could be a compile time configuration to avoid runtime
+  issues)
+* Once a BTC block number has been determined, ship a new stacks-blockchain
+  release at least one week before to give miners and node operators time to
+  upgrade before the upgrade block height is reached
+* In the subsequent release, remove all usage of the old cost-limits and just
+  use the new cost-limits by default
 
 ### Default Cost Functions
 
-Based on results from the [clarity-benchmarking](https://github.com/blockstack/clarity-benchmarking) project, we propose
-new default cost functions. The new costs are supplied in the form of a new Clarity smart contract in [Appendix A](#appendix-a).
+Based on results from the
+[clarity-benchmarking](https://github.com/blockstack/clarity-benchmarking)
+project, we propose new default cost functions. The new costs are supplied in
+the form of a new Clarity smart contract in [Appendix A](#appendix-a).
 
 ### Block Limit Changes
 
-In addition to the runtime cost changes, we propose increasing the
-block limits for MARF reads and writes. Based on the expected performance
-improvements in the implementation of the MARF (see [issue #2869](https://github.com/blockstack/stacks-blockchain/issues/2869))
-we propose doubling the current limits on blocks:
+In addition to the runtime cost changes, we propose increasing the block limits
+for MARF reads and writes. Based on the expected performance improvements in the
+implementation of the MARF (see [issue
+#2869](https://github.com/blockstack/stacks-blockchain/issues/2869)) we propose
+doubling the current limits on blocks:
 
 ```rust
 pub const BLOCK_LIMIT_MAINNET: ExecutionCost = ExecutionCost {
@@ -97,40 +153,42 @@ pub const BLOCK_LIMIT_MAINNET: ExecutionCost = ExecutionCost {
 ### Changes to Static vs. Dynamic Tabulation of Costs
 
 The cost assessment in Clarity for most data-handling functions (e.g.,
-`map-get?`) use the static cost of the fetch rather than the dynamic
-cost. For more information, see [issue #2864](https://github.com/blockstack/stacks-blockchain/issues/2864)
-in the `stacks-blockchain` repository.
+`map-get?`) use the static cost of the fetch rather than the dynamic cost. For
+more information, see [issue
+#2864](https://github.com/blockstack/stacks-blockchain/issues/2864) in the
+`stacks-blockchain` repository.
 
 There were two motivating reasons for doing this:
 
-* It makes static analysis of costs easier, because the cost assessed
-  at runtime would always use the declared size of the map entry.
+* It makes static analysis of costs easier, because the cost assessed at runtime
+  would always use the declared size of the map entry.
 * It allows the cost to be assessed before running the operation.
 
-However, it's pretty easy to argue that these reasons aren't all that
-essential. For (1), static analysis is always going to overestimate
-anyways, so why not allow the real cost to match the actual runtime
-overhead more closely. For (2), allowing a single "speculative"
-evaluation before aborting a block due to cost overflow is not
-particularly burdensome to the network: the maximum size of an
+However, it's pretty easy to argue that these reasons aren't all that essential.
+For (1), static analysis is always going to overestimate anyways, so why not
+allow the real cost to match the actual runtime overhead more closely. For (2),
+allowing a single "speculative" evaluation before aborting a block due to cost
+overflow is not particularly burdensome to the network: the maximum size of an
 overread is a single Clarity value, 2MB.
 
-The benefit of using dynamic costs, however, could be great. Many
-contracts use patterns where potentially long lists are stored in data
-maps, but in practice the stored lists are relatively short.
+The benefit of using dynamic costs, however, could be great. Many contracts use
+patterns where potentially long lists are stored in data maps, but in practice
+the stored lists are relatively short.
 
 Because of this, we propose to use a dynamic cost for these assessments.
 
 ### Bitcoin Support Indication
 
-For wallets that wish to submit a supporting vote for the activation of this SIP via a BTC transaction, they can submit a transaction in the following form:
+For wallets that wish to submit a supporting vote for the activation of this SIP
+via a BTC transaction, they can submit a transaction in the following form:
 
-The first input to the Bitcoin operation _must_ consume a UTXO that is
-a standard P2MS over P2SH output _or_ a standard P2PKH output. This first
-input will be used to verify that the sender of the Bitcoin operation corresponds
-to a specific Stacks address.
+The first input to the Bitcoin operation _must_ consume a UTXO that is a
+standard P2MS over P2SH output _or_ a standard P2PKH output. This first input
+will be used to verify that the sender of the Bitcoin operation corresponds to a
+specific Stacks address.
 
-The Bitcoin transaction will include an `OP_RETURN` output for the first Bitcoin output:
+The Bitcoin transaction will include an `OP_RETURN` output for the first Bitcoin
+output:
 
 ```
             0      2  3       9
@@ -138,14 +196,19 @@ The Bitcoin transaction will include an `OP_RETURN` output for the first Bitcoin
               XM    A  SIP-12
 ```
 
-That is, the `OP_RETURN` output will be a 9-byte field with content equal to `XMASIP-12` (ascii encoded).
+That is, the `OP_RETURN` output will be a 9-byte field with content equal to
+`XMASIP-12` (ascii encoded).
 
 # Activation
 
 The SIP will be considered Active once:
 
-* A new release of stacks-blockchain is available with the updated cost-limits and a mechanism to use the new cost-limits beyond a pre-determined Bitcoin block height
-* This new release is deployed by independent miners, as determined by the continued operation of the Stacks blockchain beyond the Bitcoin block height selected for the network-upgrade. 
+* A new release of stacks-blockchain is available with the updated cost-limits
+  and a mechanism to use the new cost-limits beyond a pre-determined Bitcoin
+  block height
+* This new release is deployed by independent miners, as determined by the
+  continued operation of the Stacks blockchain beyond the Bitcoin block height
+  selected for the network-upgrade. 
 
 # Appendices
 
@@ -653,7 +716,10 @@ The new proposed `costs-2.05.clar`:
 ```
 ## Appendix B
 
-Initial sketch of a simply Clarity contract to tally up support for the network-upgrade from STX holders. This version does not call into the PoX contract to separately aggregate Stacked STX -- the contract can be modified to do that or that can be    computed offline.
+Initial sketch of a simply Clarity contract to tally up support for the
+network-upgrade from STX holders. This version does not call into the PoX
+contract to separately aggregate Stacked STX -- the contract can be modified to
+do that or that can be    computed offline.
 
 
 ```lisp

@@ -716,6 +716,40 @@ The new proposed cost functions, which will be instantiated at
         read_length: u1
     })
 ```
+
+### Determining runtime cost values
+
+The goal of this proposal is to make the total real runtime of a full
+block less than 30 seconds. 30 seconds is a short enough period of
+time that prospective miners should be able to process a new block
+before the next Bitcoin block 95% of the time (`exp( -1/20 ) ~= 95%`).
+
+To determine a new proposed cost for a Clarity function, we executed a
+set of benchmarks for each Clarity cost function in the
+[clarity-benchmarking](https://github.com/blockstack/clarity-benchmarking)
+Github repository. After running these benchmarks, constant factors in
+the runtime functions were fitted using linear regression (given a
+transform). These benchmarks produced regression fitted functions for
+each Clarity cost function, for example:
+
+```
+runtime_ns(cost_secp256k1verify) = 8126809.571429
+runtime_ns(cost_or) = 2064.4713444648587 * input_len + 91676.397154
+```
+
+The runtime block limit in the Stacks network is `5e9` (unitless), and
+the goal of this proposal is that this should correspond to 30 seconds
+or `3e10` nanoseconds. So, to convert the `runtime_ns` functions into
+runtimes for the Stacks network, we have the simple conversion:
+
+```
+runtime_stacks = runtime_ns * 5e9 / 3e10ns
+```
+
+For running the benchmarks and analysis in the `clarity-benchmarking`
+repository, see the [`README.md`](https://github.com/blockstack/clarity-benchmarking/blob/master/README.md)
+file in that repository.
+
 ## Appendix B
 
 Initial sketch of a simply Clarity contract to tally up support for the

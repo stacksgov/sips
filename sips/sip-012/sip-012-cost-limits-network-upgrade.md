@@ -218,7 +218,7 @@ For (1), static analysis is always going to overestimate anyways, so why not
 allow the real cost to match the actual runtime overhead more closely. For (2),
 allowing a single "speculative" evaluation before aborting a block due to cost
 overflow is not particularly burdensome to the network: the maximum size of an
-overread is a single Clarity value, 2MB.
+overread is a single Clarity value, which takes only 2MB.
 
 The benefit of using dynamic costs, however, could be great. Many contracts use
 patterns where potentially long lists are stored in data maps, but in practice

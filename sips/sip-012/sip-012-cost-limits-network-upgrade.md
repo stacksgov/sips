@@ -5,7 +5,7 @@ SIP Number: 012
 Title: Burn Height Selection for a Network Upgrade to Introduce New Cost-Limits
 
 Authors:
-* 0xAsteria <asteria@syvita.org>
+* Asteria <asteria@syvita.org>
 * Aaron Blankstein <aaron@hiro.so>
 * Diwaker Gupta <diwaker@hiro.so>
 * Hank Stoever <hank@oby.io>
@@ -54,15 +54,11 @@ impacting user experience on multiple occassions: valid transactions are not
 getting processed because they exceed one or more of the block limits, and are
 therefore not included by miners.
 
-Here are some relevant results from a [recent
+One relevant results from a [recent
 analysis](https://github.com/blockstack/stacks-blockchain/discussions/2883) of
-block data:
-
-* Average number of "events" per block: 34.9. This is lower than the demands of
-  many workloads and also lower than the theoretical maximum one would expect.
-* Of all transactions that exceed some cost dimension (see SIP-006 for a
-  description of all cost dimensions), ~80% exceed the `runtime` limit and ~18%
-  exceed the `read_count` limits.
+block data: of all transactions that exceed some cost dimension (see SIP-006 for
+a description of all cost dimensions), ~80% exceed the `runtime` limit and ~18%
+exceed the `read_count` limits.
 
 In the last few months, the
 [clarity-benchmarking](https://github.com/blockstack/clarity-benchmarking)
@@ -74,12 +70,7 @@ post](https://forum.stacks.org/t/more-accurate-cost-functions-for-clarity-native
 In theory, most of these cost-limits can be changed without necessitating a
 hard-fork or network-upgrade -- the exact procedure is described in
 [SIP-006](https://github.com/stacksgov/sips/blob/main/sips/sip-006/sip-006-runtime-cost-assessment.md#cost-upgrades).
-We evaluated the feasibility of this approach and concluded that the current
-implementation of the mechanism is badly designed, in that it does not allow
-network participants to _quickly_ adapt the system based on availability of
-benchmarking data and faster implementations.
-
-Further, there are some performance improvements that _can not_ be incorporated
+However, there are some performance improvements that _cannot_ be incorporated
 using Clarity cost upgrades and necessitate a network-uprade. Specifically:
 
 * [The MARF could be 2x faster with minimal
@@ -94,10 +85,15 @@ using Clarity cost upgrades and necessitate a network-uprade. Specifically:
   maximum length, instead of their actual length. There's no way to correct this
   except via a network upgrade.
 
-We believe that there is broad community support for changing Clarity
-cost-limits, the question is exactly how and when they go into effect. A
-previous proposal suggested using a voting contract to determine the block
-height at which a network-upgrade, described in detail in [this Github
+We believe that there is broad community support for a network-upgrade to make
+the above two changes. We also believe it's prudent to leverage the
+network-upgrade to update Clarity costs to values in [Appendix A](#appendix-a).
+Assuming such community support exists, the question is exactly how and when
+these changes go into effect.
+
+A previous proposal (distinct from the procedure described in SIP-006) suggested
+using a voting contract to determine the block height at which a
+network-upgrade, described in detail in [this Github
 discussion](https://github.com/blockstack/stacks-blockchain/discussions/2845).
 Unfortunately, this path would take at least 4 months in the best-case scenario
 (factoring in time to test and deploy the voting contract, time to execute the
@@ -107,15 +103,23 @@ This SIP posits that the ongoing network congestion warrants a more expedient
 route to change the cost-limits, one that does not rely on an on-chain voting
 contract.
 
-Equally of note, we consider this SIP as a method of last resort and
-that considering the circumstances an exception is justified. All future network
-upgrades should use the voting contract (if appropriate); all hard-forks must
-follow the processes described in SIP-000 and SIP-011.
+Note that the two changes that necessitate a network-upgrade notwithstanding, we
+did evaluate the feasibility of the cost upgrades approach described in SIP-006.
+We concluded that the current implementation of the mechanism is not well-suited
+for this specific situation, in that it does not allow network participants to
+_quickly_ adapt the system based on availability of benchmarking data and faster
+implementations.
+
+Equally of note, we consider this SIP as a method of last resort and that
+considering the circumstances an exception is justified. All future Clarity cost
+upgrades should use the protocol described in SIP-006; network upgrades should
+use the voting contract (if appropriate); all hard-forks must follow the
+processes described in SIP-000 and SIP-011.
 
 
 # Specification
 
-## Proposal
+## Activation Protocol
 
 In the text below, "Stacks 2.05" refers to the proposed network-upgrade for
 cost-limits.
@@ -154,7 +158,7 @@ passes. This requires:
   largest Stacker right now.
 
 The rationale for this voting procedure is that it simultaneously gives the
-community a way to veto the SIP while also accommodating a low-ish turnout. The
+community a way to veto the SIP while also accommodating low turnout. The
 problem with any blockchain-based voting systems in the past is that unless
 there's a financial incentive to vote (e.g. mining, staking), turnout is low. By
 introducing a distinct "no" choice and giving it 2x the power of a "yes" vote,
@@ -173,13 +177,7 @@ the following:
   release at least one week before to give miners and node operators time to
   upgrade before the upgrade block height is reached
 
-
-### Default Cost Functions
-
-Based on results from the
-[clarity-benchmarking](https://github.com/blockstack/clarity-benchmarking)
-project, we propose new default cost functions. The new costs are supplied in
-the form of a new Clarity smart contract in [Appendix A](#appendix-a).
+## Cost Changes
 
 ### Block Limit Changes
 
@@ -225,6 +223,13 @@ patterns where potentially long lists are stored in data maps, but in practice
 the stored lists are relatively short.
 
 Because of this, we propose to use a dynamic cost for these assessments.
+
+### Default Cost Functions
+
+Based on results from the
+[clarity-benchmarking](https://github.com/blockstack/clarity-benchmarking)
+project, we propose new default cost functions. The new costs are supplied in
+the form of a new Clarity smart contract in [Appendix A](#appendix-a).
 
 # Activation
 

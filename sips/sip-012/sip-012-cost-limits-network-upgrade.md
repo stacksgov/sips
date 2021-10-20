@@ -278,6 +278,82 @@ patterns where potentially long lists are stored in data maps, but in practice
 the stored lists are relatively short.
 
 Because of this, this SIP proposes using a dynamic cost for these assessments.
+Specifically, it proposes changes to the inputs of the following
+functions' cost functions:
+
+* `var-get`
+* `var-set`
+* `map-get?`
+* `map-set`
+* `map-insert`
+* `map-delete`
+* `concat`
+
+#### `(var-get var-name) -> value`
+
+The `x` input to the `var-get` cost function should be the length in
+bytes of the consensus serialization (see [SIP-005](https://github.com/stacksgov/sips/blob/main/sips/sip-005/sip-005-blocks-and-transactions.md#clarity-value-representation)
+for details on this format) of the returned `value`.
+
+#### `(var-set var-name value)`
+
+The `x` input to the `var-get` cost function should be the length in
+bytes of the consensus serialization (see [SIP-005](https://github.com/stacksgov/sips/blob/main/sips/sip-005/sip-005-blocks-and-transactions.md#clarity-value-representation)
+for details on this format) of the newly stored `value`.
+
+The memory usage of this function should be this same value. The
+memory usage of `var-set` remains in effect until the end of the
+transaction (data operations remain in memory during the whole
+transaction to enable rollbacks and post-conditions).
+
+#### `(map-get? map-name key) -> value`
+
+The `x` input to the `map-get` cost function should be the sum of the
+length in bytes of the consensus serialization of the supplied `key`
+and the returned `value`.
+
+#### `(map-set map-name key value)`
+
+The `x` input to the `map-set` cost function should be the sum of the
+length in bytes of the consensus serialization of the supplied `key` and
+`value` arguments.
+
+The memory usage of this function should be this same value. The
+memory usage of `map-set` remains in effect until the end of the
+transaction (data operations remain in memory during the whole
+transaction to enable rollbacks and post-conditions).
+
+#### `(map-insert map-name key value)`
+
+If the insert is successful, the `x` input to the `map-insert` cost
+function should be the sum of the length in bytes of the consensus
+serialization of the supplied `key` and `value` arguments.
+
+If the insert is unsuccessful, the `x` input to the `map-insert` cost
+function should be the length in bytes of the consensus serialization
+of just the supplied `key` argument.
+
+The memory usage of this function should be this same `x` value. The
+memory usage of `map-insert` remains in effect until the end of the
+transaction (data operations remain in memory during the whole
+transaction to enable rollbacks and post-conditions).
+
+#### `(map-delete map-name key)`
+
+The `x` input to the `map-delete` cost function should be the length
+in bytes of the consensus serialization of the supplied `key`
+argument plus the length in bytes of the consensus serialization of
+a `none` Clarity value.
+
+The memory usage of this function should be this same `x` value. The
+memory usage of `map-delete` remains in effect until the end of the
+transaction (data operations remain in memory during the whole
+transaction to enable rollbacks and post-conditions).
+
+#### `(concat list-a list-b)`
+
+The `x` input to the `concat` cost function should be the length of
+`list-a` plus the length of `list-b`.
 
 ### New Default Cost Functions
 

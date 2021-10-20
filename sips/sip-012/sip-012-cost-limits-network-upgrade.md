@@ -8,8 +8,9 @@ Authors:
 * Asteria <asteria@syvita.org>
 * Aaron Blankstein <aaron@hiro.so>
 * Diwaker Gupta <diwaker@hiro.so>
-* Hank Stoever <hank@oby.io>
+* Hank Stoever <hank@stackerlabs.co>
 * Jason Lau <jason@okcoin.com>
+* Jude Nelson <jude@stacks.org>
 * Ludovic Galabru <ludo@hiro.so>
 * Trevor Owens <trevor@stacks.ac>
 * Xan Ditkoff <xan@daemontechnologies.co>
@@ -31,91 +32,100 @@ Discussions-To: https://github.com/stacksgov/sips
 # Abstract
 
 The current Clarity cost limits were set very conservatively in Stacks 2.0:
-transactions with contract-calls frequently exceed these limits, which
+blocks with contract-calls frequently meet one or more of these limits, which
 negatively affects transaction throughput. This SIP proposes an update to these
 cost-limits via a network upgrade and further, that the network upgrade be
 executed at a block height chosen by an off-chain process described in this SIP.
-
 
 # License and Copyright
 
 This SIP is made available under the terms of the Creative Commons CC0 1.0
 Universal license, available at
-https://creativecommons.org/publicdomain/zero/1.0/ This SIP’s copyright is held
+https://creativecommons.org/publicdomain/zero/1.0/ This SIP's copyright is held
 by the Stacks Open Internet Foundation.
-
 
 # Introduction
 
 The current Clarity cost limits were set very conservatively in Stacks 2.0.
 Since the mainnet launch on 2021-01-14, traffic on the network has grown
-steadily. And in recent months we have seen network congestion adversely
-impacting user experience on multiple occassions: valid transactions are not
-getting processed because they exceed one or more of the block limits, and are
-therefore not included by miners.
+steadily.  In recent months, we have seen network congestion adversely
+impacting the user experience: valid transactions are not
+getting mined in a timely manner because there is far more demand for block compute
+capacity than supply.  For example, in Stacks blocks from height 27,672 through 28,573, 675
+blocks' highest-filled compute dimension was their `runtime` dimension, but 319
+blocks' highest-filled compute dimension was their `read_count` dimension ([full
+report](./SIP-012-001.ods)).  In another study of 455 Stacks blocks between height
+30,904 and 33,002, just over 14% of them exceeded the `read_count` dimension
+and just over 85% exceeded the `runtime` dimension ([full report](https://github.com/blockstack/stacks-blockchain/discussions/2883)).
 
-One relevant results from a [recent
-analysis](https://github.com/blockstack/stacks-blockchain/discussions/2883) of
-block data: of all transactions that exceed some cost dimension (see SIP-006 for
-a description of all cost dimensions), ~80% exceed the `runtime` limit and ~18%
-exceed the `read_count` limits.
+While there will likely always be more demand than supply for block compute
+capacity, the current supply is artifically limited in three principal ways:
 
-In the last few months, the
-[clarity-benchmarking](https://github.com/blockstack/clarity-benchmarking)
-project has done rigorous benchmarking on contemporary hardware to come up with
-more accurate cost-limits, with a focus on the `runtime` limits. The updated
-cost-limits are described in detail in [this forum
-post](https://forum.stacks.org/t/more-accurate-cost-functions-for-clarity-native-functions/12386).
+* At the time of the launch, the MARF index (see SIP-004) was implemented in
+  such a way that a block could only execute 7,500 MARF index reads and writes
+while being processed by a non-mining node on consumer hardware in a reasonable
+amount of time.  This number was arrived at by measuring how many MARF reads and writes
+could be completed on a consumer laptop in 10 seconds in 2019.  But because the block limit is a
+consensus-critical constant that all Stacks nodes must agree on, increasing the
+number of MARF reads and writes per block can only be done via a breaking
+change.  This means that any improvements to the MARF's performance that could
+permit significant increase in the number of operations per block can only
+be capitalized upon via a breaking change.
 
-In theory, most of these cost-limits can be changed without necessitating a
-hard-fork or network-upgrade -- the exact procedure is described in
-[SIP-006](https://github.com/stacksgov/sips/blob/main/sips/sip-006/sip-006-runtime-cost-assessment.md#cost-upgrades).
-However, there are some performance improvements that _cannot_ be incorporated
-using Clarity cost upgrades and necessitate a network-uprade. Specifically:
+* An emerging Clarity contract design pattern is to store data maps and data
+  variables comprised of lists with a large maximum length.  The reason
+for this, we suspect, is because it permits storing a lot of MARF-indexed data with
+few MARF reads and writes.  However, the Clarity VM assesses list storage based
+on its _maximum_ length, not the length of the data stored.  Assessing storage
+based on the length of the data would allow contracts to make better use of the
+`read_length` and `write_length` compute resources (which have been hit in
+practice), but this would require a breaking change.
 
-* [The MARF could be 2x faster with minimal
-  effort](https://github.com/blockstack/stacks-blockchain/issues/2869), but we
-  can't capitalize on it right now because the cost functions for many
-  I/O-related Clarity functions only tabulate a single MARF read or MARF write
-  (so we can't use cost-voting to increase the number of MARF I/O operations per
-  block; we must change the block limit).
-* Many smart contracts declare lists of data in their data space with large
-  maximum lengths, but in practice don't usually make use of that space. This is
-  a problem because the Clarity VM still bills storage reads for lists by their
-  maximum length, instead of their actual length. There's no way to correct this
-  except via a network upgrade.
+* Most of the cost functions in SIP-006 have constants that are far too
+  conservative in practice.  The numbers used when mainnet launched were chosen
+to minimize the risk of a network-wide denial-of-service arising from producing
+blocks that would take an inordinate amount of time to validate; they were not
+chosen through a rigorous benchmarking process.  In the months since then,
+we have developed a more rigorous 
+[benchmark suite](https://github.com/blockstack/clarity-benchmarking)
+for the Clarity VM implementation, and have arrived at more accurate runtime
+constants for the cost functions that permit suitable block validation times on contemporary
+hardware.  The new limits, listed in [Appendix A](#appendix-a), 
+would vastly increase the number of Clarity functions that can be
+executed per block.  But in order to capitalize on this new data, STX token holders would
+need to execute the SIP-006 cost voting protocol to activate new cost functions.
 
-We believe that there is broad community support for a network-upgrade to make
-the above two changes. We also believe it's prudent to leverage the
-network-upgrade to update Clarity costs to values in [Appendix A](#appendix-a).
-Assuming such community support exists, the question is exactly how and when
-these changes go into effect.
+This SIP proposes a **breaking change** that would address these first two
+limitations.  It would increase the block runtime `read_count` and `write_count`
+limits by a factor of 2, in order to allow the network to capitalize on a [recent MARF performance
+improvement](https://github.com/blockstack/stacks-blockchain/issues/2869).  It
+would also change storage cost assessment for list data to consider the length
+of the value being stored, instead of its maximum length.  In addition, this 
+would bypass the voting protocol in SIP-006 to set 
+[new proposed runtime cost functions parameters](https://forum.stacks.org/t/more-accurate-cost-functions-for-clarity-native-functions/12386)
+via a voting protocol described in this SIP.
 
-A previous proposal (distinct from the procedure described in SIP-006) suggested
+## A Note on Bypassing SIP-006
+
+This SIP explicitly bypasses the voting procedure in SIP-006 by means of a separate
+voting procedure described below.  However, this SIP does not supersede SIP-006,
+nor does it set a precedent for this particular voting procedure's general
+applicability to making collective decisions in the SIP process.  The voting
+procedure in this SIP is specific to this SIP, and is only meant to activate the
+changes described in this SIP.
+
+The reason for this accommodation is that the SIP-006 voting procedure may be
+too costly to use in practice, since STX holders must forego Stacking to use it.
+A future SIP may study this problem further, and propose a new voting procedure 
+for runtime costs in recognition of this.  However, that is not the subject of
+this SIP.
+
+We are aware of one other proposal
+(distinct from the procedure described in SIP-006) suggested
 using a voting contract to determine the block height at which a
 network-upgrade, described in detail in [this Github
 discussion](https://github.com/blockstack/stacks-blockchain/discussions/2845).
-Unfortunately, this path would take at least 4 months in the best-case scenario
-(factoring in time to test and deploy the voting contract, time to execute the
-vote, time for a miner veto window and time to clear the votes).
-
-This SIP posits that the ongoing network congestion warrants a more expedient
-route to change the cost-limits, one that does not rely on an on-chain voting
-contract.
-
-Note that the two changes that necessitate a network-upgrade notwithstanding, we
-did evaluate the feasibility of the cost upgrades approach described in SIP-006.
-We concluded that the current implementation of the mechanism is not well-suited
-for this specific situation, in that it does not allow network participants to
-_quickly_ adapt the system based on availability of benchmarking data and faster
-implementations.
-
-Equally of note, we consider this SIP as a method of last resort and that
-considering the circumstances an exception is justified. All future Clarity cost
-upgrades should use the protocol described in SIP-006; network upgrades should
-use the voting contract (if appropriate); all hard-forks must follow the
-processes described in SIP-000 and SIP-011.
-
+However, at the time of this writing, this proposal is not yet ready for review in the SIP process.
 
 # Specification
 
@@ -124,75 +134,120 @@ processes described in SIP-000 and SIP-011.
 In the text below, "Stacks 2.05" refers to the proposed network-upgrade for
 cost-limits.
 
-The SIP authors will propose a Bitcoin block number at which the new cost-limits
-take effect. The block number should be at least two calendar weeks from when
-this SIP transitions into “Accepted” state, so as to provide sufficient time for
-node operators to upgrade. Tentatively this block number would be chosen to fall
-on November 29th or November 30th, 2021.
+Due to the far-reaching effects a breaking change will have on the Stacks
+ecosystem, this SIP can only be activated through a collective decision-making
+process.  There are three major steps to this activation procedure:
 
-Miners, developers, Stackers and community members can demonstrate their support
-(or lack thereof) for this network upgrade by sending Bitcoin transactions:
+   1.  The SIP authors will propose a Bitcoin block number at which the new cost-limits
+   take effect. The block number should be at least two calendar weeks from when
+   this SIP transitions into _Recommended_ status, so as to provide sufficient time for
+   node operators to upgrade. Tentatively this block number would be chosen to fall
+   on November 29th or November 30th, 2021.  In this document, this is the
+**activation block**.
 
-* There will be two Bitcoin addresses whose UTXOs will be used to tally the
-  vote: a "yes" address, and a "no" address. [TODO: add details on the specific
-  addresses]. To vote, you would send a small amount of BTC to either one of
-  these addresses.
-* The transaction's scriptSig must be signed by either the Stacker's PoX reward
-  address's public key(s), or the public key(s) of their Stacks address (the
-  option is provided here because not all Stackers have access to their PoX
-  addresses). In either case, the vote commits the Stacker's
-  most-recently-locked STX to "yes" or "no" if the Stacker had some STX locked
-  in the past two reward cycles at the time of the vote.
+   2.  In the two whole reward cycles prior to the activation block, users who
+       have Stacked STX will have the opportunity to cast a vote to activate
+this SIP.  The cut-off for voting will be a _separate_ Bitcoin block whose
+expected arrival time is one calendar week prior to the activation block.  This
+document refers to this block as the **vote deadline block.**
+
+   3.  If the activation voting threshold is met as of the vote deadline block,
+then the Stacks Foundation will cut a relase of the Stacks blockchain
+reference implementation with this
+SIP's changes applied and set to take effect once the activation block passes.
+If on the other hand there is insufficient support for this SIP by the vote
+deadline block, then no action will be taken and this SIP will not activate.
+
+To activate this SIP, users who have Stacked STX in either of the last two whole
+reward cycles prior to the vote deadline block height will have the opportunity to
+vote with their STX by sending a minimial amount of BTC to one of two addresses.
+There will be two Bitcoin addresses whose UTXOs will be used to tally the
+vote: a "yes" address, and a "no" address.
+
+* The "yes" address will be a p2pkh Bitcoin address whose inner Hash160 is
+  `00000000000000000000000000000000000000ee`.  On mainnet, this is address
+`111111111111111111112czxoHN`.
+
+* The "no" address will be a separate p2pkh Bitcoin address whose inner Hash160
+  is `00000000000000000000000000000000000000ff`.  On mainnet, this is address
+`111111111111111111112kmzDG2`.
+
+Note that these are similar addresses to the PoX burn address, but they all
+differ from one another in their checksums.
+
+Vote tallying is performed by examining how many STX the sender has recently
+Stacked.  The Bitcoin transaction identifies the amount of STX in the `.pox`
+smart contract's data space.  So, by examining the UTXOs for these two Bitcoin
+addresses, anyone with a full copy of the Stacks chain state as of the voting
+deadline will be able to calculate how many recently-Stacked STX have signaled
+"yes" or "no" support for this SIP.
+
+To match the Bitcoin transaction to the Stacker's state in the `.pox` contract,
+the `scriptSig` of the first transaction input must be signed by either the user's PoX reward
+address's public key(s), or the public key(s) of the Stacks address that Stacked
+the tokens (the option is provided here because not all Stackers have access to their PoX
+addresses). In either case, the vote commits the Stacker's
+most-recently-locked STX to "yes" or "no" if the Stacker had some STX locked
+in the past two reward cycles as of the vote deadline block.
+
+### Activation Criteria 
+
+The SIP will be considered _Ratified_ if the vote to activate Stacks 2.05
+passes. This requires:
+
+* 2/3 of all votes passed are "yes", weighted by the STX they represent, at a
+  Bitcoin block height at or before the vote deadline block.
+
+* At least 60 million STX are represented by the "yes" votes. This is 2x the
+  largest Stacker at the time of this writing.
+
+### Rationale 
+
+The rationale for this voting procedure is that it simultaneously gives the
+community a way to veto the SIP while also accommodating low turnout. The
+problem with blockchain-based voting systems in the past is that unless
+there is a financial incentive to vote (e.g. mining, staking), turnout is low.
+For example, the Ethereum carbon vote [1] to disable the DAO smart contract had only
+5.5% turnout [2].  As another example, BitShares' [3] highest-voted delegate in its
+delegated proof-of-stake consensus algorithm only received 18% of the vote [4].
+
+This SIP's activation procedure takes the position that non-voters are passive
+system participants and do not care about the outcome of this SIP -- they will
+be happy either way.  But, this SIP also acknowledges that of the voters that
+_do_ care about the vote outcome, those who vote "no" are financially
+disincentivized to do so, because it would render the Stacks blockchain in a
+worse-off state.  Therefore, this SIP requires a supermajority of "yes" votes to
+activate, since a strong minority of "no" votes would be a strong signal that
+something is seriously wrong with this SIP (despite its apparent benefits).
+
+## Changes to Mining
 
 Nodes that run Stacks 2.05 must put `0x05` in the memo field. Block-commit
 transactions that do not have `0x05` will be considered invalid. The purpose of
 this change is to ensure that in the unlikely event some miners didn't know
 about this SIP, they will quickly find out because their blocks will never be
-confirmed.
+confirmed or recognized by other users and exchanges that have upgraded.
 
-The SIP will be considered Recommended if the vote to activate Stacks 2.05
-passes. This requires:
+## Changes to Runtime Costs
 
-* 2/3 of all votes passed are "yes", weighted by the STX they represent
-* At least 60 million STX are represented by the "yes" votes. This is 2x the
-  largest Stacker right now.
+This SIP proposes two breaking changes to runtime costs, as well as a new set of
+default cost functions (bypassing SIP-006's voting procedure).
 
-The rationale for this voting procedure is that it simultaneously gives the
-community a way to veto the SIP while also accommodating low turnout. The
-problem with any blockchain-based voting systems in the past is that unless
-there's a financial incentive to vote (e.g. mining, staking), turnout is low. By
-introducing a distinct "no" choice and giving it 2x the power of a "yes" vote,
-this protocol ensures that if there are real problems discovered with this SIP
-that would warrant a "no" response, it will take far less effort to stop its
-ratification than to advance it.
+### Block Limit
 
-In terms of how these cost-limits would actually be applied, this SIP proposes
-the following:
+This SIP proposes increasing the block limits
+for MARF reads and writes.  This is a breaking change.
 
-* Add new functionality to Stacks blockchain that uses the current cost-limits
-  by default and uses new cost-limits if the burn block height exceeds a
-  configurable parameter (could be a compile time configuration to avoid runtime
-  issues)
-* Once a Bitcoin block number has been determined, ship a new Stacks blockchain
-  release at least one week before to give miners and node operators time to
-  upgrade before the upgrade block height is reached
-
-## Cost Changes
-
-### Block Limit Changes
-
-In addition to the runtime cost changes, we propose increasing the block limits
-for MARF reads and writes. Based on the expected performance improvements in the
-implementation of the MARF (see [issue
-#2869](https://github.com/blockstack/stacks-blockchain/issues/2869)) we propose
-doubling the current limits on blocks:
+Based on the expected performance improvements in the
+implementation of the MARF (see [issue #2869](https://github.com/blockstack/stacks-blockchain/issues/2869)) 
+this SIP proposes doubling the current limits on blocks:
 
 ```rust
 pub const BLOCK_LIMIT_MAINNET: ExecutionCost = ExecutionCost {
     write_length: 15_000_000, // roughly 15 mb
-    write_count: 15_500,
+    write_count: 15_000,
     read_length: 100_000_000,
-    read_count: 15_500,
+    read_count: 15_000,
     runtime: 5_000_000_000,
 };
 ```
@@ -200,49 +255,76 @@ pub const BLOCK_LIMIT_MAINNET: ExecutionCost = ExecutionCost {
 ### Changes to Static vs. Dynamic Tabulation of Costs
 
 The cost assessment in Clarity for most data-handling functions (e.g.,
-`map-get?`) use the static cost of the fetch rather than the dynamic cost. For
-more information, see [issue
-#2864](https://github.com/blockstack/stacks-blockchain/issues/2864) in the
+`map-get?`) use the static cost of the fetch rather than the dynamic cost. 
+This is a breaking change.  For more information, see [issue #2864](https://github.com/blockstack/stacks-blockchain/issues/2864) in the
 `stacks-blockchain` repository.
 
-There were two motivating reasons for doing this:
+There are two motivating reasons for doing this:
 
 * It makes static analysis of costs easier, because the cost assessed at runtime
   would always use the declared size of the map entry.
 * It allows the cost to be assessed before running the operation.
 
-However, it's pretty easy to argue that these reasons aren't all that essential.
-For (1), static analysis is always going to overestimate anyways, so why not
-allow the real cost to match the actual runtime overhead more closely. For (2),
+However, these reasons have not been shown to be practical in production.
+For (1), static analysis is always going to overestimate anyways, so system
+throughput would improve by using the actual runtime overhead instead of the
+maximum runtime overhead when assessing storage costs.  For (2),
 allowing a single "speculative" evaluation before aborting a block due to cost
 overflow is not particularly burdensome to the network: the maximum size of an
 overread is a single Clarity value, which takes only 2MB.
 
-The benefit of using dynamic costs, however, could be great. Many contracts use
+The benefit of using dynamic costs, however, could be significant. Many contracts use
 patterns where potentially long lists are stored in data maps, but in practice
 the stored lists are relatively short.
 
-Because of this, we propose to use a dynamic cost for these assessments.
+Because of this, this SIP proposes using a dynamic cost for these assessments.
 
-### Default Cost Functions
+### New Default Cost Functions
 
 Based on results from the
 [clarity-benchmarking](https://github.com/blockstack/clarity-benchmarking)
-project, we propose new default cost functions. The new costs are supplied in
+project, this SIP proposes new default cost functions. The new costs are supplied in
 the form of a new Clarity smart contract in [Appendix A](#appendix-a).
+
+This could have been carried out through a SIP-006 cost voting procedure, but
+due to the opportunity costs incurred by STX holders foregoing PoX rewards to
+carry this vote out, this SIP instead proposes bypassing the SIP-006 voting
+procedure in this one instance and instead using this SIP's activation procedure
+to install these new functions.
 
 # Activation
 
-The SIP will be considered Active once:
+The SIP will be considered Ratified once all of the following are true:
 
-* A new release of Stacks blockchain (available at
-  https://github.com/blockstack/stacks-blockchain/releases) contains the updated
-  cost-limits and a mechanism to use the new cost-limits beyond a pre-determined
-  Bitcoin block height
-* The SIP has garnered sufficient support as described earlier. Voting by
+* A vote deadline block height and activation block height are chosen and added
+  to this SIP's text.  This is a pre-condition for advancing this SIP to
+_Recommended_ status.
+
+* This SIP is advanced to Activation-in-Progress by the respective consideration
+  advisory boards.
+
+* The SIP has garnered sufficient support by the vote deadline block height. Voting by
   sending Bitcoin transactions can begin once the SIP text is updated with the
   "yes" / "no" addresses. Voting concludes one week prior to the Stacks 2.05
   activation block.
+
+* A new release of Stacks blockchain (available at
+  https://github.com/blockstack/stacks-blockchain/releases) contains the updated
+  cost-limits and a mechanism to use the new cost-limits beyond the activation
+block height listed in this SIP.  This release is announced by the Stacks
+Foundation.
+
+* The activation block height passes on the Bitcoin chain.
+
+# References
+
+[1] http://v1.carbonvote.com/
+
+[2] https://en.wikipedia.org/wiki/Ethereum_Classic#Carbon_vote
+
+[3] https://en.bitcoinwiki.org/wiki/BitShares
+
+[4] https://bitcointalk.org/index.php?topic=916696.330;imode
 
 # Appendices
 

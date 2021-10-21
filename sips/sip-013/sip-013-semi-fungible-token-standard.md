@@ -127,13 +127,13 @@ Transfer many tokens in one contract call. Each transfer should follow the exact
 
 ### Bulk transfers with memos
 
-`(transfer-many ((transfers (list 200 {token-id: uint, amount: uint, sender: principal, recipient: principal, memo: (buff 34)}))) (response bool uint))`
+`(transfer-many-memo ((transfers (list 200 {token-id: uint, amount: uint, sender: principal, recipient: principal, memo: (buff 34)}))) (response bool uint))`
 
 Transfer many tokens in one contract call and emit a memo for each. This function follows the same procedure as `transfer-many` but will emit the memo contained in the tuple after each transfer. The whole function call should fail with an `err` response if one of the transfers fails.
 
-## Trait implementation
+## Trait definition
 
-An implementation of the proposed trait is provided below.
+A definition of the proposed trait is provided below.
 
 ```clarity
 (define-trait sip013-semi-fungible-token-trait
@@ -174,11 +174,11 @@ An implementation of the proposed trait is provided below.
 
 Semi-fungible token contracts should emit custom events in certain situations via `print`. These events should be emitted after any built-in token events (such as those emitted by `ft-transfer?`) and before the memo in the case of `transfer-memo` and `transfer-many-memo`.
 
-| Event name           | Tuple structure                                                                                       | Description                          |
-|----------------------|-------------------------------------------------------------------------------------------------------|--------------------------------------|
-| `sft_transfer_event` | `{type: "sft_transfer_event", token-id: uint, amount: uint, sender: principal, recipient: principal}` | Emitted when tokens are transferred. |
-| `sft_mint_event`     | `{type: "sft_mint_event", token-id: uint, amount: uint, recipient: principal}`                        | Emitted when new tokens are minted.  |
-| `sft_burn_event`     | `{type: "sft_burn_event", token-id: uint, amount: uint, sender: principal, recipient: principal}`     | Emitted when tokens are burned.      |
+| Event name           | Tuple structure                                                                                 | Description                          |
+|----------------------|-------------------------------------------------------------------------------------------------|--------------------------------------|
+| `sft_transfer`       | `{type: "sft_transfer", token-id: uint, amount: uint, sender: principal, recipient: principal}` | Emitted when tokens are transferred. |
+| `sft_mint`           | `{type: "sft_mint", token-id: uint, amount: uint, recipient: principal}`                        | Emitted when new tokens are minted.  |
+| `sft_burn`           | `{type: "sft_burn", token-id: uint, amount: uint, sender: principal}`                           | Emitted when tokens are burned.      |
 
 
 ## Use of native asset functions

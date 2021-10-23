@@ -172,17 +172,16 @@ The function signatures for metadata are:
 
 # Activation
 
-This SIP is activated if 5 contracts are deployed that use the same trait that follows this specification. This must happen before Bitcoin tip #750,000.
+This SIP is activated if 5 contracts are deployed that follows this specification. This must happen before Bitcoin tip #750,000.
 
 # Appendix A
 
 List of trait function define in SIPs and specifications specific to these functions
 
-|-----------------------------|-------------------------|--------------------|
-| SIP and Trait Function Name | Definition of "existing"| Additional specification for properties| identifier parameter|
+
+| SIP and Trait Function Name | Definition of "existing"| Additional Specification for Properties| Identifier Parameter|
 |-----------------------------|-------------------------|--------------------|-----|
-| SIP-009 nft-trait.get-token-uri | token must be minted and not burnt |     | 1st    |
-| SIP-X get-contract-uri      | contract must be deployed|                   |  X |
-| SIP-010 ft-trait.get-token-uri | contract must be deployed|                |  X |
+| SIP-009 nft-trait.get-token-uri | token must be minted and not burnt | NFTs belonging to a group of tokens should use property "properties.collection" for the collection name.    | 1st    |
+| SIP-X get-contract-uri      | always |                   |  X |
+| SIP-010 ft-trait.get-token-uri | always|                |  X |
 | SIP-013 sip013-semi-fungible-token-trait.get-token-uri | token must be minted and not burnt, no requirements on the number of fungible part of the token|      |  1st |
-|--------------------------------|-----------------------|-------------------|------|

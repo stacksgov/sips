@@ -35,19 +35,25 @@ Some use cases of NFTs are name registration, digital art, certification, media 
 
 # Specification
 
-Every SIP-X compliant smart contract in Stacks blockchain must be SIP-009 compliant and must meet the following requirements for the return value of function `get-token-uri`:
+Every SIP-X compliant smart contract in Stacks blockchain must implement one or more functions that return a resolvable/retrievable uri referencing metadata. The metadata provide information for displaying a digital asset to users. This type of function is named "metadata uri functions".
 
-## Return Value of `get-token-uri`
+Appendix A contains a list of trait functions that must meet the following requirements for the return value. The appendix can be extended without changing the ratification status of this SIP.
 
-The return value must be a `some` value if and only if the provided parameter `id` is the key of an NFT that was minted and not burnt, otherwise the value must be `none`.
+## Return Value of Metadata URI Functions
 
-For minted and not burnt NFTs, the inner value of the return value must be a string representing a resolvable URI. For string containing `{id}`, the `{id}` part must be replaced by the id in decimal format given in the function call.
+The return value must be a `some` value if and only if the metadata reference an existing token, otherwise the value must be `none`. Appendix A specifies the exact meaning of "existingt" for each function.
 
-The resolved data must be a JSON blob.
+For existing tokens, the inner value of the return value must be a string representing a resolvable URI. 
+
+If a metadata uri function expects a parameter of type `uint` that identifies a token and the resulting strings contains `{id}`, then the `{id}` part must be replaced by the identifier in decimal format given in the function call.
+
+The resolved data of the URI must be a JSON blob.
 
 ## JSON scheme of Metadata
 
-The JSON blob resolved through the token uri must follow the following JSON schema. If the string `{id}` exists in any JSON value, it MUST be replaced with the actual token id in decimal format, by all client software that follows this standard.
+The JSON blob resolved through the uri must follow the following JSON schema. 
+
+If metadata were retrieved by a function call containing a token identifier and the string `{id}` exists in any JSON value, it MUST be replaced with the actual token id in decimal format, by all client software that follows this standard.
 
 ```
 {
@@ -58,15 +64,15 @@ The JSON blob resolved through the token uri must follow the following JSON sche
     "properties": {
         "version": {
             "type": number,
-            "description": "Version of the JSON schema for NFT metadata. For this SIP, the version number must be `1`."
+            "description": "Version of the JSON schema for metadata. For this SIP, the version number must be `1`."
         },
         "name": {
             "type": "string",
-            "description": "Identifies the asset to which this token represents"
+            "description": "Identifies the asset which this token represents"
         },
         "description": {
             "type": "string",
-            "description": "Describes the asset to which this token represents"
+            "description": "Describes the asset which this token represents"
         },
         "image": {
             "type": "string",
@@ -74,7 +80,7 @@ The JSON blob resolved through the token uri must follow the following JSON sche
         },
         "attributes": {
             "type": "array",
-            "description": "Arbitrary NFT attributes. Values may be strings, numbers, object or arrays."
+            "description": "Arbitrary attributes. Values may be strings, numbers, object or arrays."
             "items: {
                 "type": "object",
                 "properties": {
@@ -114,7 +120,7 @@ The lengths of string values is not restricted. Nowadays, clients should be smar
 
 ### Examples
 
-# Using NFT metadata in applications
+# Using metadata in applications
 
 Before presenting metadata to users, application developers should verify whether the metadata is compliant with the application's guidelines.
 
@@ -142,7 +148,7 @@ Metadata for NFTs on Ethereum are defined in [EIP 721](https://eips.ethereum.org
 
 # Backwards Compatibility
 
-## Meta data functions
+## Metadata functions
 
 Some contracts have dedicated functions to provide metadata.
 
@@ -164,8 +170,19 @@ The function signatures for metadata are:
 - `(get-badge-meta () {uri: (string-ascii 78111)})` and
 - `(get-meta? (uint) (optional {user: principal}))`
 
-### Beeple
-
 # Activation
 
 This SIP is activated if 5 contracts are deployed that use the same trait that follows this specification. This must happen before Bitcoin tip #750,000.
+
+# Appendix A
+
+List of trait function define in SIPs and specifications specific to these functions
+
+|-----------------------------|-------------------------|--------------------|
+| SIP and Trait Function Name | Definition of "existing"| Additional specification for properties| identifier parameter|
+|-----------------------------|-------------------------|--------------------|-----|
+| SIP-009 nft-trait.get-token-uri | token must be minted and not burnt |     | 1st    |
+| SIP-X get-contract-uri      | contract must be deployed|                   |  X |
+| SIP-010 ft-trait.get-token-uri | contract must be deployed|                |  X |
+| SIP-013 sip013-semi-fungible-token-trait.get-token-uri | token must be minted and not burnt, no requirements on the number of fungible part of the token|      |  1st |
+|--------------------------------|-----------------------|-------------------|------|

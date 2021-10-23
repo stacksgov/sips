@@ -20,7 +20,7 @@ Sign-off:
 
 # Abstract
 
-Non-fungible tokens or NFTs for short are digital assets registered on blockchain with unique identifiers and properties that distinguish them from each other. SIP-009 defines the trait how ownership of an NFT is managed. This SIP aims to provide a flexible standard to attach meta data to NFTs, like descriptions or urls to digital files.
+Non-fungible tokens or NFTs for short are digital assets registered on blockchain with unique identifiers and properties that distinguish them from each other. SIP-009 defines the trait for how ownership of an NFT is managed. This SIP aims to provide a flexible standard to attach metadata to NFTs, like descriptions or urls to digital files.
 
 # License and Copyright
 
@@ -51,10 +51,15 @@ The JSON blob resolved through the token uri must follow the following JSON sche
 
 ```
 {
+    "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "Token Metadata",
     "type": "object",
-    "required": [],
+    "required": ["version", "name", "image"],
     "properties": {
+        "version": {
+            "type": number,
+            "description": "Version of the JSON schema for NFT metadata. For this SIP, the version number must be `1`."
+        },
         "name": {
             "type": "string",
             "description": "Identifies the asset to which this token represents"
@@ -75,7 +80,7 @@ The JSON blob resolved through the token uri must follow the following JSON sche
                 "properties": {
                     "display_type": "string",
                     "trait_type": "string",
-                    "value": {"not": {"type": "object"}},
+                    "value": {"oneOf": [{"type": "object"}, {"type": "string"},{"type: "array"}},
                 }
             }
         },
@@ -107,15 +112,16 @@ The JSON blob resolved through the token uri must follow the following JSON sche
 
 ### Examples
 
-# Using NFTs in applications
+# Using NFT metadata in applications
 
-Before presenting metadata to users, application developers should verify whether the metadata is compliant with the applications guidelines.
+Before presenting metadata to users, application developers should verify whether the metadata is compliant with the application's guidelines.
 
 We remind implementation authors that the empty string for the token uri is a valid response. We also remind everyone that any smart contract can use the same metadata as other NFT contracts. It is out of the scope of this standard to define how a client may determine which smart contracts are is the original, well-known, canonical one.
 
-Furthermore, accessiblity of content is not covered by the standard.
+# Out of Scope
+Accessiblity of content is not covered by the standard.
 
-Note, that metadata might change over time.
+Properties other than resolvability of the token uri are out of scope. This implies that metadata might change over time (stability).
 
 # Related Work
 
@@ -129,7 +135,7 @@ The Blockchain Naming System uses native non-fungible tokens. It does define met
 
 Metadata for NFTs on Ethereum are defined in [EIP 721](https://eips.ethereum.org/EIPS/eip-721) and [EIP 1155](https://eips.ethereum.org/EIPS/eip-1155). The JSON schema for SIP-X has adopted the EIP 1155 schema with the following differences:
 
-* substitution of `{id}` strings must use the decimal format not the hexdecimal, zero-padded format. 
+- substitution of `{id}` strings must use the decimal format not the hexdecimal, zero-padded format.
 
 # Backwards Compatibility
 
@@ -156,7 +162,6 @@ The function signatures for metadata are:
 - `(get-meta? (uint) (optional {user: principal}))`
 
 ### Beeple
-
 
 # Activation
 

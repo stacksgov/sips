@@ -110,6 +110,8 @@ The JSON blob resolved through the token uri must follow the following JSON sche
 }
 ```
 
+The lengths of string values is not restricted. Nowadays, clients should be smart enough to deal with values of different lengths.
+
 ### Examples
 
 # Using NFT metadata in applications
@@ -119,6 +121,7 @@ Before presenting metadata to users, application developers should verify whethe
 We remind implementation authors that the empty string for the token uri is a valid response. We also remind everyone that any smart contract can use the same metadata as other NFT contracts. It is out of the scope of this standard to define how a client may determine which smart contracts are is the original, well-known, canonical one.
 
 # Out of Scope
+
 Accessiblity of content is not covered by the standard.
 
 Properties other than resolvability of the token uri are out of scope. This implies that metadata might change over time (stability).

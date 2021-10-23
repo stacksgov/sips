@@ -121,6 +121,8 @@ The lengths of string values is not restricted. Nowadays, clients should be smar
 
 ### Examples
 
+### Properties
+Commone properties are `created` of type `integer` defining the creation date of the token.
 ### Attributes
 Attributes describe addition elements of tokens that are "observable", usually represented in the image of the token.
 
@@ -192,7 +194,7 @@ List of trait function define in SIPs and specifications specific to these funct
 | SIP and Trait Function Name | Definition of "existing"| Additional Specification for Properties| Identifier Parameter|
 |-----------------------------|-------------------------|--------------------|-----|
 | SIP-009 nft-trait.get-token-uri | token must be minted and not burnt | NFTs belonging to a group of tokens should use property `properties.collection` of type `string` for the collection name. <br/> Optional property `properties.id` of type `integer` describes the identifier of the token.   | 1st    |
-| SIP-X get-contract-uri      | always |                   |  X |
+| SIP-X get-contract-uri      | always | `properties.items` of type array can be used to provide the metadata of all tokens belonging to the collection                  |  X |
 | SIP-010 ft-trait.get-token-uri | always| The required property `decimals` of type `integer` must be the same number as `get-decimals`.               |  X |
 | SIP-013 sip013-semi-fungible-token-trait.get-token-uri | token must be minted and not burnt, no requirements on the number of fungible part of the token|      |  1st |
 
@@ -201,8 +203,8 @@ List of trait function define in SIPs and specifications specific to these funct
 
 Attribute types
 
-| Type | Display types | Additional Properties |
+| Type | Display types | Additional Properties | Comment |
 |------|-------------|-----------------------|
-| Numeric | `number`, `boost_percentage`, `boost_number` | `max_value`|
-| Date | `date` | | 
-| String | empty | |
+| Numeric | `number`, `boost_percentage`, `boost_number` | `max_value`| |
+| Date | `date` | | As unix timestamp in UTC | 
+| String | empty | | |

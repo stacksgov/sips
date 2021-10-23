@@ -181,8 +181,7 @@ List of trait function define in SIPs and specifications specific to these funct
 
 | SIP and Trait Function Name | Definition of "existing"| Additional Specification for Properties| Identifier Parameter|
 |-----------------------------|-------------------------|--------------------|-----|
-| SIP-009 nft-trait.get-token-uri | token must be minted and not burnt | NFTs belonging to a group of tokens should use property "properties.collection" for the collection name.    | 1st    |
-  |  |  Optional property "properties.id" describes the identifier of the token | |
+| SIP-009 nft-trait.get-token-uri | token must be minted and not burnt | NFTs belonging to a group of tokens should use property "properties.collection" for the collection name. <br/> Optional property "properties.id" describes the identifier of the token.   | 1st    |
 | SIP-X get-contract-uri      | always |                   |  X |
 | SIP-010 ft-trait.get-token-uri | always|                |  X |
 | SIP-013 sip013-semi-fungible-token-trait.get-token-uri | token must be minted and not burnt, no requirements on the number of fungible part of the token|      |  1st |

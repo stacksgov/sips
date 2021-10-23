@@ -83,10 +83,11 @@ If metadata were retrieved by a function call containing a token identifier and 
             "description": "Arbitrary attributes. Values may be strings, numbers, object or arrays."
             "items: {
                 "type": "object",
+                "required": ["value"],
                 "properties": {
                     "display_type": "string",
                     "trait_type": "string",
-                    "value": {"oneOf": [{"type": "object"}, {"type": "string"},{"type: "array"}},
+                    "value": {"oneOf": [{"type": "object"}, {"type": "string"}, {"type": "number"}, {"type: "array"}},
                 }
             }
         },
@@ -119,6 +120,15 @@ If metadata were retrieved by a function call containing a token identifier and 
 The lengths of string values is not restricted. Nowadays, clients should be smart enough to deal with values of different lengths.
 
 ### Examples
+
+### Attributes
+Attributes describe addition elements of tokens that are "observable", usually represented in the image of the token.
+
+In contrast, properties describe elements of tokens that are more abstract.
+
+An attribute consists of a `trait_type` defining  the name of the trait, `value` is the value of the trait, and `display_type` is a field indicating how you would like it to be displayed.
+
+Appendix B describes type of attributes
 
 # Using metadata in applications
 
@@ -181,7 +191,18 @@ List of trait function define in SIPs and specifications specific to these funct
 
 | SIP and Trait Function Name | Definition of "existing"| Additional Specification for Properties| Identifier Parameter|
 |-----------------------------|-------------------------|--------------------|-----|
-| SIP-009 nft-trait.get-token-uri | token must be minted and not burnt | NFTs belonging to a group of tokens should use property "properties.collection" for the collection name. <br/> Optional property "properties.id" describes the identifier of the token.   | 1st    |
+| SIP-009 nft-trait.get-token-uri | token must be minted and not burnt | NFTs belonging to a group of tokens should use property `properties.collection` of type `string` for the collection name. <br/> Optional property `properties.id` of type `integer` describes the identifier of the token.   | 1st    |
 | SIP-X get-contract-uri      | always |                   |  X |
-| SIP-010 ft-trait.get-token-uri | always|                |  X |
+| SIP-010 ft-trait.get-token-uri | always| The required property `decimals` of type `integer` must be the same number as `get-decimals`.               |  X |
 | SIP-013 sip013-semi-fungible-token-trait.get-token-uri | token must be minted and not burnt, no requirements on the number of fungible part of the token|      |  1st |
+
+
+# Appendix B
+
+Attribute types
+
+| Type | Display types | Additional Properties |
+|------|-------------|-----------------------|
+| Numeric | `number`, `boost_percentage`, `boost_number` | `max_value`|
+| Date | `date` | | 
+| String | empty | |

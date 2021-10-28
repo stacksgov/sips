@@ -8,7 +8,8 @@ may submit a SIP.
 
 ## SIPs in the Process of Being Activated
 
-None right now
+* [SIP-012](./sips/sip-012/sip-012-cost-limits-network-upgrade.md): Burn Height 
+Selection for a Network Upgrade to Introduce New Cost-Limits
 
 ## Ratified SIPs
 

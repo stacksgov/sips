@@ -19,7 +19,7 @@ Consideration: Governance, Technical
 
 Type: Consensus
 
-Status: Draft
+Status: Accepted
 
 Created: 2021-10-08
 
@@ -31,11 +31,21 @@ Discussions-To: https://github.com/stacksgov/sips
 
 # Abstract
 
-The current Clarity cost limits were set very conservatively in Stacks 2.0:
-blocks with contract-calls frequently meet one or more of these limits, which
-negatively affects transaction throughput. This SIP proposes an update to these
-cost-limits via a network upgrade and further, that the network upgrade be
-executed at a block height chosen by an off-chain process described in this SIP.
+The Stacks 2.0 blockchain artificially constrains block goodput in two
+consensus-critical ways: it assesses storage costs for lists based on their
+maximum length instead of actual length, and it constrains the number of indexed
+I/O operations well below what the reference implementation is capable of
+handling.  Changing either of these is breaking change, which requires a
+network-wide upgrade.
+
+This SIP proposes executing a breaking change to not only
+address these two constraints, but also to update all Clarity cost functions to
+more accurately reflect their true performance.  The breaking change is carried
+out via a network-wide vote by Stackers on the Bitcoin blockchain, which will
+both serve to activate this SIP and to effectively bypass the cost voting procedure
+in SIP-006.
+
+The upgraded blockchain will be called Stacks 2.05.
 
 # License and Copyright
 
@@ -46,8 +56,8 @@ by the Stacks Open Internet Foundation.
 
 # Introduction
 
-The current Clarity cost limits were set very conservatively in Stacks 2.0.
-Since the mainnet launch on 2021-01-14, traffic on the network has grown
+The current block limits were set very conservatively in Stacks 2.0, but
+since the mainnet launch on 2021-01-14, traffic on the network has grown
 steadily.  In recent months, we have seen network congestion adversely
 impacting the user experience: valid transactions are not
 getting mined in a timely manner because there is far more demand for block compute
@@ -120,13 +130,6 @@ A future SIP may study this problem further, and propose a new voting procedure
 for runtime costs in recognition of this.  However, that is not the subject of
 this SIP.
 
-We are aware of one other proposal
-(distinct from the procedure described in SIP-006) suggested
-using a voting contract to determine the block height at which a
-network-upgrade, described in detail in [this Github
-discussion](https://github.com/blockstack/stacks-blockchain/discussions/2845).
-However, at the time of this writing, this proposal is not yet ready for review in the SIP process.
-
 # Specification
 
 ## Activation Protocol
@@ -175,20 +178,40 @@ vote: a "yes" address, and a "no" address.
 Note that these are similar addresses to the PoX burn address, but they all
 differ from one another in their checksums.
 
-Vote tallying is performed by examining how many STX the sender has recently
-Stacked.  The Bitcoin transaction identifies the amount of STX in the `.pox`
-smart contract's data space.  So, by examining the UTXOs for these two Bitcoin
+Vote tallying is performed by examining how many STX the Bitcoin transaction
+sender has most-recently Stacked.  By examining the UTXOs for these two Bitcoin
 addresses, anyone with a full copy of the Stacks chain state as of the voting
 deadline will be able to calculate how many recently-Stacked STX have signaled
 "yes" or "no" support for this SIP.
 
 To match the Bitcoin transaction to the Stacker's state in the `.pox` contract,
 the `scriptSig` of the first transaction input must be signed by either the user's PoX reward
-address's public key(s), or the public key(s) of the Stacks address that Stacked
+address's public key(s), or the public key(s) of the standard principal Stacks address that Stacked
 the tokens (the option is provided here because not all Stackers have access to their PoX
-addresses). In either case, the vote commits the Stacker's
+addresses).  In either case, the vote commits the Stacker's
 most-recently-locked STX to "yes" or "no" if the Stacker had some STX locked
 in the past two reward cycles as of the vote deadline block.
+
+For Stackers that vote with their Stacks address key(s), the STX that the
+associated standard principal had locked up will be committed to the vote.
+
+For Stackers that vote with their PoX address key(s), the STX for _all_
+associated Stacks principals that use this PoX address will be committed to the
+vote (note that multiple Stacks principals may use the same PoX address).
+
+For Stackers that have delegated STX to a Stacking pool, the pool operator must
+perform the vote on their behalf.  As with a normal Stacker, the pool operator may 
+sign the Bitcoin transaction with either the PoX reward address key(s) or the
+standard Stacks principal address key(s).
+
+For Stackers that have Stacked via a smart contract, only the PoX reward
+address key(s) may be used to vote.
+
+Stackers can send as many Bitcoin transactions as they like, but their STX will
+only be counted once.  Only the *first* such voting transaction will be
+considered to determine how the STX voted.
+
+If a Stacker votes for both "yes" and "no," their vote will not be counted.
 
 ### Activation Criteria 
 
@@ -223,10 +246,15 @@ something is seriously wrong with this SIP (despite its apparent benefits).
 ## Changes to Mining
 
 Nodes that run Stacks 2.05 must put `0x05` in the memo field. Block-commit
-transactions that do not have `0x05` will be considered invalid. The purpose of
-this change is to ensure that in the unlikely event some miners didn't know
+transactions that do not have a value that is _at least_ `0x05` will be considered invalid.
+
+The purpose of this change is to ensure that in the unlikely event some miners didn't know
 about this SIP, they will quickly find out because their blocks will never be
 confirmed or recognized by other users and exchanges that have upgraded.
+Moreover, the "at least" condition is meant for future compatibility: if there
+is ever another SIP that requires miners to signal support for the SIP's
+activation via the memo field, then they can do so by putting in a _higher_
+value while still remaining able to mine under the current rules.
 
 ## Changes to Runtime Costs
 
@@ -368,15 +396,43 @@ carry this vote out, this SIP instead proposes bypassing the SIP-006 voting
 procedure in this one instance and instead using this SIP's activation procedure
 to install these new functions.
 
+# Related Work 
+
+On-chain voting for upgrades is not a new concept.  Bitcoin has famously
+executed many soft-forks using time-based activation [5], miner voting
+thresholds [6], and a combination of both [7].  The voting approach in this SIP
+uses both a timeout and a voting threshold to activate, but differs from
+Bitcoin's approach in that it empowers Stackers as the instigators of the
+upgrade.
+
+We are aware of one other proposal
+(distinct from the procedure described in SIP-006) suggested
+using a voting contract to determine the block height at which a
+network-upgrade, described in detail in [this Github
+discussion](https://github.com/blockstack/stacks-blockchain/discussions/2845).
+This SIP differs from this proposal in that the burnchain is used to identify
+Stackers.
+
+# Backwards Compatibility
+
+This SIP proposes a breaking change.  If this SIP activates, then old miners'
+block-commits will no longer be considered valid.  In addition, old nodes will
+not accept new blocks as valid if they exceed the Stacks 2.0 block cost limits.
+Therefore, all node operators are encouraged to upgrade immediately once SIP 012
+transitions to _Activation-in-Progress_ status.
+
 # Activation
 
-The SIP will be considered Ratified once all of the following are true:
+The SIP will be considered _Ratified_ once all of the following are true:
+
+* The cost functions in Appendix A are finalized.  This is a precondition for
+  advancing the SIP to _Activation-in-Progress_ status.
 
 * A vote deadline block height and activation block height are chosen and added
   to this SIP's text.  This is a pre-condition for advancing this SIP to
-_Recommended_ status.
+_Activation-in-Progress_ status.
 
-* This SIP is advanced to Activation-in-Progress by the respective consideration
+* This SIP is advanced to _Activation-in-Progress_ by the respective consideration
   advisory boards.
 
 * The SIP has garnered sufficient support by the vote deadline block height. Voting by
@@ -392,6 +448,12 @@ Foundation.
 
 * The activation block height passes on the Bitcoin chain.
 
+# Reference Implementation
+
+The reference implementation of this SIP is developed in the `next-costs` branch
+of the reference implementation of the Stacks blockchain, available at
+https://github.com/blockstack/stacks-blockchain.
+
 # References
 
 [1] http://v1.carbonvote.com/
@@ -401,6 +463,12 @@ Foundation.
 [3] https://en.bitcoinwiki.org/wiki/BitShares
 
 [4] https://bitcointalk.org/index.php?topic=916696.330;imode
+
+[5] https://github.com/bitcoin/bips/blob/master/bip-0016.mediawiki
+
+[6] https://github.com/bitcoin/bips/blob/master/bip-0034.mediawiki
+
+[7] https://github.com/bitcoin/bips/blob/master/bip-0009.mediawiki
 
 # Appendices
 

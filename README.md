@@ -8,7 +8,7 @@ may submit a SIP.
 
 ## SIPs in the Process of Being Activated
 
-* [SIP-012](./sips/sip-012/sip-012-cost-limits-network-upgrade.md): Burn Height 
+* [SIP-012](https://github.com/stacksgov/sips/pull/41/files#diff-30158688704ec09920309bbc5a856f6b5b2fa55cc91f59191c5b517406c61b20): Burn Height 
 Selection for a Network Upgrade to Introduce New Cost-Limits
 
 ## Ratified SIPs

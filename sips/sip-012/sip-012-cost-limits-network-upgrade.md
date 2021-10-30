@@ -211,7 +211,18 @@ Stackers can send as many Bitcoin transactions as they like, but their STX will
 only be counted once.  Only the *first* such voting transaction will be
 considered to determine how the STX voted.
 
-If a Stacker votes for both "yes" and "no," their vote will not be counted.
+If a Stacker votes using both their STX address and PoX address, then the PoX
+address will be used to count their STX.  A subsequent vote with the STX address
+will be ignored as a duplicate vote.  In particular, the PoX address will
+count *all* STX it represents.  For example, if Alice Stacks 100,000 STX with two STX
+addresses that share the same PoX address, and she votes with her PoX address,
+then the vote will count for 200,000 STX, and she will be unable to vote
+separately with her STX addresses.  If instead she votes with only one
+of her STX addresses, then that vote counts for 100,000 STX.
+
+If a Stacker votes for both "yes" and "no," their vote will not be counted at
+all.  This provides a way for a Stacker to cancel their vote, but they will be
+unable to change it.
 
 ### Activation Criteria 
 

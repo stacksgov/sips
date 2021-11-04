@@ -284,6 +284,22 @@ list_stx_voters() {
    done
 }
 
+is_contract_principal() {
+   # Is a given STX address a contract principal?
+   # 
+   # $1: a stx address that is either a standard or contract principal
+   # stdin: none
+   # stdout: "1" if so; "0" if not
+   # stderr: none
+   # return: 0 on success, nonzero on error
+   local addr="$1"
+   if [ -n "$(echo "$addr" | grep -E "\." || true)" ]; then
+      echo "1"
+   else
+      echo "0"
+   fi
+}
+
 stx_addr_to_clarity_principal() {
    # Convert a STX address into a serialized Clarity principal
    #
@@ -293,11 +309,20 @@ stx_addr_to_clarity_principal() {
    # stderr: none
    # return: 0 on success, nonzero on error
    local stx_addr="$1"
-   echo "
-c32 = require('c32check');
-const decoded = c32.c32addressDecode(\"$stx_addr\");
-console.log( \"0x05\" + Buffer.from([decoded[0]]).toString(\"hex\") + decoded[1] )
+   if [ "$(is_contract_principal "$stx_addr")" = "1" ]; then
+      # contract principal
+      echo "
+stxtx = require('@stacks/transactions');
+parts = \"$stx_addr\".split('.');
+console.log('0x' + stxtx.serializeCV(stxtx.contractPrincipalCV(parts[0], parts[1])).toString('hex'));
 " | node -
+   else
+      # staandard principal
+      echo "
+stxtx = require('@stacks/transactions');
+console.log('0x' + stxtx.serializeCV(stxtx.standardPrincipalCV(\"$stx_addr\")).toString('hex'));
+" | node -
+    fi
 }
 
 stx_addr_to_delegate_state_key() {
@@ -309,17 +334,15 @@ stx_addr_to_delegate_state_key() {
    # stderr: none
    # return: 0 on success, nonzero on error
    local stx_addr="$1"
+   local clarity_stx_addr="$(stx_addr_to_clarity_principal "$stx_addr")"
    echo "
 c32 = require('c32check');
-const decoded = c32.c32addressDecode(\"$stx_addr\");
 var stacker_tuple = '';
 stacker_tuple += '0c';              // tuple type ID
 stacker_tuple += '00000001';        // 32-bit tuple length
 stacker_tuple += '07';              // length of 'stacker'
 stacker_tuple += Buffer.from('stacker').toString('hex');    // 'stacker' as hex
-stacker_tuple += '05';              // standard principal ID
-stacker_tuple += Buffer.from([decoded[0]]).toString('hex'); // principal address version
-stacker_tuple += decoded[1];        // principal bytes
+stacker_tuple += \"$clarity_stx_addr\".slice(2);  // STX address, minus the leading 0x
 console.log(stacker_tuple)
 " | node -
 }
@@ -799,6 +822,7 @@ test_stx_addr_to_clarity_principal() {
 
    assert_eq "0x0516c8b2df71cedcdf5f32dcf2228976b0e7f5ba7231" "$(stx_addr_to_clarity_principal "SP34B5QVHSVEDYQSJVKS252BPP3KZBEKJ67SAYQCD")"
    assert_eq "0x051447557df3a9fcde9fe2ca7684fae81957f11df6df" "$(stx_addr_to_clarity_principal "SM13NAZFKN7YDX7Z2S9V89YQ835BZ27FPVXYDH7GE")"
+   assert_eq "0x06160b4e114c8d7c79497cd8447f28f5ebdcfc71648703666f6f" "$(stx_addr_to_clarity_principal "SP5MW4ACHNY7JJBWV127YA7NXFEFRWB4GYPWFGTN.foo")"
 
    echo "ok"
 }
@@ -807,6 +831,7 @@ test_stx_addr_to_delegate_state_key() {
    echo -n "test_stx_addr_to_delegate_state_key..."
 
    assert_eq "0c0000000107737461636b657205168dab0d2ba8086e74b88f7f7cf7ab9fb418d87c3e" "$(stx_addr_to_delegate_state_key "SP26TP39BN046WX5RHXZQSXXBKYT1HP3W7VNASJ4P")"
+   assert_eq "0c0000000107737461636b657206168dab0d2ba8086e74b88f7f7cf7ab9fb418d87c3e03666f6f" "$(stx_addr_to_delegate_state_key "SP26TP39BN046WX5RHXZQSXXBKYT1HP3W7VNASJ4P.foo")"
 
    echo "ok"
 }
@@ -857,6 +882,7 @@ test_get_stacker_info() {
    local json=""
    local cur_burn_ht=0
    local tip="22ac907019619fe9ae4e4ef5100740ecbf1b95510caccfb59fb71053e85bd783"
+   local contract_tip="7ae943351df455aab1aa69ce7ba6606f937ebab5f34322c982227cd9e0322176" 
    
    cur_burn_ht="$(curl -s $STX_NODE/v2/info | jq -r -c '.burn_block_height')"
 
@@ -873,6 +899,13 @@ test_get_stacker_info() {
    assert_eq "SM12TJXJEQQER0EWX6783RWH1R8YZG3M9SBQVDFH" "$(echo "$json" | jq -r -c '.stx_address')"
    assert_eq "1AvrGwwtm5acsbVEaeHk7FkAbQh2FJgfSn" "$(echo "$json" | jq -r -c '.pox_address')"
    assert_eq "15000000000000" "$(echo "$json" | jq -r -c '.ustx')"
+
+   # contract
+   json="$(get_stacker_info "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-stacker-v1-1" "$cur_burn_ht" "$contract_tip")"
+   
+   assert_eq "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-stacker-v1-1" "$(echo "$json" | jq -r -c '.stx_address')"
+   assert_eq "1EsgJoqwcfbWsSyz6VHCYBvnh1iGrWB7dY" "$(echo "$json" | jq -r -c '.pox_address')"
+   assert_eq "12622260119595" "$(echo "$json" | jq -r -c '.ustx')"
 
    # someone who isn't stacking
    json="$(get_stacker_info "SP2E8N3T3TJP2D9YQZ41PY7X0ZFNQA8PZZ9RES24G" "$cur_burn_ht" "$tip")"
@@ -1155,7 +1188,7 @@ if [ -z "$TEST" ]; then
    TEST=""
 fi
 set -u
-
+   
 if [ -n "$TEST" ]; then
    run_tests
    exit 0

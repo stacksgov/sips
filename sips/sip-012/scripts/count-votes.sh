@@ -40,12 +40,22 @@
 # * Node.js packages `bitcoinjs-lib`, `c32check`, and `@stacks/transactions` installed to your NODE_PATH
 # * the binaries `bitcoin-cli`, `jq`, `grep`, `date`, and `xargs`
 #
+# Usage: ./count-votes TABULATION_DIR CHAIN_TIP_HASH < STACKERS.TXT
+#
+# For reward cycle 19, you can use the file 'stackers-19-only.txt' for STACKERS.TXT and
+# 4933b0b002a854a9ca7305166238d17be018ce54e415530540aa7e620e9cd86d for TIP.
+#
+# For reward cycle 20, you can use the file 'stackers-20.txt' for STACKERS.TXT and
+# 7ae943351df455aab1aa69ce7ba6606f937ebab5f34322c982227cd9e0322176 for TIP.
+#
 ###########################################################################################################
 #
-# To use this script to tabulate SIP 012's votes, you need to gather the list of Stackers for a giveni
+# To use this script to tabulate SIP 012's votes, you need to gather the list of Stackers for a given
 # reward cycle that could count towards the vote.  In SIP 012, this means that if a Stacker is 
 # present in either of the two prior full reward cycles, then their *latest* quantity of STX Stacked
 # needs to be considered (and they should not be counted in an earlier reward cycle's tabulation).
+# Given SIP 012's timeline, this means considering Stackers in reward cycles 19 and 20.  If a Stacker
+# Stacked in both, then only the STX Stacked in reward cycle 20 is considered.
 # 
 # Examples:
 #
@@ -68,7 +78,7 @@
 
 TESTNET=0
 BITCOIN_CONF=/etc/bitcoin/bitcoin.conf
-STX_NODE="http://52.0.54.100:20443"
+STX_NODE="http://localhost:20443"
 POX_ADDR="SP000000000000000000002Q6VF78"
 
 YES_ADDR="111111111111111111112czxoHN"
@@ -109,10 +119,34 @@ get_scriptSigs() {
    # Decode UTXOs into scriptSigs
    #
    # stdin: JSON-encoded unspent outputs as an array of objects
-   # stdout: newline-separated list of scriptSig JSON objects in the form of '{ "hex": ..., "asm": ... }'
+   # stdout: newline-separated list of scriptSig JSON objects in the form of '{ "hex": ..., "asm": ... "address": ...}'.  "address" is optional.
    # stderr: none
    # return: 0 on success, nonzero on error
-   jq -r '.[].txid' | xargs -I txid bitcoin_cli getrawtransaction txid 1 | jq -r -c '.vin[0].scriptSig'
+   local txid=""
+   local vout=0
+   local json=""
+   local scriptPubKey=""
+   local address=""
+   jq -r '.[].txid' | while read -r txid; do
+       json="$(bitcoin_cli getrawtransaction "$txid" 1)"
+
+       # if this is a segwit tx, go and get the tx that funded it
+       # to find the segwit-over-p2sh address (if it exists)
+       if [ "$(echo "$json" | jq -r -c '.vin[0].txinwitness')" != "null" ]; then
+          txid="$(echo "$json" | jq -r -c '.vin[0].txid')"
+          vout="$(echo "$json" | jq -r -c '.vin[0].vout')"
+          json="$(bitcoin_cli getrawtransaction "$txid" 1)"
+          scriptPubKey="$(echo "$json" | jq -r -c ".vout[$vout].scriptPubKey")"
+          if [ "$(echo "$scriptPubKey" | jq -r -c '.type')" = "scripthash" ]; then
+             address="$(echo "$scriptPubKey" | jq -r -c '.addresses[0]')"
+             if [ "$address" != "null" ]; then
+                 echo "{\"hex\": \"00\", \"asm\": \"00\", \"address\": \"$address\"}"
+             fi
+          fi
+       else
+           bitcoin_cli getrawtransaction "$txid" 1 | jq -r -c '.vin[0].scriptSig'
+       fi
+   done
 }
 
 btc_addr_to_stx_addr() {
@@ -201,26 +235,33 @@ decode_scriptSig() {
    local btc_address=""
    local stx_address=""
 
-   # verify that we got an asm field that isn't empty
-   asm="$(echo "$scriptSig" | jq -r '.asm')"
-   if [ -z "$asm" ]; then
-      return 1
-   fi
+   # if address is given directly, just use it
+   btc_address="$(echo "$scriptSig" | jq -rc '.address')"
+   if [ "$btc_address" = "null" ]; then
 
-   # get last field in the 'asm' representation.
-   # it could be the script of a p2sh, or
-   # it could be the public key of a p2pkh.
-   # we don't support segwit.
-   last_asm_field="$(echo "$asm" | sed -r 's/^.+ ([^ ]+)$/\1/g')"
-   p2sh_json="$(bitcoin_cli decodescript "$last_asm_field" | jq -r '.type')"
+      # verify that we got an asm field that isn't empty
+      asm="$(echo "$scriptSig" | jq -r '.asm')"
+      if [ -z "$asm" ]; then
+         return 0
+      fi
 
-   if [ "$(echo "$p2sh_json" | jq -r '.type')" = "multisig" ]; then
-      # last_asm_field is indeed a multisig script. Extract the Bitcoin address for it.
-      btc_address="$(echo "$p2sh_json" | jq -r '.p2sh')"
+      # get last field in the 'asm' representation.
+      # it could be the script of a p2sh, or
+      # it could be the public key of a p2pkh.
+      last_asm_field="$(echo "$asm" | sed -r 's/^.+ ([^ ]+)$/\1/g')"
+      p2sh_json="$(bitcoin_cli decodescript "$last_asm_field")"
 
-   else
-      # last_asm_field was maybe a public key?
-      btc_address="$(pubkey_to_btc_addr "$last_asm_field")"
+      if [ "$(echo "$p2sh_json" | jq -r '.type')" = "multisig" ]; then
+         # last_asm_field is indeed a multisig script. Extract the Bitcoin address for it.
+         btc_address="$(echo "$p2sh_json" | jq -r '.p2sh')"
+
+      elif [ "$(echo "$p2sh_json" | jq -r '.type')" = "nonstandard" ]; then
+         # last_asm_field was maybe a public key? It's definitely not a segwit address
+         btc_address="$(pubkey_to_btc_addr "$last_asm_field")"
+      else
+         # segwit -- should have gotten an address passed to us already
+         return 0
+      fi
    fi
 
    stx_address="$(btc_addr_to_stx_addr "$btc_address")"
@@ -237,7 +278,10 @@ list_stx_voters() {
    # stderr: none
    # return: 0 on success, nonzero on error
    local vote_addr="$1"
-   get_utxos "$vote_addr" | get_scriptSigs | xargs -I scriptSig decode_scriptSig scriptSig
+   local scriptSig=""
+   get_utxos "$vote_addr" | get_scriptSigs | while read -r scriptSig; do
+      decode_scriptSig "$scriptSig"
+   done
 }
 
 stx_addr_to_clarity_principal() {
@@ -477,13 +521,13 @@ get_stacker_vote() {
       stacker_addr="$select_addr"
 
       # what was the PoX address for this stacker?
-      json="$(grep -F "$stacker_addr" "$stackers_path" | head -n1)"
+      json="$(grep -F "$stacker_addr" "$stackers_path" | head -n1 || true)"
       if [ -z "$json" ]; then
          # didn't vote
          return 0
       fi
 
-      pox_addr="$(echo "$json" | jq -r -c '.pox_address' 2>/dev/null)"
+      pox_addr="$(echo "$json" | jq -r -c '.pox_address' 2>/dev/null || true)"
       if [ -z "$pox_addr" ]; then
          # no pox address
          return 0
@@ -492,13 +536,13 @@ get_stacker_vote() {
       pox_addr="$select_addr"
 
       # what is the first STX address for this PoX addr?
-      json="$(grep -F "$pox_addr" "$stackers_path" | head -n1)"
+      json="$(grep -F "$pox_addr" "$stackers_path" | head -n1 || true)"
       if [ -z "$json" ]; then
          # didn't vote
          return 0
       fi
 
-      stacker_addr="$(echo "$json" | jq -r -c '.stx_address' 2>/dev/null)"
+      stacker_addr="$(echo "$json" | jq -r -c '.stx_address' 2>/dev/null || true)"
       if [ -z "$stacker_addr" ]; then
          # no STX address
          return 0
@@ -506,18 +550,19 @@ get_stacker_vote() {
    fi
 
    # must have not already voted
-   if grep -E "$stacker_addr|$pox_addr" "$already_voted_path" >/dev/null; then
+   touch "$already_voted_path"
+   if [ -n "$(grep -E "$stacker_addr|$pox_addr" "$already_voted_path" || true)" ]; then
       return 0
    fi
 
    # voted yes?
-   if grep -E "$stacker_addr|$pox_addr" "$yes_votes_path" >/dev/null; then
+   if [ -n "$(grep -E "$stacker_addr|$pox_addr" "$yes_votes_path" || true)" ]; then
       voted_yes=1
       vote="yes"
    fi
 
    # voted no?
-   if grep -E "$stacker_addr|$pox_addr" "$no_votes_path" >/dev/null; then
+   if [ -n "$(grep -E "$stacker_addr|$pox_addr" "$no_votes_path" || true)" ]; then
       voted_no=1
       vote="no"
    fi
@@ -548,8 +593,8 @@ get_stacker_vote() {
    # mark as having voted.
    # be sure to invalidate both the PoX and STX addresses.
    # if the stacker voted with the PoX address, then invalidate all associated STX addresses too.
-   grep -E "$stacker_addr|$pox_addr" "$yes_votes_path" >> "$already_voted_path"
-   grep -E "$stacker_addr|$pox_addr" "$no_votes_path" >> "$already_voted_path"
+   grep -E "$stacker_addr|$pox_addr" "$yes_votes_path" >> "$already_voted_path" || true
+   grep -E "$stacker_addr|$pox_addr" "$no_votes_path" >> "$already_voted_path" || true
 
    echo "{\"pox_address\":\"$pox_addr\",\"vote\":\"$vote\",\"ustx\":\"$voted_ustx\"}"
    return 0
@@ -658,8 +703,10 @@ main() {
 
    if ! [ -f "$stacker_path" ]; then 
       echo >&2 "Obtaining stacker info as of $tip..."
-      cur_burn_ht="$(curl -s $STX_NODE/v2/info | jq -r -c '.burn_block_height')"
-      xargs -a "$stacker_addrs_path" -I stx_addr get_stacker_info stx_addr "$cur_burn_ht" "$tip" > "$stacker_path"
+      cur_burn_ht="$(curl -s "$STX_NODE/v2/info" | jq -r -c '.burn_block_height')"
+      while read -r stx_addr; do
+         get_stacker_info "$stx_addr" "$cur_burn_ht" "$tip" >> "$stacker_path"
+      done < "$stacker_addrs_path"
    fi
 
    # get each stacker's vote.
@@ -718,6 +765,18 @@ test_make_btc_addr() {
    echo "ok"
 }
 
+test_get_scriptSig() {
+   echo -n "test_get_scriptSig..."
+
+   # segwit-over-p2sh
+   assert_eq '{"hex": "00", "asm": "00", "address": "3HASeAxLLZQJTbGDTSyfxbJXLtnUF8K1Dw"}' "$(echo '[{"txid": "13c2d9af1bc99b96e4c03f428be7580eeb1d745980a9e946dece7947c153e81f"}]' | get_scriptSigs)"
+
+   # p2pkh
+   assert_eq '{"asm":"304402206d333b3ced3f75d1de0cd89450231b2a636965a8a9bc457115f48d34b63c917a022079f49c2cea06ced80e871b55e009b30585de92302fda820c3ae37b596d3d75d2[ALL] 02cd8737f57117705588c8ab282664e76e93217f8c953653905edcba2bc1be1ae9","hex":"47304402206d333b3ced3f75d1de0cd89450231b2a636965a8a9bc457115f48d34b63c917a022079f49c2cea06ced80e871b55e009b30585de92302fda820c3ae37b596d3d75d2012102cd8737f57117705588c8ab282664e76e93217f8c953653905edcba2bc1be1ae9"}' "$(echo '[{"txid": "9412c01065dedaa5e4767aca5e6e6f0b1e542147823d6428f6bbb418e6c33e57"}]' | get_scriptSigs)"
+
+   echo "ok"
+}
+
 test_decode_scriptSig() {
     echo -n "test_decode_scriptSig..."
     
@@ -727,7 +786,7 @@ test_decode_scriptSig() {
     assert_eq "38CCKFZqyTZVx8DFUsBWKsoB4zLUVQ3H9Z" "$(echo "$json" | jq -r -c '.btc')"
     assert_eq "SM13NAZFKN7YDX7Z2S9V89YQ835BZ27FPVXYDH7GE" "$(echo "$json" | jq -r -c '.stx')"
 
-    json="$(decode-scriptSig '{"asm": "3045022100e224ce381ae121cb59bcdbab86e2a06f9c2f288558dd4771bec72947bf2340b602204dcf2ba336b9209ae86d7468c5172b0459b004c66923e68fcb6d3f08c318a524[ALL] 035180521b9c167493d41ea30e7c2dc9c35b2a003d39317a20ccde837fb268b8df", "hex": "483045022100e224ce381ae121cb59bcdbab86e2a06f9c2f288558dd4771bec72947bf2340b602204dcf2ba336b9209ae86d7468c5172b0459b004c66923e68fcb6d3f08c318a5240121035180521b9c167493d41ea30e7c2dc9c35b2a003d39317a20ccde837fb268b8df"}')"
+    json="$(decode_scriptSig '{"asm": "3045022100e224ce381ae121cb59bcdbab86e2a06f9c2f288558dd4771bec72947bf2340b602204dcf2ba336b9209ae86d7468c5172b0459b004c66923e68fcb6d3f08c318a524[ALL] 035180521b9c167493d41ea30e7c2dc9c35b2a003d39317a20ccde837fb268b8df", "hex": "483045022100e224ce381ae121cb59bcdbab86e2a06f9c2f288558dd4771bec72947bf2340b602204dcf2ba336b9209ae86d7468c5172b0459b004c66923e68fcb6d3f08c318a5240121035180521b9c167493d41ea30e7c2dc9c35b2a003d39317a20ccde837fb268b8df"}')"
     
     assert_eq "16sAXi1jxhxKCfY84hubDdnFNaAhqd5t49" "$(echo "$json" | jq -r -c '.btc')"
     assert_eq "SP105ARDW7EQTFTFMYNGMKJTA9JYFHF0FFMW9K815" "$(echo "$json" | jq -r -c '.stx')"
@@ -1070,6 +1129,7 @@ run_local_tests() {
 run_bitcoin_tests() {
    deps_check
    test_bitcoin_ping
+   test_get_scriptSig
    test_decode_scriptSig
 }
 
@@ -1089,6 +1149,12 @@ run_tests() {
 # Entry point
 #
 ###############################################################
+
+set +u
+if [ -z "$TEST" ]; then
+   TEST=""
+fi
+set -u
 
 if [ -n "$TEST" ]; then
    run_tests

@@ -1121,6 +1121,8 @@ The following type IDs indicate the following values:
 * 0x0a: Some option
 * 0x0b: List
 * 0x0c: Tuple
+* 0x0d: StringASCII
+* 0x0e: StringUTF8
 
 The serialized payloads are defined as follows:
 
@@ -1185,6 +1187,19 @@ big-endian integer.  The remaining bytes are encoded as a concatenation of tuple
 items.  A tuple item's serialized representation is a 
 Clarity name (a 1-byte length and up to 128 bytes (exclusive) of valid Clarity
 name characters) followed by a Clarity value.
+
+**StringASCII**
+
+The following 4 bytes are the string length, encoded as a 32-bit unsigned
+big-endian integer.  The remaining bytes are the ASCII-encoded string.  Each
+byte in the string must be an alphanumeric or punctuation ASCII byte.
+
+**StringUTF8**
+
+The following 4 bytes are the total number of bytes that make up the UTF8
+string, encoded as a 32-bit unsigned big-endian integer.  The remaining bytes
+are the UTF-8-encoded string.  The byte sequence must be comprised of valid
+UTF-8 codepoints.
 
 #### Calculating the State of an Account
 

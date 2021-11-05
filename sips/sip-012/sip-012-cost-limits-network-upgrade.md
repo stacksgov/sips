@@ -25,7 +25,8 @@ Created: 2021-10-08
 
 License: BSD 2-Clause
 
-Sign-off:
+Sign-off: Harold Davis (governance) <recursive3@gmail.com>, Juliet Oberding
+(governance) <juliet.oberding@gmail.com>, Jason Schrader (governance) <jason@joinfreehold.com>
 
 Discussions-To: https://github.com/stacksgov/sips
 

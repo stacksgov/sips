@@ -347,7 +347,7 @@ encoded as big-endian.
    * The signature(s) and signature threshold for the origin account.
    * The address of the sponsor account, if this is a sponsored transaction.
    * The signature(s) and signature threshold for the sponsor account, if given.
-   * The **fee rate** to pay, denominated in microSTX/compute unit.
+   * The **fee** to pay, denominated in microSTX.
 * A 1-byte **anchor mode**, identifying how the transaction should be mined.  It
   takes one of the following values:
    * `0x01`:  The transaction MUST be included in an anchored block
@@ -385,7 +385,7 @@ main Stacks blockchain MUST have a chain ID of `0x00000000`.
 
 Each transaction contains a transaction authorization structure, which is used
 by the Stacks peer to identify the originating account and sponsored account, to
-determine the maximum fee rate the spending account will pay, and to
+determine the fee that the spending account will pay, and to
 and determine whether or not it is allowed to carry out the encoded state-transition.
 It is encoded as follows:
 
@@ -415,7 +415,7 @@ in Stacks v1 (which uses Bitcoin hashing routines):
 hash uniquely identify the origin account, with the hash mode being used to
 derive the appropriate account version number.
 * An 8-byte **nonce**.
-* An 8-byte **fee rate**.
+* An 8-byte **fee**.
 * Either a **single-signature spending condition** or a **multisig spending
   condition**, described below.  If the hash mode byte is either `0x00` or
 `0x02`, then a single-signature spending condition follows.  Otherwise, a
@@ -567,10 +567,24 @@ A _Non-fungible token post-condition_ body is encoded as follows:
 A **principal** structure encodes either a standard account address or a
 contract account address.
 * A standard account address is encoded as a 1-byte version number and a 20-byte
-  Hash160
+  Hash160.
 * A contract account address is encoded as a 1-byte version number, a 20-byte
   Hash160, a 1-byte name length, and a variable-length name of up to 128
 characters.  The name characters must be a valid contract name (see below).
+
+The _standard principal_ variant of the principal post-condition field is
+encoded as follows:
+* A 1-byte type prefix of `0x02`
+* The standard principal's 1-byte version
+* The standard principal's 20-byte Hash160
+
+The _contract principal_ variant of the principal post-condition field is
+encoded as follows:
+* A 1-byte type prefix of `0x03`
+* The 1-byte version of the standard principal that issued the contract
+* The 20-byte Hash160 of the standard principal that issued the contract
+* A 1-byte length of the contract name, up to 128
+* The contract name
 
 An **asset info** structure identifies a token type declared somewhere in an
 earlier-processed Clarity smart contract.  It contains the following fields:
@@ -725,8 +739,8 @@ condition structure is as follows:
 2. Serialize the transaction into a byte sequence, and hash it to form an
    initial `sighash`.
 3. Calculate the `presign-sighash` over the `sighash` by hashing the 
-   `sighash` with the authorization type byte (0x04 or 0x05), fee rate (as an 8-byte big-endian value),
-   and nonce (as an 8-byte big-endian value).
+   `sighash` with the authorization type byte (0x04 or 0x05), the fee (as an 8-byte big-endian value),
+   and the nonce (as an 8-byte big-endian value).
 4. Calculate the ECDSA signature over the `presign-sighash` by treating this
    hash as the message digest.  Note that the signature must be a `libsecp256k1`
    recoverable signature.
@@ -738,10 +752,9 @@ condition structure is as follows:
    from step 5.
 
 The algorithms for clearing an authorization structure are as follows:
-* If this is a single-signature spending condition, then set the fee rate and
-  nonce to 0, set the public key encoding byte to `Compressed`, and set the
-  signature bytes to 0 (note that the address is _preserved_).
-* If this is a multi-signature spending condition, then set the fee rate and
+* If this is a single-signature spending condition, then set the fee and
+  nonce to 0, and set the signature bytes to 0 (note that the address is _preserved_).
+* If this is a multi-signature spending condition, then set the fee and
   nonce to 0, and set the vector of authorization fields to the empty vector
   (note that the address and the 2-byte signature count are _preserved_).
 
@@ -761,7 +774,7 @@ are calculated first, and the sponsor spending conditions are calculated second.
 When the origin key(s) sign, the set the sponsor spending condition to a
 specially-crafted "signing sentinel" structure.  This structure is a
 single-signature spending condition, with a hash mode equal to 0x00, an
-address and signature of all 0's, a fee rate and a nonce equal to 0, and a
+address and signature of all 0's, a fee and a nonce equal to 0, and a
 public key encoding byte equal to 0x00.  This way, the origin commits to the
 fact that the transaction is sponsored without having to know anything about the
 sponsor's spending conditions.
@@ -780,7 +793,7 @@ recovers public keys.
 2. Serialize the transaction into a byte sequence, and hash it to form an
    initial `sighash`.
 3. Calculate the `presign-sighash` from the `sighash`, authorization type byte,
-   fee rate, and nonce.
+   fee, and nonce.
 4. Use the `presign-sighash` and the next (public key encoding byte,
    ECDSA recoverable signature) pair to recover the public key that generated it.
 5. Calculate the `postsign-sighash` from `presign-sighash`, the signature, public key encoding

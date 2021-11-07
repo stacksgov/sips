@@ -12,7 +12,7 @@ Type: Standard
 
 Status: Draft
 
-Created: 20 October 2021
+Created: 7 November 2021
 
 License: CC0-1.0
 
@@ -101,7 +101,7 @@ If metadata were retrieved by a function call containing a token identifier and 
             "properties": {
                 "uri": {
                     "type": "string",
-                    "description": "The URI pattern to fetch localized data from. This URI should contain the substring `{locale}` which will be replaced with the appropriate locale value before sending the request."
+                    "description": "The URI pattern to fetch localized data from. This URI should contain the substring `{locale}` which will be replaced with the appropriate locale value before sending the request. See section about localization for more rules"
                 },
                 "default": {
                     "type": "string",
@@ -119,10 +119,86 @@ If metadata were retrieved by a function call containing a token identifier and 
 
 The lengths of string values is not restricted. Nowadays, clients should be smart enough to deal with values of different lengths.
 
-### Examples
+### Example
+token101.json
+```
+{
+  "version": 1,
+  "name": "Foo #101",
+  "image": "ipfs://somerandomecid",
+  "attributes": [
+     { 
+      "trait_type": "hair",      
+      "value": "red",
+    },
+    {
+      "trait_type": "strength",
+      "display_type": "number",
+      "value": 99,
+    },    
+  ],
+  "properties": {
+    { 
+      "collection":  "Foo Collection",
+      "collection_size":  "10000" 
+    },
+  },
+  "localization": {
+      "uri": "ipfs://somerandomcid/{locale}.json",
+      "default": "en",
+      "locales": ["en", "pt-BR", "de"]
+  }
+}
+```
+
+de.json
+```
+{
+    "version": 1,
+    "attritbutes: [
+        { 
+          "trait_type": "Haare",      
+          "value": "rot",
+        },
+        { 
+          "trait_type": "Stärke",  
+          "display_type": "number",
+          "value": 99,
+        },
+    ]
+}
+```
+
+
+pt-BR.json
+```
+{
+    "version": 1,
+    "attritbutes: [
+        { 
+          "trait_type": "cabelos",      
+          "value": "vermelho",
+        },
+        { 
+          "trait_type": "amido",  
+          "display_type": "number",
+          "value": 99,
+        },
+    ]
+}
+```
 
 ### Properties
-Commone properties are `created` of type `integer` defining the creation date of the token.
+Common properties are 
+
+| Name | Type | Description |
+|------|------|-------------|
+| `collection` | `string` | collection name the token belongs to. See also Appendix A. |
+| `decimals` | `integer` | number of decimals. See also Appendix A. |
+| `id` | `integer` | identifier for NFTs. See also Appendix A. |
+| `created` | `integer` | creation date of the token in unix timestamp | 
+| `symbol`  | `string` | token symbol |
+
 ### Attributes
 Attributes describe addition elements of tokens that are "observable", usually represented in the image of the token.
 
@@ -131,6 +207,15 @@ In contrast, properties describe elements of tokens that are more abstract.
 An attribute consists of a `trait_type` defining  the name of the trait, `value` is the value of the trait, and `display_type` is a field indicating how you would like it to be displayed.
 
 Appendix B describes type of attributes
+
+## Localization
+The localized data follow the same JSON schema with property `version` as required and all other properties as optional. 
+
+The localized data overwrite data provided in the default meta data JSON. The localized data can provide only partial data.
+
+An array of localized `attributes` overwrites the whole list of default `attributes`.
+
+A localized properties with partial data overwrites only the provided properties, the remaining default properties remain as default values.
 
 # Using metadata in applications
 
@@ -204,7 +289,7 @@ List of trait function define in SIPs and specifications specific to these funct
 Attribute types
 
 | Type | Display types | Additional Properties | Comment |
-|------|-------------|-----------------------|
+|------|---------------|-----------------------|---------|
 | Numeric | `number`, `boost_percentage`, `boost_number` | `max_value`| |
-| Date | `date` | | As unix timestamp in UTC | 
-| String | empty | | |
+| Date    | `date`     |                       | As unix timestamp in UTC | 
+| String  | empty      |                       |         |

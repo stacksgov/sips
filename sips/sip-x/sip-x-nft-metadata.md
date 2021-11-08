@@ -196,6 +196,7 @@ Common properties are
 | `id` | `integer` | identifier for NFTs. See also Appendix A. |
 | `created` | `integer` | creation date of the token in unix timestamp | 
 | `symbol`  | `string` | token symbol |
+| `ip_document_uri` | `string` | link to document about intellectual property (IP) rights |
 
 ### Attributes
 Attributes describe addition elements of tokens that are "observable", usually represented in the image of the token.

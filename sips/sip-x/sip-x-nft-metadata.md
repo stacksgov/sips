@@ -31,7 +31,7 @@ This SIP’s copyright is held by the Stacks Open Internet Foundation.
 
 Tokens are digital assets registered on blockchain through a smart contract. A non-fungible token (NFT) is a token that is globally unique and can be identified through its unique identifier. In blockchains with smart contracts, including the Stacks blockchain, developers and users can use smart contracts to register and interact with non-fungible tokens.
 
-Some use cases of NFTs are name registration, digital art, certification, media and enternainment, real-estate. They all require that users associate certain content with an NFT. In general, it is helpful for the users to have a name, sound, image that represents this content.
+Some use cases of NFTs are name registration, digital art, certification, media and entertainment, real-estate. They all require that users associate certain content with an NFT. In general, it is helpful for the users to have a name, sound, image that represents this content.
 
 # Specification
 
@@ -41,7 +41,7 @@ Appendix A contains a list of trait functions that must meet the following requi
 
 ## Return Value of Metadata URI Functions
 
-The return value must be a `some` value if and only if the metadata reference an existing token, otherwise the value must be `none`. Appendix A specifies the exact meaning of "existingt" for each function.
+The return value must be a `some` value if and only if the metadata reference an existing token, otherwise the value must be `none`. Appendix A specifies the exact meaning of "existing" for each function.
 
 For existing tokens, the inner value of the return value must be a string representing a resolvable URI. 
 
@@ -137,12 +137,10 @@ token101.json
       "value": 99,
     },    
   ],
-  "properties": {
-    { 
+  "properties": { 
       "collection":  "Foo Collection",
       "collection_size":  "10000" 
-    },
-  },
+  },  
   "localization": {
       "uri": "ipfs://somerandomcid/{locale}.json",
       "default": "en",

@@ -18,10 +18,8 @@ REWARD_CYCLE_LENGTH=2100
 #
 # becomes
 #
-# {"locked":"604260000","until":"689150","address":"SP2WGGG8E7NVFA0W4YZ87M6R09TNJ33CEBAXB9QPB"}
-# {"locked":"12622260119595","until":"714350","address":"SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-stacker-v1-1"}
-#
-# log lines for contracts that do locking are ignored, since they don't get counted.
+# {"type";"stacker", "locked":"604260000","until":"689150","address":"SP2WGGG8E7NVFA0W4YZ87M6R09TNJ33CEBAXB9QPB"}
+# {"type":"stacker", "locked":"12622260119595","until":"714350","address":"SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-stacker-v1-1"}
 extract_stacker() {
    # stdin: a DEBUG-level logfile
    # stdout: JSON describing each PoX lock event
@@ -51,7 +49,7 @@ extract_stacker() {
    }
 
    if (found) {
-      printf "{\"locked\":\"" num_locked "\",\"until\":\"" until "\",\"address\":\"" address "\"}\n"
+      printf "{\"address\":\"" address "\",\"type\":\"stacker\",\"locked\":\"" num_locked "\",\"until\":\"" until "\"}\n"
    }
 }
 '
@@ -89,4 +87,4 @@ stacking_in_reward_cycle() {
 }
 
 target_reward_cycle="$1"
-extract_stacker | stacking_in_reward_cycle "$target_reward_cycle"
+grep ' PoX lock ' | extract_stacker | stacking_in_reward_cycle "$target_reward_cycle"

@@ -35,18 +35,33 @@
 #   * txindex=1 set in its config file
 #   * the "yes" and "no" address' UTXOs tracked
 # * a fully-sync'ed stacks node
-# * a list of stacker addresses taken from the node's event stream
+# * a list of stacker records taken from the logfile.  Records must take the form of either:
+#   * a stacker record, containing a JSON object with {"address": $addr, "type": "stacker", "locked": $ustx, "until": $unlock_burn_height}
+#   * a delegate record, containing a JSON object with {"address": $addr, "type": "delegation", "until": $unlocK_burn_height}
 # * a recent version of the node.js CLI
 # * Node.js packages `bitcoinjs-lib`, `c32check`, and `@stacks/transactions` installed to your NODE_PATH
-# * the binaries `bitcoin-cli`, `jq`, `grep`, `date`, and `xargs`
+# * the binaries `bitcoin-cli`, `jq`, `grep`, `date`, `wc`, and `xargs`
 #
-# Usage: ./count-votes TABULATION_DIR CHAIN_TIP_HASH < STACKERS.TXT
+# USAGE: ./count-votes.sh TABULATION_DIR CHAIN_TIP_HASH CHAIN_TIP_BURN_HEIGHT < STACKERS.json
 #
-# For reward cycle 19, you can use the file 'stackers-19-only.txt' for STACKERS.TXT and
-# 4933b0b002a854a9ca7305166238d17be018ce54e415530540aa7e620e9cd86d for TIP.
+# To get the tabulation for reward cycle 19, run:
 #
-# For reward cycle 20, you can use the file 'stackers-20.txt' for STACKERS.TXT and
-# 7ae943351df455aab1aa69ce7ba6606f937ebab5f34322c982227cd9e0322176 for TIP.
+#   $ cat stackers-19.json delegating.json | ./count-votes.sh /tmp/tally-19 4933b0b002a854a9ca7305166238d17be018ce54e415530540aa7e620e9cd86d 705850
+#
+# To get the tabulation for reward cycle 20, run:
+#
+#   $ cat stackers-20.json delegating.json | ./count-votes.sh /tmp/tally-20 7ae943351df455aab1aa69ce7ba6606f937ebab5f34322c982227cd9e0322176 707951
+#
+# The script may take a while to run, depending on how fast your node is.
+#
+# The script is idempotent, and will attempt to reuse data it obtained in TABULATION_DIR.
+#
+# BUGS
+#
+# * Sometimes the act of determining a stacker's voting information can fail silently.  You can detect this
+# by comparing the number of lines in TABULATION_DIR/stackers.json to the number of "stacker" records.  If
+# there are fewer lines in TABULATION_DIR/stackers.json, then just re-run the script.  It will only fetch
+# the missing stacker.json records.
 #
 ###########################################################################################################
 #
@@ -325,28 +340,6 @@ console.log('0x' + stxtx.serializeCV(stxtx.standardPrincipalCV(\"$stx_addr\")).t
     fi
 }
 
-stx_addr_to_delegate_state_key() {
-   # Convert a STX address into a the serialized Clarity tuple value `{ stacker: $stx_addr }`
-   #
-   # $1: a stx address
-   # stdin: none
-   # stdout: a serialized Clarity value representing the Clarity value `{ stacker: $1 }`
-   # stderr: none
-   # return: 0 on success, nonzero on error
-   local stx_addr="$1"
-   local clarity_stx_addr="$(stx_addr_to_clarity_principal "$stx_addr")"
-   echo "
-c32 = require('c32check');
-var stacker_tuple = '';
-stacker_tuple += '0c';              // tuple type ID
-stacker_tuple += '00000001';        // 32-bit tuple length
-stacker_tuple += '07';              // length of 'stacker'
-stacker_tuple += Buffer.from('stacker').toString('hex');    // 'stacker' as hex
-stacker_tuple += \"$clarity_stx_addr\".slice(2);  // STX address, minus the leading 0x
-console.log(stacker_tuple)
-" | node -
-}
-
 decode_clarity_value() {
    # Decode a serialized Clarity value, optionally pulling out a specific field.
    # Uses @stacks/transactions.
@@ -399,54 +392,31 @@ is_stacker_delegating() {
    #
    # $1: stx address
    # $2: current burnchain block height
-   # $3: (optional) chain tip to use, so as to query historic state
+   # $3: path to the delegating.json file
    # stdin: none
    # stdout: "1" if so, "0" if not
    # stderr: none
    # return: 0 on success; nonzero on error
    local stx_addr="$1"
    local cur_burn_ht="$2"
-   local tip="$3"
-   local url=""
-   local body=""
-   local body_len=0
-   local delegate_value=""
-   local until_burn_ht_type=""
-   local until_burn_ht=""
-   local delegating=0
+   local delegating_file="$3"
 
-   # check delegate status
-   url="$STX_NODE/v2/map_entry/$POX_ADDR/pox/delegation-state?proof=0"
-   if [ -n "$tip" ]; then
-      url="$url&tip=$tip"
-   fi
+   local json=""
+   local until_ht=""
 
-   body="\"$(stx_addr_to_delegate_state_key "$stx_addr")\""
-   body_len=${#body}
-
-   delegate_value="$(echo "$body" | \
-     curl -s -X POST -H "content-type: application/json" -H "content-length: $body_len" --data-binary @- "$url")"
-
-   delegate_value="$(echo "$delegate_value" | jq -r -c ".data")"
-
-   delegating=1
-   if [ "$delegate_value" = "0x09" ]; then
-      # not delegating
-      delegating=0
-   else
-      # maybe delegating -- check expiration
-      until_burn_ht_type="$(decode_clarity_value "$delegate_value" "value.data['until-burn-ht'].type")"
-      if [ "$until_burn_ht_type" = "10" ]; then
-         # Some expiration
-         until_burn_ht="$(decode_clarity_value "$delegate_value" "value.data['until-burn-ht'].value.value")"
-         if (( "$(echo "$until_burn_ht" | tr -d 'n')" < "$cur_burn_ht" )); then
-            # delegation expired
-            delegating=0
+   json="$(grep "$stx_addr" "$delegating_file" || true)"
+   if [ -n "$json" ]; then
+      while read -r until_ht; do
+         if (( "$until_ht" >= "$cur_burn_ht" )); then
+            echo "1"
+            return 0
          fi
-      fi
+      done < <(grep "$stx_addr" "$delegating_file" | jq -r -c '.until')
+      echo "0"
+   else
+      echo "0"
    fi
-
-   echo "$delegating"
+   return 0
 }
 
 get_stacker_info() {
@@ -454,7 +424,8 @@ get_stacker_info() {
    #
    # $1: a standard stx address
    # $2: current burnchain block height
-   # $3: (optional) chain tip to use, so as to query historic stacking state
+   # $3: chain tip to use, so as to query historic stacking state
+   # $4: path to delegating.json file
    # stdin: none
    # stdout: a JSON object representing the number of uSTX stacked, the STX address, and the PoX address (if this stacker is stacked), or an empty string if not
    # stderr: none
@@ -462,6 +433,7 @@ get_stacker_info() {
    local stx_addr="$1"
    local cur_burn_ht="$2"
    local tip="$3"
+   local delegating_file="$4"
    local body=""
    local body_len=0
    local url="$STX_NODE/v2/contracts/call-read/$POX_ADDR/pox/get-stacker-info"
@@ -494,21 +466,15 @@ get_stacker_info() {
       # this is a none
       echo -n ""
    else
+      amount_stacked="$(decode_clarity_value "$clarity_value" "value.data['amount-ustx'].value.toString()")"
+      pox_addr_version="$(decode_clarity_value "$clarity_value" "value.data['pox-addr'].data.version.buffer.toString('hex')")"
+      pox_addr_version="$(pox_version_to_btc_version "$pox_addr_version")"
+      pox_addr_hashbytes="$(decode_clarity_value "$clarity_value" "value.data['pox-addr'].data.hashbytes.buffer.toString('hex')")"
+      pox_addr="$(make_btc_addr "$pox_addr_version" "$pox_addr_hashbytes")"
+
       # check delegate status
-      delegating="$(is_stacker_delegating "$stx_addr" "$cur_burn_ht" "$tip")"
-      if [ "$delegating" = "0" ]; then
-         # stacker is not delegating, so is eligible to vote
-         amount_stacked="$(decode_clarity_value "$clarity_value" "value.data['amount-ustx'].value.toString()")"
-         pox_addr_version="$(decode_clarity_value "$clarity_value" "value.data['pox-addr'].data.version.buffer.toString('hex')")"
-         pox_addr_version="$(pox_version_to_btc_version "$pox_addr_version")"
-         pox_addr_hashbytes="$(decode_clarity_value "$clarity_value" "value.data['pox-addr'].data.hashbytes.buffer.toString('hex')")"
-         pox_addr="$(make_btc_addr "$pox_addr_version" "$pox_addr_hashbytes")"
-   
-         echo "{\"pox_address\":\"$pox_addr\",\"stx_address\":\"$stx_addr\",\"ustx\":\"$amount_stacked\"}"
-      else
-         # delegating -- can't vote
-         echo -n ""
-      fi
+      delegating="$(is_stacker_delegating "$stx_addr" "$cur_burn_ht" "$delegating_file")"
+      echo "{\"pox_address\":\"$pox_addr\",\"stx_address\":\"$stx_addr\",\"ustx\":\"$amount_stacked\",\"delegating\":\"$delegating\"}"
    fi
 }
 
@@ -527,6 +493,7 @@ get_stacker_vote() {
    # return: 0 on success, nonzero on error
    local addr_mode="$1"
    local select_addr="$2"
+   local vote_path=""
    local yes_votes_path="$3"
    local no_votes_path="$4"
    local stackers_path="$5"
@@ -535,10 +502,14 @@ get_stacker_vote() {
    local pox_addr=""
    local json=""
    local vote=""
+   local tmp=""
    local ustx=0
    local voted_ustx=0
    local voted_yes=0
    local voted_no=0
+   local delegating=0
+   local is_pool_pox_addr=0
+   local stx_btc_addr=""
 
    if [ "$addr_mode" = "stx" ]; then
       stacker_addr="$select_addr"
@@ -568,6 +539,35 @@ get_stacker_vote() {
       stacker_addr="$(echo "$json" | jq -r -c '.stx_address' 2>/dev/null || true)"
       if [ -z "$stacker_addr" ]; then
          # no STX address
+         return 0
+      fi
+
+      # Does this BTC address correspond to a STX address that is stacking?
+      # If not, then it could be a pool address -- i.e. all of its associated
+      # STX addresses are delegating.  If that's the case, then unconditionally
+      # count their collective votes, since only the pool's PoX address can vote.
+      for vote_path in "$yes_votes_path" "$no_votes_path"; do
+         tmp="$(grep -F "$pox_addr" "$vote_path" | head -n1 || true)"
+         if [ -n "$tmp" ]; then
+            stx_btc_addr="$(echo "$tmp" | jq -r -c '.stx')"
+            tmp="$(grep -F "$stx_btc_addr" "$stackers_path" | wc -l || true)"
+            if [ "$tmp" = "0" ]; then
+               # all associated STX addresses must be delegating
+               tmp="$(grep -F "$pox_addr" "$stackers_path" | grep -F '"delegating":"0"' | wc -l || true)"
+               if [ "$tmp" = "0" ]; then
+                  # all addresses are delegating to this PoX address
+                  is_pool_pox_addr=1
+               fi
+            fi
+         fi
+      done
+   fi
+
+   if [ $is_pool_pox_addr = 0 ]; then
+      # this isn't a pool PoX address, so don't consider this address's vote if it's delegating
+      delegating="$(echo "$json" | jq -r -c '.delegating')"
+      if [ "$delegating" = "1" ]; then
+         # delegating can't vote
          return 0
       fi
    fi
@@ -683,12 +683,13 @@ main() {
    #
    # $1: working directory to use
    # $2: chaintip of vote tally block
-   # stdin: a list of Stackers for this vote tally
+   # stdin: a list of JSON stacker records that describe either stacking or delegating
    # stdout: a JSON object with the sums of the "yes" and "no" votes
    # stderr: none
    # return: 0 on success, nonzero on error
    local work_dir="$1"
    local tip="$2"
+   local cur_burn_ht="$3"
    local stacker_addrs_path="$work_dir/input.txt"
    local yes_votes_path="$work_dir/yes-addrs.json"
    local no_votes_path="$work_dir/no-addrs.json"
@@ -696,10 +697,12 @@ main() {
    local votes_path="$work_dir/votes.json"
    local all_votes_path="$work_dir/.all-votes.json"
    local already_voted_path="$work_dir/.already_voted.json"
-   local cur_burn_ht=0
+   local delegates="$work_dir/delegating.json"
    local vote_json=""
    local btc_addr=""
    local stx_addr=""
+   local stacker_json=""
+   local record_type=""
 
    deps_check
 
@@ -708,10 +711,19 @@ main() {
    echo -n "" > "$stacker_addrs_path"
    echo -n "" > "$votes_path"
    echo -n "" > "$already_voted_path"
+   echo -n "" > "$delegates"
 
    # copy stdin to a file so we can reuse it
-   while read -r stacker_address; do
-      echo "$stacker_address" >> "$stacker_addrs_path"
+   while read -r stacker_json; do
+      record_type="$(echo "$stacker_json" | jq -r -c '.type')"
+      if [ "$record_type" = "delegation" ]; then
+         echo "$stacker_json" >> "$delegates"
+      elif [ "$record_type" = "stacker" ]; then
+         echo "$stacker_json" | jq -r -c '.address' >> "$stacker_addrs_path"
+      else
+         echo >&2 "Invalid record $stacker_json"
+         exit 1
+      fi
    done
 
    if ! [ -f "$yes_votes_path" ]; then
@@ -726,9 +738,16 @@ main() {
 
    if ! [ -f "$stacker_path" ]; then 
       echo >&2 "Obtaining stacker info as of $tip..."
-      cur_burn_ht="$(curl -s "$STX_NODE/v2/info" | jq -r -c '.burn_block_height')"
       while read -r stx_addr; do
-         get_stacker_info "$stx_addr" "$cur_burn_ht" "$tip" >> "$stacker_path"
+         get_stacker_info "$stx_addr" "$cur_burn_ht" "$tip" "$delegates" >> "$stacker_path"
+      done < "$stacker_addrs_path"
+   else
+      echo >&2 "Stacker consistency check as of $tip..."
+      while read -r stx_addr; do
+         json="$(grep "$stx_addr" "$stacker_path" || true)"
+         if [ -z "$json" ]; then
+            get_stacker_info "$stx_addr" "$cur_burn_ht" "$tip" "$delegates" >> "$stacker_path"
+         fi
       done < "$stacker_addrs_path"
    fi
 
@@ -827,15 +846,6 @@ test_stx_addr_to_clarity_principal() {
    echo "ok"
 }
 
-test_stx_addr_to_delegate_state_key() {
-   echo -n "test_stx_addr_to_delegate_state_key..."
-
-   assert_eq "0c0000000107737461636b657205168dab0d2ba8086e74b88f7f7cf7ab9fb418d87c3e" "$(stx_addr_to_delegate_state_key "SP26TP39BN046WX5RHXZQSXXBKYT1HP3W7VNASJ4P")"
-   assert_eq "0c0000000107737461636b657206168dab0d2ba8086e74b88f7f7cf7ab9fb418d87c3e03666f6f" "$(stx_addr_to_delegate_state_key "SP26TP39BN046WX5RHXZQSXXBKYT1HP3W7VNASJ4P.foo")"
-
-   echo "ok"
-}
-
 test_decode_clarity_value() {
    echo -n "test_decode_clarity_value..."
 
@@ -854,66 +864,86 @@ test_bitcoin_ping() {
 
 test_is_stacker_delegating() {
    echo -n "test_is_stacker_delegating..."
+   
+   local test_dir="/tmp/sip012-vote-count/test/test_is_stacker_delegating"
+   if [ -d "$test_dir" ]; then 
+      mv "$test_dir" "$test_dir.bak.$(date +%s)"
+   fi
+
+   mkdir -p "$test_dir"
+
+   echo '{"address":"SP1H5X1MP2DQ9KXHZFVC3E43NNTZRCJXKMHCAE8N","until":"710150"}' > "$test_dir/delegating.json"
 
    local ret=""
-   local cur_burn_ht=0
-   local tip="22ac907019619fe9ae4e4ef5100740ecbf1b95510caccfb59fb71053e85bd783"
+
+   ret="$(is_stacker_delegating "SP1H5X1MP2DQ9KXHZFVC3E43NNTZRCJXKMHCAE8N" "700000" "$test_dir/delegating.json")"
+   assert_eq "1" "$ret"
    
-   cur_burn_ht="$(curl -s $STX_NODE/v2/info | jq -r -c '.burn_block_height')"
-
-   # this one is delegating
-   ret="$(is_stacker_delegating "SPRPW92SBDC982QJDPHAAXN3DGKV798CRM0ZWX63" "$cur_burn_ht" "$tip")"
-   assert_eq "$ret" "1"
-
-   # this one is not
-   ret="$(is_stacker_delegating "SM12TJXJEQQER0EWX6783RWH1R8YZG3M9SBQVDFH" "$cur_burn_ht" "$tip")"
-   assert_eq "$ret" "0"
-
-   # this one isn't stacking
-   ret="$(is_stacker_delegating "SP2E8N3T3TJP2D9YQZ41PY7X0ZFNQA8PZZ9RES24G" "$cur_burn_ht" "$tip")"
-   assert_eq "$ret" "0"
+   ret="$(is_stacker_delegating "SP1H5X1MP2DQ9KXHZFVC3E43NNTZRCJXKMHCAE8N" "710150" "$test_dir/delegating.json")"
+   assert_eq "1" "$ret"
+   
+   ret="$(is_stacker_delegating "SP1H5X1MP2DQ9KXHZFVC3E43NNTZRCJXKMHCAE8N" "710151" "$test_dir/delegating.json")"
+   assert_eq "0" "$ret"
+   
+   ret="$(is_stacker_delegating "SM21NR8W96KGG4YCFXRHZ6EAR2PAY3NS0MQ3FK95T" "700000" "$test_dir/delegating.json")"
+   assert_eq "0" "$ret"
 
    echo "ok"
 }
 
 test_get_stacker_info() {
    echo -n "test_get_stacker_info..."
+
+   local test_dir="/tmp/sip012-vote-count/test/test_get_stacker_info"
+   if [ -d "$test_dir" ]; then 
+      mv "$test_dir" "$test_dir.bak.$(date +%s)"
+   fi
+
+   mkdir -p "$test_dir"
    
    local json=""
-   local cur_burn_ht=0
+   local cur_burn_ht=708236
    local tip="22ac907019619fe9ae4e4ef5100740ecbf1b95510caccfb59fb71053e85bd783"
    local contract_tip="7ae943351df455aab1aa69ce7ba6606f937ebab5f34322c982227cd9e0322176" 
-   
-   cur_burn_ht="$(curl -s $STX_NODE/v2/info | jq -r -c '.burn_block_height')"
+   local delegates="$test_dir/delegates.json"
 
+   echo '{"address":"SPRPW92SBDC982QJDPHAAXN3DGKV798CRM0ZWX63","until":"712250"}' > "$delegates"
+   
    # multisig
-   json="$(get_stacker_info "SM21NR8W96KGG4YCFXRHZ6EAR2PAY3NS0MQ3FK95T" "$cur_burn_ht" "$tip")"
+   json="$(get_stacker_info "SM21NR8W96KGG4YCFXRHZ6EAR2PAY3NS0MQ3FK95T" "$cur_burn_ht" "$tip" "$delegates")"
 
    assert_eq "SM21NR8W96KGG4YCFXRHZ6EAR2PAY3NS0MQ3FK95T" "$(echo "$json" | jq -r -c '.stx_address')"
    assert_eq "3JqqSxLku7h8WUD2LZ7JenoeUdNzBNEDH6" "$(echo "$json" | jq -r -c '.pox_address')"
    assert_eq "12291711000000" "$(echo "$json" | jq -r -c '.ustx')"
+   assert_eq "0" "$(echo "$json" | jq -r -c '.delegating')"
 
    # singlesig
-   json="$(get_stacker_info "SM12TJXJEQQER0EWX6783RWH1R8YZG3M9SBQVDFH" "$cur_burn_ht" "$tip")"
+   json="$(get_stacker_info "SM12TJXJEQQER0EWX6783RWH1R8YZG3M9SBQVDFH" "$cur_burn_ht" "$tip" "$delegates")"
 
    assert_eq "SM12TJXJEQQER0EWX6783RWH1R8YZG3M9SBQVDFH" "$(echo "$json" | jq -r -c '.stx_address')"
    assert_eq "1AvrGwwtm5acsbVEaeHk7FkAbQh2FJgfSn" "$(echo "$json" | jq -r -c '.pox_address')"
    assert_eq "15000000000000" "$(echo "$json" | jq -r -c '.ustx')"
+   assert_eq "0" "$(echo "$json" | jq -r -c '.delegating')"
 
    # contract
-   json="$(get_stacker_info "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-stacker-v1-1" "$cur_burn_ht" "$contract_tip")"
+   json="$(get_stacker_info "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-stacker-v1-1" "$cur_burn_ht" "$contract_tip" "$delegates")"
    
    assert_eq "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-stacker-v1-1" "$(echo "$json" | jq -r -c '.stx_address')"
    assert_eq "1EsgJoqwcfbWsSyz6VHCYBvnh1iGrWB7dY" "$(echo "$json" | jq -r -c '.pox_address')"
    assert_eq "12622260119595" "$(echo "$json" | jq -r -c '.ustx')"
+   assert_eq "0" "$(echo "$json" | jq -r -c '.delegating')"
 
    # someone who isn't stacking
-   json="$(get_stacker_info "SP2E8N3T3TJP2D9YQZ41PY7X0ZFNQA8PZZ9RES24G" "$cur_burn_ht" "$tip")"
+   json="$(get_stacker_info "SP2E8N3T3TJP2D9YQZ41PY7X0ZFNQA8PZZ9RES24G" "$cur_burn_ht" "$tip" "$delegates")"
    assert_eq "" "$json"
 
-   # someone who delegated with no deadline
-   json="$(get_stacker_info "SPRPW92SBDC982QJDPHAAXN3DGKV798CRM0ZWX63" "$cur_burn_ht" "$tip")"
-   assert_eq "" "$json"
+   # someone who delegated 
+   json="$(get_stacker_info "SPRPW92SBDC982QJDPHAAXN3DGKV798CRM0ZWX63" "$cur_burn_ht" "$tip" "$delegates")"
+
+   assert_eq "SPRPW92SBDC982QJDPHAAXN3DGKV798CRM0ZWX63" "$(echo "$json" | jq -r -c '.stx_address')"
+   assert_eq '14y4Z27pvL6Fyo4WawkYGRBmwtg3rzTGrq' "$(echo "$json" | jq -r -c '.pox_address')"
+   assert_eq "50000000000" "$(echo "$json" | jq -r -c '.ustx')"
+   assert_eq "1" "$(echo "$json" | jq -r -c '.delegating')"
 
    echo "ok"
 }
@@ -959,16 +989,18 @@ EOF
    # #6 voted twice, via their STX address
    # #7 voted twice, via their BTC address
    # #8 and #9 are pooling with the same PoX address
+   # #10 delegates
    cat > "$test_dir/stackers.json" <<EOF
-{"stx_address": "SP3STEY6JEYREF8Y023T82740V5B6DBE7QBCR4FMK", "pox_address": "1JqvPcVGsv5HxKwRnrpJizmTrihgmtSztk", "ustx": "200"}
-{"stx_address": "SP35N8ZBAANK3886HHEDJ6MMXEM58VJENHWH80PD5", "pox_address": "1LjDBXmKw5wToyrEaWR2eDUXTkEwak9iZq", "ustx": "100"}
-{"stx_address": "SP30H7BJWABGSMTS5F5NTVTBVKZPFCDB218PPS9HK", "pox_address": "15NqmwLcQ9TX136A2ejRQzt3LoL5H8WwzH", "ustx": "600"}
-{"stx_address": "SP30YGE0QD3H8S8R6JKWPH0VKJY5WCRKCZDZ3FPE1", "pox_address": "1PDKpmhYBVrv4XTBHZ2rGkuwweysNvom5R", "ustx": "3"}
-{"stx_address": "SP3STEY6JEYREF8Y023T82740V5B6DBE7QBCR4FMK", "pox_address": "16ecPjRJgaiEv81DcVewZm1qchkUrXtfk7", "ustx": "200"}
-{"stx_address": "SP2S1TVYFQV12RDNAT5JKC0NB0Y58TYCV2SRP1H4H", "pox_address": "1MD2VpS3kxDNTcPjARZPXPJTYeucVD3nm6", "ustx": "5"}
-{"stx_address": "SP35AF3G0M2GFA34S8R3VT0PRHQW563D4FH80JMCH", "pox_address": "12mb6aPVSJUNA6KxBLAKTKL8dXgn9y1XMZ", "ustx": "6"}
-{"stx_address": "SP3QXB26B01E5P6WZN7KAMFDHBCSPKTKR8X6RZ3M9", "pox_address": "1LhPVRPowv9fDzzpKg3ku4GQrAq5HpChFE", "ustx": "1000"}
-{"stx_address": "SP3C0VKAMZTBKYDEBG0BGSCS64EM425N2PN7QQZ8A", "pox_address": "1LhPVRPowv9fDzzpKg3ku4GQrAq5HpChFE", "ustx": "3000"}
+{"stx_address": "SP3STEY6JEYREF8Y023T82740V5B6DBE7QBCR4FMK", "pox_address": "1JqvPcVGsv5HxKwRnrpJizmTrihgmtSztk", "ustx": "200", "delegating": "0"}
+{"stx_address": "SP35N8ZBAANK3886HHEDJ6MMXEM58VJENHWH80PD5", "pox_address": "1LjDBXmKw5wToyrEaWR2eDUXTkEwak9iZq", "ustx": "100", "delegating": "0"}
+{"stx_address": "SP30H7BJWABGSMTS5F5NTVTBVKZPFCDB218PPS9HK", "pox_address": "15NqmwLcQ9TX136A2ejRQzt3LoL5H8WwzH", "ustx": "600", "delegating": "0"}
+{"stx_address": "SP30YGE0QD3H8S8R6JKWPH0VKJY5WCRKCZDZ3FPE1", "pox_address": "1PDKpmhYBVrv4XTBHZ2rGkuwweysNvom5R", "ustx": "3", "delegating": "0"}
+{"stx_address": "SP3STEY6JEYREF8Y023T82740V5B6DBE7QBCR4FMK", "pox_address": "16ecPjRJgaiEv81DcVewZm1qchkUrXtfk7", "ustx": "200", "delegating": "0"}
+{"stx_address": "SP2S1TVYFQV12RDNAT5JKC0NB0Y58TYCV2SRP1H4H", "pox_address": "1MD2VpS3kxDNTcPjARZPXPJTYeucVD3nm6", "ustx": "5", "delegating": "0"}
+{"stx_address": "SP35AF3G0M2GFA34S8R3VT0PRHQW563D4FH80JMCH", "pox_address": "12mb6aPVSJUNA6KxBLAKTKL8dXgn9y1XMZ", "ustx": "6", "delegating": "0"}
+{"stx_address": "SP3QXB26B01E5P6WZN7KAMFDHBCSPKTKR8X6RZ3M9", "pox_address": "1LhPVRPowv9fDzzpKg3ku4GQrAq5HpChFE", "ustx": "1000", "delegating": "0"}
+{"stx_address": "SP3C0VKAMZTBKYDEBG0BGSCS64EM425N2PN7QQZ8A", "pox_address": "1LhPVRPowv9fDzzpKg3ku4GQrAq5HpChFE", "ustx": "3000", "delegating": "0"}
+{"stx_address": "SP3RV0668H0F1WF9ZX290BEVK79AMK8KSPPQVNDPP", "pox_address": "1LhPVRPowv9fDzzpKg3ku4GQrAq5HpChFE", "ustx": "1", "delegating": "1"}
 EOF
 
    # mock already-voted
@@ -1005,9 +1037,10 @@ EOF
    assert_eq "" "$json"
 
    # voter #8 and #9 are pooling
+   # voter #10 is pooling with them but delegating
    json="$(get_stacker_vote "stx" "SP3C0VKAMZTBKYDEBG0BGSCS64EM425N2PN7QQZ8A" "$test_dir/yes.txt" "$test_dir/no.txt" "$test_dir/stackers.json" "$test_dir/.already-voted.json")"
    assert_eq "yes" "$(echo "$json" | jq -r -c '.vote')"
-   assert_eq "4000" "$(echo "$json" | jq -r -c '.ustx')"
+   assert_eq "4001" "$(echo "$json" | jq -r -c '.ustx')"
    
    json="$(get_stacker_vote "stx" "SP3QXB26B01E5P6WZN7KAMFDHBCSPKTKR8X6RZ3M9" "$test_dir/yes.txt" "$test_dir/no.txt" "$test_dir/stackers.json" "$test_dir/.already-voted.json")"
    assert_eq "" "$json"
@@ -1057,10 +1090,14 @@ EOF
    json="$(get_stacker_vote "btc" "12mb6aPVSJUNA6KxBLAKTKL8dXgn9y1XMZ" "$test_dir/yes.txt" "$test_dir/no.txt" "$test_dir/stackers.json" "$test_dir/.already-voted.json")"
    assert_eq "" "$json"
 
-   # voter #8 and #9 are pooling
+   # voter #11 is delegating, so it can't vote
+   json="$(get_stacker_vote "stx" "SP3RV0668H0F1WF9ZX290BEVK79AMK8KSPPQVNDPP" "$test_dir/yes.txt" "$test_dir/no.txt" "$test_dir/stackers.json" "$test_dir/.already-voted.json")"
+   assert_eq "" "$json"
+
+   # voter #8 and #9 are pooling, and #10 delegates
    json="$(get_stacker_vote "btc" "1LhPVRPowv9fDzzpKg3ku4GQrAq5HpChFE" "$test_dir/yes.txt" "$test_dir/no.txt" "$test_dir/stackers.json" "$test_dir/.already-voted.json")"
    assert_eq "yes" "$(echo "$json" | jq -r -c '.vote')"
-   assert_eq "4000" "$(echo "$json" | jq -r -c '.ustx')"
+   assert_eq "4001" "$(echo "$json" | jq -r -c '.ustx')"
    
    json="$(get_stacker_vote "btc" "1LhPVRPowv9fDzzpKg3ku4GQrAq5HpChFE" "$test_dir/yes.txt" "$test_dir/no.txt" "$test_dir/stackers.json" "$test_dir/.already-voted.json")"
    assert_eq "" "$json"
@@ -1087,6 +1124,7 @@ test_main() {
    local result=""
    local test_dir="/tmp/sip012-vote-count/test/test_main"
    local tip="22ac907019619fe9ae4e4ef5100740ecbf1b95510caccfb59fb71053e85bd783"
+   local cur_burn_ht=707148
    if [ -d "$test_dir" ]; then 
       mv "$test_dir" "$test_dir.bak.$(date +%s)"
    fi
@@ -1123,23 +1161,35 @@ EOF
    # #6 voted twice, via their STX address, and won't count
    # #7 voted twice, via their BTC address, and won't count
    # #8 and #9 are pooling with the same PoX address, and will count as a single unit
+   # #10 delegates
    cat > "$test_dir/stackers.json" <<EOF
-{"stx_address": "SP3STEY6JEYREF8Y023T82740V5B6DBE7QBCR4FMK", "pox_address": "1JqvPcVGsv5HxKwRnrpJizmTrihgmtSztk", "ustx": "200"}
-{"stx_address": "SP35N8ZBAANK3886HHEDJ6MMXEM58VJENHWH80PD5", "pox_address": "1LjDBXmKw5wToyrEaWR2eDUXTkEwak9iZq", "ustx": "100"}
-{"stx_address": "SP30H7BJWABGSMTS5F5NTVTBVKZPFCDB218PPS9HK", "pox_address": "15NqmwLcQ9TX136A2ejRQzt3LoL5H8WwzH", "ustx": "600"}
-{"stx_address": "SP30YGE0QD3H8S8R6JKWPH0VKJY5WCRKCZDZ3FPE1", "pox_address": "1PDKpmhYBVrv4XTBHZ2rGkuwweysNvom5R", "ustx": "3"}
-{"stx_address": "SP3STEY6JEYREF8Y023T82740V5B6DBE7QBCR4FMK", "pox_address": "16ecPjRJgaiEv81DcVewZm1qchkUrXtfk7", "ustx": "200"}
-{"stx_address": "SP2S1TVYFQV12RDNAT5JKC0NB0Y58TYCV2SRP1H4H", "pox_address": "1MD2VpS3kxDNTcPjARZPXPJTYeucVD3nm6", "ustx": "5"}
-{"stx_address": "SP35AF3G0M2GFA34S8R3VT0PRHQW563D4FH80JMCH", "pox_address": "12mb6aPVSJUNA6KxBLAKTKL8dXgn9y1XMZ", "ustx": "6"}
-{"stx_address": "SP3QXB26B01E5P6WZN7KAMFDHBCSPKTKR8X6RZ3M9", "pox_address": "1LhPVRPowv9fDzzpKg3ku4GQrAq5HpChFE", "ustx": "1000"}
-{"stx_address": "SP3C0VKAMZTBKYDEBG0BGSCS64EM425N2PN7QQZ8A", "pox_address": "1LhPVRPowv9fDzzpKg3ku4GQrAq5HpChFE", "ustx": "3000"}
+{"stx_address": "SP3STEY6JEYREF8Y023T82740V5B6DBE7QBCR4FMK", "pox_address": "1JqvPcVGsv5HxKwRnrpJizmTrihgmtSztk", "ustx": "200", "delegating": "0"}
+{"stx_address": "SP35N8ZBAANK3886HHEDJ6MMXEM58VJENHWH80PD5", "pox_address": "1LjDBXmKw5wToyrEaWR2eDUXTkEwak9iZq", "ustx": "100", "delegating": "0"}
+{"stx_address": "SP30H7BJWABGSMTS5F5NTVTBVKZPFCDB218PPS9HK", "pox_address": "15NqmwLcQ9TX136A2ejRQzt3LoL5H8WwzH", "ustx": "600", "delegating": "0"}
+{"stx_address": "SP30YGE0QD3H8S8R6JKWPH0VKJY5WCRKCZDZ3FPE1", "pox_address": "1PDKpmhYBVrv4XTBHZ2rGkuwweysNvom5R", "ustx": "3", "delegating": "0"}
+{"stx_address": "SP3STEY6JEYREF8Y023T82740V5B6DBE7QBCR4FMK", "pox_address": "16ecPjRJgaiEv81DcVewZm1qchkUrXtfk7", "ustx": "200", "delegating": "0"}
+{"stx_address": "SP2S1TVYFQV12RDNAT5JKC0NB0Y58TYCV2SRP1H4H", "pox_address": "1MD2VpS3kxDNTcPjARZPXPJTYeucVD3nm6", "ustx": "5", "delegating": "0"}
+{"stx_address": "SP35AF3G0M2GFA34S8R3VT0PRHQW563D4FH80JMCH", "pox_address": "12mb6aPVSJUNA6KxBLAKTKL8dXgn9y1XMZ", "ustx": "6", "delegating": "0"}
+{"stx_address": "SP3QXB26B01E5P6WZN7KAMFDHBCSPKTKR8X6RZ3M9", "pox_address": "1LhPVRPowv9fDzzpKg3ku4GQrAq5HpChFE", "ustx": "1000", "delegating": "0"}
+{"stx_address": "SP3C0VKAMZTBKYDEBG0BGSCS64EM425N2PN7QQZ8A", "pox_address": "1LhPVRPowv9fDzzpKg3ku4GQrAq5HpChFE", "ustx": "3000", "delegating": "0"}
+{"stx_address": "SP3RV0668H0F1WF9ZX290BEVK79AMK8KSPPQVNDPP", "pox_address": "1LhPVRPowv9fDzzpKg3ku4GQrAq5HpChFE", "ustx": "1", "delegating": "1"}
 EOF
 
    # extract stackers
-   jq -r -c '.stx_address' < "$test_dir/stackers.json" > "$test_dir/.stackers.txt"
+   while read -r json; do
+      local addr="$(echo "$json" | jq -r -c '.stx_address')"
+      local locked="$(echo "$json" | jq -r -c '.ustx')"
+      local until_ht=$(($cur_burn_ht + 2101))
+      local delegating="$(echo "$json" | jq -r -c '.delegating')"
 
-   result="$(main "$test_dir" "$tip" < "$test_dir/.stackers.txt")"
-   assert_eq "4003" "$(echo "$result" | jq -r -c '.yes')"
+      echo "{\"address\":\"$addr\",\"locked\":\"$locked\",\"until\":\"$until_ht\",\"type\":\"stacker\"}" >> "$test_dir/.stackers.txt"
+      if [ "$delegating" = "1" ]; then
+          echo "{\"address\":\"$addr\",\"until\":\"$until_ht\",\"type\":\"delegation\"}" >> "$test_dir/.stackers.txt"
+      fi
+   done < "$test_dir/stackers.json"
+
+   result="$(main "$test_dir" "$tip" "$cur_burn_ht" < "$test_dir/.stackers.txt")"
+   assert_eq "4004" "$(echo "$result" | jq -r -c '.yes')"
    assert_eq "100" "$(echo "$result" | jq -r -c '.no')"
 
    echo "ok"
@@ -1151,9 +1201,9 @@ run_local_tests() {
    test_btc_addr_to_stx_addr
    test_pubkey_to_btc_addr
    test_make_btc_addr
-   test_stx_addr_to_delegate_state_key
    test_stx_addr_to_clarity_principal
    test_decode_clarity_value
+   test_is_stacker_delegating
    test_get_stacker_vote
    test_tabulate_vote
    test_main

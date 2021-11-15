@@ -76,7 +76,7 @@ If metadata were retrieved by a function call containing a token identifier and 
         },
         "image": {
             "type": "string",
-            "description": "A URI pointing to a resource with mime type image/* representing the asset to which this token represents. Consider making any images at a width between 320 and 1080 pixels and aspect ratio between 1.91:1 and 4:5 inclusive."
+            "description": "A URI pointing to a resource with mime type image/* representing the asset to which this token represents. Consider making any images at a width between 320 and 1080 pixels and aspect ratio between 1.91:1 and 4:5 inclusive. If the token represents a media file of different mime-type or of higher quality defined in property 'raw_media_file_uri', then this image should be used as preview image like a cover for music, or an low-res image."
         },
         "attributes": {
             "type": "array",
@@ -187,16 +187,42 @@ pt-BR.json
 ```
 
 ### Properties
-Common properties are 
+Common properties are described in Appendic C.
 
-| Name | Type | Description |
-|------|------|-------------|
-| `collection` | `string` | collection name the token belongs to. See also Appendix A. |
-| `decimals` | `integer` | number of decimals. See also Appendix A. |
-| `id` | `integer` | identifier for NFTs. See also Appendix A. |
-| `created` | `integer` | creation date of the token in unix timestamp | 
-| `symbol`  | `string` | token symbol |
-| `ip_document_uri` | `string` | link to document about intellectual property (IP) rights |
+### Properties
+Common properties are described in appendix C. Properties of type object are usually described using the following schema:
+```
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Token Metadata Property",
+    "type": "object",
+    "required": ["value"],
+    "properties": {
+        "type": {
+            "type": "string",
+            "description": "type of the property"
+        },
+        "description": {
+            "type": "string",
+            "description": "description of the property"
+        },
+        "value": {
+            "type": any,
+            "description": "value of the property"
+        }
+    }
+}
+```
+
+Example:
+
+```
+{
+    "type": "string", 
+    "description": "Address of custodian key holder", 
+    "value": "Casa Inc., P.O. Box 20575, Charleston, S.C. 29413, United States."
+}
+```
 
 ### Attributes
 Attributes describe addition elements of tokens that are "observable", usually represented in the image of the token.
@@ -241,6 +267,8 @@ The Blockchain Naming System uses native non-fungible tokens. It does define met
 Metadata for NFTs on Ethereum are defined in [EIP 721](https://eips.ethereum.org/EIPS/eip-721) and [EIP 1155](https://eips.ethereum.org/EIPS/eip-1155). The JSON schema for SIP-X has adopted the EIP 1155 schema with the following differences:
 
 - substitution of `{id}` strings must use the decimal format not the hexdecimal, zero-padded format.
+
+- properties of type object should use property `value` for the value, not property `description` as used by some EIP-1155 NFTs.
 
 # Backwards Compatibility
 
@@ -292,3 +320,22 @@ Attribute types
 | Numeric | `number`, `boost_percentage`, `boost_number` | `max_value`| |
 | Date    | `date`     |                       | As unix timestamp in UTC | 
 | String  | empty      |                       |         |
+
+# Appendic C
+
+Common Properties with predefined types.
+
+| Name | Type | Description |
+|------|------|-------------|
+| `collection` | `string` | collection name the token belongs to. See also Appendix A. |
+| `decimals` | `integer` | number of decimals. See also Appendix A. |
+| `id` | `integer` | identifier for NFTs. See also Appendix A. |
+| `created` | `integer` | creation date of the token in unix timestamp | 
+| `symbol`  | `string` | token symbol |
+| `total_supply`| `integer` | number of total supply, e.g. minted tokens |
+| `ip_document_uri` | `string` | link to document about intellectual property (IP) rights |
+| `external_url` | `string` | url that will view the token on an external site |
+| `raw_media_file_uri` | `string` | uri of the media represented by the token |
+| `raw_media_file_type` | `string` | mime-type of the media represented by the token |
+| `raw_media_file_signature` | `string` | signature of the media file represented by the token |
+| `raw_media_file_signature_type` | `string` | signature type of the media represented by the token, e.g. SHA-256 |

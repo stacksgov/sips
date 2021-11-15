@@ -1048,12 +1048,18 @@ batch or within a microblock stream -- the transaction signer makes the choice.
 [1] Ali, Nelson, Shea, and Freedman. [Blockstack: A Global Naming and Storage
 System Secured by
 Blockchains](https://www.usenix.org/conference/atc16/technical-sessions/presentation/ali)
+
 [2] Eyal, Gencer, Sirer, and van Renesse. [Bitcoin-NG: A Scalable Blockchain Protocol](https://www.usenix.org/system/files/conference/nsdi16/nsdi16-paper-eyal.pdf)
+
 [3] Gilad, Hemo, Micali, Vlachos, and Zeldovich. [Algorand: Scaling Byzantine Agreements for
 Cryptocurrencies](https://dl.acm.org/doi/pdf/10.1145/3132747.3132757)
+
 [4] Narayanan. [Bitcoin's Academic Pedigree](https://dl.acm.org/doi/10.1145/3132259)
+
 [5] [Merged Mining Specification](https://en.bitcoin.it/wiki/Merged_mining_specification)
+
 [6] [Slimcoin](https://github.com/slimcoin-project)
+
 [7] [Why Proof-of-Burn](https://counterparty.io/news/why-proof-of-burn/)
 
 # Backwards Compatibility

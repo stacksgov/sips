@@ -492,11 +492,39 @@ The new proposed cost functions, which will be instantiated at
 `SP000000000000000000002Q6VF78.costs-2.05.clar`:
 
 ```lisp
+;; the .costs-2 contract
+
+;; Helper Functions
+
+;; Return a Cost Specification with just a runtime cost
+(define-private (runtime (r uint))
+    {
+        runtime: r,
+        write_length: u0,
+        write_count: u0,
+        read_count: u0,
+        read_length: u0,
+    })
+
+;; Linear cost-assessment function
+(define-private (linear (n uint) (a uint) (b uint))
+    (+ (* a n) b))
+
+;; LogN cost-assessment function
+(define-private (logn (n uint) (a uint) (b uint))
+    (+ (* a (log2 n)) b))
+
+;; NLogN cost-assessment function
+(define-private (nlogn (n uint) (a uint) (b uint))
+    (+ (* a (* n (log2 n))) b))
+
+
+;; Cost Functions
 (define-read-only (cost_analysis_type_annotate (n uint))
     (runtime (linear n u1 u9)))
 
 (define-read-only (cost_analysis_type_check (n uint))
-    (runtime (linear n u113 u0)))
+    (runtime (linear n u113 u1)))
 
 (define-read-only (cost_analysis_type_lookup (n uint))
     (runtime (linear n u1 u6)))
@@ -521,6 +549,9 @@ The new proposed cost functions, which will be instantiated at
 
 (define-read-only (cost_analysis_check_tuple_get (n uint))
     (runtime (logn n u1 u2)))
+
+(define-read-only (cost_analysis_check_tuple_merge (n uint))
+    (runtime (linear n u1000 u1000)))
 
 (define-read-only (cost_analysis_check_tuple_cons (n uint))
     (runtime (nlogn n u3 u5)))
@@ -577,11 +608,21 @@ The new proposed cost functions, which will be instantiated at
         read_length: (linear n u1 u1)
     })
 
+
+(define-read-only (cost_analysis_fetch_contract_entry (n uint))
+    {
+        runtime: (linear n u1000 u1000),
+        write_length: u0,
+        write_count: u0,
+        read_count: u1,
+        read_length: (linear n u1 u1)
+    })
+
 (define-read-only (cost_lookup_variable_depth (n uint))
     (runtime (linear n u2 u14)))
 
 (define-read-only (cost_lookup_variable_size (n uint))
-    (runtime (linear n u2 u0)))
+    (runtime (linear n u2 u1)))
 
 (define-read-only (cost_lookup_function (n uint))
     (runtime u16))
@@ -602,7 +643,7 @@ The new proposed cost functions, which will be instantiated at
     (runtime u200))
 
 (define-read-only (cost_asserts (n uint))
-    (runtime u158))
+    (runtime u170))
 
 (define-read-only (cost_map (n uint))
     (runtime (linear n u1210 u3314)))
@@ -638,10 +679,10 @@ The new proposed cost functions, which will be instantiated at
     (runtime (nlogn n u11 u1101)))
 
 (define-read-only (cost_add (n uint))
-    (runtime (linear n u12 u156)))
+    (runtime (linear n u14 u157)))
 
 (define-read-only (cost_sub (n uint))
-    (runtime (linear n u12 u156)))
+    (runtime (linear n u14 u157)))
 
 (define-read-only (cost_mul (n uint))
     (runtime (linear n u14 u157)))
@@ -650,37 +691,37 @@ The new proposed cost functions, which will be instantiated at
     (runtime (linear n u14 u157)))
 
 (define-read-only (cost_geq (n uint))
-    (runtime u166))
+    (runtime u170))
 
 (define-read-only (cost_leq (n uint))
-    (runtime u166))
+    (runtime u170))
 
 (define-read-only (cost_le (n uint))
-    (runtime u166))
+    (runtime u170))
 
 (define-read-only (cost_ge (n uint))
-    (runtime u166))
+    (runtime u170))
 
 (define-read-only (cost_int_cast (n uint))
-    (runtime u164))
+    (runtime u170))
 
 (define-read-only (cost_mod (n uint))
-    (runtime u168))
+    (runtime u170))
 
 (define-read-only (cost_pow (n uint))
     (runtime u170))
 
 (define-read-only (cost_sqrti (n uint))
-    (runtime u167))
+    (runtime u170))
 
 (define-read-only (cost_log2 (n uint))
-    (runtime u161))
+    (runtime u170))
 
 (define-read-only (cost_xor (n uint))
-    (runtime u167))
+    (runtime u170))
 
 (define-read-only (cost_not (n uint))
-    (runtime u162))
+    (runtime u170))
 
 (define-read-only (cost_eq (n uint))
     (runtime (linear n u7 u172)))
@@ -713,19 +754,19 @@ The new proposed cost functions, which will be instantiated at
     (runtime (linear n u3 u1413)))
 
 (define-read-only (cost_some_cons (n uint))
-    (runtime u219))
+    (runtime u230))
 
 (define-read-only (cost_ok_cons (n uint))
-    (runtime u219))
+    (runtime u230))
 
 (define-read-only (cost_err_cons (n uint))
-    (runtime u219))
+    (runtime u230))
 
 (define-read-only (cost_default_to (n uint))
-    (runtime u249))
+    (runtime u287))
 
 (define-read-only (cost_unwrap_ret (n uint))
-    (runtime u299))
+    (runtime u339))
 
 (define-read-only (cost_unwrap_err_or_ret (n uint))
     (runtime u339))
@@ -734,25 +775,25 @@ The new proposed cost functions, which will be instantiated at
     (runtime u287))
 
 (define-read-only (cost_is_none (n uint))
-    (runtime u212))
+    (runtime u287))
 
 (define-read-only (cost_is_err (n uint))
-    (runtime u282))
+    (runtime u287))
 
 (define-read-only (cost_is_some (n uint))
-    (runtime u223))
+    (runtime u287))
 
 (define-read-only (cost_unwrap (n uint))
-    (runtime u284))
+    (runtime u287))
 
 (define-read-only (cost_unwrap_err (n uint))
-    (runtime u264))
+    (runtime u287))
 
 (define-read-only (cost_try_ret (n uint))
-    (runtime u256))
+    (runtime u287))
 
 (define-read-only (cost_match (n uint))
-    (runtime u286))
+    (runtime u287))
 
 (define-read-only (cost_or (n uint))
     (runtime (linear n u3 u149)))
@@ -776,7 +817,7 @@ The new proposed cost functions, which will be instantiated at
     (runtime u13400))
 
 (define-read-only (cost_principal_of (n uint))
-    (runtime u39))
+    (runtime u235))
 
 
 (define-read-only (cost_at_block (n uint))
@@ -952,7 +993,7 @@ The new proposed cost functions, which will be instantiated at
 
 (define-read-only (cost_nft_mint (n uint))
     {
-        runtime: (linear n u9 u636),
+        runtime: (linear n u9 u795),
         write_length: u1,
         write_count: u1,
         read_count: u1,
@@ -962,7 +1003,7 @@ The new proposed cost functions, which will be instantiated at
 
 (define-read-only (cost_nft_transfer (n uint))
     {
-        runtime: (linear n u9 u647),
+        runtime: (linear n u9 u795),
         write_length: u1,
         write_count: u1,
         read_count: u1,
@@ -1002,7 +1043,7 @@ The new proposed cost functions, which will be instantiated at
 
 (define-read-only (cost_nft_burn (n uint))
     {
-        runtime: (linear n u9 u647),
+        runtime: (linear n u9 u795),
         write_length: u1,
         write_count: u1,
         read_count: u1,

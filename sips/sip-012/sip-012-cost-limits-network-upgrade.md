@@ -21,14 +21,15 @@ Consideration: Governance, Technical
 
 Type: Consensus
 
-Status: Accepted
+Status: Recommended
 
 Created: 2021-10-08
 
 License: BSD 2-Clause
 
 Sign-off: Harold Davis (governance) <recursive3@gmail.com>, Juliet Oberding
-(governance) <juliet.oberding@gmail.com>, Jason Schrader (governance) <jason@joinfreehold.com>
+(governance) <juliet.oberding@gmail.com>, Jason Schrader (governance) <jason@joinfreehold.com>,
+Jude Nelson (technical) <jude@stacks.org>
 
 Discussions-To: https://github.com/stacksgov/sips
 
@@ -151,14 +152,27 @@ process.  There are three major steps to this activation procedure:
    on November 29th or November 30th, 2021.  In this document, this is the
 **activation block**.
 
+   On November 15, 2021, the SIP authors finalized the choice of Bitcoin block
+713,000 to be the activation block.  This block is expected to be mined at or
+around December 6, 2021.  The reason for this extra week delay over the
+tentative block number is to ensure that the network upgrade happens in the
+_middle_ of a reward cycle.  November 29th/30th is expected to be the start of
+reward cycle 21. Executing a network upgrade at the start of a reward cycle is
+needlessly risky, because if the upgrade fails for some reason during the
+prepare phase, it could cause PoX rewards to be disabled for cycle 21.
+
    2.  In the two whole reward cycles prior to the activation block, users who
        have Stacked STX will have the opportunity to cast a vote to activate
 this SIP.  The cut-off for voting will be a _separate_ Bitcoin block whose
 expected arrival time is one calendar week prior to the activation block.  This
 document refers to this block as the **vote deadline block.**
 
+   On November 15, 2021, the SIP authors finalized the decision to select the
+first Bitcoin block height mined after November 23, 2021 at 12:00 EST to be the
+vote deadline block.
+
    3.  If the activation voting threshold is met as of the vote deadline block,
-then the Stacks Foundation will cut a relase of the Stacks blockchain
+then the Stacks Foundation will make a release of the Stacks blockchain
 reference implementation with this
 SIP's changes applied and set to take effect once the activation block passes.
 If on the other hand there is insufficient support for this SIP by the vote
@@ -330,6 +344,10 @@ functions' cost functions:
 * `map-insert`
 * `map-delete`
 * `concat`
+* `nft-mint?`
+* `nft-burn?`
+* `nft-transfer?`
+* `nft-get-owner?`
 
 #### `(var-get var-name) -> value`
 
@@ -397,6 +415,44 @@ transaction to enable rollbacks and post-conditions).
 The `x` input to the `concat` cost function should be the length of
 `list-a` plus the length of `list-b`.
 
+#### `(nft-mint? asset-class asset-identifier recipient)`
+
+The `x` input to the `nft-mint?` cost function should be the length in bytes of
+the consensus serialization of the supplied `asset-identifier`.
+
+The memory usage of this function should be this new `x` value, plus the size of
+a `principal` type.  The memory
+usage of `nft-mint?` remains in effect until the end of the transaction (asset
+operations remain in memory during the whole transaction to enable rollbacks and
+post-conditions).
+
+#### `(nft-burn? asset-class asset-identifier owner)`
+
+The `x` input to the `nft-burn?` cost function should be the length in bytes of
+the consensus serialization of the specified `asset-identifier`.
+
+The memory usage of this function should be this new `x` value, plus the size of
+a `principal` type.  The memory
+usage of `nft-burn?` remains in effect until the end of the transaction (asset
+operations remain in memory during the whole transaction to enable rollbacks and
+post-conditions).
+
+#### `(nft-transfer? asset-class asset-identifier sender recipient)`
+
+The `x` input to the `nft-transfer?` cost function should be the length in bytes
+of the consensus serialization of the specified `asset-identifier`.
+
+The memory usage of this function should be this new `x` value, plus the size of
+a `principal` type.  The memory
+usage of `nft-transfer?` remains in effect until the end of the transaction (asset
+operations remain in memory during the whole transaction to enable rollbacks and
+post-conditions).
+
+#### `(nft-get-owner? asset-class asset-identifier)`
+
+The `x` input to the `nft-get-owner?` cost function should be the length in
+bytes of the consensus serialization of the specified `asset-identifier`.
+
 ### New Default Cost Functions
 
 Based on results from the
@@ -451,7 +507,7 @@ _Activation-in-Progress_ status.
 
 * The SIP has garnered sufficient support by the vote deadline block height. Voting by
   sending Bitcoin transactions can begin once the SIP text is updated with the
-  "yes" / "no" addresses. Voting concludes one week prior to the Stacks 2.05
+  "yes" / "no" addresses. Voting concludes at least one week prior to the Stacks 2.05
   activation block.
 
 * A new release of Stacks blockchain (available at
@@ -461,6 +517,16 @@ block height listed in this SIP.  This release is announced by the Stacks
 Foundation.
 
 * The activation block height passes on the Bitcoin chain.
+
+## Activation Status
+
+* On November 15, 2021, the authors finalized the choice of the activation
+  block to be Bitcoin block 713,000.  This block is expected to be mined at or
+around December 6, 2021.
+
+* The vote deadline block will be backdated to the first Bitcoin block mined
+  after November 23, 2021 at 12:00 EST.  The exact block number will be added to
+this SIP's text once it is known.
 
 # Reference Implementation
 

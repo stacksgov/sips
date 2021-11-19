@@ -335,6 +335,10 @@ Metadata for NFTs on Ethereum are defined in [EIP 721](https://eips.ethereum.org
 
 The tool suite Metaplex for NFTs on Solana defines a [JSON schema](https://docs.metaplex.com/nft-standard#uri-json-schema). The properties `category` and `files` in Appendic C were inspired by that schema.
 
+## Hedera
+
+Hedera follows the same schema defined in [H-10](https://github.com/hashgraph/hedera-improvement-proposal/blob/master/HIP/hip-10.md).
+
 # Activation
 
 This SIP is activated if 10 contracts are deployed that follows this specification. This must happen before Bitcoin tip #750,000.

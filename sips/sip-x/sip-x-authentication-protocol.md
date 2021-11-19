@@ -71,9 +71,10 @@ Android provides an open account management system.
 Example implementation: https://github.com/openintents/calendar-sync/blob/master/app/src/main/java/org/openintents/calendar/common/accounts/GenericAccountService.kt
 
 
-## Authentication Result
+## Authentication Response
 
-### Public key 
+### Public key and BNS Username
+If the Stacks address representing the public key owns a BNS username, it is returned as part of the response. Other users can use the username to lookup metadata of other applications via the zonefile and the profile linked in the zonefile. The profile is signed with the private key belonging to the public key.
 
 ### App key derivation
 

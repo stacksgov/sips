@@ -170,7 +170,7 @@ de.json
 ```
 {
     "version": 1,
-    "attritbutes: [
+    "attributes: [
         {
           "trait_type": "Haare",
           "value": "rot",

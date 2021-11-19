@@ -107,6 +107,8 @@ https://github.com/blockstack/connect
 
 https://github.com/fungible-systems/micro-stacks
 
+https://github.com/PravicaInc/wise-js
+
 ## Authenticators
 
 
@@ -123,6 +125,8 @@ The wallet key can own a BNS username.
 https://github.com/blockstack/stacks-wallet-web
 
 ### Wise
+
+https://github.com/PravicaInc/Wise
 
 https://wiseapp.id
 

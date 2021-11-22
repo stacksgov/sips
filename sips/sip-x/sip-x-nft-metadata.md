@@ -155,7 +155,7 @@ token101.json
   ],
   "properties": {
       "collection":  "Foo Collection",
-      "collection_size":  "10000"
+      "total_supply":  "10000"
   },
   "localization": {
       "uri": "ipfs://somerandomcid/{locale}.json",
@@ -386,4 +386,5 @@ Common Properties with predefined types.
 | `image_data`                    | `string`  | raw SVG image data.                                                                                                                                                                                                                                                                                                                                                 |
 | `category`                      | `string`  | category of the associated media file, e.g. `image`, `video`, `audio`, `vr`, `html`.                                                                                                                                                                                                                                                                                |
 | `files`                         | `array`   | list of all associated files, represented as `{uri: string, type: string, signature: string, signature_type: string}`.                                                                                                                                                                                                                                              |
-| `creators`                      | `array`   | list of creators and their shares, represented as `{address: string, share: number}`.                                                                                                                                                                                                                                                                               |
+| `creators`                      | `array`   | list of creators and their shares, represented as `{address: string, share: integer}`. Shares are represented as percentage. The sum of shares of all creators must add up to 100. Shares can be used to define royalties.                                                                                                                                          |
+| `seed`                          | `string`  | hex string represented the DNA of the NFT. The seed is usually stored on-chain, it might be contained in the metadata for convenience.                                                                                                                                                                                                                              |

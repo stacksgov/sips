@@ -50,7 +50,7 @@
 #
 # To get the tabulation for reward cycle 20, run:
 #
-#   $ cat stackers-20.json delegating.json | ./count-votes.sh /tmp/tally-20 7ae943351df455aab1aa69ce7ba6606f937ebab5f34322c982227cd9e0322176 707951
+#   $ cat stackers-20.json delegating.json | ./count-votes.sh /tmp/tally-20 13f60e5857a64485572372eeee9a204226e199d5051a2f2d6babc7b173854a89 711001
 #
 # The script may take a while to run, depending on how fast your node is.
 #

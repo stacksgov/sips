@@ -14,19 +14,22 @@ Authors:
 * Ludovic Galabru <ludo@hiro.so>
 * Trevor Owens <trevor@stacks.ac>
 * Xan Ditkoff <xan@daemontechnologies.co>
+* Pavitthra Pandurangan <pavitthra@hiro.so>
+* Reed Rosenbluth <reed@hiro.so>
 
 Consideration: Governance, Technical
 
 Type: Consensus
 
-Status: Accepted
+Status: Recommended
 
 Created: 2021-10-08
 
 License: BSD 2-Clause
 
 Sign-off: Harold Davis (governance) <recursive3@gmail.com>, Juliet Oberding
-(governance) <juliet.oberding@gmail.com>, Jason Schrader (governance) <jason@joinfreehold.com>
+(governance) <juliet.oberding@gmail.com>, Jason Schrader (governance) <jason@joinfreehold.com>,
+Jude Nelson (technical) <jude@stacks.org>
 
 Discussions-To: https://github.com/stacksgov/sips
 
@@ -149,14 +152,27 @@ process.  There are three major steps to this activation procedure:
    on November 29th or November 30th, 2021.  In this document, this is the
 **activation block**.
 
+   On November 15, 2021, the SIP authors finalized the choice of Bitcoin block
+713,000 to be the activation block.  This block is expected to be mined at or
+around December 6, 2021.  The reason for this extra week delay over the
+tentative block number is to ensure that the network upgrade happens in the
+_middle_ of a reward cycle.  November 29th/30th is expected to be the start of
+reward cycle 21. Executing a network upgrade at the start of a reward cycle is
+needlessly risky, because if the upgrade fails for some reason during the
+prepare phase, it could cause PoX rewards to be disabled for cycle 21.
+
    2.  In the two whole reward cycles prior to the activation block, users who
        have Stacked STX will have the opportunity to cast a vote to activate
 this SIP.  The cut-off for voting will be a _separate_ Bitcoin block whose
 expected arrival time is one calendar week prior to the activation block.  This
 document refers to this block as the **vote deadline block.**
 
+   On November 15, 2021, the SIP authors finalized the decision to select the
+first Bitcoin block height mined after November 23, 2021 at 12:00 EST to be the
+vote deadline block.
+
    3.  If the activation voting threshold is met as of the vote deadline block,
-then the Stacks Foundation will cut a relase of the Stacks blockchain
+then the Stacks Foundation will make a release of the Stacks blockchain
 reference implementation with this
 SIP's changes applied and set to take effect once the activation block passes.
 If on the other hand there is insufficient support for this SIP by the vote
@@ -328,6 +344,10 @@ functions' cost functions:
 * `map-insert`
 * `map-delete`
 * `concat`
+* `nft-mint?`
+* `nft-burn?`
+* `nft-transfer?`
+* `nft-get-owner?`
 
 #### `(var-get var-name) -> value`
 
@@ -395,6 +415,44 @@ transaction to enable rollbacks and post-conditions).
 The `x` input to the `concat` cost function should be the length of
 `list-a` plus the length of `list-b`.
 
+#### `(nft-mint? asset-class asset-identifier recipient)`
+
+The `x` input to the `nft-mint?` cost function should be the length in bytes of
+the consensus serialization of the supplied `asset-identifier`.
+
+The memory usage of this function should be this new `x` value, plus the size of
+a `principal` type.  The memory
+usage of `nft-mint?` remains in effect until the end of the transaction (asset
+operations remain in memory during the whole transaction to enable rollbacks and
+post-conditions).
+
+#### `(nft-burn? asset-class asset-identifier owner)`
+
+The `x` input to the `nft-burn?` cost function should be the length in bytes of
+the consensus serialization of the specified `asset-identifier`.
+
+The memory usage of this function should be this new `x` value, plus the size of
+a `principal` type.  The memory
+usage of `nft-burn?` remains in effect until the end of the transaction (asset
+operations remain in memory during the whole transaction to enable rollbacks and
+post-conditions).
+
+#### `(nft-transfer? asset-class asset-identifier sender recipient)`
+
+The `x` input to the `nft-transfer?` cost function should be the length in bytes
+of the consensus serialization of the specified `asset-identifier`.
+
+The memory usage of this function should be this new `x` value, plus the size of
+a `principal` type.  The memory
+usage of `nft-transfer?` remains in effect until the end of the transaction (asset
+operations remain in memory during the whole transaction to enable rollbacks and
+post-conditions).
+
+#### `(nft-get-owner? asset-class asset-identifier)`
+
+The `x` input to the `nft-get-owner?` cost function should be the length in
+bytes of the consensus serialization of the specified `asset-identifier`.
+
 ### New Default Cost Functions
 
 Based on results from the
@@ -449,7 +507,7 @@ _Activation-in-Progress_ status.
 
 * The SIP has garnered sufficient support by the vote deadline block height. Voting by
   sending Bitcoin transactions can begin once the SIP text is updated with the
-  "yes" / "no" addresses. Voting concludes one week prior to the Stacks 2.05
+  "yes" / "no" addresses. Voting concludes at least one week prior to the Stacks 2.05
   activation block.
 
 * A new release of Stacks blockchain (available at
@@ -459,6 +517,16 @@ block height listed in this SIP.  This release is announced by the Stacks
 Foundation.
 
 * The activation block height passes on the Bitcoin chain.
+
+## Activation Status
+
+* On November 15, 2021, the authors finalized the choice of the activation
+  block to be Bitcoin block 713,000.  This block is expected to be mined at or
+around December 6, 2021.
+
+* The vote deadline block will be backdated to the first Bitcoin block mined
+  after November 23, 2021 at 12:00 EST.  The exact block number will be added to
+this SIP's text once it is known.
 
 # Reference Implementation
 
@@ -490,60 +558,97 @@ The new proposed cost functions, which will be instantiated at
 `SP000000000000000000002Q6VF78.costs-2.05.clar`:
 
 ```lisp
+;; the .costs-2 contract
+
+;; Helper Functions
+
+;; Return a Cost Specification with just a runtime cost
+(define-private (runtime (r uint))
+    {
+        runtime: r,
+        write_length: u0,
+        write_count: u0,
+        read_count: u0,
+        read_length: u0,
+    })
+
+;; Linear cost-assessment function
+(define-private (linear (n uint) (a uint) (b uint))
+    (+ (* a n) b))
+
+;; LogN cost-assessment function
+(define-private (logn (n uint) (a uint) (b uint))
+    (+ (* a (log2 n)) b))
+
+;; NLogN cost-assessment function
+(define-private (nlogn (n uint) (a uint) (b uint))
+    (+ (* a (* n (log2 n))) b))
+
+
+;; Cost Functions
 (define-read-only (cost_analysis_type_annotate (n uint))
-    (runtime (linear n u3 u12)))
+    (runtime (linear n u1 u9)))
+
+(define-read-only (cost_analysis_type_check (n uint))
+    (runtime (linear n u113 u1)))
 
 (define-read-only (cost_analysis_type_lookup (n uint))
-    (runtime (linear n u1 u5)))
+    (runtime (linear n u1 u6)))
 
 (define-read-only (cost_analysis_visit (n uint))
-    (runtime u17))
+    (runtime u1))
+
+(define-read-only (cost_analysis_iterable_func (n uint))
+    (runtime (linear n u2 u14)))
 
 (define-read-only (cost_analysis_option_cons (n uint))
-    (runtime u51))
+    (runtime u6))
 
 (define-read-only (cost_analysis_option_check (n uint))
-    (runtime u131))
+    (runtime u3))
 
 (define-read-only (cost_analysis_bind_name (n uint))
-    (runtime (linear n u14 u144)))
+    (runtime (linear n u2 u176)))
 
 (define-read-only (cost_analysis_list_items_check (n uint))
-    (runtime (linear n u25 u5)))
+    (runtime (linear n u2 u4)))
 
 (define-read-only (cost_analysis_check_tuple_get (n uint))
-    (runtime (logn n u1 u1)))
+    (runtime (logn n u1 u2)))
+
+(define-read-only (cost_analysis_check_tuple_merge (n uint))
+    (runtime (linear n u1000 u1000)))
 
 (define-read-only (cost_analysis_check_tuple_cons (n uint))
-    (runtime (nlogn n u12 u64)))
+    (runtime (nlogn n u3 u5)))
 
 (define-read-only (cost_analysis_tuple_items_check (n uint))
-    (runtime (linear n u13 u50)))
+    (runtime (linear n u1 u59)))
 
 (define-read-only (cost_analysis_check_let (n uint))
-    (runtime (linear n u51 u87)))
+    (runtime (linear n u1 u12)))
 
 (define-read-only (cost_analysis_lookup_function (n uint))
-    (runtime u21))
+    (runtime u20))
 
 (define-read-only (cost_analysis_lookup_function_types (n uint))
-    (runtime (linear n u1 u27)))
+    (runtime (linear n u1 u28)))
 
 (define-read-only (cost_analysis_lookup_variable_const (n uint))
     (runtime u15))
 
 (define-read-only (cost_analysis_lookup_variable_depth (n uint))
-    (runtime (nlogn n u1 u65)))
+    (runtime (nlogn n u1 u34)))
 
 (define-read-only (cost_ast_parse (n uint))
-    (runtime (linear n u171 u282923)))
+    (runtime (linear n u172 u287441)))
 
 (define-read-only (cost_ast_cycle_detection (n uint))
-    (runtime (linear n u141 u26)))
+    (runtime (linear n u141 u72)))
 
 (define-read-only (cost_analysis_storage (n uint))
     {
-        runtime: (linear n u1 u5),
+        runtime: (linear n u2 u100),
         write_length: (linear n u1 u1),
         write_count: u1,
         read_count: u1,
@@ -552,7 +657,7 @@ The new proposed cost functions, which will be instantiated at
 
 (define-read-only (cost_analysis_use_trait_entry (n uint))
     {
-        runtime: (linear n u9 u736),
+        runtime: (linear n u9 u723),
         write_length: (linear n u1 u1),
         write_count: u0,
         read_count: u1,
@@ -562,7 +667,17 @@ The new proposed cost functions, which will be instantiated at
 
 (define-read-only (cost_analysis_get_function_entry (n uint))
     {
-        runtime: (linear n u82 u1345),
+        runtime: (linear n u81 u1303),
+        write_length: u0,
+        write_count: u0,
+        read_count: u1,
+        read_length: (linear n u1 u1)
+    })
+
+
+(define-read-only (cost_analysis_fetch_contract_entry (n uint))
+    {
+        runtime: (linear n u1000 u1000),
         write_length: u0,
         write_count: u0,
         read_count: u1,
@@ -576,40 +691,46 @@ The new proposed cost functions, which will be instantiated at
     (runtime (linear n u2 u1)))
 
 (define-read-only (cost_lookup_function (n uint))
-    (runtime u26))
+    (runtime u16))
 
 (define-read-only (cost_bind_name (n uint))
-    (runtime u273))
+    (runtime u256))
 
 (define-read-only (cost_inner_type_check_cost (n uint))
     (runtime (linear n u2 u9)))
 
 (define-read-only (cost_user_function_application (n uint))
-    (runtime (linear n u26 u0)))
+    (runtime (linear n u26 u140)))
 
 (define-read-only (cost_let (n uint))
-    (runtime (linear n u1 u270)))
+    (runtime (linear n u146 u862)))
 
 (define-read-only (cost_if (n uint))
-    (runtime u191))
+    (runtime u200))
 
 (define-read-only (cost_asserts (n uint))
-    (runtime u151))
+    (runtime u170))
 
 (define-read-only (cost_map (n uint))
-    (runtime (linear n u1186 u3325)))
+    (runtime (linear n u1210 u3314)))
 
 (define-read-only (cost_filter (n uint))
-    (runtime u437))
+    (runtime u460))
 
 (define-read-only (cost_len (n uint))
-    (runtime u444))
+    (runtime u486))
 
 (define-read-only (cost_element_at (n uint))
-    (runtime u548))
+    (runtime u619))
+
+(define-read-only (cost_index_of (n uint))
+    (runtime (linear n u1 u243)))
 
 (define-read-only (cost_fold (n uint))
-    (runtime u489))
+    (runtime u483))
+
+(define-read-only (cost_list_cons (n uint))
+    (runtime (linear n u14 u198)))
 
 (define-read-only (cost_type_parse_step (n uint))
     (runtime u5))
@@ -618,138 +739,156 @@ The new proposed cost functions, which will be instantiated at
     (runtime (nlogn n u4 u1780)))
 
 (define-read-only (cost_tuple_merge (n uint))
-    (runtime (linear n u208 u185)))
+    (runtime (linear n u4 u646)))
 
 (define-read-only (cost_tuple_cons (n uint))
-    (runtime (nlogn n u11 u1481)))
+    (runtime (nlogn n u11 u1101)))
 
 (define-read-only (cost_add (n uint))
-    (runtime (linear n u11 u152)))
+    (runtime (linear n u14 u157)))
 
 (define-read-only (cost_sub (n uint))
-    (runtime (linear n u11 u152)))
+    (runtime (linear n u14 u157)))
 
 (define-read-only (cost_mul (n uint))
-    (runtime (linear n u12 u151)))
+    (runtime (linear n u14 u157)))
 
 (define-read-only (cost_div (n uint))
-    (runtime (linear n u13 u151)))
+    (runtime (linear n u14 u157)))
 
 (define-read-only (cost_geq (n uint))
-    (runtime u162))
+    (runtime u170))
 
 (define-read-only (cost_leq (n uint))
-    (runtime u164))
+    (runtime u170))
 
 (define-read-only (cost_le (n uint))
-    (runtime u152))
+    (runtime u170))
 
 (define-read-only (cost_ge (n uint))
-    (runtime u152))
+    (runtime u170))
 
 (define-read-only (cost_int_cast (n uint))
-    (runtime u157))
+    (runtime u170))
 
 (define-read-only (cost_mod (n uint))
-    (runtime u166))
+    (runtime u170))
 
 (define-read-only (cost_pow (n uint))
-    (runtime u166))
+    (runtime u170))
 
 (define-read-only (cost_sqrti (n uint))
-    (runtime u165))
+    (runtime u170))
 
 (define-read-only (cost_log2 (n uint))
-    (runtime u156))
+    (runtime u170))
 
 (define-read-only (cost_xor (n uint))
-    (runtime u163))
+    (runtime u170))
 
 (define-read-only (cost_not (n uint))
-    (runtime u158))
+    (runtime u170))
 
 (define-read-only (cost_eq (n uint))
-    (runtime (linear n u8 u155)))
+    (runtime (linear n u7 u172)))
 
 (define-read-only (cost_begin (n uint))
-    (runtime u189))
+    (runtime u202))
+
+(define-read-only (cost_hash160 (n uint))
+    (runtime (linear n u1 u201)))
+
+(define-read-only (cost_sha256 (n uint))
+    (runtime (linear n u1 u100)))
+
+(define-read-only (cost_sha512 (n uint))
+    (runtime (linear n u1 u176)))
+
+(define-read-only (cost_sha512t256 (n uint))
+    (runtime (linear n u1 u188)))
+
+(define-read-only (cost_keccak256 (n uint))
+    (runtime (linear n u1 u221)))
 
 (define-read-only (cost_secp256k1recover (n uint))
-    (runtime u14312))
+    (runtime u14344))
 
 (define-read-only (cost_secp256k1verify (n uint))
-    (runtime u13488))
+    (runtime u13540))
+
+(define-read-only (cost_print (n uint))
+    (runtime (linear n u3 u1413)))
 
 (define-read-only (cost_some_cons (n uint))
-    (runtime u217))
+    (runtime u230))
 
 (define-read-only (cost_ok_cons (n uint))
-    (runtime u209))
+    (runtime u230))
 
 (define-read-only (cost_err_cons (n uint))
-    (runtime u205))
+    (runtime u230))
 
 (define-read-only (cost_default_to (n uint))
-    (runtime u255))
+    (runtime u287))
 
 (define-read-only (cost_unwrap_ret (n uint))
-    (runtime u330))
+    (runtime u339))
 
 (define-read-only (cost_unwrap_err_or_ret (n uint))
-    (runtime u319))
+    (runtime u339))
 
 (define-read-only (cost_is_okay (n uint))
-    (runtime u275))
+    (runtime u287))
 
 (define-read-only (cost_is_none (n uint))
-    (runtime u229))
+    (runtime u287))
 
 (define-read-only (cost_is_err (n uint))
-    (runtime u268))
+    (runtime u287))
 
 (define-read-only (cost_is_some (n uint))
-    (runtime u217))
+    (runtime u287))
 
 (define-read-only (cost_unwrap (n uint))
-    (runtime u281))
+    (runtime u287))
 
 (define-read-only (cost_unwrap_err (n uint))
-    (runtime u273))
+    (runtime u287))
 
 (define-read-only (cost_try_ret (n uint))
-    (runtime u275))
+    (runtime u287))
 
 (define-read-only (cost_match (n uint))
-    (runtime u316))
+    (runtime u287))
 
 (define-read-only (cost_or (n uint))
-    (runtime (linear n u3 u147)))
+    (runtime (linear n u3 u149)))
 
 (define-read-only (cost_and (n uint))
-    (runtime (linear n u3 u146)))
+    (runtime (linear n u3 u149)))
 
 (define-read-only (cost_append (n uint))
-    (runtime (linear n u1 u1024)))
+    (runtime (linear n u71 u176)))
 
 (define-read-only (cost_concat (n uint))
-    (runtime (linear n u1 u1004)))
+    (runtime (linear n u75 u244)))
 
 (define-read-only (cost_as_max_len (n uint))
-    (runtime u482))
+    (runtime u475))
 
 (define-read-only (cost_contract_call (n uint))
-    (runtime u154))
+    (runtime u153))
 
 (define-read-only (cost_contract_of (n uint))
-    (runtime u13391))
+    (runtime u13400))
 
 (define-read-only (cost_principal_of (n uint))
-    (runtime u15))
+    (runtime u999))
 
 
 (define-read-only (cost_at_block (n uint))
     {
-        runtime: u205,
+        runtime: u210,
         write_length: u0,
         write_count: u0,
         read_count: u1,
@@ -759,7 +898,7 @@ The new proposed cost functions, which will be instantiated at
 
 (define-read-only (cost_load_contract (n uint))
     {
-        runtime: (linear n u1 u10),
+        runtime: (linear n u1 u157),
         write_length: u0,
         write_count: u0,
         ;; set to 3 because of the associated metadata loads
@@ -770,7 +909,7 @@ The new proposed cost functions, which will be instantiated at
 
 (define-read-only (cost_create_map (n uint))
     {
-        runtime: (linear n u3 u1650),
+        runtime: (linear n u1 u1631),
         write_length: (linear n u1 u1),
         write_count: u1,
         read_count: u0,
@@ -780,7 +919,7 @@ The new proposed cost functions, which will be instantiated at
 
 (define-read-only (cost_create_var (n uint))
     {
-        runtime: (linear n u24 u2170),
+        runtime: (linear n u7 u2152),
         write_length: (linear n u1 u1),
         write_count: u2,
         read_count: u0,
@@ -790,7 +929,7 @@ The new proposed cost functions, which will be instantiated at
 
 (define-read-only (cost_create_nft (n uint))
     {
-        runtime: (linear n u4 u1624),
+        runtime: (linear n u1 u1610),
         write_length: (linear n u1 u1),
         write_count: u1,
         read_count: u0,
@@ -800,7 +939,7 @@ The new proposed cost functions, which will be instantiated at
 
 (define-read-only (cost_create_ft (n uint))
     {
-        runtime: u2025,
+        runtime: u1972,
         write_length: u1,
         write_count: u2,
         read_count: u0,
@@ -810,7 +949,7 @@ The new proposed cost functions, which will be instantiated at
 
 (define-read-only (cost_fetch_entry (n uint))
     {
-        runtime: (linear n u1 u1466),
+        runtime: (linear n u1 u1539),
         write_length: u0,
         write_count: u0,
         read_count: u1,
@@ -820,7 +959,7 @@ The new proposed cost functions, which will be instantiated at
 
 (define-read-only (cost_set_entry (n uint))
     {
-        runtime: (linear n u1 u1574),
+        runtime: (linear n u4 u2204),
         write_length: (linear n u1 u1),
         write_count: u1,
         read_count: u1,
@@ -830,7 +969,7 @@ The new proposed cost functions, which will be instantiated at
 
 (define-read-only (cost_fetch_var (n uint))
     {
-        runtime: (linear n u1 u679),
+        runtime: (linear n u1 u543),
         write_length: u0,
         write_count: u0,
         read_count: u1,
@@ -840,7 +979,7 @@ The new proposed cost functions, which will be instantiated at
 
 (define-read-only (cost_set_var (n uint))
     {
-        runtime: (linear n u1 u723),
+        runtime: (linear n u5 u691),
         write_length: (linear n u1 u1),
         write_count: u1,
         read_count: u1,
@@ -850,7 +989,7 @@ The new proposed cost functions, which will be instantiated at
 
 (define-read-only (cost_contract_storage (n uint))
     {
-        runtime: (linear n u13 u8043),
+        runtime: (linear n u13 u7982),
         write_length: (linear n u1 u1),
         write_count: u1,
         read_count: u0,
@@ -860,7 +999,7 @@ The new proposed cost functions, which will be instantiated at
 
 (define-read-only (cost_block_info (n uint))
     {
-        runtime: u5886,
+        runtime: u6321,
         write_length: u0,
         write_count: u0,
         read_count: u1,
@@ -870,7 +1009,7 @@ The new proposed cost functions, which will be instantiated at
 
 (define-read-only (cost_stx_balance (n uint))
     {
-        runtime: u1386,
+        runtime: u1385,
         write_length: u0,
         write_count: u0,
         read_count: u1,
@@ -880,7 +1019,7 @@ The new proposed cost functions, which will be instantiated at
 
 (define-read-only (cost_stx_transfer (n uint))
     {
-        runtime: u1444,
+        runtime: u1430,
         write_length: u1,
         write_count: u1,
         read_count: u1,
@@ -890,7 +1029,7 @@ The new proposed cost functions, which will be instantiated at
 
 (define-read-only (cost_ft_mint (n uint))
     {
-        runtime: u1624,
+        runtime: u1645,
         write_length: u1,
         write_count: u2,
         read_count: u2,
@@ -900,7 +1039,7 @@ The new proposed cost functions, which will be instantiated at
 
 (define-read-only (cost_ft_transfer (n uint))
     {
-        runtime: u563,
+        runtime: u612,
         write_length: u1,
         write_count: u2,
         read_count: u2,
@@ -910,7 +1049,7 @@ The new proposed cost functions, which will be instantiated at
 
 (define-read-only (cost_ft_balance (n uint))
     {
-        runtime: u543,
+        runtime: u547,
         write_length: u0,
         write_count: u0,
         read_count: u1,
@@ -920,7 +1059,7 @@ The new proposed cost functions, which will be instantiated at
 
 (define-read-only (cost_nft_mint (n uint))
     {
-        runtime: (linear n u1 u724),
+        runtime: (linear n u9 u795),
         write_length: u1,
         write_count: u1,
         read_count: u1,
@@ -930,7 +1069,7 @@ The new proposed cost functions, which will be instantiated at
 
 (define-read-only (cost_nft_transfer (n uint))
     {
-        runtime: (linear n u1 u787),
+        runtime: (linear n u9 u795),
         write_length: u1,
         write_count: u1,
         read_count: u1,
@@ -940,7 +1079,7 @@ The new proposed cost functions, which will be instantiated at
 
 (define-read-only (cost_nft_owner (n uint))
     {
-        runtime: (linear n u1 u680),
+        runtime: (linear n u9 u795),
         write_length: u0,
         write_count: u0,
         read_count: u1,
@@ -950,7 +1089,7 @@ The new proposed cost functions, which will be instantiated at
 
 (define-read-only (cost_ft_get_supply (n uint))
     {
-        runtime: u474,
+        runtime: u483,
         write_length: u0,
         write_count: u0,
         read_count: u1,
@@ -960,7 +1099,7 @@ The new proposed cost functions, which will be instantiated at
 
 (define-read-only (cost_ft_burn (n uint))
     {
-        runtime: u599,
+        runtime: u612,
         write_length: u1,
         write_count: u2,
         read_count: u2,
@@ -970,7 +1109,7 @@ The new proposed cost functions, which will be instantiated at
 
 (define-read-only (cost_nft_burn (n uint))
     {
-        runtime: (linear n u1 u644),
+        runtime: (linear n u9 u795),
         write_length: u1,
         write_count: u1,
         read_count: u1,
@@ -980,7 +1119,7 @@ The new proposed cost functions, which will be instantiated at
 
 (define-read-only (poison_microblock (n uint))
     {
-        runtime: u29374,
+        runtime: u29568,
         write_length: u1,
         write_count: u1,
         read_count: u1,

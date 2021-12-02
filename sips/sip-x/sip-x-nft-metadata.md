@@ -4,13 +4,13 @@ SIP Number: X
 
 Title: Schema Definition for Metadata for Non-Fungible Tokens
 
-Author: Friedger Müffke (mail@friedger.de)
+Author: Friedger Müffke (mail@friedger.de), Dan Trevino
 
 Consideration: Technical
 
 Type: Standard
 
-Status: Draft
+Status: Accepted
 
 Created: 7 November 2021
 
@@ -18,9 +18,11 @@ License: CC0-1.0
 
 Sign-off:
 
+Layer: Traits
+
 # Abstract
 
-Non-fungible tokens or NFTs for short are digital assets registered on blockchain with unique identifiers and properties that distinguish them from each other. SIP-009 defines the trait for how ownership of an NFT is managed. This SIP aims to provide a flexible standard to attach metadata to NFTs, like descriptions or urls to digital files.
+Non-fungible tokens - NFTs for short - are digital assets registered on blockchain with unique identifiers and properties that distinguish them from each other. SIP-009 defines the trait for how ownership of an NFT is managed. Fungible tokens - FTs for short - are digital assets where each token can be replaced by another token (see SIP-010). Semi-fungible tokens are digital assets where each token has a unique identifier and is dividable into fungible parts (see SIP-013). This SIP aims to provide a flexible standard to attach metadata to NFTs, like descriptions or urls to digital files. The same standard is applicable to fungible tokens.
 
 # License and Copyright
 

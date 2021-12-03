@@ -526,7 +526,7 @@ Foundation.
 
 * On November 15, 2021, the authors finalized the choice of the activation
   block to be Bitcoin block 713,000.  This block is expected to be mined at or
-around December 6, 2021.
+around December 6, 2021 at 23:00 UTC.
 
 * The vote deadline block will be backdated to the first Bitcoin block mined
   after November 23, 2021 at 12:00 EST.  The exact block number will be added to

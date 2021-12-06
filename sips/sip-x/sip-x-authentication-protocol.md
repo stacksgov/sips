@@ -31,9 +31,9 @@ This SIP’s copyright is held by the Stacks Open Internet Foundation.
 
 Decentralized application do not want to store credentials of their users. Instead users should be able to login using some kind of cryptographic proof that they control a public key.
 
-The private key for that public key is guarded by a so-called authenticator. When a users visits the app, the app needs to communicate with the authenticator. In the authenticator, the user can control which public key should be shared with the application. 
+The private key for that public key is guarded and managed by a so-called authenticator. When a users visits the app, the app needs to communicate with the authenticator. In the authenticator, the user can control which public key should be shared with the application. 
 
-In addition, to the public key more information can be shared like email address or profile pictures. In particular, a private key is derived by the authenticator specific for the application and for the user. This private key can be used by the application to access for example decentralized storage or sign messages in the name of the user of the application.
+In addition to the public key, more information can be shared like email address or profile pictures. In particular, a private key is derived by the authenticator specific for the application and for the user. This private key can be used by the application to access for example decentralized storage or sign messages in the name of the user of the application.
 
 # Specification
 

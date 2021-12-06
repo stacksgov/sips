@@ -1,10 +1,10 @@
 # Preamble
 
-SIP Number: X
+SIP Number: 016
 
-Title: Schema Definition for Metadata for Non-Fungible Tokens
+Title: Schema Definition for Metadata for Digital Assets
 
-Author: Friedger Müffke (mail@friedger.de), Dan Trevino
+Author: Friedger Müffke (mail@friedger.de)
 
 Consideration: Technical
 

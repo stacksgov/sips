@@ -169,7 +169,7 @@ document refers to this block as the **vote deadline block.**
 
    On November 15, 2021, the SIP authors finalized the decision to select the
 first Bitcoin block height mined after November 23, 2021 at 12:00 EST to be the
-vote deadline block.
+vote deadline block.  This was Bitcoin block 710,001.
 
    3.  If the activation voting threshold is met as of the vote deadline block,
 then the Stacks Foundation will make a release of the Stacks blockchain
@@ -177,6 +177,10 @@ reference implementation with this
 SIP's changes applied and set to take effect once the activation block passes.
 If on the other hand there is insufficient support for this SIP by the vote
 deadline block, then no action will be taken and this SIP will not activate.
+   
+   On November 23, 2021, the SIP authors inspected the Bitcoin and Stacks chainstate
+using [vote-tallying scripts](./scripts) and determined that the the voting threshold has been met.
+At least 129,615,879 stacked STX had voted in favor of this SIP, and 0 against.
 
 To activate this SIP, users who have Stacked STX in either of the last two whole
 reward cycles prior to the vote deadline block height will have the opportunity to
@@ -522,7 +526,7 @@ Foundation.
 
 * On November 15, 2021, the authors finalized the choice of the activation
   block to be Bitcoin block 713,000.  This block is expected to be mined at or
-around December 6, 2021.
+around December 6, 2021 at 23:00 UTC.
 
 * The vote deadline block will be backdated to the first Bitcoin block mined
   after November 23, 2021 at 12:00 EST.  The exact block number will be added to

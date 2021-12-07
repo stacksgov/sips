@@ -21,7 +21,7 @@ Consideration: Governance, Technical
 
 Type: Consensus
 
-Status: Recommended
+Status: Ratified
 
 Created: 2021-10-08
 

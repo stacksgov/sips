@@ -30,6 +30,7 @@ None right now
 * [SIP-009](./sips/sip-009/sip-009-nft-standard.md): Standard Trait Definition
   for Non-Fungible Tokens
 * [SIP-010](./sips/sip-010/sip-010-fungible-token-standard.md): Standard Trait Definition for Fungible Tokens
+* [SIP-012](./sips/sip-012/sip-012-cost-limits-network-upgrade.md):  Burn Height Selection for a Network Upgrade to Introduce New Cost-Limits
 
 ## How to Get Involved
 

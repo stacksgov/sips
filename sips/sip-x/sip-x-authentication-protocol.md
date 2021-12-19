@@ -153,7 +153,7 @@ https://github.com/PravicaInc/wise-js
 
 ### Hiro Wallet
 
-Hiro Wallet is an browser extension that handles authentication and transaction signing.
+Hiro Wallet is a browser extension that handles authentication and transaction signing.
 
 It uses a 24 mnemonic called SecretKey to derive private keys for different user accounts.
 

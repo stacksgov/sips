@@ -10,7 +10,7 @@ Consideration: Technical
 
 Type: Standard
 
-Status: Draft
+Status: Accepted
 
 Created: 12 September 2021
 
@@ -85,13 +85,13 @@ Returns the decimal places of a token type. This is purely for display reasons, 
 
 ### Token URI
 
-`(get-token-uri ((token-id uint)) (response (optional (string-utf8 256)) uint))`
+`(get-token-uri ((token-id uint)) (response (optional (string-ascii 256)) uint))`
 
-Returns an optional UTF8 string that is a valid URI which resolves to this token type's metadata. These files can provide off-chain metadata about that particular token type, like descriptions, imagery, or any other information. The exact structure of the metadata is out of scope for this SIP and may be defined in a future SIP. However, the metadata file should be in JSON format and should include a `version` property containing a string:
+Returns an optional ASCII string that is a valid URI which resolves to this token type's metadata. These files can provide off-chain metadata about that particular token type, like descriptions, imagery, or any other information. The exact structure of the metadata is out of scope for this SIP. However, the metadata file should be in JSON format and should include a `version` property containing a string:
 
 ```JSON
 {
-	"version: "v1"
+	"version": "1"
 	// ... any other properties
 }
 ```
@@ -109,7 +109,9 @@ Transfer a token from the sender to the recipient. It is recommended to leverage
 | `u1`       | The sender has insufficient balance.             |
 | `u2`       | The sender and recipient are the same principal. |
 | `u3`       | Amount is `u0`.                                  |
-| `u4`       | The sender is not the `tx-sender`.               |
+| `u4`       | The sender is not authorised to transfer tokens. |
+
+Error code `u4` is broad and may be returned under different cirumstances. For example, a token  contract with an allowance mechanism can return `(err u4)` when the `sender` parameter has no allowance for the specified token amount or if the sender is not equal to `tx-sender`. A token contract without an allowance mechanism can return `(err u4)` simply when the `sender` is not equal to the `tx-sender`.
 
 This function should emit a special transfer event, as detailed in the Events section of this document.
 
@@ -121,13 +123,13 @@ Transfer a token from the sender to the recipient and emit a memo. This function
 
 ### Bulk transfers
 
-`(transfer-many ((transfers (list 200 {token-id: uint, amount: uint, sender: principal, recipient: principal}))) (response bool uint))`
+`(transfer-many ((transfers (list 100 {token-id: uint, amount: uint, sender: principal, recipient: principal}))) (response bool uint))`
 
 Transfer many tokens in one contract call. Each transfer should follow the exact same procedure as if it were an individual `transfer` call. The whole function call should fail with an `err` response if one of the transfers fails.
 
 ### Bulk transfers with memos
 
-`(transfer-many-memo ((transfers (list 200 {token-id: uint, amount: uint, sender: principal, recipient: principal, memo: (buff 34)}))) (response bool uint))`
+`(transfer-many-memo ((transfers (list 100 {token-id: uint, amount: uint, sender: principal, recipient: principal, memo: (buff 34)}))) (response bool uint))`
 
 Transfer many tokens in one contract call and emit a memo for each. This function follows the same procedure as `transfer-many` but will emit the memo contained in the tuple after each transfer. The whole function call should fail with an `err` response if one of the transfers fails.
 
@@ -154,7 +156,7 @@ A definition of the proposed trait is provided below.
 		(get-decimals (uint) (response uint uint))
 
 		;; Get an optional token URI that represents metadata for a specific token.
-		(get-token-uri (uint) (response (optional (string-utf8 256)) uint))
+		(get-token-uri (uint) (response (optional (string-ascii 256)) uint))
 
 		;; Transfer from one principal to another.
 		(transfer (uint uint principal principal) (response bool uint))
@@ -163,10 +165,10 @@ A definition of the proposed trait is provided below.
 		(transfer-memo (uint uint principal principal (buff 34)) (response bool uint))
 
 		;; Transfer many tokens at once.
-		(transfer-many ((list 200 {token-id: uint, amount: uint, sender: principal, recipient: principal})) (response bool uint))
+		(transfer-many ((list 100 {token-id: uint, amount: uint, sender: principal, recipient: principal})) (response bool uint))
 
 		;; Transfer many tokens at once with memos.
-		(transfer-many-memo ((list 200 {token-id: uint, amount: uint, sender: principal, recipient: principal, memo: (buff 34)})) (response bool uint))
+		(transfer-many-memo ((list 100 {token-id: uint, amount: uint, sender: principal, recipient: principal, memo: (buff 34)})) (response bool uint))
 	)
 )
 ```
@@ -206,7 +208,7 @@ The Stacks blockchain includes a feature known as Post Conditions. By defining p
 
 However, since there are no Clarity primitive counterparts for semi-fungible tokens, post conditions can only safeguard users on a basic level. Semi-fungible token contracts that are implemented using the Clarity primitive `define-fungible-token` give users the ability to make assertions against the total number of tokens transferred in any single call. It does not, however, provide any securities as to the type of token transferred.
 
-Future research may be conducted to see if a custom non-fungible definition using `define-non-fungible-token` can help on this front, perhaps by minting and burning in one go, or by defining a more complex internal token ID. Another solution may be if a future Stacks version allows users to define post conditions for custom `print` events.
+For strategies on how to best guard a semi-fungible token contract with post conditions, see the reference implementation at the end of this document.
 
 # Related work
 

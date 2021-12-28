@@ -90,8 +90,8 @@ The `domain` is a `tuple` type Clarity Value that represents the domain in which
 ```clojure
 {
 	name: (string-ascii len)
-  version: (string-ascii len)
-  chain-id: uint
+	version: (string-ascii len)
+	chain-id: uint
 }
 ```
 

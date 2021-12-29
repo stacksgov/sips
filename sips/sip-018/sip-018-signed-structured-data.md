@@ -10,13 +10,13 @@ Consideration: Technical
 
 Type: Standard
 
-Status: Accepted
+Status: Draft
 
 Created: 28 December 2021
 
 License: CC0-1.0
 
-Sign-off: Jude Nelson <jude@stacks.org>, Technical Steering Committee Chair
+Sign-off: 
 
 Layer: Applications
 
@@ -34,7 +34,11 @@ This SIP's copyright is held by the Stacks Open Internet Foundation.
 
 # Introduction
 
-Digital signatures are at the heart of blockchains. They allow users to trustlessly transfer assets, invoke smart contracts and more. To perform these actions, a user signs a transaction and broadcasts it to the network. However, there are situations in which signed proofs without having to broadcast transactions are desirable. A few common use-cases include: (1) prove to an external application or entity that a user is in control of an address; (2) authorise an action to be performed by a smart contract at a later stage (like a meta transaction); (3) participate in an off-chain mechanism that is later settled on-chain (like a subnet).
+Digital signatures are at the heart of blockchains. They allow users to transfer assets, invoke smart contracts and more, without a designated trusted third party. To perform these actions, a user signs a transaction and broadcasts it to the network. However, there are situations in which it is desirable to produce signed messages that are not transactions. A few common use-cases include:
+
+1. prove to an external application or entity that a user is in control of an address;
+2. authorise an action to be performed by a smart contract at a later stage (like a meta transaction, see below); 
+3. participate in an off-chain mechanism that is later settled on-chain (like a subnet).
 
 It is important that signed messages are understandable for humans. For transactions, this is obvious: wallet applications display whom is receiving how many tokens of what kind. Likewise, the input parameters, function name, and target contract of contract calls are properly listed. Signed messages that are not transactions should be no different.
 
@@ -51,6 +55,8 @@ The challenge lies in producing messages that are both meaningful to humans as w
 ## Definitions
 
 *Clarity Value*: a native Clarity value as expressed in *SIP002: Smart Contract Language*.
+
+*Meta Transaction*: a meta transaction can be understood of as a transaction that contains another "transaction". For example, a user may sign a message that, when received by a particular smart contract, causes it to transfer tokens. A transaction carrying the signed message will then trigger the underlying action when it is broadcast.
 
 *SHA256*: a cryptographic hash function producing hashes with a length of 32 bytes.
 

@@ -10,13 +10,13 @@ Consideration: Technical
 
 Type: Standard
 
-Status: Accepted
+Status: Draft
 
 Created: 12 September 2021
 
 License: CC0-1.0
 
-Sign-off: Jude Nelson <jude@stacks.org>, Technical Steering Committee Chair
+Sign-off: 
 
 Layer: Traits
 

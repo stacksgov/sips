@@ -42,7 +42,7 @@ review by advancing it them from Draft to Accepted status.  If you want to becom
 open an issue with your name and email to ask to be added to the list of SIP editors.
 
 * **Joining a Consideration Advisory Board**.  SIPs fall under the purview of
-  one or more considerations, such as "technical," "economic," "governance,"
+  one or more considerations, such as "technical", "economic", "governance",
 and so on.  A full list is in the `considerations/` directory.  Members of SIP
 consideration advisory boards use their domain expertise to give Accepted SIPs a
 deep read, and give the authors any/all feedback to help make the SIP workable.

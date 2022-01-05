@@ -31,42 +31,24 @@ This SIP’s copyright is held by the Stacks Open Internet Foundation.
 
 Decentralized application do not want to store credentials of their users. Instead users should be able to login using some kind of cryptographic proof that they control a public key.
 
-The private key for that public key is guarded and managed by a so-called authenticator. When a users visits the app, the app needs to communicate with the authenticator. In the authenticator, the user can control which public key should be shared with the application.
+The private key for that public key is guarded and managed by a so-called authenticator. When a users visits the app, the app needs to communicate with the authenticator. The authenticator helps the user to choose a public key that should be shared with the application.
 
-In addition to the public key, more information can be shared like email address or profile pictures. In particular, a private key is derived by the authenticator specific for the application and for the user. This private key can be used by the application to access for example decentralized storage or sign messages in the name of the user of the application.
+In addition to the public key, more information can be shared like email address or profile pictures. Some data can be shared publicly, other only with the application. In particular, a private key is derived by the authenticator that is specific to the application and to the user. This private key can be used by the application to access for example decentralized storage or sign messages in the name of the user of the application.
 
 # Specification
-
-## Authentication Flow
 
 The basic flow of the authentication between the application and the authenticator (aka wallet or agent of the user) is as follows:
 
 1. Application creates app transit private key, signs an auth request with that key and sends the request to the Authenticator.
-2. In the Authenticator, User authorizes sharing of public key, Authenticator derives app private key from request.
+2. In the Authenticator, User authorizes sharing of public key, Authenticator derives app private key from request and updates the user's public profile if required.
 3. Authenticator creates response with authorized data and sends response to the Application.
 4. Application verifies signature against the app transit private key.
 
 https://cogarius.medium.com/blockstack-world-tour-brussels-social-dapp-workshop-fb0ef887b55f
 
-## Authentication Response
+Requests and responses are signed json web tokens (JWT) following standard [RFC 7519](https://tools.ietf.org/html/rfc7519).
 
-The authentication response is a signed JWT that contains the requests and authorized data. The token is signed with the app transit key.
-
-### Public key and BNS Username
-
-If the Stacks address representing the public key owns a BNS username, it is returned as part of the response. Other users can use the username to lookup metadata of other applications via the zonefile and the profile linked in the zonefile. The profile is signed with the private key belonging to the public key.
-
-### App key derivation
-
-### Profile
-
-### App Meta Data
-
-### Response Token Schema
-
-The response is a signed json web token following standard [RFC 7519](https://tools.ietf.org/html/rfc7519).
-
-A typical header is
+The header of any JWT must be
 
 ```
 {
@@ -75,6 +57,43 @@ A typical header is
 }
 ```
 
+The payloads for the authentication request and the response are specified in the following sections.
+
+## Authentication Request
+
+The authentication request is a JWT created by the application. It is signed by a private key that is usually freshly generated. The key is called app transit key. The payload schema is defined as follows:
+
+The payload must contain the following claims:
+
+| Claim name             | Type   | Description                                                                                                 |
+| ---------------------- | ------ | ----------------------------------------------------------------------------------------------------------- |
+| jti                    | string | As defined in RFC7519                                                                                       |
+| iat                    | string | As defined in RFC7519                                                                                       |
+| exp                    | string | As defined in RFC7519                                                                                       |
+| iss                    | string | Decentralized identifier defined in DID specification representing the user's account.                      |
+|                        |
+| public_keys            | array  | Single item list with the public key of the signer                                                          |
+| domain_name            | string | The url of the application with schema.                                                                     |
+| manifest_uri           | string | The url of the application manifest, usually domain_name + "/manifest.json"                                 |
+| redirect_uri           | string | The url that should receive the authentication response                                                     |
+| do_not_include_profile | bool   |                                                                                                             |
+| supports_hub_url       | bool   |                                                                                                             |
+| scopes                 | array  | list of strings specifying the requested access to the user's account. See Append A for full list of scopes |
+| version                | string | must be "1.3.1"                                                                                             |
+
+## User authorization
+
+The authenticator manages the user' private keys. The protocol requires that keys are created using [BIP-39](https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki).
+
+Depending on the requested scopes the authenticator has to do the following operations:
+
+- Update public profile
+- Create authentication response
+
+## Authentication Response
+
+The authentication response is a signed JWT that contains the requested and authorized data. The token is signed with the public key of the request signature, i.e. the app transit key.
+
 The payload must contain the following claims:
 
 | Claim name         | Type    | Description                                                                                                                                                                                                 |
@@ -82,7 +101,7 @@ The payload must contain the following claims:
 | jti                | string  | As defined in RFC7519                                                                                                                                                                                       |
 | iat                | string  | As defined in RFC7519                                                                                                                                                                                       |
 | exp                | string  | As defined in RFC7519                                                                                                                                                                                       |
-| iss                | string  | Decentralized identifier defined in DID specification                                                                                                                                                       |
+| iss                | string  | Decentralized identifier defined in DID specification representing the user's account.                                                                                                                      |
 | private_key        | string  | App private key for the provided domain                                                                                                                                                                     |
 | public_keys        | array   | Array of public keys owned by the user                                                                                                                                                                      |
 | profile            | object  | Object containing properties of the users, the object schema should be well-known type, like `Person` or `Organisation` defined by schema.org                                                               |
@@ -96,7 +115,18 @@ The payload must contain the following claims:
 | hub_url            | string  | User's storage hub url for the current app.                                                                                                                                                                 |
 | blockstackAPIUrl   | string? | Deprecated. Url to the user's preferred authenticator                                                                                                                                                       |
 | associationToken   | string  | Signed JWT to access gaia storage bucket of user's app data.                                                                                                                                                |
-| version            | string  | Version of this schema, must be "1.3.1"                                                                                                                                                                     |
+| version            | string  | Version of this schema, must be "1.3.1"                                                                                                   
+
+### Public key and BNS Username
+
+If the Stacks address representing the public key owns a BNS username, it is returned as part of the response. Other users can use the username to lookup metadata of other applications via the zonefile and the profile linked in the zonefile. The profile is signed with the private key belonging to the public key.
+
+### App key derivation
+
+### Profile
+
+### App Meta Data
+                                                                  |
 
 ## Transport Protocol
 

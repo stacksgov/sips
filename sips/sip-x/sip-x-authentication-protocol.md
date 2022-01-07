@@ -65,21 +65,20 @@ The authentication request is a JWT created by the application. It is signed by 
 
 The payload must contain the following claims:
 
-| Claim name             | Type   | Description                                                                                                 |
-| ---------------------- | ------ | ----------------------------------------------------------------------------------------------------------- |
-| jti                    | string | As defined in RFC7519                                                                                       |
-| iat                    | string | As defined in RFC7519                                                                                       |
-| exp                    | string | As defined in RFC7519                                                                                       |
-| iss                    | string | Decentralized identifier defined in DID specification representing the user's account.                      |
-|                        |
-| public_keys            | array  | Single item list with the public key of the signer                                                          |
-| domain_name            | string | The url of the application with schema.                                                                     |
-| manifest_uri           | string | The url of the application manifest, usually domain_name + "/manifest.json"                                 |
-| redirect_uri           | string | The url that should receive the authentication response                                                     |
-| do_not_include_profile | bool   |                                                                                                             |
-| supports_hub_url       | bool   |                                                                                                             |
+| Claim name             | Type   | Description                                                                                                   |
+| ---------------------- | ------ | ------------------------------------------------------------------------------------------------------------- |
+| jti                    | string | As defined in RFC7519                                                                                         |
+| iat                    | string | As defined in RFC7519                                                                                         |
+| exp                    | string | As defined in RFC7519                                                                                         |
+| iss                    | string | Decentralized identifier defined in DID specification representing the user's account.                        |
+| public_keys            | array  | Single item list with the public key of the signer                                                            |
+| domain_name            | string | The url of the application with schema.                                                                       |
+| manifest_uri           | string | The url of the application manifest, usually domain_name + "/manifest.json"                                   |
+| redirect_uri           | string | The url that should receive the authentication response                                                       |
+| do_not_include_profile | bool   |                                                                                                               |
+| supports_hub_url       | bool   |                                                                                                               |
 | scopes                 | array  | list of strings specifying the requested access to the user's account. See Appendix A for full list of scopes |
-| version                | string | must be "2.0.0"                                                                                             |
+| version                | string | must be "2.0.0"                                                                                               |
 
 ## User authorization
 
@@ -119,14 +118,14 @@ The JWT must be signed by the private key of the stacks address that ownes the u
 
 The JWT payload must have the following claims:
 
-| claim   | description                                                                                                    |
-| ------- | -------------------------------------------------------------------------------------------------------------- |
-| jti     | as defined by RFC 7519                                                                                         |
-| iat     | as defined by RFC 7519                                                                                         |
-| exp     | as defined by RFC 7519                                                                                         |
-| subject | a json object with property `publicKey` containing the hex representation of the public key of the signing key |
-| issuer  | same as subject                                                                                                |
-| claim   | a json object containing data of the username owner mixed with meta data of applications used by the owner     |
+| Claim   | Type   | Description                                                                                                    |
+| ------- | ------ | -------------------------------------------------------------------------------------------------------------- |
+| jti     | string | as defined by RFC 7519                                                                                         |
+| iat     | string | as defined by RFC 7519                                                                                         |
+| exp     | string | as defined by RFC 7519                                                                                         |
+| subject | object | a json object with property `publicKey` containing the hex representation of the public key of the signing key |
+| issuer  | object | same as subject                                                                                                |
+| claim   | object | a json object containing data of the username owner mixed with meta data of applications used by the owner     |
 
 #### Owner Data
 
@@ -202,7 +201,7 @@ The payload must contain the following claims:
 | associationToken   | string  | Signed JWT to access gaia storage of a private gaia hub.                                                                                                                                                            |
 | version            | string  | Version of this schema, must be "2.0.0"                                                                                                                                                                             |
 
-## Transport Protocol
+## Transport Protocols
 
 The communication between application and authenticator can happen in various ways. The subsections below define common transport protocols.
 
@@ -219,7 +218,7 @@ https://github.com/hirosystems/connect/blob/main/packages/connect/src/types/prov
 
 The function `authenticationRequest` expects the JWT of the authentication request as parameter and must return the authentication response as encoded JWT.
 
-This transport protocol is implemented by the [Hiro Wallet web extension](https://github.com/blockstack/stacks-wallet-web/).
+This transport protocol is implemented by the [Hiro Wallet web extension](https://github.com/blockstack/stacks-wallet-web/). Examples for client libraries are [Connect](https://github.com/blockstack/connect) and [Micro Stacks](https://github.com/fungible-systems/micro-stacks).
 
 ### HTTPS
 
@@ -235,8 +234,8 @@ On mobile devices, applications can use app links/deep links to send authenticat
 
 This transport protocol is implemented by the following authenticator apps:
 
-- [Wise app](https://github.com/PravicaInc/wise-js) and
-- [Circles app](https://github.com/blocoio/stacks-circles-app).
+- [Wise app](https://github.com/PravicaInc/wise-js) and client library[wise-js](https://github.com/PravicaInc/wise-js)
+- [Circles app](https://github.com/blocoio/stacks-circles-app) for Android.
 
 ### Android Accounts
 
@@ -246,9 +245,19 @@ The communication happens via Android Intents. The used data uris must use the q
 
 Proof of concept implementation in [OI Calendar](https://github.com/openintents/calendar-sync/blob/master/app/src/main/java/org/openintents/calendar/common/accounts/GenericAccountService.kt).
 
+## Client Libraries
+
+https://github.com/PravicaInc/wise-js
+
 # Out of Scope
 
 This SIP does not specify other communication between application and authenticator like transaction signing or message encryption.
+
+## User collections
+
+Collections are data items with well-defined schema, for example a collection of contacts (address book). Application can request access to these collection, the scope is defined as `collection._collection type_`. The Response will contain details about how to lookup collections. The collection type for scope `collection.contact` is defined in [blockstack-collections](https://github.com/blockstack/blockstack-collections).
+
+Specification of user collections is out of scope of this SIP.
 
 # Backwards Compatibility
 
@@ -256,27 +265,17 @@ The specification contains parts that are deprecated like the property `apps` in
 
 # Related Work
 
-## Unstoppabledomains auth
+## Unstoppable Login
 
-https://unstoppabledomains.com/blog/login-with-unstoppable
+Unstoppable are domain names registered on Polygon blockchain. The login is similar to the HTTPS transport protocol. When a user visits an app and logs in with their domain, the app reads the domain and directs the user to the authorization server saved to that domain name.
+
+It differs in the way how the user authorizes access to private information. The user authenticates and grants access to the information requested by signing a transaction with the key that owns their domain. The app receives an access token and an id token from the authorization server with the user’s contact information (e.g., email address).
+
+See the [blog post by unstoppabledomains](https://unstoppabledomains.com/blog/login-with-unstoppable)
 
 ## DID auth
 
-https://medium.com/@sethisaab/what-is-did-auth-and-how-does-it-works-1e4884383a53
-
-## User collections
-
-Collections are data items with well-defined schema, for example a collection of contacts (address book). Application can request access to these collection, the scope is defined as `collection._collection type_`. The Response will contain details about how to lookup collections. The collection types for scope `collection.contact` was defined in [blockstack-collections](https://github.com/blockstack/blockstack-collections).
-
-# Implementations
-
-## Libraries
-
-https://github.com/blockstack/connect
-
-https://github.com/fungible-systems/micro-stacks
-
-https://github.com/PravicaInc/wise-js
+The generalized form the authentication flow is a cryptographic challenge where users and applications use [DIDs](https://www.w3.org/TR/did-core/) and where the details about the cryptography have to be looked up via a DID resolver. See for example [this article](https://medium.com/@sethisaab/what-is-did-auth-and-how-does-it-works-1e4884383a53).
 
 # Activation
 

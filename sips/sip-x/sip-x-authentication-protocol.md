@@ -78,17 +78,102 @@ The payload must contain the following claims:
 | redirect_uri           | string | The url that should receive the authentication response                                                     |
 | do_not_include_profile | bool   |                                                                                                             |
 | supports_hub_url       | bool   |                                                                                                             |
-| scopes                 | array  | list of strings specifying the requested access to the user's account. See Append A for full list of scopes |
-| version                | string | must be "1.3.1"                                                                                             |
+| scopes                 | array  | list of strings specifying the requested access to the user's account. See Appendix A for full list of scopes |
+| version                | string | must be "2.0.0"                                                                                             |
 
 ## User authorization
 
-The authenticator manages the user' private keys. The protocol requires that keys are created using [BIP-39](https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki).
+The authenticator manages the user' private keys. The protocol requires that keys are created from a deterministic wallet using [BIP-39](https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki).
 
-Depending on the requested scopes the authenticator has to do the following operations:
+The authenticator can offer the user a list of accounts. Each account corresponds to a change of the key derivation path by 1. This SIP does not specify how the wallet determines which accounts should be presented. Only requirement is that one account is selected. The selected index shall be called account index `n`.
 
-- Update public profile
+Once the account index has been fixed, authenticator has to do the following operations:
+
+- Update public profile (depending on requested scopes)
 - Create authentication response
+
+## Application Private Key
+
+If the authentication request contains the scope `storage_write`, then the authenticator must create a private key that is specific for the requesting application. It must use the following algorithm:
+
+1. Wallet salt: create the sha256 hash of the hex representation of the public key of derivation path (`m/888'/0'`)
+1. Create sha256 hash of concatinated string of the `domain_name` from the request and the hex representation of the wallet salt.
+1. Hash code: Create a hash code (as defined in Java and Javascript) from the hex representation of the hash, then apply bitwise `and` to the hash code and 0x7fffffff.
+1. Use derivation path `m/888'/0'/n'/0'/_hash code_'` for the private key.
+
+## Public Profile
+
+Users who own a BNS username can publish a public profile with information about the account that owns the BNS username. The url of the publicly accessible profile is provided in the zone file of the BNS username. The process of attaching a zone file to a BNS username is part of name registration via the BNS contract.
+
+The public profile is used during authentication when the authentication request contains the scope `publish_data`. The profile then contains public meta data about the application that other users can use to find data shared with them.
+
+### Profile Storage
+
+It is recommended to use the [gaia protocol](https://github.com/blockstack/gaia) to publish the public profile. In this case, the gaia bucket must be used that is owned by the data private key, i.e. using derivation path `m/888'/0'/n'` (where `n` is the selected account index starting with 0).
+
+The profile must be stored as a JSON array containing a single JSON object with properties `token` and `decodedToken`. The values are a signed JWT token and its decoded representation.
+
+### Signed JWT
+
+The JWT must be signed by the private key of the stacks address that ownes the username of the select account. This should be the Stacks private key using the derivation path `m/44'/5757'/0'/0/n`. Some users might have used the data private key to register a username, therefore, authenticators must verify whether the username is owned by the signing private key at the time of signing.
+
+The JWT payload must have the following claims:
+
+| claim   | description                                                                                                    |
+| ------- | -------------------------------------------------------------------------------------------------------------- |
+| jti     | as defined by RFC 7519                                                                                         |
+| iat     | as defined by RFC 7519                                                                                         |
+| exp     | as defined by RFC 7519                                                                                         |
+| subject | a json object with property `publicKey` containing the hex representation of the public key of the signing key |
+| issuer  | same as subject                                                                                                |
+| claim   | a json object containing data of the username owner mixed with meta data of applications used by the owner     |
+
+#### Owner Data
+
+Personal data must not be published by the authenticator without consent of the user. If published, the authenticator must provide a method to remove this data as well.
+
+Examples of personal data are name and profile picture.
+
+The owner data shall use a well-known schema. See Appendix B for recommended schemas.
+
+#### Application Meta Data
+
+If the application requested to share data publicly through the scope `publish_data`, then the authenticator has to publish the public profile with information about the application's gaia bucket location. This is the gaia bucket owned by the application private key. The location and the public key are published as entry of the profile property `appsMeta`. The key of the entry is the `domain name` of the authorization request and the value is a JSON object of the following schema:
+
+```
+{
+    "$schema": "http://json-schema.org/draft-2020-12/schema",
+    "type": "object",
+    "title": "Public profile application meta data",
+    "description": "Meta data for application specific storage",
+    "default": {},
+    "examples": [
+        {
+            "storage": "https://gaia.blockstack.org/hub/19xhuMssxAnLoa1yMTD7YNmhhaev5NBzv1/",
+            "publicKey": "03f2dea6295f8e4e7b05e092e4a97ad1a113143f820b65d9e4990a10fd8fcb0b1d"
+        }
+    ],
+    "required": [
+        "storage",
+        "publicKey"
+    ],
+    "properties": {
+        "storage": {
+            "$id": "#/properties/storage",
+            "type": "string",
+            "title": "Storage location",
+            "description": "Url of the publicly readable gaia bucket owned by the application private key."
+        },
+        "publicKey": {
+            "$id": "#/properties/publicKey",
+            "type": "string",
+            "title": "Public Key",
+            "description": "Hex representation of the public key of the application private key."
+        }
+    },
+    "additionalProperties": true
+}
+```
 
 ## Authentication Response
 
@@ -96,45 +181,34 @@ The authentication response is a signed JWT that contains the requested and auth
 
 The payload must contain the following claims:
 
-| Claim name         | Type    | Description                                                                                                                                                                                                 |
-| ------------------ | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| jti                | string  | As defined in RFC7519                                                                                                                                                                                       |
-| iat                | string  | As defined in RFC7519                                                                                                                                                                                       |
-| exp                | string  | As defined in RFC7519                                                                                                                                                                                       |
-| iss                | string  | Decentralized identifier defined in DID specification representing the user's account.                                                                                                                      |
-| private_key        | string  | App private key for the provided domain                                                                                                                                                                     |
-| public_keys        | array   | Array of public keys owned by the user                                                                                                                                                                      |
-| profile            | object  | Object containing properties of the users, the object schema should be well-known type, like `Person` or `Organisation` defined by schema.org                                                               |
-| profile.stxAddress | object  | Object containing the user's stx address for mainnet and testnet in the form: `{mainnet: "S...", testnet: "S..."}`                                                                                          |
-| profile.apps       | object  | Deprecated; use appsMeta. Storage endpoints for user data of different apps index by app urls                                                                                                               |
-| profile.appsMeta   | object  | Information about user data of different apps. Property names are the domain name of the app. Each property value is an object of containing properties for `storage` and `publicKey`. See "App Meta Data". |
-| username           | string  | BNS username, owned by the first public key of `public_keys` claim. Can be empty string                                                                                                                     |
-| profile_url        | string  | Resolvable url of the user's profile.                                                                                                                                                                       |
-| core_token         | string? |                                                                                                                                                                                                             |
-| email              | string? | User's email address. Can be null.                                                                                                                                                                          |
-| hub_url            | string  | User's storage hub url for the current app.                                                                                                                                                                 |
-| blockstackAPIUrl   | string? | Deprecated. Url to the user's preferred authenticator                                                                                                                                                       |
-| associationToken   | string  | Signed JWT to access gaia storage bucket of user's app data.                                                                                                                                                |
-| version            | string  | Version of this schema, must be "1.3.1"                                                                                                   
-
-### Public key and BNS Username
-
-If the Stacks address representing the public key owns a BNS username, it is returned as part of the response. Other users can use the username to lookup metadata of other applications via the zonefile and the profile linked in the zonefile. The profile is signed with the private key belonging to the public key.
-
-### App key derivation
-
-### Profile
-
-### App Meta Data
-                                                                  |
+| Claim name         | Type    | Description                                                                                                                                                                                                         |
+| ------------------ | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| jti                | string  | As defined in RFC7519                                                                                                                                                                                               |
+| iat                | string  | As defined in RFC7519                                                                                                                                                                                               |
+| exp                | string  | As defined in RFC7519                                                                                                                                                                                               |
+| iss                | string  | Decentralized identifier defined in DID specification representing the user's account.                                                                                                                              |
+| private_key        | string  | Encrypted app private key for the provided domain. The key is encrypted with the public key of the app transit key.                                                                                                 |
+| public_keys        | array   | Single item array containing the public key of the selected account in hex representation.                                                                                                                          |
+| profile            | object  | Object containing properties of the users, the object schema should be well-known type of Appendix B. This can be the public profile of the selected account.                                                       |
+| profile.stxAddress | object  | Object containing the user's stx address for mainnet and testnet in the form: `{mainnet: "S...", testnet: "S..."}`                                                                                                  |
+| profile.apps       | object  | Deprecated; use appsMeta. Storage endpoints for user data of different apps index by app urls                                                                                                                       |
+| profile.appsMeta   | object  | Information about user data of different apps. Property names are the domain name of the app. Each property value is an object of containing properties for `storage` and `publicKey`. See "Application Meta Data". |
+| username           | string  | BNS username, owned by the first public key of `public_keys` claim. Can be the empty string                                                                                                                         |
+| profile_url        | string  | Resolvable url of the public profile of the selected account.                                                                                                                                                       |
+| core_token         | string? | Usually not used. Encrypted token to access a stacks node. The public key of the app transit key must be used for encryption.                                                                                       |
+| email              | string? | User's email address. Can be null.                                                                                                                                                                                  |
+| hub_url            | string  | User's storage hub url for the current app.                                                                                                                                                                         |
+| blockstackAPIUrl   | string? | Deprecated. Url to the user's preferred authenticator                                                                                                                                                               |
+| associationToken   | string  | Signed JWT to access gaia storage of a private gaia hub.                                                                                                                                                            |
+| version            | string  | Version of this schema, must be "2.0.0"                                                                                                                                                                             |
 
 ## Transport Protocol
 
-The communication between application and authenticator can happen in various ways. It is defined by the transport protocol.
+The communication between application and authenticator can happen in various ways. The subsections below define common transport protocols.
 
 ### Stacks Provider
 
-Stacks Provider is a common interface used for web applications to communicate with the authenticator.
+Stacks Provider is a common interface used for web applications to communicate with the authenticator via a browser extension.
 
 It provides functions to handle
 
@@ -143,21 +217,42 @@ It provides functions to handle
 
 https://github.com/hirosystems/connect/blob/main/packages/connect/src/types/provider.ts
 
-### Deep Links
+The function `authenticationRequest` expects the JWT of the authentication request as parameter and must return the authentication response as encoded JWT.
 
-Wise app uses deep links to handle request on mobile devices
+This transport protocol is implemented by the [Hiro Wallet web extension](https://github.com/blockstack/stacks-wallet-web/).
+
+### HTTPS
+
+Authentication requests can be sent via HTTPS to a hosted authenticator. The encoded JWT of the request must be set as query parameter `authRequest` when calling the url of the authenticator.
+
+The authentication request must contain a redirect url. The authenticator must open this url with the authentication response as encoded JWT in the query parameter `authResponse`.
+
+This transport protocol is implemented by the Blockstack Browser and the Stacks cli.
+
+### App Links
+
+On mobile devices, applications can use app links/deep links to send authentication requests and receive the response. They must use the same query parameters for the authentication requests and responses as the HTTPS protocol, i.e. `authRequest` and `authResponse`.
+
+This transport protocol is implemented by the following authenticator apps:
+
+- [Wise app](https://github.com/PravicaInc/wise-js) and
+- [Circles app](https://github.com/blocoio/stacks-circles-app).
 
 ### Android Accounts
 
-Android provides an open account management system.
+Android provides an open account management system. An authenticator can make use of it and provide an account service that application can use to authenticate and to access content providers of the user.
 
-Example implementation: https://github.com/openintents/calendar-sync/blob/master/app/src/main/java/org/openintents/calendar/common/accounts/GenericAccountService.kt
+The communication happens via Android Intents. The used data uris must use the query parameters `authRequest` and `authResponse`.
+
+Proof of concept implementation in [OI Calendar](https://github.com/openintents/calendar-sync/blob/master/app/src/main/java/org/openintents/calendar/common/accounts/GenericAccountService.kt).
 
 # Out of Scope
 
-This SIP does not specify other flows between applications and authenticators like transaction signing or message encryption.
+This SIP does not specify other communication between application and authenticator like transaction signing or message encryption.
 
 # Backwards Compatibility
+
+The specification contains parts that are deprecated like the property `apps` in the public profile. These parts are for information only and are not normative. Versions of the authentication requests and responses older than 1.3.1 are considered deprecated and not covered by this SIP.
 
 # Related Work
 
@@ -169,6 +264,10 @@ https://unstoppabledomains.com/blog/login-with-unstoppable
 
 https://medium.com/@sethisaab/what-is-did-auth-and-how-does-it-works-1e4884383a53
 
+## User collections
+
+Collections are data items with well-defined schema, for example a collection of contacts (address book). Application can request access to these collection, the scope is defined as `collection._collection type_`. The Response will contain details about how to lookup collections. The collection types for scope `collection.contact` was defined in [blockstack-collections](https://github.com/blockstack/blockstack-collections).
+
 # Implementations
 
 ## Libraries
@@ -179,38 +278,23 @@ https://github.com/fungible-systems/micro-stacks
 
 https://github.com/PravicaInc/wise-js
 
-## Authenticators
-
-### Hiro Wallet
-
-Hiro Wallet is a browser extension that handles authentication and transaction signing.
-
-It uses a 24 mnemonic called SecretKey to derive private keys for different user accounts.
-
-Each account owns one private key to handle stx tokens (wallet key) and one private key to access storage (data key).
-
-The wallet key can own a BNS username.
-
-https://github.com/blockstack/stacks-wallet-web
-
-### Wise
-
-https://github.com/PravicaInc/Wise
-
-https://wiseapp.id
-
-### Circles
-
-https://github.com/blocoio/stacks-circles-app
-
 # Activation
 
-This SIP is activated if ..
+This SIP is activated if 3 authenticators support version 2.0.0 of the authentication requests and responses.
 
 # Appendix A
 
-Transport protocols
+Scopes in authentication requests
 
-```
+| Scope identifier | Description                                                 |
+| ---------------- | ----------------------------------------------------------- |
+| store_write      | Response must contain the app private key                   |
+| email            | Response may contain selected email by the user             |
+| publish_data     | Public profile must contain app information for data lookup |
 
-```
+# Appendix B
+
+Well-known JSON schemas used for owner data in `claim` of public profile
+
+| Canonical Url | Comment |
+| https://schema.org/Person | Used for owners that are persons. Data shall contain values for `name` and `description`. Profile pictures must be named `avatar` in property `image.name` if provided as `ImageObject`.|

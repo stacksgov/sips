@@ -696,6 +696,24 @@ Examples:
 (stx-transfer-memo? u60 tx-sender 'SZ2J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKQ9H6DPR 0x010203)) ;; Returns (ok true)
 ```
 
+### 15. `btc-txid-of`
+
+* **Input Signature:** `(btc-txid-of (tx buff))`
+* **Output Signature:** `(buff 32)`
+
+This method computes the Bitcoin txid of a given buffer (simply the
+double SHA256 hash).
+
+### 16. `btc-tx-confirmations`
+
+* **Input Signature:** `(btc-tx-confirmations (txid (buff 32))`
+* **Output Signature:** `(optional uint)`
+
+This method returns an `(option uint)` for the number of confirmations
+for a given Bitcoin transaction as of the *parent Stacks block's
+sortition block*. If the transaction is not in the Bitcoin chain, it
+returns none.
+
 ## New native variables
 
 ### 1. `tx-sponsor?`

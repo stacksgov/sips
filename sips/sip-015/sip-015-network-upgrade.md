@@ -377,6 +377,41 @@ address separately.
 
 # Clarity Version 2
 
+With the launch of the Stacks 2.1 network upgrade, the Clarity smart
+contracting language will be expanded with new features and some new
+behaviors for existing native methods. In order to support these
+changes, this SIP proposes to introduce *Clarity versioning for smart
+contracts*. In this scheme, each smart contract will be associated
+with a particular Clarity version. The execution environment will
+track the current version for a given execution (in the
+implementation, this will be via the `ContractContext`), and use that
+to select which features are available, and which native method
+implementations will be used. Clarity 2 contracts can invoke Clarity 1
+contracts (and vice-versa), but paticular care will need to be taken
+if a new native keyword is used in the Clarity 1 contract's API.
+
+For example:
+
+```
+Contract A (Clarity 1 Contract):
+  (define-public (stx-account) ...)
+  
+Contract B (Clarity 2 Contract):
+  (contract-call contract-A stx-account)
+```
+
+In such cases, the new keyword (in the above example, the keyword is
+`stx-account`) *cannot* be used by the Clarity 2 contract, and
+therefore invoking the public method of Contract A from Contract B is
+not allowed. To address these cases, contract authors must launch a
+Clarity 1 contract that interposes on Contract A, providing a Clarity
+2 compatible interface.
+
+
+Existing, pre-2.1 contracts will all be Clarity 1. New contracts will
+default to Clarity 2, and a new pragma command will allow contract
+publishers to choose the version that their contract should use.
+
 ## New native methods
 
 ### 1. `stx-account`

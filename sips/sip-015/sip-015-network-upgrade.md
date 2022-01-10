@@ -1,8 +1,8 @@
 # Preamble
 
-SIP Number: 013
+SIP Number: 015
 
-Title: Upgrading Proof-of-Transfer Consensus
+Title: Stacks Upgrade of Proof-of-Transfer and Clarity
 
 Author:
     Aaron Blankstein <aaron@hiro.so>,
@@ -26,13 +26,15 @@ Discussions-To: https://github.com/stacksgov/sips
 
 This SIP proposes a set of updates to Stacking, the Proof-of-Transfer
 (PoX) consensus algorithm as implemented in the Stacks chain and
-originally proposed in [SIP-007](./sip-007-stacking-consensus.md).
-These updates improve the user and developer experience of
-participating in Stacking, add support for new behaviors in the
-Stacking smart contract, and address potential consensus challenges
-for PoX related chain reorganizations. In addition to proposing these
-changes, this SIP also outlines an approach for implementing these
-changes in the Stacks blockchain.
+originally proposed in [SIP-007](./sip-007-stacking-consensus.md) and
+to the Clarity language supported on the Stacks blockchain. These
+updates improve the user and developer experience of participating in
+Stacking, add support for new behaviors in the Stacking smart
+contract, address potential consensus challenges for PoX related
+chain reorganizations, and improve Clarity's support for interacting
+with the Bitcoin network. In addition to proposing these changes, this
+SIP also outlines an approach for implementing these changes in the
+Stacks blockchain.
 
 # Introduction
 
@@ -58,6 +60,13 @@ mined--- if the anchor block is later revealed, it will invalidate all
 of the blocks that did not build on it. While mining and confirming a
 hidden anchor block is very costly, it is possible.
 
+Finally, a year of active development of smart contracts on the Stacks
+blockchain highlighted areas for improved support in the Clarity smart
+contracting language. These areas include increasing the visibility of
+burnchain operations (on the Stacks chain, these are *Bitcoin
+operations*) and general improvements to the Clarity programming
+language.
+
 # Specification
 
 Upgrading Stacking in the Stacks blockchain requires a
@@ -65,9 +74,16 @@ consensus-breaking network upgrade, in this case, a hard fork. Like
 other such changes, this will require a new Stacks epoch. In this SIP,
 we will refer to this new epoch as Stacks 2.1.
 
-At the onset of Stacks 2.1, a new `pox-2` contract will be published
-by the boot address. The `stacks-node` will use the new `pox-2`
-contract for determining PoX reward sets and governing PoX
+At the onset of Stacks 2.1, the Clarity VM will begin to support
+"Clarity Version 2". This version will include support for the new
+native methods proposed in this SIP (and therefore include new
+*keywords* which cannot be used for method names or variable names).
+New contracts launched in Stacks 2.1 will _default_ to Clarity 2, but
+contract authors will be able to use a special pragma in their
+contracts to indicate if a contract should specifically launch using
+Clarity 1 or Clarity 2. Additionally, a new `pox-2` contract will be
+published by the boot address. The `stacks-node` will use the new
+`pox-2` contract for determining PoX reward sets and governing PoX
 locks.
 
 The new PoX contract operates exclusively with PoX state that was
@@ -236,19 +252,6 @@ partially stacked funds with the rolled back funds.
 Because this method does not perform any unlocking, it does not
 require a special case handler in the Clarity VM.
 
-## New native support methods for PoX-2
-
-### 1. `stx-account`
-
-This method returns the status of STX account: the account's
-current STX balance, the amount of STX that is currently locked,
-the unlock height for the account, and whether or not the account
-qualifies for an early unlock.
-
-This method will be used by the `pox-2` contract to validate
-various contract-calls: implementing early unlocks, lock extensions,
-lock increases, etc.
-
 ## Changes to existing PoX methods in PoX-2
 
 ### 1. Fix expiration of `contract-caller` allowances
@@ -371,3 +374,334 @@ delegation operator to set a new PoX address to receive the
 "partially stacked" funds from the increase. Once called, the operator
 can use `stack-aggregation-commit` to commit to each PoX reward
 address separately.
+
+# Clarity Version 2
+
+## New native methods
+
+### 1. `stx-account`
+
+This method returns the status of STX account: the account's
+current STX balance, the amount of STX that is currently locked,
+the unlock height for the account, and whether or not the account
+qualifies for an early unlock.
+
+This method will be used by the `pox-2` contract to validate
+various contract-calls: implementing early unlocks, lock extensions,
+lock increases, etc.
+
+### 2. `parse-principal`
+
+* **Input Signature:** `(principal-parse (principal-address principal))`
+* **Output Signature:** `(response { hash-bytes (buff 20), version (buff 1) } { hash-bytes (buff 20), version (buff 1) })`
+
+A principal value is a concatenation of two components: a `(buff 1)`
+*version byte*, indicating the type of account and the type of network
+that this principal can spend tokens on, and a `(buff 20)` *public key hash*,
+indicating the principal's unique identity.
+
+`principal-parse` will decompose a principal into its component parts,
+`{version-byte, hash-bytes}`.
+
+This method returns a `Response` that wraps this pair as a Clarity tuple.
+
+If the version byte of `principal-address` matches the network (see
+`is-standard`), then this method returns the pair as its `ok` value.
+
+If the version byte of `principal-address` does not match the network,
+then this method returns the pair as its `err` value.
+
+Examples:
+
+```
+(principal-parse 'STB44HYPYAT2BB2QE513NSP81HTMYWBJP02HPGK6) ;; Returns (ok (tuple (hash-bytes 0x164247d6f2b425ac5771423ae6c80c754f7172b0) (version 0x1a)))
+(principal-parse 'SP3X6QWWETNBZWGBK6DRGTR1KX50S74D3433WDGJY) ;; Returns (err (tuple (hash-bytes 0xfa6bf38ed557fe417333710d6033e9419391a320) (version 0x16)))
+```
+
+### 3. `assemble-principal`
+
+* **Input Signature:** `(principal-parse (version-byte (buff 1)) (hash-bytes (buff 20)))`
+* **Output Signature:** `(response principal uint)`
+
+`principal-construct` takes as input such a `(buff 1)` `version-byte`
+and a `(buff 20)` `hash-bytes`, and returns a principal.
+
+This function returns a `Response`. On success, the `ok` value is a `Principal`.
+
+The `err` value is a value tuple with the form `{err_int:UInt,value:Option<Principal>}`.
+
+If the single-byte `version-byte` is in the valid range `0x00` to
+`0x1f`, but is not an appropriate version byte for the current
+network, then the error will be `u0`, and `value` will contain
+`Some<Principal>`, where the wrapped value is the principal.
+
+If the `version-byte` is a `buff` of length 0, if the single-byte
+`version-byte` is a value greater than `0x1f`, or the `hash-bytes` is
+a `buff` of length less than 20, then `err_int` will be `u1` and
+`value` will be `None`.
+
+Examples:
+
+```
+(principal-construct 0x1a 0xfa6bf38ed557fe417333710d6033e9419391a320) ;; Returns (ok ST3X6QWWETNBZWGBK6DRGTR1KX50S74D3425Q1TPK)
+(principal-construct 0x16 0xfa6bf38ed557fe417333710d6033e9419391a320) ;; Returns (err (tuple (error_int u0) (value (some SP3X6QWWETNBZWGBK6DRGTR1KX50S74D3433WDGJY))))
+(principal-construct 0x20 0xfa6bf38ed557fe417333710d6033e9419391a320) ;; Returns (err (tuple (error_int u1) (value none)))
+```
+
+### 4. `get-burn-block-info?`
+
+* **Input Signature:** `(get-burn-block-info? (prop-name BurnBlockPropertyName) (block-height uint))`
+* **Output Signature:** `(optional buff)`
+
+The `get-burn-block-info?` function fetches data for a block of the
+given *burnchain* block height. The value and type returned are
+determined by the specified `BlockInfoPropertyName`. If the provided
+`block-height` does not correspond to an block that is both 1) prior
+to the current block, and 2) since the start of the Stacks chain, the
+function returns `None`. The only available property name so far is
+`header-hash`.
+
+The `header-hash` property returns a 32-byte integer representing the
+header hash of the burnchain block at burnchain height `block-height`.
+
+Example:
+
+```
+(get-burn-block-info? header-hash u677050) ;; Returns (some 0xe67141016c88a7f1203eca0b4312f2ed141531f59303a1c267d7d83ab6b977d8)
+```
+
+### 5. `slice`
+
+* **Input Signature:** `(slice (sequence sequence_A) (left uint) (right uint))`
+* **Output Signature:** `(optional sequence_A)`
+
+The `slice` function attempts to return a sub-sequence of that starts
+at `left-position` (inclusive), and ends at `right-position`
+(non-inclusive).
+
+If `left_position`==`right_position`, the function returns an empty
+sequence.
+
+If either `left_position` or `right_position` are out of bounds OR if
+`right_position` is less than `left_position`, the function returns
+`none`.
+
+Examples:
+
+```
+(slice \"blockstack\" u5 u10) ;; Returns (some \"stack\")
+(slice (list 1 2 3 4 5) u5 u9) ;; Returns none
+(slice (list 1 2 3 4 5) u3 u4) ;; Returns (some (4))
+(slice \"abcd\" u1 u3) ;; Returns (some \"bc\")
+(slice \"abcd\" u2 u2) ;; Returns (some \"\")
+(slice \"abcd\" u3 u1) ;; Returns none
+```
+
+### 6. `string-to-int`
+
+* **Input Signature:** `(string-to-int (input (string-ascii|string-utf8)))`
+* **Output Signature:** `(optional int)`
+
+Converts a string, either `string-ascii` or `string-utf8`, to an
+optional-wrapped signed integer.  If the input string does not
+represent a valid integer, then the function returns `none`. Otherwise
+it returns an `int` wrapped in `some`.
+
+Examples:
+
+```
+(string-to-int "1") ;; Returns (some 1)
+(string-to-int u"-1") ;; Returns (some -1)
+(string-to-int "a") ;; Returns none
+```
+
+### 7. `string-to-uint`
+
+* **Input Signature:** `(string-to-uint (input (string-ascii|string-utf8)))`
+* **Output Signature:** `(optional uint)`
+
+Converts a string, either `string-ascii` or `string-utf8`, to an
+optional-wrapped `uint`.  If the input string does not represent a
+valid non-negative integer, then the function returns
+`none`. Otherwise it returns an `uint` wrapped in `some`.
+
+Examples:
+
+```
+(string-to-uint "1") ;; Returns (some u1)
+(string-to-uint u"1") ;; Returns (some u1)
+(string-to-uint "a") ;; Returns none
+```
+
+### 8. `int-to-ascii`
+
+* **Input Signature:** `(int-to-ascii (input (int|uint)))`
+* **Output Signature:** `string-ascii`
+
+Converts  an integer,  either  `int` or  `uint`,  to a  `string-ascii`
+string-value representation.
+
+Examples:
+
+```
+(int-to-ascii 1) ;; Returns "1"
+(int-to-ascii u1) ;; Returns "1"
+(int-to-ascii -1) ;; Returns "-1"
+```
+
+### 9. `int-to-utf8`
+
+* **Input Signature:** `(int-to-utf8 (input (int|uint)))`
+* **Output Signature:** `string-utf8`
+
+Converts an integer, either `int` or `uint`, to a `string-utf8`
+string-value representation.
+
+Examples:
+
+```
+(int-to-utf8 1) ;; Returns u"1"
+(int-to-utf8 u1) ;; Returns u"1"
+(int-to-utf8 -1) ;; Returns u"-1"
+```
+
+### 10. `buff-to-int-le`
+
+* **Input Signature:** `(buff-to-int-le (input (buff 16)))`
+* **Output Signature:** `int`
+
+Converts a byte buffer to a signed integer use a little-endian
+encoding.  The byte buffer can be up to 16 bytes in length. If there
+are fewer than 16 bytes, as this function uses a little-endian
+encoding, the input behaves as if it is zero-padded on the _right_.
+
+Examples:
+
+```
+(buff-to-int-le 0x01) ;; Returns 1
+(buff-to-int-le 0x01000000000000000000000000000000) ;; Returns 1
+(buff-to-int-le 0xffffffffffffffffffffffffffffffff) ;; Returns -1
+(buff-to-int-le 0x) ;; Returns 0
+```
+
+### 11. `buff-to-uint-le`
+
+* **Input Signature:** `(buff-to-uint-le (input (buff 16)))`
+* **Output Signature:** `uint`
+
+Converts a byte buffer to an unsigned integer use a little-endian
+encoding..  The byte buffer can be up to 16 bytes in length. If there
+are fewer than 16 bytes, as this function uses a little-endian
+encoding, the input behaves as if it is zero-padded on the _right_.
+
+Examples:
+
+```
+(buff-to-uint-le 0x01) ;; Returns u1
+(buff-to-uint-le 0x01000000000000000000000000000000) ;; Returns u1
+(buff-to-uint-le 0xffffffffffffffffffffffffffffffff) ;; Returns u340282366920938463463374607431768211455
+(buff-to-uint-le 0x) ;; Returns u0
+```
+
+### 12. `buff-to-int-be`
+
+* **Input Signature:** `(buff-to-int-be (input (buff 16)))`
+* **Output Signature:** `int`
+
+Converts a byte buffer to a signed integer use a big-endian encoding.
+The byte buffer can be up to 16 bytes in length. If there are fewer
+than 16 bytes, as this function uses a big-endian encoding, the input
+behaves as if it is zero-padded on the _left_.
+
+Examples:
+
+```
+(buff-to-int-be 0x01) ;; Returns 1
+(buff-to-int-be 0x00000000000000000000000000000001) ;; Returns 1
+(buff-to-int-be 0xffffffffffffffffffffffffffffffff) ;; Returns -1
+(buff-to-int-be 0x) ;; Returns 0
+```
+
+### 13. `buff-to-uint-be`
+
+* **Input Signature:** `(buff-to-uint-be (input (buff 16)))`
+* **Output Signature:** `uint`
+
+Converts a byte buffer to an unsigned integer use a big-endian
+encoding.  The byte buffer can be up to 16 bytes in length. If there
+are fewer than 16 bytes, as this function uses a big-endian encoding,
+the input behaves as if it is zero-padded on the _left_.
+
+Examples:
+
+```
+(buff-to-uint-be 0x01) ;; Returns u1
+(buff-to-uint-be 0x00000000000000000000000000000001) ;; Returns u1
+(buff-to-uint-be 0xffffffffffffffffffffffffffffffff) ;; Returns u340282366920938463463374607431768211455
+(buff-to-uint-be 0x) ;; Returns u0
+```
+
+### 14. `stx-transfer-memo?`
+
+* **Input Signature:** `(stx-transfer? (amount uint) (sender principal) (recipient principal) (memo buff))`
+* **Output Signature:** `(response bool uint)`
+
+`stx-transfer-memo?` is similar to `stx-transfer?`, except that it
+adds a `memo` field.
+
+This function returns `(ok true)` if the transfer
+is successful, or, on an error, returns the same codes as
+`stx-transfer?`.
+
+Examples:
+
+```
+(as-contract
+  (stx-transfer? u50 'SZ2J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKQ9H6DPR tx-sender 0x00)) ;; Returns (err u4)
+(stx-transfer-memo? u60 tx-sender 'SZ2J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKQ9H6DPR 0x010203)) ;; Returns (ok true)
+```
+
+## New native variables
+
+### 1. `tx-sponsor?`
+
+* **Type:** `(optional principal)`
+
+Returns the fee-sponsoring principal of the current transaction (if there is such a principal).
+
+## Altered native methods
+
+### 1. `principal-of?`
+
+The `principal-of?` function returns the principal derived from the
+provided public key.
+
+If the `public-key` is invalid, it will return the error code `(err u1).`.
+
+Before Stacks 2.1, this function has a bug, in that the principal
+returned would always be a testnet single-signature principal, even if
+the function were run on the mainnet. In Clarity version 2, this bug
+is fixed, so that this function will return a principal suited to the
+network it is called on. In particular, if this is called on the
+mainnet, it will return a single-signature mainnet principal.
+
+
+### 2. Comparators `>`, `>=`, `<=`, `<`
+
+In Clarity version 2, these binary comparators will be extended to support
+comparison of `string-ascii`, `string-utf8` and `buff`.
+
+These comparisons are done using a lexicographical comparison. 
+
+Examples:
+```
+(>= "baa" "aaa") ;; Returns true
+(>= "aaa" "aa") ;; Returns true
+(>= 0x02 0x01) ;; Returns true
+(> "baa" "aaa") ;; Returns true
+(> "aaa" "aa") ;; Returns true
+(> 0x02 0x01) ;; Returns true
+(< "aaa" "baa") ;; Returns true
+(< "aa" "aaa") ;; Returns true
+(< 0x01 0x02) ;; Returns true
+```

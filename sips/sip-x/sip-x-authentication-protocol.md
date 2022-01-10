@@ -61,24 +61,38 @@ The payloads for the authentication request and the response are specified in th
 
 ## Authentication Request
 
-The authentication request is a JWT created by the application. It is signed by a private key that is usually freshly generated. The key is called app transit key. The payload schema is defined as follows:
+The authentication request is a JWT created by the application. It is signed by a private key that must be freshly generated. The key is called app transit key.
+
+### Signed JWT
 
 The payload must contain the following claims:
 
-| Claim name             | Type   | Description                                                                                                   |
-| ---------------------- | ------ | ------------------------------------------------------------------------------------------------------------- |
-| jti                    | string | As defined in RFC7519                                                                                         |
-| iat                    | string | As defined in RFC7519                                                                                         |
-| exp                    | string | As defined in RFC7519                                                                                         |
-| iss                    | string | Decentralized identifier defined in DID specification representing the user's account.                        |
-| public_keys            | array  | Single item list with the public key of the signer                                                            |
-| domain_name            | string | The url of the application with schema.                                                                       |
-| manifest_uri           | string | The url of the application manifest, usually domain_name + "/manifest.json"                                   |
-| redirect_uri           | string | The url that should receive the authentication response                                                       |
-| do_not_include_profile | bool   |                                                                                                               |
-| supports_hub_url       | bool   |                                                                                                               |
-| scopes                 | array  | list of strings specifying the requested access to the user's account. See Appendix A for full list of scopes |
-| version                | string | must be "2.0.0"                                                                                               |
+| Claim name             | Type   | Description                                                                                                                               |
+| ---------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| jti                    | string | As defined in RFC7519                                                                                                                     |
+| iat                    | string | As defined in RFC7519                                                                                                                     |
+| exp                    | string | As defined in RFC7519                                                                                                                     |
+| iss                    | string | Decentralized identifier defined in DID specification representing the user's account. See Appendix C for list of well-known DID methods. |
+| public_keys            | array  | Single item list with the public key of the signer                                                                                        |
+| domain_name            | string | The url of the application with schema.                                                                                                   |
+| manifest_uri           | string | The url of the application manifest, usually domain_name + "/manifest.json"                                                               |
+| redirect_uri           | string | The url that should receive the authentication response                                                                                   |
+| do_not_include_profile | bool   |                                                                                                                                           |
+| supports_hub_url       | bool   |                                                                                                                                           |
+| scopes                 | array  | list of strings specifying the requested access to the user's account. See Appendix A for full list of scopes                             |
+| version                | string | must be "2.0.0"                                                                                                                           |
+
+### Verification
+
+Authenticators should verify that the request has the following properties:
+
+- expiration date (`exp`) is not in the past
+- issuance date (`iat`) is in the past
+- public keys length is 1
+- public key (`public_keys[0]`) is same as the signer's key
+- public key's stacks address is the same as the issuer
+- manifest url is same origin as the app domain
+- redirect url is same origin as the app domain
 
 ## User authorization
 
@@ -174,6 +188,14 @@ If the application requested to share data publicly through the scope `publish_d
 }
 ```
 
+### Verification
+
+Public profiles owned by users with a username can be looked up via the Stacks blockchain. The retrieved profile token was registered by the user. It must be verified that the token has the following properties:
+
+- issuer's public key (`issuer.publicKey`) is the same as the signer's key.
+- subject's public key (`subject.publicKey`) exists.
+- profile (`claim`) exists.
+
 ## Authentication Response
 
 The authentication response is a signed JWT that contains the requested and authorized data. The token is signed with the public key of the request signature, i.e. the app transit key.
@@ -200,6 +222,22 @@ The payload must contain the following claims:
 | blockstackAPIUrl   | string? | Deprecated. Url to the user's preferred authenticator                                                                                                                                                               |
 | associationToken   | string  | Signed JWT to access gaia storage of a private gaia hub.                                                                                                                                                            |
 | version            | string  | Version of this schema, must be "2.0.0"                                                                                                                                                                             |
+
+### Verification
+
+When the application received the authentication response it must verify that the token has the following properties:
+
+- expiration date (`exp`) is not in the past
+- issuance date (`iat`) is in the past
+- public keys length is 1
+- public key (`public_keys[0]`) is same as the signer's key
+- public key's stacks address is the same as the issuer
+- username if provided is owned by issuer
+
+#### Usernames and DIDs
+
+If the authentication response contains a username the username must be owned by the issuer.
+The issuer of a JWT tokens is represented by a DID in claim `iss`. The DID has to be resolved to a public key and then the blockchain has to confirm that the username indeed is owned by the public key encoded as Stacks address.
 
 ## Transport Protocols
 
@@ -297,3 +335,11 @@ Well-known JSON schemas used for owner data in `claim` of public profile
 
 | Canonical Url | Comment |
 | https://schema.org/Person | Used for owners that are persons. Data shall contain values for `name` and `description`. Profile pictures must be named `avatar` in property `image.name` if provided as `ImageObject`.|
+
+# Appendix C
+
+Well-known DID methods
+
+| DID method | Comment |
+| did:btc | public keys are encoded in the DID directly using b58 encoding.|
+| did:stacks:v2 | public keys are derived from the transaction of username registration, update or import. |

@@ -4,7 +4,7 @@ SIP Number: 016
 
 Title: Schema Definition for Metadata for Digital Assets
 
-Author: Friedger Müffke (mail@friedger.de)
+Author: Friedger Müffke (mail@friedger.de), Dan Trevino (dantrevino@gmail.com)
 
 Consideration: Technical
 
@@ -390,5 +390,5 @@ Common Properties with predefined types.
 | `category`                      | `string`  | category of the associated media file, e.g. `image`, `video`, `audio`, `vr`, `html`.                                                                                                                                                                                                                                                                                |
 | `files`                         | `array`   | list of all associated files, represented as `{uri: string, type: string, signature: string, signature_type: string}`.                                                                                                                                                                                                                                              |
 | `creators`                      | `array`   | list of creators and their shares, represented as `{address: string, share: integer}`. Shares are represented as percentage. The sum of shares of all creators must add up to 100. Shares can be used to define royalties.                                                                                                                                          |
-| `artist_name`                   | `string`   | name of the artist, mainly used as attribution.                                                                                                                                          |
+| `artist_name`                   | `string`  | name of the artist, mainly used as attribution.                                                                                                                                                                                                                                                                                                                     |
 | `seed`                          | `string`  | hex string represented the DNA of the NFT. The seed is usually stored on-chain, it might be contained in the metadata for convenience.                                                                                                                                                                                                                              |

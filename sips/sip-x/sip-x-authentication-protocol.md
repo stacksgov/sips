@@ -20,7 +20,7 @@ Sign-off:
 
 # Abstract
 
-Decentralized application often require the authentication of their users. This SIP specifies a protocol between the application and an authenticator that results in a public key controlled by the user and a private key specific for the application for the user.
+Decentralized application often require the authentication of their users. This SIP specifies a protocol between the application and an authenticator that results in the exchange of a public key controlled by the user and a private key specific for the application for the user.
 
 # License and Copyright
 
@@ -33,7 +33,7 @@ Decentralized application do not want to store credentials of their users. Inste
 
 The private key for that public key is guarded and managed by a so-called authenticator. When a users visits the app, the app needs to communicate with the authenticator. The authenticator helps the user to choose a public key that should be shared with the application.
 
-In addition to the public key, more information can be shared like email address or profile pictures. Some data can be shared publicly, other only with the application. In particular, a private key is derived by the authenticator that is specific to the application and to the user. This private key can be used by the application to access for example decentralized storage or sign messages in the name of the user of the application.
+In addition to the public key, more information can be shared like email address or profile pictures. Some data can be shared publicly, other only with the application. In particular, a private key is derived by the authenticator that is specific to the application and to the user. This private key can be used by the application for example to access decentralized storage detailed in the response or sign messages in the name of the user of the application.
 
 # Specification
 
@@ -218,9 +218,8 @@ The payload must contain the following claims:
 | profile_url        | string  | Resolvable url of the public profile of the selected account.                                                                                                                                                       |
 | core_token         | string? | Usually not used. Encrypted token to access a stacks node. The public key of the app transit key must be used for encryption.                                                                                       |
 | email              | string? | User's email address. Can be null.                                                                                                                                                                                  |
-| hub_url            | string  | User's storage hub url for the current app.                                                                                                                                                                         |
-| blockstackAPIUrl   | string? | Deprecated. Url to the user's preferred authenticator                                                                                                                                                               |
-| associationToken   | string  | Signed JWT to access gaia storage of a private gaia hub.                                                                                                                                                            |
+| hub_url            | string  | User's storage hub url for the current app accessible with the app private key.                                                                                                                                                                         |
+| association_token   | string  | Signed JWT to access gaia storage of a private gaia hub.                                                                                                                                                            |
 | version            | string  | Version of this schema, must be "2.0.0"                                                                                                                                                                             |
 
 ### Verification
@@ -238,6 +237,19 @@ When the application received the authentication response it must verify that th
 
 If the authentication response contains a username the username must be owned by the issuer.
 The issuer of a JWT tokens is represented by a DID in claim `iss`. The DID has to be resolved to a public key and then the blockchain has to confirm that the username indeed is owned by the public key encoded as Stacks address.
+
+## Comparison of used JSON objects
+
+Three JSON object are specified in this document: Authentication Request, Authentication Response, Public Profile.
+
+| Property | Authentication Request           | Authentication Response   | Public Profile                                                                                                     |
+| -------- | ---------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------ |
+| Format   | JWT                    | JWT             | JSON document with property `token` with a JWT as value and property `decodedToken` with the decoded JWT as value. |
+| Issuer   | `iss`: app transit key | `iss`: data key | `issuer`: wallet key                                                                                               |
+
+The Authentication Request and Authentication Response are used for communication between authentication and application only and are called auth messages.
+
+The Public Profile can be used a [DID Document](https://www.w3.org/TR/did-core/) or a self-signed [Verifiable Credential](https://www.w3.org/TR/vc-data-model/).
 
 ## Transport Protocols
 

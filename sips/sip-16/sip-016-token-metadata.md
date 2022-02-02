@@ -64,11 +64,11 @@ If metadata were retrieved by a function call containing a token identifier and 
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "Token Metadata",
     "type": "object",
-    "required": ["version", "name"],
+    "required": ["sip", "name"],
     "properties": {
-        "version": {
+        "sip": {
             "type": number,
-            "description": "Version of the JSON schema for metadata. For this SIP, the version number must be `1`."
+            "description": "SIP number that defines the JSON schema for metadata. For this SIP, the sip number must be `16`."
         },
         "name": {
             "type": "string",
@@ -141,7 +141,7 @@ token101.json
 
 ```
 {
-  "version": 1,
+  "sip": 16,
   "name": "Foo #101",
   "image": "ipfs://somerandomecid",
   "attributes": [
@@ -171,7 +171,7 @@ de.json
 
 ```
 {
-    "version": 1,
+    "sip": 16,
     "attributes: [
         {
           "trait_type": "Haare",
@@ -190,8 +190,8 @@ pt-BR.json
 
 ```
 {
-    "version": 1,
-    "attritbutes: [
+    "sip": 16,
+    "attributes: [
         {
           "trait_type": "cabelos",
           "value": "vermelho",
@@ -254,7 +254,7 @@ Appendix B describes type of attributes
 
 ## Localization
 
-The localized data follow the same JSON schema with property `version` as required and all other properties as optional.
+The localized data follow the same JSON schema with property `sip` as required and all other properties as optional.
 
 The localized data overwrite data provided in the default meta data JSON. The localized data can provide only partial data.
 
@@ -266,7 +266,7 @@ A localized properties with partial data overwrites only the provided properties
 
 Before presenting metadata to users, application developers should verify whether the metadata is compliant with the application's guidelines.
 
-We remind implementation authors that the empty string for the token uri is a valid response. We also remind everyone that any smart contract can use the same metadata as other NFT contracts. It is out of the scope of this standard to define how a client may determine which smart contracts are is the original, well-known, canonical one.
+We remind implementation authors that the empty string for the token uri is a valid response. We also remind everyone that any smart contract can use the same metadata as other NFT contracts. It is out of the scope of this standard to define how a client may determine which smart contracts are the original, well-known, canonical ones.
 
 ## Graphical representation
 

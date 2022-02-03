@@ -35,7 +35,7 @@ This SIP's copyright is held by the Stacks Open Internet Foundation.
 
 Digital assets commonly fall in one of two categories; namely, they are either fungible or non-fungible. Fungible tokens are assets like the native Stacks Token (STX), stablecoins, and so on. Non-Fungible Tokens (NFTs) are tokens expressed as digital artwork and other use-cases that demand them to be globally unique. However, not all asset classes can be represented as either exclusively fungible or non-fungible tokens. This is where semi-fungible tokens come in.
 
-Semi-fungible tokens are a combination of the aforementioned digital asset types in that they have both an identifier and an amount. A single semi-fungible token class can therefore represent a multitude of digital assets within a single contract. A user may own 10 tokens of ID 1 and 20 tokens of ID 2, for example. It effectively means that one contract can represent any combination of fungible and non-fungible tokens.
+Semi-fungible tokens are a combination of the aforementioned digital asset types in that they have both an identifier and an amount. A single semi-fungible token class can therefore represent a multitude of digital assets within a single contract. A user may own ten tokens of ID 1 and twenty tokens of ID 2, for example. It effectively means that one contract can represent any combination of fungible and non-fungible tokens.
 
 Some real-world examples can highlight the value and use-cases of semi-fungible tokens. People who collect trading cards or postage stamps will know that not all of them are of equal value, although there may be more than one of a specific kind. Video games can feature in-game items that have different economic values compared to others. There are many more such parallels to be found.
 
@@ -57,7 +57,7 @@ The Semi-Fungible Token trait, `sip013-semi-fungible-token-trait`, has 10 functi
 
 `(get-balance ((token-id uint) (who principal)) (response uint uint))`
 
-Returns the token type balance `token-id` of a specific principal `who` as an unsigned integer wrapped in an `ok` response. It has to respond with `u0` if the principal does not have a balance of the specified token. The function should never return an `err` response and is recommended to be defined as read-only.
+Returns the token type balance `token-id` of a specific principal `who` as an unsigned integer wrapped in an `ok` response. It has to respond with `u0` if the principal does not have a balance of the specified token or if no token with `token-id` exists. The function should never return an `err` response and is recommended to be defined as read-only.
 
 ### Overall balance
 
@@ -87,16 +87,16 @@ Returns the decimal places of a token type. This is purely for display reasons, 
 
 `(get-token-uri ((token-id uint)) (response (optional (string-ascii 256)) uint))`
 
-Returns an optional ASCII string that is a valid URI which resolves to this token type's metadata. These files can provide off-chain metadata about that particular token type, like descriptions, imagery, or any other information. The exact structure of the metadata is out of scope for this SIP. However, the metadata file should be in JSON format and should include a `version` property containing a string:
+Returns an optional ASCII string that is a valid URI which resolves to this token type's metadata. These files can provide off-chain metadata about that particular token type, like descriptions, imagery, or any other information. The exact structure of the metadata is out of scope for this SIP. However, the metadata file should be in JSON format and should include a `sip` property containing a number:
 
 ```JSON
 {
-	"version": "1"
+	"sip": 16
 	// ... any other properties
 }
 ```
 
-Applications consuming these metadata files can base display capabilities on the version string.
+Applications consuming these metadata files can base display capabilities on the `sip` value. It should refer to a SIP number describing a JSON metadata standard.
 
 ### Transfer
 
@@ -111,15 +111,21 @@ Transfer a token from the sender to the recipient. It is recommended to leverage
 | `u3`       | Amount is `u0`.                                  |
 | `u4`       | The sender is not authorised to transfer tokens. |
 
-Error code `u4` is broad and may be returned under different cirumstances. For example, a token  contract with an allowance mechanism can return `(err u4)` when the `sender` parameter has no allowance for the specified token amount or if the sender is not equal to `tx-sender`. A token contract without an allowance mechanism can return `(err u4)` simply when the `sender` is not equal to the `tx-sender`.
+Error code `u4` is broad and may be returned under different cirumstances. For example, a token  contract with an allowance mechanism can return `(err u4)` when the `sender` parameter has no allowance for the specified token amount or if the sender is not equal to `tx-sender` or `contract-owner`. A token contract without an allowance mechanism can return `(err u4)` simply when the `sender` is not what is expected.
 
-This function should emit a special transfer event, as detailed in the Events section of this document.
+Since it is possible for smart contracts to own tokens, it is recommended to check for both `tx-sender` and `contract-caller` as it allows smart contracts to transfer tokens it owns without having to resort to using `as-contract`. Such a guard can be constructed as follows:
+
+```clarity
+(asserts! (or (is-eq sender tx-sender) (is-eq sender contract-caller)) (err u4))
+```
+
+The `transfer` function should emit a special transfer event, as detailed in the Events section of this document.
 
 ### Transfer with memo
 
 `(transfer-memo ((token-id uint) (amount uint) (sender principal) (recipient principal) (memo (buff 34))) (response bool uint))`
 
-Transfer a token from the sender to the recipient and emit a memo. This function follows the exact same procedure as `transfer` but emits the provided memo via `(print memo)`. The memo event should be the final event emitted by the contract. (See also the #vents section of this document below.)
+Transfer a token from the sender to the recipient and emit a memo. This function follows the exact same procedure as `transfer` but emits the provided memo via `(print memo)`. The memo event should be the final event emitted by the contract. (See also the events section of this document below.)
 
 ### Bulk transfers
 
@@ -195,18 +201,26 @@ The recommended native asset primitives to use:
 - `ft-get-supply`
 - `ft-mint?`
 - `ft-transfer?`
+- And their NFT equivalents.
 
 ## Implementing in wallets and other applications
 
 Applications that interact with semi-fungible token contracts should validate if those contracts implement the SFT trait. If they do, then the application can use the interface described in this SIP for making transfers and getting other token information.
 
-All of the functions in this trait return the `response` type, which is a requirement of trait definitions in Clarity. However, some of these functions should be "fail-proof", in the sense that they should never return an error. These "fail-proof" functions are those that have been recommended as read-only. If a contract that implements this trait returns an error for these functions, it may be an indication of a faulty contract, and consumers of those contracts should proceed with caution.
+All of the functions in this trait return the `response` type, which is a requirement of trait definitions in Clarity. However, some of these functions should be "fail-proof", in the sense that they should never return an error. The "fail-proof" functions are those that have been recommended as read-only. If a contract that implements this trait returns an error for these functions, it may be an indication of a faulty contract, and consumers of those contracts should proceed with caution.
 
 ## Use of post conditions
 
 The Stacks blockchain includes a feature known as Post Conditions. By defining post conditions, users can create transactions that include pre-defined guarantees about what might happen in a contract. These post conditions can also be used to provide guarantees for custom fungible and non-fungible tokens that were defined using built-in Clarity primitives.
 
-However, since there are no Clarity primitive counterparts for semi-fungible tokens, post conditions can only safeguard users on a basic level. Semi-fungible token contracts that are implemented using the Clarity primitive `define-fungible-token` give users the ability to make assertions against the total number of tokens transferred in any single call. It does not, however, provide any securities as to the type of token transferred.
+There are no Clarity primitive counterparts for semi-fungible tokens, but contract developers can leverage a combination of post conditions to achieve the same result.
+
+There are two factor that should be checked by post conditions:
+
+1. The amount of semi-fungible tokens being transferred.
+2. The token ID of the semi-fungible token being transferred.
+
+To that end, it is recommended that developers use both Clarity primitives in their design. Semi-fungible token contracts can achieve complete post condition coverage by using both `define-fungible-token` and `define-non-fungible-token`.
 
 For strategies on how to best guard a semi-fungible token contract with post conditions, see the reference implementation at the end of this document.
 

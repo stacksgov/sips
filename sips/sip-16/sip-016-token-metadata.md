@@ -22,7 +22,15 @@ Layer: Traits
 
 # Abstract
 
-Non-fungible tokens - NFTs for short - are digital assets registered on blockchain with unique identifiers and properties that distinguish them from each other. SIP-009 defines the trait for how ownership of an NFT is managed. Fungible tokens - FTs for short - are digital assets where each token can be replaced by another token (see SIP-010). Semi-fungible tokens are digital assets where each token has a unique identifier and is dividable into fungible parts (see SIP-013). This SIP aims to provide a flexible standard to attach metadata to NFTs, like descriptions or urls to digital files. The same standard is applicable to fungible tokens.
+Non-fungible tokens - NFTs for short - are digital assets registered on
+blockchain with unique identifiers and properties that distinguish them from
+each other. SIP-009 defines the trait for how ownership of an NFT is managed.
+Fungible tokens - FTs for short - are digital assets where each token can be
+replaced by another token (see SIP-010). Semi-fungible tokens are digital assets
+where each token has a unique identifier and is dividable into fungible parts
+(see SIP-013). This SIP aims to provide a flexible standard to attach metadata
+to NFTs, like descriptions or urls to digital files. The same standard is
+applicable to fungible tokens.
 
 # License and Copyright
 
@@ -37,7 +45,7 @@ Some use cases of NFTs are name registration, digital art, certification, media 
 
 # Specification
 
-Every SIP-X compliant smart contract in Stacks blockchain must implement one or more functions that return a resolvable/retrievable uri referencing metadata. The metadata provide information e.g. for displaying a digital asset to users. This type of function is named "metadata uri functions".
+Every SIP-X compliant smart contract in Stacks blockchain must implement one or more functions that return a resolvable/retrievable URI referencing metadata. The metadata provide information e.g. for displaying a digital asset to users. This type of function is named "metadata URI functions".
 
 Appendix A contains a list of trait functions that must meet the following requirements for the return value. The appendix can be extended without changing the ratification status of this SIP.
 
@@ -49,13 +57,13 @@ For existing tokens, the inner value of the return value must be a string repres
 
 The schema of the resolvable URI is not specified and should be a well-known schema like `https`, `ar`, `ipfs`, `sia`. A `data` URI is also valid, however, the length is limited by this SIP.
 
-If a metadata uri function expects a parameter of type `uint` that identifies a token and the resulting strings contains `{id}`, then the `{id}` part must be replaced by the identifier in decimal format given in the function call.
+If a metadata URI function expects a parameter of type `uint` that identifies a token and the resulting strings contains `{id}`, then the `{id}` part must be replaced by the identifier in decimal format given in the function call.
 
 The resolved data of the URI must be a JSON blob.
 
 ## JSON scheme of Metadata
 
-The JSON blob resolved through the uri must follow the following JSON schema.
+The JSON blob resolved through the URI must follow the following JSON schema.
 
 If metadata were retrieved by a function call containing a token identifier and the string `{id}` exists in any JSON value, it MUST be replaced with the actual token id in decimal format, by all client software that follows this standard.
 
@@ -266,7 +274,7 @@ A localized properties with partial data overwrites only the provided properties
 
 Before presenting metadata to users, application developers should verify whether the metadata is compliant with the application's guidelines.
 
-We remind implementation authors that the empty string for the token uri is a valid response. We also remind everyone that any smart contract can use the same metadata as other NFT contracts. It is out of the scope of this standard to define how a client may determine which smart contracts are is the original, well-known, canonical one.
+We remind implementation authors that the empty string for the token URI is a valid response. We also remind everyone that any smart contract can use the same metadata as other NFT contracts. It is out of the scope of this standard to define how a client may determine which smart contracts are is the original, well-known, canonical one.
 
 ## Graphical representation
 
@@ -285,7 +293,7 @@ Rich representation should use ther first defined property of the following list
 
 Accessiblity of content is not covered by the standard.
 
-Properties other than resolvability of the token uri are out of scope. This implies that metadata might change over time (stability).
+Properties other than resolvability of the token URI are out of scope. This implies that metadata might change over time (stability).
 
 # Metadata functions
 

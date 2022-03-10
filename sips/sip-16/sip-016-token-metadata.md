@@ -119,7 +119,7 @@ token id in decimal format, by all client software that follows this standard.
             "description": "Additional attributes of the token that are \"observable\". See section below. Values may be strings, numbers, object or arrays."
             "items: {
                 "type": "object",
-                "required": ["value"],
+                "required": ["trait_type", "value"],
                 "properties": {
                     "display_type": "string",
                     "trait_type": "string",
@@ -293,7 +293,8 @@ that could define the rarity of the NFT.
 An `attribute` consists of a `trait_type` defining the name of the trait, e.g.
 "hair". The `value` is the value of the trait, e.g. "red". The `display_type` is
 a field indicating how the trait value should be displayed, e.g. on a
-marketplace.
+marketplace. If `display_type` is omitted, then `string` is used as default
+display type.
 
 Appendix B describes the possible types and display types of attributes.
 
@@ -365,8 +366,10 @@ types than response types.
 
 The function signatures for metadata are:
 
-- `(get-boom-meta () {uri: (string-ascii 35), name: (string-ascii 16), mime-type: (string-ascii 9)})` and
-- `(get-meta? uint {series-id: uint, number: uint, name: (string-utf8 80), uri: (string-ascii 2048), mime-type: (string-ascii 129), hash: (buff 64)})`
+- `(get-boom-meta () {uri: (string-ascii 35), name: (string-ascii 16),
+  mime-type: (string-ascii 9)})` and
+- `(get-meta? uint {series-id: uint, number: uint, name: (string-utf8 80), uri:
+  (string-ascii 2048), mime-type: (string-ascii 129), hash: (buff 64)})`
 
 **Badges**
 

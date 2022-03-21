@@ -16,7 +16,7 @@ Created: 7 November 2021
 
 License: CC0-1.0
 
-Sign-off:
+Sign-off: Jude Nelson (jude@stacks.org)
 
 Layer: Traits
 

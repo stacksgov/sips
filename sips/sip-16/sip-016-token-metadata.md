@@ -232,7 +232,7 @@ pt-BR.json
           "value": "vermelho",
         },
         {
-          "trait_type": "amido",
+          "trait_type": "força",
           "display_type": "number",
           "value": 99,
         },

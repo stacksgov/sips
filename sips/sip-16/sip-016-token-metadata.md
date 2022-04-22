@@ -116,14 +116,14 @@ token id in decimal format, by all client software that follows this standard.
         },
         "attributes": {
             "type": "array",
-            "description": "Additional attributes of the token that are \"observable\". See section below. Values may be strings, numbers, object or arrays."
-            "items: {
+            "description": "Additional attributes of the token that are \"observable\". See section below. Values may be strings, numbers, object or arrays.",
+            "items": {
                 "type": "object",
                 "required": ["trait_type", "value"],
                 "properties": {
-                    "display_type": "string",
-                    "trait_type": "string",
-                    "value": {"oneOf": [{"type": "object"}, {"type": "string"}, {"type": "number"}, {"type": "integer"}, {"type": "boolean"} {"type: "array"}},
+                    "display_type": {"type": "string"},
+                    "trait_type": {"type": "string"},
+                    "value": {"anyOf": [{"type": "object"}, {"type": "string"}, {"type": "number"}, {"type": "integer"}, {"type": "boolean"}, {"type": "array"}]}
                 }
             }
         },
@@ -160,7 +160,7 @@ token id in decimal format, by all client software that follows this standard.
         "animation_url": {
             "type": "string",
             "description": "URL to a multi-media attachment for the item. Deprecated. Use `properties.animation_url`."
-        },
+        }
     }
 }
 ```

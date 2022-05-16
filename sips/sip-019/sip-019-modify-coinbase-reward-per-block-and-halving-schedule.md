@@ -41,26 +41,17 @@ Change the current coinbase reward to 1600 STX per block. This change will remai
 
 ## STX Halving Schedule
 The current halving schedule for coinbase reward amounts are:
-
-1000 STX per block are released in the first 4 years of mining
-
-500 STX per block are released during the following 4 years
-
-250 STX per block are released during the following 4 years
-
-125 STX per block are released from then on indefinitely.
+- 1000 STX per block are released in the first 4 years of mining
+- 500 STX per block are released during the following 4 years
+- 250 STX per block are released during the following 4 years
+- 125 STX per block are released from then on indefinitely.
 
 This proposal would modify the schedule to the following:
-
-1600 STX per block are released from SIP acceptance until first halving (~2 years)
-
-800 STX per block are released during the following 4 years
-
-400 STX per block are released during the following 4 years
-
-200 STX per block are released during the following 4 years
-
-100 STX per block are released from then on indefinitely
+- 1600 STX per block are released from SIP acceptance until first halving (~2 years)
+- 800 STX per block are released during the following 4 years
+- 400 STX per block are released during the following 4 years
+- 200 STX per block are released during the following 4 years
+- 100 STX per block are released from then on indefinitely
 
 # Effects on STX Inflation & 2050 Supply
 The current cumulative mining mint results in a total circulating supply of approximately 1,810,745,848 STX tokens by January 2050. With the adoption of this proposal, the 2050 total circulating supply will increase by approximately 157 million STX tokens, to 1,967,777,098. Below is a visual comparison of the change.

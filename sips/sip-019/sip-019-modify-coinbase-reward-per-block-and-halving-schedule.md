@@ -29,7 +29,7 @@ This SIP is made available under the terms of the Creative Commons CC0 1.0 Unive
 # Introduction
 Open membership blockchain based networks need to provide an economic incentive for miners to process transactions and provide security. Coinbase rewards are typically used to bootstrap this economic incentive in the early days of an open source network when transaction fees alone will not provide a sufficient incentive. Currently, the coinbase reward for the Stacks network is 1000 STX per block, with a halving schedule as follows:
 
-INSERT HALVING CHART
+<img width="659" alt="Screenshot 2022-05-16 at 2 35 35 PM" src="https://user-images.githubusercontent.com/31934541/168593660-d13311d9-2710-4202-bc9d-e41bf4d6c945.png">
 
 For the first ten thousand blocks of Stacks 2.0, however, the coinbase reward was inflated to 2000 STX per block, and resulted in much more favorable STX mining and Stacking conditions. Since the purpose of a coinbase reward is to bootstrap the network in the early days, we propose increasing the coinbase reward and subsequently modifying the halving schedule.
 
@@ -37,7 +37,7 @@ For the first ten thousand blocks of Stacks 2.0, however, the coinbase reward wa
 This SIP proposes a change to the current STX coinbase reward, and therefore also a subsequent change to the halving schedule for the STX coinbase reward. The changes are as follows:
 
 ## STX Coinbase Reward
-Change the current coinbase reward to 2000 STX per block. This change will remain in effect until the next halving for the Stacks network, which will occur roughly two years from the time of writing this draft.
+Change the current coinbase reward to 1600 STX per block. This change will remain in effect until the next halving for the Stacks network, which will occur roughly two years from the time of writing this draft.
 
 ## STX Halving Schedule
 The current halving schedule for coinbase reward amounts are:
@@ -54,22 +54,21 @@ This proposal would modify the schedule to the following:
 100 STX per block are released from then on indefinitely
 
 # Effects on STX Inflation & 2050 Supply
-The current cumulative mining mint results in a total circulating supply of approximately 1,810,745,848 STX tokens by January 2050. With the adoption of this proposal, the 2050 total circulating supply will increase by approximately 300 million STX tokens, to 2,095,667,723. Below is a visual comparison of the change.
+The current cumulative mining mint results in a total circulating supply of approximately 1,810,745,848 STX tokens by January 2050. With the adoption of this proposal, the 2050 total circulating supply will increase by approximately 157 million STX tokens, to 1,967,777,098. Below is a visual comparison of the change.
 
-INSERT ORIGINAL EMISSION CHART
+<img width="639" alt="Screenshot 2022-05-16 at 2 32 16 PM" src="https://user-images.githubusercontent.com/31934541/168593836-985e5613-80c8-42b0-8649-d3e6f9d595a1.png">
 
-INSERT NEW EMISSION CHART
+<img width="641" alt="Screenshot 2022-05-16 at 2 25 14 PM" src="https://user-images.githubusercontent.com/31934541/168593867-f42714a0-4549-40e4-a0ad-fa15266ed269.png">
 
 The resulting change to the annual inflation rate of the STX token is as follows:
 
-INSERT INFLATION TABLE
+<img width="584" alt="Screenshot 2022-05-16 at 2 31 51 PM" src="https://user-images.githubusercontent.com/31934541/168593918-ffa2282f-ed87-44c7-a1d2-257d32af5d0f.png">
 
 # Related Work
-STX token supply model LINK
+[STX token supply model](https://docs.google.com/spreadsheets/d/1Z8Rf3w6xQHpOlf4XNRH6r2uCTyI5W2HXefSkC5pPqmU/edit?usp=sharing)
 
 # Backwards Compatibility
 Yes.
 
 # Activation
 The activation criteria for this SIP needs input and debate, and should ultimately be defined by the Stacks community. Given this changes the monetary supply of STX, it should have to hit a high bar in order to pass and be adopted.
-

@@ -30,7 +30,7 @@ This SIP’s copyright is held by the Stacks Open Internet Foundation.
 
 # Introduction
 
-Decentralized application do not want to store credentials of their users. Instead users use a trusted wallet that manages the user's private keys savely. Therefore, applications needs a way to communicate with the user's wallet e.g. for requesting signatured of a transaction, authentication or message signing.
+Decentralized applications, _dApps_, do not want to store credentials of their users. Instead users use a trusted wallet that manages the user's private keys savely. Therefore, applications needs a way to communicate with the user's wallet e.g. for requesting signatured of a transaction, authentication or message signing.
 
 Different transport protocols for exchanging messages between applications and wallets have been established in the web3 ecosystem. In the following sections the transport protocols are described and a standardized way how to agree on a transport protocol is defined.
 

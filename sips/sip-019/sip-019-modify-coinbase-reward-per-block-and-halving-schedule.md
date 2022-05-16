@@ -21,7 +21,7 @@ Sign-off:
 # Abstract
 There are currently two ways the Stacks network rewards STX miners when they win a block: STX tokens as part of a “Coinbase reward” and STX tokens from transaction fees. The purpose of the Coinbase reward is to bootstrap and to provide an extra incentive for miners to secure the network in the early days, when transaction fees are not yet sufficient. 
 
-For the first 10,000 blocks of the Stacks mainnet launch the coinbase reward was 2000 STX compared with 1000 STX today. This period coincided with significant interest from users and miners. Historically, the year 2050 STX supply has been reduced in the past (from 5B to 2B to 1.8B). This proposal calls for a slight increase in the year 2050 supply, and returning the current coinbase reward to 2000 STX until the next halving. 
+For the first 10,000 blocks of the Stacks mainnet launch the coinbase reward was 2000 STX compared with 1000 STX today. This period coincided with significant interest from users and miners. Historically, the year 2050 STX supply has been reduced in the past (from 5B to 2B to 1.8B). This proposal calls for a slight increase in the year 2050 supply, and increasing the current coinbase reward to 1600 STX until the next halving. 
 
 # License and Copyright
 This SIP is made available under the terms of the Creative Commons CC0 1.0 Universal license, available at https://creativecommons.org/publicdomain/zero/1.0/ This SIP’s copyright is held by the Stacks Open Internet Foundation.

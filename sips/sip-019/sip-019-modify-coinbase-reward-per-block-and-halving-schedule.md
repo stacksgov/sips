@@ -1,13 +1,21 @@
 # Preamble
 
 SIP Number: 019
+
 Title: Modify Coinbase Reward per Block & Halving Schedule
+
 Author: Xan Ditkoff (email: xan@daemontechnologies.co)
+
 Consideration: Technical, Governance, Economics
+
 Type: Standard
+
 Status: Draft
+
 Created: 20 April 2022
+
 License: CC0-1.0
+
 Sign-off: 
 
 # Abstract

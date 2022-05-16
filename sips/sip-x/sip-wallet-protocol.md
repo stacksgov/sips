@@ -42,7 +42,7 @@ The communication between application and authenticator can happen in various wa
 
 ### Stacks Provider
 
-Stacks Provider is a common interface used for web applications to communicate with the authenticator via a browser extension.
+The _Stacks Provider_ is a common interface exposed to dApps as a JavaScript object, often injected by a Web Extension.
 
 It provides functions to handle
 

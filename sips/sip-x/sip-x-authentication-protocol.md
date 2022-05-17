@@ -72,7 +72,7 @@ The payload must contain the following claims:
 | jti                    | string | As defined in RFC7519                                                                                                                     |
 | iat                    | string | As defined in RFC7519                                                                                                                     |
 | exp                    | string | As defined in RFC7519                                                                                                                     |
-| iss                    | string | Decentralized identifier defined in DID specification representing the user's account. See Appendix C for list of well-known DID methods. |
+| iss                    | string | Decentralized identifier defined in DID specification representing the app transit public key. See Appendix C for list of well-known DID methods. |
 | public_keys            | array  | Single item list with the public key of the signer                                                                                        |
 | domain_name            | string | The url of the application with schema.                                                                                                   |
 | manifest_uri           | string | The url of the application manifest, usually domain_name + "/manifest.json"                                                               |
@@ -97,7 +97,7 @@ Authenticators should verify that the request has the following properties:
 
 ## User authorization
 
-The authenticator manages the user' private keys. The protocol requires that keys are created from a deterministic wallet using [BIP-39](https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki).
+The authenticator manages the user' private keys. The protocol requires that keys are created from a deterministic wallet using [BIP-32](https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki).
 
 The authenticator can offer the user a list of accounts. Each account corresponds to a change of the key derivation path by 1. This SIP does not specify how the wallet determines which accounts should be presented. Only requirement is that one account is selected. The selected index shall be called account index `n`.
 

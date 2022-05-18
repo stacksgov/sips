@@ -52,7 +52,7 @@ Sign-In with Stacks works as follows:
 
 | name            | type                        | description                                                                                                                                                                        |
 | --------------- | --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| title           | (string-ascii 305)          | Must be the application's domain name (max 255) followed by ` wants you to sign in with your Stacks account:`                                                                      |
+| title           | (string-ascii 126)          | Must be the application's domain name (max 80) followed by ` wants you to sign in with your Stacks account`                                                                        |
 | address         | principal                   | The address of the signer                                                                                                                                                          |
 | statement       | (string-ascii 80)           | (optional) Describes the terms and conditions the user agrees to by using the application.                                                                                         |
 | URI             | (string-ascii 80)           | An RFC 3986 URI referring to the resource that is the subject of the signing (as in the subject of a claim).                                                                       |

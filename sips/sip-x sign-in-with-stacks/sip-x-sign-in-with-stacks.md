@@ -65,6 +65,10 @@ Sign-In with Stacks works as follows:
 | request-id      | (string-ascii 64)           | an system-specific identifier that may be used to uniquely refer to the sign-in request.                                                                                           |
 | resources       | (list 10 (string-ascii 80)) | (optional) A list of information or references to information the user wishes to have resolved as part of authentication by the relying party. They are expressed as RFC 3986 URIs |
 
+## Presentation and Localization
+
+TODO
+
 # Related work
 
 ## Ethereum EIP4361

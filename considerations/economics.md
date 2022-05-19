@@ -2,7 +2,7 @@
 
 Chairperson: Jude Nelson <jude@stacks.org>
 
-Members: Jude Nelson <jude@stacks.org>, Juliet Oberding <juliet.oberding@gmail.com> 
+Members: Jude Nelson <jude@stacks.org>, Juliet Oberding <juliet.oberding@gmail.com>, Xan Ditkoff <xan@daemontechnologies.co>
 
 Discussions-to: https://github.com/stacksgov/sips
 

@@ -186,8 +186,9 @@ TBD
 
 # Reference implementations
 
-A [reference contract](./token-metadata-update-notify.clar) has been deployed to mainnet. It
-demonstrates how to send notifications for each token class and it is available for developers to
+A [reference contract](./token-metadata-update-notify.clar) has been [deployed to
+mainnet](https://explorer.stacks.co/txid/0xe92af2ea5c11e2e6fde4d31fd394de888070efff23bffad04465c549543abfa2?chain=mainnet).
+It demonstrates how to send notifications for each token class and it is available for developers to
 use for refreshing any existing or future token contract. If the SIP evolves to require a change to
 this contract pre-activation, a new one will be deployed and noted here.
 

@@ -185,7 +185,8 @@ described in [Reference Implementations](#reference-implementations).
 
 # Activation
 
-TBD
+This SIP will be activated when at least 10 unique contracts have had metadata updates triggered via
+contract-call transactions that print the proposed notification payload.
 
 # Reference implementations
 

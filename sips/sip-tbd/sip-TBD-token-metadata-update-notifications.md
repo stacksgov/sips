@@ -143,6 +143,9 @@ must be made via a contract call transaction to the [deployed reference
 contract](https://explorer.stacks.co/txid/0xe92af2ea5c11e2e6fde4d31fd394de888070efff23bffad04465c549543abfa2?chain=mainnet)
 or from a call to `print` within any other contract, including the token contract itself.
 
+The message structure was designed to be reusable by other SIPs who wish to establish new
+notification standards in the future (i.e. by varying the `notification` and `payload` key values).
+
 ## Fungible Tokens
 
 When a contract needs to notify the network that metadata has changed for a **Fungible Token**, it

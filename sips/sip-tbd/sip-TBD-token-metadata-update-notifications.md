@@ -139,9 +139,9 @@ parse its contents, and refresh any contracts that were updated.
 # Specification
 
 Notification messages for each token class are specified below. Token metadata update notifications
-must be made via a contract call transaction to the pre-deployed
-[reference contract](#reference-implementations) or from a call to `print` within any other
-contract, including the token contract itself.
+must be made via a contract call transaction to the [deployed reference
+contract](https://explorer.stacks.co/txid/0xe92af2ea5c11e2e6fde4d31fd394de888070efff23bffad04465c549543abfa2?chain=mainnet)
+or from a call to `print` within any other contract, including the token contract itself.
 
 ## Fungible Tokens
 
@@ -186,8 +186,8 @@ TBD
 
 # Reference implementations
 
-A [reference contract](./token-metadata-update-notify.clar) has been [deployed to
-mainnet](https://explorer.stacks.co/txid/0xe92af2ea5c11e2e6fde4d31fd394de888070efff23bffad04465c549543abfa2?chain=mainnet).
+A [reference contract](./token-metadata-update-notify.clar) has been deployed to mainnet as
+[`SP1H6HY2ZPSFPZF6HBNADAYKQ2FJN75GHVV95YZQ.token-metadata-update-notify`](https://explorer.stacks.co/txid/0xe92af2ea5c11e2e6fde4d31fd394de888070efff23bffad04465c549543abfa2?chain=mainnet).
 It demonstrates how to send notifications for each token class and it is available for developers to
 use for refreshing any existing or future token contract. If the SIP evolves to require a change to
 this contract pre-activation, a new one will be deployed and noted here.

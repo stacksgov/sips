@@ -10,17 +10,17 @@ Consideration: Governance, Technical
 
 Type: Consensus
 
-Status: Draft Proposal
+Status: Draft
 
 Created: 24 May 2022
 
 License: CC0-1.0
 
-Sign-off: Technical Committee
+Sign-off: 
 
 # Abstract
 
-This SIP proposes a small but important change to enable mining payouts to Taproot scripts. Taproot scripts were enabled at block 709,632 on the Bitcoin Network on November 14, 2021. 
+This SIP proposes an important change to enable mining payouts to Taproot scripts. Taproot scripts were enabled at block 709,632 on the Bitcoin Network on November 14, 2021. 
 
 We believe that with this change, mining pools are more realistic where people can pool their mining bids into a Taproot script while running independent miners. Doing so further increases the number of independent miners and aids decentralization. Taproot scripts alleviate bandwidth issues on the Bitcoin network since the pool resembles a single miner. Furthermore, we’d like to implement the optionality to send Taproot payments scripts to both Stacks wallets or Stacks smart contracts to streamline operations. 
 
@@ -57,8 +57,6 @@ Scanning the Bitcoin Network shows at least 15 independent mining pools securing
  **Source:** [Slushpool](https://slushpool.com/en/stats/btc/), accurate as of May 24, 2022
 
 Integrating Taproot scripts could have a positive impact on the Stacks ecosystem. Taking this a step further to incorporate optionality for Taproot script payouts to smart contracts aids new mining pools to start mining. 
-
-Please comment below if you are in favor, against, and/or have concerns. Your input will help the feature be ranked against other work in progress for the Stacks blockchain.
 
 # Backwards Compatibility
 

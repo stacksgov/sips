@@ -10,7 +10,7 @@ Consideration: Technical
 
 Type: Standard
 
-Status: Draft
+Status: Accepted
 
 Created: 28 December 2021
 

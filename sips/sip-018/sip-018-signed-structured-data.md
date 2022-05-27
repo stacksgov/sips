@@ -325,3 +325,59 @@ This SIP will be considered activated if the following two conditions are met:
 # Reference Implementations
 
 - https://github.com/MarvinJanssen/stx-signed-structured-data
+
+# Test vectors
+
+## Structured data hashing
+
+Using `structuredDataHash(CV)` with an input Clarity Value.
+
+- CV = `asciiCV("Hello World")`:
+  `5297eef9765c466d945ad1cb2c81b30b9fed6c165575dc9226e9edf78b8cd9e8`
+- CV = `asciiCV("")` (empty string):
+  `3c8f1b104592e3ebb2b2602b3979a27e77f586fb4c655369fa4eccb6d545a0f8`
+- CV =
+  `tupleCV({"name": asciiCV("Test App"), "version": asciiCV("1.0.0"), "chain-id": uintCV(1)})`
+  (domain tuple):
+  `2538b5dc06c5ae2f11549261d7ae174d9f77a55a92b00f330884695497be5065`
+
+## Message hashing
+
+Using `messageHash(CV)`, which is
+`sha256(Prefix || structuredDataHash(Domain) || structuredDataHash(CV))`.
+
+- Prefix = `0xC0` (constant value)
+- Domain =
+  `tupleCV({"name": asciiCV("Test App"), "version": asciiCV("1.0.0"), "chain-id": uintCV(1)})`
+- CV = `asciiCV("Hello World")`
+- Message hash:
+  `c6ace1349f59b024dec0925df0a15baf8d27fc43a357ce61f48fdc8fa461e7b9`
+
+## Message signing
+
+Using the following parameters:
+
+- Private key =
+  `753b7cc01a1a2e86221266a154af739463fce51219d97e4f856cd7200c3bd2a601`
+- Corresponding public key =
+  `0390a5cac7c33fda49f70bc1b0866fa0ba7a9440d9de647fecb8132ceb76a94dfa`
+- Corresponding address: `ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM`
+
+And the following inputs to obtain the message hash for signing:
+
+- Domain =
+  `tupleCV({"name": asciiCV("Test App"), "version": asciiCV("1.0.0"), "chain-id": uintCV(1)})`
+- CV = `asciiCV("Hello World")`
+- (Message hash:
+  `c6ace1349f59b024dec0925df0a15baf8d27fc43a357ce61f48fdc8fa461e7b9`)
+
+Produces the following signature:
+
+- `fd1c62aae1b12c07571d6c7e379a20c3858005877306914da80ae6ee8c748a6d133fcd9169cac5684fe635a5a375960827bf2184849f6cde6ed828b370c72d1b00`
+
+Which can be verified in Clarity:
+
+```clarity
+(secp256k1-verify 0xc6ace1349f59b024dec0925df0a15baf8d27fc43a357ce61f48fdc8fa461e7b9 0xfd1c62aae1b12c07571d6c7e379a20c3858005877306914da80ae6ee8c748a6d133fcd9169cac5684fe635a5a375960827bf2184849f6cde6ed828b370c72d1b00 0x0390a5cac7c33fda49f70bc1b0866fa0ba7a9440d9de647fecb8132ceb76a94dfa)
+true
+```

@@ -112,8 +112,9 @@ To obtain a signature _S_ of structured data _D_ using private key _K_:
   `secp256k1` signature of a message hash using private key _K_; and,
 
 - `messageHash(D) = sha256(structuredDataPrefix || domainHash || structuredDataHash(D))`;
-  where `structuredDataPrefix` is a static value of `"\xC0"`, and `domainHash`
-  and `structuredDataHash` are as described below.
+  where `structuredDataPrefix` is a static value of `"\x53\x49\x50\x30\x31\x38"`
+  (which spells "SIP018" in ASCII), and `domainHash` and `structuredDataHash`
+  are as described below.
 
 **Definition of** `domainHash`
 
@@ -178,17 +179,19 @@ A future SIP may define standard types of Structured Data.
 
 Structured Data hashes do not collide with _presign-sighashes_ as currently no
 Clarity Value in wire format forms a valid Stacks transaction. Furthermore, the
-`0xC0` byte prefix ensures that the input always differs in the first byte, as
-Stacks transactions start with a version byte of `0x00` (mainnet) or `0x80`
-(testnet). A Clarity Value in wire format starts with a byte in the range of
-`[0x00, 0x0C]`.
+`0x534950303138` byte prefix ensures that the input always differs in the first
+six bytes, as Stacks transactions start with a version byte of `0x00` (mainnet)
+or `0x80` (testnet), a four byte chain ID, and end with an authorisation type
+that must be `0x04` or `0x05` in order to be valid. A Clarity Value in wire
+format starts with a byte in the range of `[0x00, 0x0C]`. The prefix is easy to
+remember because it spells "SIP018" in ASCII.
 
 Replay attacks across applications, forks, and other signature-compatible chains
 are mitigated by prepending a `domainHash` to the `messageHash`. A `domainHash`
 is calculated by hashing a `domain` Clarity Value tuple containing the
 application name, version, and chain ID.
 
-This SIP is about signing and verifying application and chain specific
+This SIP is about signing and verifying application and chain-specific
 structured data. Replay protection on the application level is out of scope for
 the standard. Application developers need to make sure that their applications
 behave properly when they receive the same signed structured data more than
@@ -212,7 +215,7 @@ import {
 } from "@stacks/transactions";
 import { createHash } from "crypto";
 
-const structuredDataPrefix = Buffer.from([0xC0]);
+const structuredDataPrefix = Buffer.from([0x53, 0x49, 0x50, 0x30, 0x31, 0x38]);
 
 const chainIds = {
   mainnet: 1,
@@ -256,7 +259,7 @@ whether the signature is valid.
 
 ```clojure
 (define-constant chain-id u1)
-(define-constant structured-data-prefix 0xc0)
+(define-constant structured-data-prefix 0x534950303138)
 
 (define-constant message-domain-hash (sha256 (to-consensus-buff
 	{
@@ -346,12 +349,12 @@ Using `structuredDataHash(CV)` with an input Clarity Value.
 Using `messageHash(CV)`, which is
 `sha256(Prefix || structuredDataHash(Domain) || structuredDataHash(CV))`.
 
-- Prefix = `0xC0` (constant value)
+- Prefix = `0x534950303138` (constant value)
 - Domain =
   `tupleCV({"name": asciiCV("Test App"), "version": asciiCV("1.0.0"), "chain-id": uintCV(1)})`
 - CV = `asciiCV("Hello World")`
 - Message hash:
-  `c6ace1349f59b024dec0925df0a15baf8d27fc43a357ce61f48fdc8fa461e7b9`
+  `1bfdab6d4158313ce34073fbb8d6b0fc32c154d439def12247a0f44bb2225259`
 
 ## Message signing
 
@@ -369,15 +372,15 @@ And the following inputs to obtain the message hash for signing:
   `tupleCV({"name": asciiCV("Test App"), "version": asciiCV("1.0.0"), "chain-id": uintCV(1)})`
 - CV = `asciiCV("Hello World")`
 - (Message hash:
-  `c6ace1349f59b024dec0925df0a15baf8d27fc43a357ce61f48fdc8fa461e7b9`)
+  `1bfdab6d4158313ce34073fbb8d6b0fc32c154d439def12247a0f44bb2225259`)
 
 Produces the following signature:
 
-- `fd1c62aae1b12c07571d6c7e379a20c3858005877306914da80ae6ee8c748a6d133fcd9169cac5684fe635a5a375960827bf2184849f6cde6ed828b370c72d1b00`
+- `8b94e45701d857c9f1d1d70e8b2ca076045dae4920fb0160be0642a68cd78de072ab527b5c5277a593baeb2a8b657c216b99f7abb5d14af35b4bf12ba6460ba401`
 
 Which can be verified in Clarity:
 
 ```clarity
-(secp256k1-verify 0xc6ace1349f59b024dec0925df0a15baf8d27fc43a357ce61f48fdc8fa461e7b9 0xfd1c62aae1b12c07571d6c7e379a20c3858005877306914da80ae6ee8c748a6d133fcd9169cac5684fe635a5a375960827bf2184849f6cde6ed828b370c72d1b00 0x0390a5cac7c33fda49f70bc1b0866fa0ba7a9440d9de647fecb8132ceb76a94dfa)
+(secp256k1-verify 0x1bfdab6d4158313ce34073fbb8d6b0fc32c154d439def12247a0f44bb2225259 0x8b94e45701d857c9f1d1d70e8b2ca076045dae4920fb0160be0642a68cd78de072ab527b5c5277a593baeb2a8b657c216b99f7abb5d14af35b4bf12ba6460ba401 0x0390a5cac7c33fda49f70bc1b0866fa0ba7a9440d9de647fecb8132ceb76a94dfa)
 true
 ```

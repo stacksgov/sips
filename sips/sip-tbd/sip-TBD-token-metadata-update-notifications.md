@@ -179,14 +179,16 @@ it shall call `print` with a tuple with the following structure:
 
 # Backwards compatibility
 
-Developers who need to update metadata for contracts that were deployed before this SIP is activated
-could deploy a new one with a function that broadcasts this message or use the deployed contract
-described in [Reference Implementations](#reference-implementations).
+Developers who need to emit metadata update notifications for tokens declared in older contracts
+(that were deployed before this notification standard was established) could do so by either calling
+the contract described in [Reference Implementations](#reference-implementations) or by deploying a
+new separate contract containing a public function that emits this notification.
 
 # Activation
 
 This SIP will be activated when at least 10 unique contracts have had metadata updates triggered via
-contract-call transactions that print the proposed notification payload.
+contract-call transactions that print the proposed notification payload. If the Stacks blockchain
+reaches block height 170000 and this has not happened, this SIP will be considered rejected.
 
 # Reference implementations
 

@@ -177,6 +177,25 @@ it shall call `print` with a tuple with the following structure:
 | `payload.token-ids`   | A list with the uint token ids that need to be refreshed               |
 | `payload.contract-id` | The contract id (principal) of the contract that declared the tokens   |
 
+## Considerations for metadata indexers
+
+Metadata indexers should review the following implications when reacting to token metadata update
+notifications:
+
+* Notifications can come at any point in time and are persistent in the Stacks blockchain.
+  * When performing a local sync to the chain tip, old notifications for old metadata updates could
+    not necessarily have a distinct effect in metadata responses when processed in the present.
+* Multiple notifications for the same tokens will not necessarily correspond to multiple metadata
+  updates.
+  * Refreshing a token's metadata should be an idempotent operation. Repeated refreshes should not
+    create distinct records in the internal metadata database.
+* Notifications could be gratuitous.
+  * To prevent slow performance and guard against any Denial of Service attack attempts, contract
+    call rate limiting should be implemented locally.
+* Notifications can be delayed and out of order.
+  * A notification transaction's timestamp should not be considered to be the time when the token
+    metadata was actually updated.
+
 # Backwards compatibility
 
 Developers who need to emit metadata update notifications for tokens declared in older contracts

@@ -74,15 +74,17 @@ SIP018 message.
 The challenge lies in producing messages that are both meaningful to humans as
 well as easy to be processed on-chain. Luckily, Clarity is a strongly-typed
 interpreted language. Structured Data is therefore a Clarity Value expression as
-detailed in _SIP002: Smart Contract Language_. These value expressions are
-encoded in Stacks wire format, as detailed in _SIP005: Blocks and Transactions_,
+detailed in _[SIP002: Smart Contract Language
+](https://github.com/stacksgov/sips/blob/main/sips/sip-002/sip-002-smart-contract-language.md)_.
+These value expressions are encoded in Stacks wire format, as detailed in
+_[SIP005: Blocks and Transactions](https://github.com/stacksgov/sips/blob/main/sips/sip-005/sip-005-blocks-and-transactions.md)_,
 and then hashed with SHA256. The resulting hash is used as the input for
 signing.
 
 ## Definitions
 
-_Clarity Value_: a native Clarity value as expressed in _SIP002: Smart Contract
-Language_.
+_Clarity Value_: a native Clarity value as expressed in _[SIP002: Smart Contract
+Language](https://github.com/stacksgov/sips/blob/main/sips/sip-002/sip-002-smart-contract-language.md)_.
 
 _Meta Transaction_: a meta transaction can be understood of as a transaction
 that contains another "transaction". For example, a user may sign a message
@@ -100,7 +102,8 @@ _Structured Data_: A structured representation of a message to sign expressed as
 a Clarity Value.
 
 _Wire format_: the underlying encoding for Clarity Values when generating a
-transaction, as expressed in _SIP005: Blocks and Transactions_.
+transaction, as expressed in _[SIP005: Blocks and Transactions
+](https://github.com/stacksgov/sips/blob/main/sips/sip-005/sip-005-blocks-and-transactions.md)_.
 
 ## Formal specification
 
@@ -132,14 +135,15 @@ Value _D_.
 - `H = structuredDataHash(D)`; where,
 - `structuredDataHash(D) = sha256(ToCVWireFormat(D))`; where `ToCVWireFormat` is
   a function that encodes an input Clarity Value to its wire format
-  representation as described in _SIP005_.
+  representation as described in
+  _[SIP005](https://github.com/stacksgov/sips/blob/main/sips/sip-005/sip-005-blocks-and-transactions.md)_.
 
 **Definition of** `domain`
 
 The `domain` is a `tuple` type Clarity Value that represents the domain in which
 messages are signed. Its Clarity type definition is as follows:
 
-```clojure
+```clarity
 {
 	name: (string-ascii len)
 	version: (string-ascii len)
@@ -257,7 +261,7 @@ reference. The `verify-signed-structured-data` function takes a structured data
 hash, a signature, and a signer, and returns `true` or `false` depending on
 whether the signature is valid.
 
-```clojure
+```clarity
 (define-constant chain-id u1)
 (define-constant structured-data-prefix 0x534950303138)
 

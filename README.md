@@ -8,7 +8,7 @@ may submit a SIP.
 
 ## SIPs in the Process of Being Activated
 
-None at this time.  See the [Pull Requests](https://github.com/stacksgov/sips/pulls) for work-in-progress SIPs.
+* [SIP-018](https://github.com/stacksgov/sips/pull/57): Signed Structured Data
 
 ## Ratified SIPs
 

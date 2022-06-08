@@ -8,6 +8,7 @@ may submit a SIP.
 
 ## SIPs in the Process of Being Activated
 
+* [SIP-016](https://github.com/stacksgov/sips/pull/44): Metadata for Tokens
 * [SIP-018](https://github.com/stacksgov/sips/pull/57): Signed Structured Data
 
 ## Ratified SIPs

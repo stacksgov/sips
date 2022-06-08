@@ -1,6 +1,6 @@
 # Preamble
 
-SIP Number: TBD
+SIP Number: 019
 
 Title: Notifications for Token Metadata Updates
 
@@ -10,13 +10,13 @@ Consideration: Technical
 
 Type: Standard
 
-Status: Draft
+Status: Accepted
 
 Created: 17 May 2022
 
 License: GPL-3.0
 
-Sign-off: TBD
+Sign-off: Jude Nelson <jude@stacks.org>
 
 Layer: Traits
 

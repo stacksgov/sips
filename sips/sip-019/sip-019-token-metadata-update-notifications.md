@@ -196,18 +196,28 @@ notifications:
   * A notification transaction's timestamp should not be considered to be the time when the token
     metadata was actually updated.
 
+Given these constraints the notifications this SIP proposes should be taken as _hints_ to metadata
+indexers. Metadata indexers are not obliged to follow them.
+
 # Backwards compatibility
 
 Developers who need to emit metadata update notifications for tokens declared in older contracts
 (that were deployed before this notification standard was established) could do so by either calling
-the contract described in [Reference Implementations](#reference-implementations) or by deploying a
-new separate contract containing a public function that emits this notification.
+the contract described in [Reference Implementations](#reference-implementations) or by first
+deploying a new separate contract containing a public function that prints this notification and
+then calling it to have it emitted.
 
 # Activation
 
-This SIP will be activated when at least 10 unique contracts have had metadata updates triggered via
-contract-call transactions that print the proposed notification payload. If the Stacks blockchain
-reaches block height 170000 and this has not happened, this SIP will be considered rejected.
+This SIP will be activated when the following conditions are met:
+
+1. At least 10 unique contracts have had metadata updates triggered via contract-call transactions
+   that print the proposed notification payload.
+1. At least 3 metadata indexers (like the Stacks Blockchain API or an NFT marketplace) start
+   listening for and reacting to the emitted notifications.
+
+If the Stacks blockchain reaches block height 170000 and the above has not happened, this SIP will
+be considered rejected.
 
 # Reference implementations
 

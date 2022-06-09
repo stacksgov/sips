@@ -61,7 +61,7 @@ When this URI is resolved, it returns a JSON file with the following metadata:
   "image": "https://cdn.citycoins.co/logos/newyorkcitycoin.png"
 }
 ```
-Even though the URI string is fixed, this file lives off-chain so it is concievable that its
+Even though the URI string is fixed, this file lives off-chain so it is conceivable that its
 contents could change at any point in the future. Additionally, this contract includes a way for its
 owners to change this URI via a `var-set` function call:
 

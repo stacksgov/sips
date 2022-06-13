@@ -134,7 +134,7 @@ included in a block or microblock.
 This SIP proposes a standard message structure (similar to a notification payload) that would be
 used through `print`. Existing metadata indexers would receive this event through the [Stacks node
 event-emitter interface](https://github.com/stacks-network/stacks-blockchain/blob/master/docs/event-dispatcher.md#post-new_block),
-parse its contents, and refresh any contracts that were updated.
+parse and validate its contents, and refresh any contracts that were updated.
 
 # Specification
 
@@ -179,8 +179,19 @@ it shall call `print` with a tuple with the following structure:
 
 ## Considerations for metadata indexers
 
-Metadata indexers should review the following implications when reacting to token metadata update
-notifications:
+For a token metadata update notification to be considered valid by metadata indexers, it must meet
+the following requirements:
+
+1. Its payload structure should be correct whether it is updating a [FT](#fungible-tokens) or a
+   [NFT](#non-fungible-tokens).
+1. The STX address that initiated the contract call which emits the notification should match the
+   owner of the token contract being updated.
+    * The transaction's `sender_address` principal should match the principal contained in the
+      notification's `payload.contract-id`.
+
+Notifications that do not meet these requirements must be ignored.
+
+### Other implications
 
 * Notifications can come at any point in time and are persistent in the Stacks blockchain.
   * When performing a local sync to the chain tip, old notifications for old metadata updates could
@@ -189,7 +200,6 @@ notifications:
   updates.
   * Refreshing a token's metadata should be an idempotent operation. Repeated refreshes should not
     create distinct records in the internal metadata database.
-* Notifications could be gratuitous.
   * To prevent slow performance and guard against any Denial of Service attack attempts, contract
     call rate limiting should be implemented locally.
 * Notifications can be delayed and out of order.

@@ -189,7 +189,7 @@ the following requirements:
    [NFT](#non-fungible-tokens).
 1. The STX address that initiated the contract call which emits the notification should match the
    owner of the token contract being updated.
-    * The transaction's `sender_address` principal should match the principal contained in the
+    * The transaction's `tx-sender` principal should match the principal contained in the
       notification's `payload.contract-id`.
 
 Notifications that do not meet these requirements must be ignored.

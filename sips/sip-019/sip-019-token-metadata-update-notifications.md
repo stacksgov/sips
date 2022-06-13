@@ -174,8 +174,11 @@ it shall call `print` with a tuple with the following structure:
 |-----------------------|------------------------------------------------------------------------|
 | `notification`        | The string `"token-metadata-update"`                                   |
 | `payload.token-class` | The string `"nft"`                                                     |
-| `payload.token-ids`   | A list with the uint token ids that need to be refreshed               |
+| `payload.token-ids`   | (optional) A list with the uint token ids that need to be refreshed    |
 | `payload.contract-id` | The contract id (principal) of the contract that declared the tokens   |
+
+If a notification does not contain a value for `payload.token-ids`, it means it is requesting an
+update for all tokens.
 
 ## Considerations for metadata indexers
 

@@ -212,6 +212,26 @@ Notifications that do not meet these requirements must be ignored.
 Given these constraints the notifications this SIP proposes should be taken as _hints_ to metadata
 indexers. Metadata indexers are not obliged to follow them.
 
+# Related work
+
+An alternative considered for token metadata update notifications is for them to be transmitted via
+an off-chain notification service such as an official mailing list or a forum post. While this
+channel would have had the advantage of being easier to update and faster to propagate, it has a few
+key disadvantages that make it inadequate for this SIP's intended use:
+
+1. It introduces a third party dependency
+    * An off-chain notification service would most likely be maintained by centralized entities
+      unrelated to the Stacks ecosystem which at any time may modify the channel, its reach, or its
+      rules.
+1. It does not leave a permanent record in the blockchain
+    * If a new network participant wishes to recreate the entire Stacks chain history, they will not
+      be able to determine at which points metadata was updated for tokens without having to query
+      the off-chain notification service and performing a manual match.
+1. It is not future proof
+    * It the selected off-chain service changes at any point, a migration to another notification
+      channel will be much more difficult once the Stacks ecosystem has more token applications and
+      metadata indexers.
+
 # Backwards compatibility
 
 Developers who need to emit metadata update notifications for tokens declared in older contracts

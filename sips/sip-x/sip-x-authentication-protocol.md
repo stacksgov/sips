@@ -67,21 +67,21 @@ The authentication request is a JWT created by the application. It is signed by 
 
 The payload must contain the following claims:
 
-| Claim name             | Type   | Description                                                                                                                               |
-| ---------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| jti                    | string | As defined in RFC7519                                                                                                                     |
-| iat                    | string | As defined in RFC7519                                                                                                                     |
-| exp                    | string | As defined in RFC7519                                                                                                                     |
+| Claim name             | Type   | Description                                                                                                                                       |
+| ---------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| jti                    | string | As defined in RFC7519                                                                                                                             |
+| iat                    | string | As defined in RFC7519                                                                                                                             |
+| exp                    | string | As defined in RFC7519                                                                                                                             |
 | iss                    | string | Decentralized identifier defined in DID specification representing the app transit public key. See Appendix C for list of well-known DID methods. |
-| public_keys            | array  | Single item list with the public key of the signer                                                                                        |
-| domain_name            | string | The url of the application with schema.                                                                                                   |
-| manifest_uri           | string | The url of the application manifest, usually domain_name + "/manifest.json"                                                               |
-| redirect_uri           | string | The url that should receive the authentication response                                                                                   |
-| do_not_include_profile | bool   |                                                                                                                                           |
-| supports_hub_url       | bool   |                                                                                                                                           |
-| scopes                 | array  | list of strings specifying the requested access to the user's account. See Appendix A for full list of scopes                             |
-| state                  | any    | value to be echoed in the auth response                                                                                                   |
-| version                | string | must be "2.0.0"                                                                                                                           |
+| public_keys            | array  | Single item list with the public key of the signer                                                                                                |
+| domain_name            | string | The url of the application with schema.                                                                                                           |
+| manifest_uri           | string | The url of the application manifest, usually domain_name + "/manifest.json"                                                                       |
+| redirect_uri           | string | The url that should receive the authentication response                                                                                           |
+| do_not_include_profile | bool   |                                                                                                                                                   |
+| supports_hub_url       | bool   |                                                                                                                                                   |
+| scopes                 | array  | list of strings specifying the requested access to the user's account. See Appendix A for full list of scopes                                     |
+| state                  | any    | value to be echoed in the auth response                                                                                                           |
+| version                | string | must be "2.0.0"                                                                                                                                   |
 
 ### Verification
 
@@ -97,9 +97,23 @@ Authenticators should verify that the request has the following properties:
 
 ## User authorization
 
-The authenticator manages the user' private keys. The protocol requires that keys are created from a deterministic wallet using [BIP-32](https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki).
+The authenticator manages the user' private keys. The protocol requires that
+keys are created from a deterministic wallet using
+[BIP-32](https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki) with a
+seed from a secret key using [BIP-39](https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki).
 
-The authenticator can offer the user a list of accounts. Each account corresponds to a change of the key derivation path by 1. This SIP does not specify how the wallet determines which accounts should be presented. Only requirement is that one account is selected. The selected index shall be called account index `n`.
+The authenticator can offer the user a list of accounts. Each account
+corresponds to a change of the key derivation path by 1. This SIP does not specifies how
+the wallet determines which accounts should be presented. Only requirement is
+that one account is selected. The selected
+index shall be called account index `n`.
+
+Wallets might display the following account details:
+
+| Description     | Derivation path                | Comment                                                                                                                                                                  |
+| --------------- | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Stacks identity | `m/44'/5757'/0'/0/n`           | Usually owns the BNS username and holds the accounts assets. The uncompressed public key is used to generate the accounts STX address (and a corresponding BTC address). |
+| native Bitcoin  | `m/44'/0'/n'` or `m/49'/0'/n'` | First unused BTC addresses related to these derivation paths could be shown.                                                                                             |
 
 Once the account index has been fixed, authenticator has to do the following operations:
 
@@ -110,7 +124,8 @@ Once the account index has been fixed, authenticator has to do the following ope
 
 If the authentication request contains the scope `storage_write`, then the authenticator must create a private key that is specific for the requesting application. It must use the following algorithm:
 
-1. Wallet salt: create the sha256 hash of the hex representation of the public key of derivation path (`m/888'/0'`)
+1. Wallet salt: create the sha256 hash of the hex representation of the
+   compressed public key of derivation path (`m/888'/0'`)
 1. Create sha256 hash of concatinated string of the `domain_name` from the request and the hex representation of the wallet salt.
 1. Hash code: Create a hash code (as defined in Java and Javascript) from the hex representation of the hash, then apply bitwise `and` to the hash code and 0x7fffffff.
 1. Use derivation path `m/888'/0'/n'/0'/_hash code_'` for the private key.
@@ -119,7 +134,12 @@ If the authentication request contains the scope `storage_write`, then the authe
 
 Users can create a public profile that is shared with the application or other users. It contains information similar to a profile of social media. The profile is a self-signed document that can be shared and verified off-chain.
 
-Users who own a BNS username can publish their public profile under their BNS username. The url of the publicly accessible profile is provided in the zone file of the BNS username. The process of attaching a zone file to a BNS username is part of name registration via the BNS contract.
+Users who own a BNS username can publish their public profile under their BNS
+username. The url of the publicly accessible profile is provided in the zone
+file of the BNS username. The process of attaching a zone file to a BNS username
+is part of name registration via the BNS contract.
+
+Users who do NOT own a BNS username can share the storage location of their public profile off-chain.
 
 The public profile is used during authentication when the authentication request contains the scope `publish_data`. The profile then contains public meta data about the application that other users can use to find data shared with them.
 
@@ -201,7 +221,7 @@ User might want to share API endpoints and configurations with applications and 
 
 The verifiable credential must be encoded as a signed JWT.
 
-The JWT must be signed by the private key of the stacks address that ownes the username of the select account. This should be the Stacks private key using the derivation path `m/44'/5757'/0'/0/n`. Some users might have used the data private key to register a username, therefore, authenticators must verify whether the username is owned by the signing private key at the time of signing.
+The signature must be created using the private key of the Stacks Identity of the selected account.
 
 The JWT payload must have the following claims:
 
@@ -262,7 +282,9 @@ The JWT payload must have the following claims:
 
 ### Verification
 
-Public profiles owned by users with a username can be looked up via the Stacks blockchain. The retrieved verifiable credential was registered by the user. The usual verification for VCs must be applied.
+Public profiles owned by users with a username can be looked up via the Stacks
+blockchain. Clients should verify that the retrieved verifiable credential was
+issued by the user. The usual verification for VCs about expiry, etc. must be applied as well.
 
 ## Authentication Response
 
@@ -280,7 +302,6 @@ The payload must contain the following claims:
 | public_keys       | array   | Single item array containing the public key of the selected account in hex representation.                                                                                                                          |
 | profile           | object  | Object containing properties of the users, the object schema should be well-known type of Appendix B. This can be the public profile of the selected account.                                                       |
 | apps_meta         | object  | Information about user data of different apps. Property names are the domain name of the app. Each property value is an object of containing properties for `storage` and `publicKey`. See "Application Meta Data". |
-| username          | string  | BNS username, owned by the first public key of `public_keys` claim. Can be the empty string                                                                                                                         |
 | stx_address       | object  | Object containing the user's stx address for mainnet and testnet in the form: `{mainnet: "S...", testnet: "S..."}                                                                                                   |
 | profile_url       | string  | Resolvable url of the public profile of the selected account.                                                                                                                                                       |
 | core_token        | string? | Usually not used. Encrypted token to access a stacks node. The public key of the app transit key must be used for encryption.                                                                                       |
@@ -299,12 +320,6 @@ When the application received the authentication response it must verify that th
 - public keys length is 1
 - public key (`public_keys[0]`) is same as the signer's key
 - public key's stacks address is the same as the issuer
-- username if provided is owned by issuer
-
-#### Usernames and DIDs
-
-If the authentication response contains a username the username must be owned by the issuer.
-The issuer of a JWT tokens is represented by a DID in claim `iss`. The DID has to be resolved to a public key and then the blockchain has to confirm that the username indeed is owned by the public key encoded as Stacks address.
 
 ## Comparison of used JSON objects
 
@@ -343,7 +358,8 @@ The specification contains parts that are deprecated like the property `apps` in
 
 The following changes from version 1.3.1 to 2.0.0 require updates of the existing wallets
 
-- The public profile is a verifiable credential and must be signed by the owner of the username of the selected account.
+- The public profile is a verifiable credential and must be signed by private
+  key of the Stacks Identity of the selected account.
 - The authentication response must be signed by the same key as the public profile.
 - The issuer of a JWT should be given as DID using the DID method `did:stacks:v2`.
 - The following properties of the authentication response have been renamed:

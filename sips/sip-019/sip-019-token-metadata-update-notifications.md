@@ -143,9 +143,6 @@ must be made via a contract call transaction to the [deployed reference
 contract](https://explorer.stacks.co/txid/0xe92af2ea5c11e2e6fde4d31fd394de888070efff23bffad04465c549543abfa2?chain=mainnet)
 or from a call to `print` within any other contract, including the token contract itself.
 
-The message structure was designed to be reusable by other SIPs who wish to establish new
-notification standards in the future (i.e. by varying the `notification` and `payload` key values).
-
 ## Fungible Tokens
 
 When a contract needs to notify the network that metadata has changed for a **Fungible Token**, it
@@ -211,6 +208,15 @@ Notifications that do not meet these requirements must be ignored.
 
 Given these constraints the notifications this SIP proposes should be taken as _hints_ to metadata
 indexers. Metadata indexers are not obliged to follow them.
+
+## Notification structure reusability
+
+Even though establishing a generalized smart contract notification standard is out of scope for this
+SIP, the proposed `print` message structure was designed for reusability by future SIPs that wish to
+standardize other events.
+
+For example, developers could vary the `notification` and `payload` values to notify the network
+when an NFT collection has been fully minted or another important milestone is reached.
 
 # Related work
 

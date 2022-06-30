@@ -184,10 +184,11 @@ the following requirements:
 
 1. Its payload structure should be correct whether it is updating a [FT](#fungible-tokens) or a
    [NFT](#non-fungible-tokens).
-1. The STX address that initiated the contract call which emits the notification should match the
-   owner of the token contract being updated.
-    * The transaction's `tx-sender` principal should match the principal contained in the
-      notification's `payload.contract-id`.
+1. Either the `contract_identifier` field of the contract event must be equal to the
+   `payload.contract-id` (i.e., the event was produced by the contract that owns the metadata) or
+   the transaction's `tx-sender` principal should match the principal contained in the
+   notification's `payload.contract-id` (i.e., the STX address that sent the transaction which emits
+   the notification should match the owner of the token contract being updated).
 
 Notifications that do not meet these requirements must be ignored.
 

@@ -10,6 +10,7 @@ may submit a SIP.
 
 * [SIP-016](https://github.com/stacksgov/sips/pull/44): Metadata for Tokens
 * [SIP-018](https://github.com/stacksgov/sips/pull/57): Signed Structured Data
+* [SIP-019](https://github.com/stacksgov/sips/pull/72): Notifications for Token Metadata Updates
 
 ## Ratified SIPs
 

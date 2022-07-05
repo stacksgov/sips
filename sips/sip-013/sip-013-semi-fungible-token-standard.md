@@ -364,16 +364,24 @@ Ethereum.
 
 Not applicable.
 
+# Trait deployments
+
+## Mainnet
+
+- Token trait: [SPDBEG5X8XD50SPM1JJH0E5CTXGDV5NJTKAKKR5V.sip013-semi-fungible-token-trait](https://explorer.stacks.co/txid/0x7e9d8bac5157ab0366089d00a40a2a83926314ab08807ab3efa87ebc96d9e20a?chain=mainnet)
+- Send-many trait: [SPDBEG5X8XD50SPM1JJH0E5CTXGDV5NJTKAKKR5V.sip013-transfer-many-trait](https://explorer.stacks.co/txid/0x88457278a61b7e59c8a19704932eebb7b46817e0bbd3235436a1d72c956db19c?chain=mainnet)
+
+## Testnet
+
+- Token trait: [STDBEG5X8XD50SPM1JJH0E5CTXGDV5NJTJTTH7YB.sip013-semi-fungible-token-trait](https://explorer.stacks.co/txid/0x37e846cce0d31f34be06d969efbb6ff413308066eefffa0bf1a8669bd4be0a05?chain=testnet)
+- Send-many trait: [STDBEG5X8XD50SPM1JJH0E5CTXGDV5NJTJTTH7YB.sip013-transfer-many-trait](https://explorer.stacks.co/txid/0x81ec048b187137ade2fb9519375d22ec96c271d114e79c2d44018434e9009911?chain=testnet)
+
 # Activation
 
-Trait deployments:
-
-- mainnet: [TODO](#TODO)
-- Testnet: [TODO](#TODO)
-
-This trait will be considered activated when this trait is deployed to mainnet,
-and 3 different implementations of the trait have been deployed to mainnet, no
-later than Bitcoin block TODO.
+These traits will be considered activated when they are deployed to mainnet
+and 3 different implementations of the main trait have been deployed to mainnet,
+no later than Bitcoin block 769,950. Additionally, no revisions to the traits
+were made after Bitcoin block 756,810.
 
 # Reference Implementations
 

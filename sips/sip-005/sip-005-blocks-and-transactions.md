@@ -623,8 +623,8 @@ units:
 A **non-fungible condition code** encodes a statement being made about a
 non-fungible token, with respect to whether or not the particular non-fungible
 token is owned by the account.  It can take the following values:
-* `0x10`: "The account does NOT own this non-fungible token"
-* `0x11`: "The account owns this non-fungible token"
+* `0x10`: "The account will SEND this non-fungible token"
+* `0x11`: "The account will NOT SEND this non-fungible token"
 
 Post-conditions are defined in terms of which assets each account sends or
 does not send during the transaction's execution.  To enforce post-conditions,

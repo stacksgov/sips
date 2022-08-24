@@ -3,7 +3,7 @@
 Chairperson: Jason Schrader <jason@joinfreehold.com>
 
 Members: Harold Davis <recursive3@gmail.com>, Juliet Oberding
-<juliet.oberding@gmail.com>, Jason Schrader <jason@joinfreehold.com>,
+<juliet.oberding@gmail.com>, Jason Schrader <jason@joinfreehold.com>, Orlando Cosme <orlando@stackerdaos.com>,
 
 Discussions-to: https://github.com/stacksgov/sips
 

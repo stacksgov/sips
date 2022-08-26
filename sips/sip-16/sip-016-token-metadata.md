@@ -10,7 +10,7 @@ Consideration: Technical
 
 Type: Standard
 
-Status: Activation-in-Progress
+Status: Ratified
 
 Created: 7 November 2021
 

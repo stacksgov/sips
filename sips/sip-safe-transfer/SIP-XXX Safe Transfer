@@ -68,11 +68,10 @@ Consideration of SIP013 is excluded as the proposed standard already includes th
 
 ## Backwards Compatibility
 
-What is the suggestion ?
+Two new traits applicable for SIP009 and SIP010 asset respectively, see below.
 
-New traits to replace SIP009 and SIP010 which replicate all the functions but switch `transfer` to `transfer-safe`? Or two new trait contracts which simply specify the new `transfer-safe` variant?
-
-If the former then a new NFT contract will have to start supporting a null transfer method.  If the latter then existing marketplaces will need to support two NFT token standards.
+New NFT and FT contracts can implement these traits and marketplaces will be able to call into transfer
+assets without having to switch the tx-sender context.
 
 ## Activation
 

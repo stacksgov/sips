@@ -1,0 +1,112 @@
+# Safe Transfer Standard for SIP-009/SIP-010 Assets
+
+## Preamble
+
+SIP - XXX
+
+Title: SIP009/SIP010 Safe Token Transfer
+
+Authors: Mike Cohen, Marvin Janssen
+
+Consideration: Technical
+
+Type: Standard
+
+Status:
+
+Created:
+
+License:
+
+Sign Off:
+
+Additional SIP fields
+
+Layer: traits
+
+Requires: SIP009, SIP010
+
+Replaces: ???
+
+## Abstract
+
+A safe token standard for SIP009 and SIP010 is required. We introduce a new SIP that complements the existing standards and adds a new function to each.
+
+## Introduction
+
+We need this standard because right now it is unsafe for contract principals to call **arbitrary** SIP009/SIP010 token transfer functions without reviewing and allowlisting the contracts individually. The trend has been for token contracts to guard their transfer function only by `tx-sender`, which forces the intermediary contract to use `as-contract` to change the sender context. This in turn allows a malicious token contract to assume full ownership of many other tokens guarded in the same way.
+
+<img width="1065" alt="Screenshot 2022-08-01 at 17 42 51" src="https://user-images.githubusercontent.com/4384929/188104977-27e15126-6160-4903-96af-69a5327e4579.png">
+
+## The Solution
+
+The solution is to introduce a transfer function that is required to be guarded by both `tx-sender` and `contract-caller`. The intermediary contract can now call the SIP009 / SIP010 contract without changing the `tx-sender` context.
+
+The post-conditions on the original `tx-sender` context now prevent unexpected asset transfers from the intermediary contract.
+
+### Malicious Intermediary Contracts
+
+It’s important to note that the clarity in-built;
+
+```jsx
+nft-transfer asset-name asset-id sender recipient
+```
+
+does not require the sender to be the asset owner (for proof of this see [[this testnet transaction](https://explorer.stacks.co/txid/0xbfb35aa472e2d22ba2fe908922ed916f8f65bd929897de661d148b41fb7adac6?chain=testnet)](<https://explorer.stacks.co/txid/0xbfb35aa472e2d22ba2fe908922ed916f8f65bd929897de661d148b41fb7adac6?chain=testnet>)). Well formed Post Conditions are therefore the main gatekeepers to prevent intermediary contracts from behaving maliciously towards the end user. However safe transfer is still needed as the assets under threat do not belong to the end user and the marketplace contract must still change context using `(as-contract)` to call the transfer function of the intermediary contract.
+
+## Implementation Notes
+
+### Handling Bulk Transfers
+
+The ability to transfer many SIP009/010 assets in a single transaction is unaffected as transfer-many can unwind to call the new transfer-safe variant.
+
+Similar for transfer-memo versions of transfer functions - the actual NFT/FT transfer should be handled by the transfer / transfer-safe function.
+
+### SIP013 Assets
+
+Consideration of SIP013 is excluded as the proposed standard already includes the safe version of transfer.
+
+## Backwards Compatibility
+
+What is the suggestion ?
+
+New traits to replace SIP009 and SIP010 which replicate all the functions but switch `transfer` to `transfer-safe`? Or two new trait contracts which simply specify the new `transfer-safe` variant?
+
+If the former then a new NFT contract will have to start supporting a null transfer method.  If the latter then existing marketplaces will need to support two NFT token standards.
+
+## Activation
+
+Activation of this SIP;
+
+- Affirmative vote via STX snapshot voting
+- Mainnet implementation by at least one NFT marketplace or automated market maker on the Stacks Blockchain
+
+## Reference Implementations
+
+### SIP009
+
+The most widely used non-fungible token standard.
+
+```clarity
+(define-public (transfer-safe (token-id uint) (sender principal) (recipient principal))
+ (begin
+  (asserts! (or (is-eq sender tx-sender) (is-eq sender contract-caller)) err-unauthorised)
+  ;; rest of the transfer logic...
+  (ok token-id)
+ )
+)
+```
+
+### SIP010
+
+The most widely used fungible token standard.
+
+```clarity
+(define-public (transfer-safe (amount uint) (sender principal) (recipient principal) (memo (optional (buff 34))))
+ (begin
+  (asserts! (or (is-eq sender tx-sender) (is-eq sender contract-caller)) err-unauthorised)
+  ;; rest of the transfer logic...
+  (ok amount)
+ )
+)
+```

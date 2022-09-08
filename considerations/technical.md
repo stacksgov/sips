@@ -2,7 +2,7 @@
 
 Chairperson: Jude Nelson <jude@stacks.org>
 
-Members: Jude Nelson <jude@stacks.org>, Aaron Blankstein <aaron@hiro.so>
+Members: Jude Nelson <jude@stacks.org>, Aaron Blankstein <aaron@hiro.so>, Thomas Osmonson (aulneau) <thomas@fungible.systems>
 
 Discussions-to: https://github.com/stacksgov/sips
 

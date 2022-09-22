@@ -22,7 +22,7 @@ Created-by: SIP-000
 
 ## About this CAB
 
-The SIP concerns the blockchain’s token economics. This not only includes the STX token, but also any on-chain tokens created within smart contracts. SIPs that are concerned with fundraising methods, grants, bounties, and so on also belong in this SIP track.
+The economics CAB reviews SIPs related to the blockchain's token economics. This not only includes the STX token, but also any on-chain tokens created within smart contracts. SIPs that are concerned with fundraising methods, grants, bounties, and so on also belong in this SIP track.
 
 ## Considerations
 

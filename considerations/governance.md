@@ -57,7 +57,7 @@ The following items would be considered out-of-scope for this CAB:
 
 Questions to facilitate SIP review:
 
-1. Which stakeholders' governance processes are expected to be impacted, or at-risk of being impacted, by this SIP (ex. miners, stakers, STX holders, STX users, STX builders, etc)?
+1. Which stakeholders' governance processes are expected to be impacted, or at-risk of being impacted, by this SIP (ex. miners, stackers, STX holders, STX users, STX builders, etc)?
 2. What are the expected governance impacts to each of these parties?
 3. What are the governance and non-governance risks to each of these parties?
 4. Do the expected governance benefits outweigh the governance and non-governance risks for each of these parties?

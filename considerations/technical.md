@@ -41,7 +41,7 @@ Working in The Clarity Innovation Lab - a research and development centre focuse
 
 ## About this CAB
 
-The SIP is technical in nature, and must be vetted by users with the relevant technical expertise.
+The technical CAB reviews SIPs related to technical implementations to the blockchain, including consensus-breaking changes. SIPs tahat are technical in nature and must be vetted by users with the relevant technical expertise belong in this SIP track.
 
 ## Considerations
 

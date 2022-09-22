@@ -1,7 +1,5 @@
 # Consideration for Governance SIPs
 
-## Member Information
-
 Chairperson: Jason Schrader
 
 Members:

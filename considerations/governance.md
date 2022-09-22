@@ -14,7 +14,7 @@ Discussions-to: https://github.com/stacksgov/sips
 
 Created-by: SIP-000
 
-### Biographies
+## Biographies
 
 **Harold Davis**: Started in the Blockstack ecosystem back in 2016. Became very involved with governance in 2020 with the governance working group. Established a governance residency focused on R+D of gov tooling for the Stacks Advocates & ecosystem. Specifically focused on distributed power for long term sustainability.
 

@@ -12,7 +12,7 @@ Discussions-to: https://github.com/stacksgov/sips
 
 Created-by: SIP-000
 
-### Biographies
+## Biographies
 
 **Dr. Chiente Hsu**: Dr. Chiente Hsu is CEO and co-founder of ALEX, the flagship DeFi on Bitcoin via Stacks. Dr. Hsu joins ALEX from Morgan Stanley and Credit Suisse, where she was a Managing Director and Global Head of Quant Research. She is also the author of ‘Rule Based Investing”, published by FT Press. Dr. Hsu spent her early career in academia. She was a tenure-track professor at the University of Vienna, Austria, and a visiting professor at Duke University, where she taught and conducted research in Financial Econometrics.
 

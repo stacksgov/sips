@@ -18,7 +18,7 @@ Discussions-to: https://github.com/stacksgov/sips
 
 Created-by: SIP-000
 
-### Biographies
+## Biographies
 
 **Aaron Blankstein**: Aaron is a staff engineer at Hiro, contributing to the Stacks blockchain, Clarity, and Hiro’s subnets implementation. He has been working on the Stacks blockchain for 5+ years, working on Proof-of-Transfer consensus, Clarity, and other projects.
 
@@ -41,7 +41,7 @@ Working in The Clarity Innovation Lab - a research and development centre focuse
 
 ## About this CAB
 
-The technical CAB reviews SIPs related to technical implementations to the blockchain, including consensus-breaking changes. SIPs tahat are technical in nature and must be vetted by users with the relevant technical expertise belong in this SIP track.
+The technical CAB reviews SIPs related to technical implementations to the blockchain, including consensus-breaking changes. SIPs that are technical in nature and must be vetted by users with the relevant technical expertise belong in this SIP track.
 
 ## Considerations
 

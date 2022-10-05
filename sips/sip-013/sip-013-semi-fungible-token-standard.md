@@ -298,6 +298,48 @@ To that end, it is recommended that developers use both Clarity primitives in
 their design. Semi-fungible token contracts can achieve complete post condition
 coverage by using both `define-fungible-token` and `define-non-fungible-token`.
 
+A minimal and sufficient strategy that provides full post condition coverage is
+to create a "burn-and-mint" mechanism for token creation and transfers. Such an
+SFT contract tracks quantities using an internal fungible token and token IDs
+using an internal non-fungible token. Since token identifiers for assets defined
+by `define-non-fungible-token` need to be unique, an additional component is
+added to ensure token IDs can be expressed per owner. (As SFTs may have a
+quantity of a certain token ID that is larger than one.) The token ID type
+identifier thus becomes `{token-id: uint, owner: principal}`. Wallet software
+can then easily determine the post conditions for the amount as well as the
+token ID.
+
+An example of a burn-and-mint mechanism is provided below. The reference
+implementation at the end of the document features a full SFT contract that
+includes burn-and-mint.
+
+```clarity
+(define-fungible-token semi-fungible-token)
+(define-non-fungible-token semi-fungible-token-id {token-id: uint, owner: principal})
+
+(define-public (transfer (token-id uint) (amount uint) (sender principal) (recipient principal))
+	(begin
+		;; <guards>
+		;; <token transfer logic>
+		(try! (tag-nft-token-id {token-id: token-id, owner: sender}))
+		(try! (tag-nft-token-id {token-id: token-id, owner: recipient}))
+		;; <balance updates>
+		(print {type: "sft_transfer", token-id: token-id, amount: amount, sender: sender, recipient: recipient})
+		(ok true)
+	)
+)
+
+(define-private (tag-nft-token-id (nft-token-id {token-id: uint, owner: principal}))
+	(begin
+		(and
+			(is-some (nft-get-owner? semi-fungible-token-id nft-token-id))
+			(try! (nft-burn? semi-fungible-token-id nft-token-id (get owner nft-token-id)))
+		)
+		(nft-mint? semi-fungible-token-id nft-token-id (get owner nft-token-id))
+	)
+)
+```
+
 ## Post Condition strategies
 
 For strategies on how to best guard a semi-fungible token contract with post

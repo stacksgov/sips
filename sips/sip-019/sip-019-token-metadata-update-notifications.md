@@ -157,6 +157,8 @@ shall call `print` with a tuple with the following structure:
 | `notification`        | The string `"token-metadata-update"`                                   |
 | `payload.token-class` | The string `"ft"`                                                      |
 | `payload.contract-id` | The contract id (principal) of the contract that declared the token    |
+| `payload.update-mode` | _[optional]_ Metadata update mode (see section below)                  |
+| `payload.ttl`         | _[optional]_ Time-to-live for `payload.update-mode: dynamic`           |
 
 ## Non-Fungible Tokens
 
@@ -171,11 +173,42 @@ it shall call `print` with a tuple with the following structure:
 |-----------------------|------------------------------------------------------------------------|
 | `notification`        | The string `"token-metadata-update"`                                   |
 | `payload.token-class` | The string `"nft"`                                                     |
-| `payload.token-ids`   | (optional) A list with the uint token ids that need to be refreshed    |
 | `payload.contract-id` | The contract id (principal) of the contract that declared the tokens   |
+| `payload.token-ids`   | _[optional]_ A list with the uint token ids that need to be refreshed  |
+| `payload.update-mode` | _[optional]_ Metadata update mode (see section below)                  |
+| `payload.ttl`         | _[optional]_ Time-to-live for `payload.update-mode: dynamic`           |
 
 If a notification does not contain a value for `payload.token-ids`, it means it is requesting an
 update for all tokens.
+
+## Metadata update modes
+
+Applications may use tokens for very different purposes. Some of these could require none or very
+few metadata updates ever (e.g. digital artwork that never changes except for reveals), while others
+could need to alter it several times a day (e.g. NFTs for in-game items that are traded and modded
+continuously).
+
+This use-case variety also affects how developers decide to host their metadata JSON files. For
+example, they could choose to use IPFS for low-frequency updates and finality, versus Amazon S3 for
+high-frequency off-chain updates.
+
+In order to allow creators and app developers to specify how token metadata should be treated by
+indexers, notifications support an optional `payload.update-mode` key that may contain one of the
+following values:
+
+* `standard`: The new metadata will be valid until the next notification comes.
+
+    This is the default mode if none is specified.
+* `frozen`: This token's metadata will never change again, ever.
+
+    Indexers should ignore new notifications for this token, even if valid.
+* `dynamic`: The new metadata is expected to change very quickly and many times in the future (even
+  off-chain).
+
+    Indexers should not expect to receive explicit notifications for each of these changes and
+should consider refreshing this token's metadata frequently. Token developers may suggest a
+reasonable amount of time between refreshes by adding an estimated value (defined in seconds) to the
+`payload.ttl` notification property.
 
 ## Considerations for metadata indexers
 

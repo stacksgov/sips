@@ -133,8 +133,23 @@ included in a block or microblock.
 
 This SIP proposes a standard message structure (similar to a notification payload) that would be
 used through `print`. Existing metadata indexers would receive this event through the [Stacks node
-event-emitter interface](https://github.com/stacks-network/stacks-blockchain/blob/master/docs/event-dispatcher.md#post-new_block),
-parse and validate its contents, and refresh any contracts that were updated.
+event-emitter
+interface](https://github.com/stacks-network/stacks-blockchain/blob/master/docs/event-dispatcher.md#post-new_block),
+parse and validate its contents, and refresh any contracts that were updated. `print` was also
+selected for the following reasons:
+
+1. There is precedent for the use of `print` notifications in the Stacks ecosystem: the BNS
+contract, for example, uses it to notify the network when a change to a name or its zonefile has
+occurred. The PoX-2 contract for Stacks 2.1 will make heavy use of it to record stacking state
+changes across addresses. This SIP aims to continue this trend.
+1. For chain indexers, consuming it is practically free if they already process transactions. This
+would enable, for example, a notification to be clearly displayed in the Stacks Explorer alongside
+its transaction.
+1. Adding a `print` notification to a function's Clarity code also serves as self-explanatory
+   documentation.
+1. If there is a new notification use case in the future, a newer SIP can propose an additional
+   `print` structure and indexers would be quick to adopt these if they need to. See [Notification
+   structure reusability](#notification-structure-reusability).
 
 # Specification
 
@@ -272,6 +287,8 @@ SIP's intended use:
     * Accepting third party solutions would invite developers to use many different hinting service
       APIs and implementations, defeating the standardization purpose of this SIP. Moving
       notifications to the blockchain establishes a canonical way to store and access them.
+    * Even if a decentralized off-chain third-party solution is found, it could still add a layer
+      of friction for developer adoption.
 1. They are not future proof
     * If the selected off-chain service changes at any point, a migration to another notification
       channel will be much more difficult once the Stacks ecosystem has more token applications and

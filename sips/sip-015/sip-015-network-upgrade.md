@@ -5,11 +5,12 @@ SIP Number: 015
 Title: Stacks Upgrade of Proof-of-Transfer and Clarity
 
 Authors:
-    Muneeb Ali <mx@trustmachines.co>,
+    Muneeb Ali <muneeb@trustmachines.co>,
     Aaron Blankstein <aaron@hiro.so>,
     Mike Cohen <mjoecohen@gmail.com>,
     Greg Coppola <greg@hiro.so>,
     Brice Dobry <brice@hiro.so>,
+    Hero Gamer <TDB>
     Matthew Little <matthew@blockstack.com>,
     Jenny Mith <jenny@stacks.org>,
     Jude Nelson <jude@stacks.org>,
@@ -58,6 +59,12 @@ multiple Clarity versions, and to support decentralized mining pools.
 
 In addition to proposing these changes, this SIP also outlines an approach for
 implementing these changes in the Stacks blockchain.
+
+Because this is a breaking change, there must be a vote from the relevant
+stakeholders to activate this SIP.  This vote is slated to take place
+during reward cycles 46 and 47.  This
+window is estimated to begin **starting November 10, 20222** and **ending
+December 8, 2022**.
 
 # Introduction
 
@@ -333,12 +340,12 @@ get altered to render this impractical.
 ### Changed: Support Segwit PoX Payout Addresses
 
 The type of a PoX address is now `(tuple (hashbytes (buff 32)) (version (buff
-1)))`.  This is to accomodate p2wsh and p2tr scriptPubKeys on Bitcoin.  In
+1)))`.  This is to accomodate pay-to-witness-script-hash (p2wsh) and taproot (p2tr) scriptPubKeys on Bitcoin.  In
 addition, new values for `version` are supported to represent these encodings:
 
-   * `0x04` means this is a p2wpkh address, and `hashbytes` is the 20-byte hash160 of the witness script
-   * `0x05` means this is a p2wsh address, and `hashbytes` is the 32-byte sha256 of the witness script
-   * `0x06` means this is a p2tr address, and `hashbytes` is the 32-byte sha256 of the witness script
+   * `0x04` means this is a pay-to-witness-public-key-hash (p2wpkh) address, and `hashbytes` is the 20-byte hash160 of the witness script
+   * `0x05` means this is a pay-to-script-hash (p2wsh) address, and `hashbytes` is the 32-byte sha256 of the witness script
+   * `0x06` means this is a pay-to-taproot (p2tr) address, and `hashbytes` is the 32-byte sha256 of the witness script
 
 ### Fixed: Expiration of `contract-caller` Allowances
 
@@ -601,13 +608,13 @@ there will be exactly one burn address reported. During the reward phase, up to 
 The `addrs` list contains the same PoX address values passed into the PoX smart contract:
    * They each have type signature `(tuple (hashbytes (buff 32)) (version (buff 1)))`
    * The `version` field can be any of the following:
-      * `0x00` means this is a p2pkh address, and `hashbytes` is the 20-byte hash160 of a single public key
-      * `0x01` means this is a p2sh address, and `hashbytes` is the 20-byte hash160 of a redeemScript script
-      * `0x02` means this is a p2wpkh-p2sh address, and `hashbytes` is the 20-byte hash160 of a p2wpkh witness script
-      * `0x03` means this is a p2wsh-p2sh address, and `hashbytes` is the 20-byte hash160 of a p2wsh witness script
-      * `0x04` means this is a p2wpkh address, and `hashbytes` is the 20-byte hash160 of the witness script
-      * `0x05` means this is a p2wsh address, and `hashbytes` is the 32-byte sha256 of the witness script
-      * `0x06` means this is a p2tr address, and `hashbytes` is the 32-byte sha256 of the witness script
+      * `0x00` means this is a pay-to-public-key-hash (p2pkh) address, and `hashbytes` is the 20-byte hash160 of a single public key
+      * `0x01` means this is a pay-to-script-hash (p2sh) address, and `hashbytes` is the 20-byte hash160 of a redeemScript script
+      * `0x02` means this is a pay-to-witness-public-key-hash-over-pay-to-script-hash (p2wpkh-p2sh) address, and `hashbytes` is the 20-byte hash160 of a p2wpkh witness script
+      * `0x03` means this is a pay-to-witness-script-hash-over-pay-to-script-hash (p2wsh-p2sh) address, and `hashbytes` is the 20-byte hash160 of a p2wsh witness script
+      * `0x04` means this is a pay-to-witness-public-key-hash (p2wpkh) address, and `hashbytes` is the 20-byte hash160 of the witness script
+      * `0x05` means this is a pay-to-witness-script-hash (p2wsh) address, and `hashbytes` is the 32-byte sha256 of the witness script
+      * `0x06` means this is a pay-to-taproot (p2tr) address, and `hashbytes` is the 32-byte sha256 of the witness script
 
 **Rationale:**  This method empowers developers to query Bitcoin state.  Stacks
 2.1 adds the ability for smart contracts to query PoX payouts directly, with applications
@@ -1134,7 +1141,7 @@ which the block reward will materialize.  Its encoding is described as follows:
    * **Recipient Address**: variable bytes
       * This is an encoded Clarity `principal` value.  See SIP-005 for details.
 
-### New Transation: Versioned Smart Contract 
+### New Transaction: Versioned Smart Contract 
 
 To support offering developers a choice to use Clarity 1 or Clarity 2, this SIP
 proposes a new Stacks transaction payload variant for deploying a **versioned
@@ -1378,9 +1385,15 @@ uses these reserved words for any other purpose.  However, already-deployed
 contracts are not affected -- they were published under Clarity 1 rules, and
 will continue to be usable as-is.
 
-The read-only contract calls in `pox` will continue to be available to
-contracts.  However, it will no longer be possible to call public functions in
-`pox`.  All future Stacking operations must be done through `pox-2`.
+As mentioned above, Stacking will no longer be possible in `pox`.  Calls to
+Stacking operations in `pox` will fail.  All future Stacking operations happen
+through the new `pox-2` contract.  However, the read-only contract calls in `pox`
+will continue to be available for posterity.
+
+All Stacked STX in `pox` will automatically unlock when this SIP activates, even if
+they were locked for subsequent reward cycles.  Users will have a chance to re-Stack
+their STX into the new `pox-2` contract in order to continue participating in
+PoX once the subsequent reward cycle begins.
 
 # Activation 
 
@@ -1432,13 +1445,13 @@ decision, then the vote is discarded.
 The user must send a minimal amount of BTC from their PoX reward address to one
 of the following Bitcoin addresses:
 
-* For "yes", the address is `11111111111111X6zHB1ZC2FmtnqJ`.  This is the
+* For **"yes"**, the address is `11111111111111X6zHB1ZC2FmtnqJ`.  This is the
   base58check encoding of the hash in the Bitcoin script `OP_DUP OP_HASH160
 000000000000000000000000007965732d322e31 OP_EQUALVERIFY OP_CHECKSIG`.  The value
 `000000000000000000000000007965732d322e31` encodes "yes-2.1" in ASCII, with
 0-padding.
 
-* For "no", the address is `1111111111111117CrbcZgemVNFx8`.  This is the
+* For **"no"**, the address is `1111111111111117CrbcZgemVNFx8`.  This is the
   base58check encoding of the hash in the Bitcoin script `OP_DUP OP_HASH160
 00000000000000000000000000006e6f2d322e31 OP_EQUALVERIFY OP_CHECKSIG`.  The value
 `00000000000000000000000000006e6f2d322e31` encodes "no-2.1" in ASCII, with
@@ -1460,10 +1473,10 @@ If the user is stacking in a pool, then they must send a minimal amount of STX
 from their Stacking address to one of the following Stacks addresses to commit
 their STX to a vote:
 
-* For "yes", the address is `SP00000000000003SCNSJTCHE66N2PXHX`.  This is the
+* For **"yes"**, the address is `SP00000000000003SCNSJTCHE66N2PXHX`.  This is the
   c32check-encoded Bitcoin address for "yes" (`11111111111111X6zHB1ZC2FmtnqJ`) above.
 
-* For "no", the address is `SP00000000000000DSQJTCHE66XE1NHQ`.  This is the
+* For **"no"**, the address is `SP00000000000000DSQJTCHE66XE1NHQ`.  This is the
   c32check-encoded Bitcoin address for "no" (`1111111111111117CrbcZgemVNFx8`)
 above.
 
@@ -1521,7 +1534,7 @@ cycles between cycle 45 and the end of the voting period, PoX must activate.
 
 Suppose Alice has stacked 100,000 STX to `1LP3pniXxjSMqyLmrKHpdmoYfsDvwMMSxJ`
 during at least one of the voting period's reward cycles.  To vote,
-she sends 5500 satoshis to `11111111111111X6zHB1ZC2FmtnqJ`.  Then, her 100,000
+she sends 5500 satoshis for **yes** to `11111111111111X6zHB1ZC2FmtnqJ`.  Then, her 100,000
 STX are tabulated as "yes".
 
 ### Voting "no" as a pool Stacker
@@ -1529,8 +1542,8 @@ STX are tabulated as "yes".
 Suppose Bob has Stacked 1,000 STX in a Stacking pool and wants to vote "no", and
 suppose it remains locked in PoX during at least one reward cycle in the voting
 period.  Suppose his Stacks address is `SP2REA2WBSD3XMVMYS48NJKS3WB22JTQNB101XRRZ`.  To
-vote, he sends 1 uSTX from `SP2REA2WBSD3XMVMYS48NJKS3WB22JTQNB101XRRZ` to `SP00000000000000DSQJTCHE66XE1NHQ`.
-Then, his 1,000 STX are tabulated as "no."
+vote, he sends 1 uSTX from `SP2REA2WBSD3XMVMYS48NJKS3WB22JTQNB101XRRZ` for **no** to
+`SP00000000000000DSQJTCHE66XE1NHQ`. Then, his 1,000 STX are tabulated as "no."
 
 ### Voting "yes" with liquid STX
 

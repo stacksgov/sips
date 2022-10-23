@@ -54,7 +54,7 @@ not specified by any prior SIP, but which cannot be changed without a
 coordinated network-wide upgrade.  In addition, the proposed changes address
 potential consensus challenges for PoX-related chain reorganizations which were
 not known at the time SIP-007 was written.  Finally, new variations of existing
-transactions are proposed to in order to better support Stacking, to support
+transactions are proposed to better support Stacking, to support
 multiple Clarity versions, and to support decentralized mining pools.
 
 In addition to proposing these changes, this SIP also outlines an approach for
@@ -63,7 +63,7 @@ implementing these changes in the Stacks blockchain.
 Because this is a breaking change, there must be a vote from the relevant
 stakeholders to activate this SIP.  This vote is slated to take place
 during reward cycles 46 and 47.  This
-window is estimated to begin **starting November 10, 20222** and **ending
+window is estimated to begin **starting November 10, 2022** and **ending
 December 8, 2022**.
 
 # Introduction
@@ -97,7 +97,7 @@ shortcomings for developers and users:
 
 This SIP proposes the creation of a new `pox-2` smart contract to implement
 Stacking which addresses the above problems.  A migration procedure is presented
-for transitionin the system from `pox` to `pox-2`.
+for transitioning the system from `pox` to `pox-2`.
 
 At the same time, it was discovered over the lifetime of the Stacks blockchain
 that there are a few shortcomings in the block validation logic that
@@ -198,7 +198,7 @@ This defines three periods of PoX operation:
 Period 1 | Period 2 | Period 3
 -- | -- | --
 2.0 Consensus Rules in Effect | 2.1 Consensus Rules enacted, but first PoX-2 reward cycle has not begun | First PoX-2 reward cycle has begun
-_This is the period of time before the 2.1 fork._ | _This is after the 2.1 fork, but before cycle (N+1)._ | _This is after cycle (N+1) has begun. Original PoX contract state will no longer have any impact on reward sets, account lock status, etc._
+_This is the period of time before the 2.1 fork._ | _This is after the 2.1 fork in cycle N, but before cycle (N+1)._ | _This is the start of cycle (N+1), and all cycles afterward.  The original PoX contract state will no longer have any impact on reward sets, account lock status, etc._
 
 - Every account that is locked by the original contract for cycle `N`
   and beyond is unlocked at the end of Cycle `N`.
@@ -352,6 +352,13 @@ addition, new values for `version` are supported to represent these encodings:
 The `pox` contract's implementation of contract-caller allowance
 expirations is broken. `pox-2` should fix this behavior.
 
+This behavior is not explicitly specified in SIP-007, but is a behavior present
+in the reference implementation which enables users to allow other principals
+(e.g. smart contracts) to Stack their STX on their behalf.  In the `pox`
+contracts, users can set the principal allowed to do this at any time, and
+specify the maximum burnchain height for which the authorization will be valid
+(once this burnchain height passes, the allowance is automatically revoked).
+
 ### Usecase: Stacking without a Cooldown Cycle
 
 #### Direct stackers
@@ -394,9 +401,9 @@ without cooldown may do the following:
      ...)
 ```
 
-If the delegator wishes to *increase* the amount that the user has
-stacked, they must separately issue a `delegate-stack-increase` call
-which locks but does not commit the increased funds.
+3. If the delegator wishes to *increase* the amount that the user has
+   stacked, they must separately issue a `delegate-stack-increase` call
+   which locks but does not commit the increased funds.
 
 ### Usecase: Stacking with Multiple PoX Addresses
 
@@ -436,7 +443,7 @@ track the current version for a given execution (in the
 implementation, this will be via the `ContractContext`), and use that
 to select which features are available, and which native method
 implementations will be used. Clarity 2 contracts can invoke Clarity 1
-contracts (and vice-versa), but paticular care will need to be taken
+contracts (and vice-versa), but particular care will need to be taken
 if a new native keyword is used in the Clarity 1 contract's API.
 
 For example:
@@ -468,8 +475,7 @@ their contract should use.
 
 This method returns the status of STX account: the account's
 current STX balance, the amount of STX that is currently locked,
-the unlock height for the account, and whether or not the account
-qualifies for an early unlock.
+and the unlock height for the account.
 
 **Rationale:**  This method will be used by the `pox-2` contract to validate
 various contract-calls: implementing early unlocks, lock extensions,
@@ -486,7 +492,7 @@ entirely visible even in `pox` or `pox-2`.
 ### New method: `principal-destruct`
 
 * **Input Signature:** `(principal-destruct (principal-address principal))`
-* **Output Signature:** `(response { hash-bytes: (buff 20), name: (optional (string-ascii 40)) version: (buff 1) } { hash-bytes: (buff 20), name: (optional (string-ascii 40)), version: (buff 1) })`
+* **Output Signature:** `(response { hash-bytes: (buff 20), name: (optional (string-ascii 40)), version: (buff 1) } { hash-bytes: (buff 20), name: (optional (string-ascii 40)), version: (buff 1) })`
 
 A principal value represents either a set of keys, or a smart contract.
 The former, called a _standard principal_,
@@ -496,8 +502,11 @@ and a `(buff 20)` *public key hash*, characterizing the principal's unique ident
 The latter, a _contract principal_, is encoded as a standard principal concatenated with
 a `(string-ascii 40)` *contract name* that identifies the code body.
 
-`principal-destruct` will decompose a principal into its component parts: either`{version-byte, hash-bytes}`
-for standard principals, or `{version-byte, hash-bytes, name}` for contract principals.
+`principal-destruct` will decompose a principal into its component parts.  Standard principals will 
+be decomposed into a tuple containing the **version byte** and **public key
+hash**.  Decomposed contract principals contain the same data as standard
+principals, as well as a **name** element that contains the human-readable
+contract name part of the contract address.
 
 This method returns a `Response` that wraps this data as a tuple.
 
@@ -629,19 +638,22 @@ for Stacking pools and other Stacking-centric programs.
 
 ### New method: `slice`
 
-* **Input Signature:** `(slice (sequence sequence_A) (left uint) (right uint))`
+* **Input Signature:** `(slice (sequence sequence_A) (left-position uint) (right-position uint))`
 * **Output Signature:** `(optional sequence_A)`
 
-The `slice` function attempts to return a sub-sequence of that starts
+The `slice` function attempts to return a sub-sequence of `sequence_A` that starts
 at `left-position` (inclusive), and ends at `right-position`
 (non-inclusive).
 
-If `left_position`==`right_position`, the function returns an empty
+If `left-position`==`right-position`, the function returns an empty
 sequence.
 
-If either `left_position` or `right_position` are out of bounds OR if
-`right_position` is less than `left_position`, the function returns
+If either `left-position` or `right-position` are out of bounds OR if
+`right-position` is less than `left-position`, the function returns
 `none`.
+
+Values in `sequence_A` are zero-based.  That is, the first item in `sequence_A`
+is at index 0. 
 
 **Rationale:** This method facilitates parsing user-supplied encoded data, such
 as data from oracles and other off-chain services.  While a variant of `slice`
@@ -651,12 +663,13 @@ expensive than supplying a native method.
 **Examples:**
 
 ```clarity
-(slice \"blockstack\" u5 u10) ;; Returns (some \"stack\")
+(slice "blockstack" u5 u10) ;; Returns (some "stack")
 (slice (list 1 2 3 4 5) u5 u9) ;; Returns none
 (slice (list 1 2 3 4 5) u3 u4) ;; Returns (some (4))
-(slice \"abcd\" u1 u3) ;; Returns (some \"bc\")
-(slice \"abcd\" u2 u2) ;; Returns (some \"\")
-(slice \"abcd\" u3 u1) ;; Returns none
+(slice "abcd" u0 u2) ;; Returns (some "ab")
+(slice "abcd" u1 u3) ;; Returns (some "bc")
+(slice "abcd" u2 u2) ;; Returns (some "")
+(slice "abcd" u3 u1) ;; Returns none
 ```
 
 ### New method: `string-to-int`
@@ -666,7 +679,7 @@ expensive than supplying a native method.
 
 Converts a string, either `string-ascii` or `string-utf8`, to an
 optional-wrapped signed integer.  If the input string does not
-represent a valid integer, then the function returns `none`. Otherwise
+represent a valid integer in decimal format, then the function returns `none`. Otherwise
 it returns an `int` wrapped in `some`.
 
 **Rationale:** This method facilitates parsing user-supplied encoded data from
@@ -688,7 +701,7 @@ have been much more expensive to use.
 
 Converts a string, either `string-ascii` or `string-utf8`, to an
 optional-wrapped `uint`.  If the input string does not represent a
-valid non-negative integer, then the function returns
+valid non-negative integer in decimal format, then the function returns
 `none`. Otherwise it returns an `uint` wrapped in `some`.
 
 **Rationale:** This method facilitates parsing user-supplied encoded data from
@@ -709,7 +722,7 @@ have been much more expensive to use.
 * **Output Signature:** `string-ascii`
 
 Converts  an integer,  either  `int` or  `uint`,  to a  `string-ascii`
-string-value representation.
+string-value representation in decimal format.
 
 **Rationale:** This method facilitates parsing user-supplied encoded data from
 text.  While this functionality could have been implemented in Clarity, it would
@@ -729,7 +742,7 @@ have been much more expensive to use.
 * **Output Signature:** `string-utf8`
 
 Converts an integer, either `int` or `uint`, to a `string-utf8`
-string-value representation.
+string-value representation in decimal format.
 
 **Rationale:** This method facilitates parsing user-supplied encoded data from
 text.  While this functionality could have been implemented in Clarity, it would
@@ -861,8 +874,8 @@ to interact with exchanges that follow this convention.
 
 ```clarity
 (as-contract
-  (stx-transfer? u50 'SZ2J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKQ9H6DPR tx-sender 0x00)) ;; Returns (err u4)
-(stx-transfer-memo? u60 tx-sender 'SZ2J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKQ9H6DPR 0x010203)) ;; Returns (ok true)
+  (stx-transfer? u50 'SP3X6QWWETNBZWGBK6DRGTR1KX50S74D3433WDGJY tx-sender 0x00)) ;; Returns (err u4)
+(stx-transfer-memo? u60 tx-sender 'SP3X6QWWETNBZWGBK6DRGTR1KX50S74D3433WDGJY 0x010203)) ;; Returns (ok true)
 ```
 
 ### New method: `is-standard`
@@ -936,8 +949,8 @@ off-chain.
 The `from-consensus-buff` function is a special function that will deserialize a
 buffer into a Clarity value, using the SIP-005 serialization of the
 Clarity value. The type that `from-consensus-buff` tries to deserialize
-into is provided by the first parameter to the function. If it fails
-to deserialize the type, the method returns `none`.
+into is provided by `type-signature`. If it fails
+to deserialize the `buff` argument to this type, the method returns `none`.
 
 **Rationale:** This method is used to facilitate interactions with off-chain
 services, and to implement "transaction-less transactions.""  The ability to
@@ -974,6 +987,8 @@ index of the input sequence. The return type on success is the same type as the 
 The sequence can be a list, buffer, string-ascii, or string-utf8.
 
 If the provided index is out of bounds, this functions returns `none`.
+
+Note that sequences are zero-indexed.  The first item in `x` is at index 0.
 
 **Rationale:** This method makes it possible to set values of a sequence type
 without incurring the costs of splitting the sequence into subsequences,
@@ -1073,6 +1088,36 @@ functions indicated by the trait definition.  The trait concretization does
 _not_ need to implement the _same_ trait; it only needs to implement a _compatible_
 trait.
 
+#### Examples
+
+```clarity
+;; use trait in optional
+(define-public (execute (job (optional <job-trait>))) (match job j (contract-call? j fn) (default-job)))
+
+;; use of compatible traits, e.g. marketplace commissions
+(define-trait t1 ((fn (response uint bool)))) 
+(define-trait t2 ((fn (response uint bool)))) 
+```
+
+```clarity
+;; --- contract 1
+(impl-trait .contract.t1)
+;; ...
+```
+
+```clarity
+;; -- contract 2
+(impl-trait .contract.t2)
+;; ...
+```
+
+```clarity
+;; -- contract 3
+(use-trait t contract.t1)
+;; can be called with contract 1 and contract 2 because of compatible traits
+(define-public (meta-fn (ctr <t>)...)
+```
+
 ### Changed: Comparators `>`, `>=`, `<=`, `<`
 
 In Clarity version 2, these binary comparators will be extended to support
@@ -1103,10 +1148,11 @@ the anchored block's transaction fees, and the shares of the confirmed and produ
 be smaller than the Stacks coinbase at this height, because the miner may have been punished with a valid `PoisonMicroblock` transaction in the event that the miner
 published two or more microblock stream forks.
 
-* `miner-spend-total`: This property returns a `uint` value for the total number of burnchain tokens (i.e. satoshis) spent by all miners trying to win this block.
+* `miner-spend-total`: This property returns a `uint` value for the total number of burnchain tokens (i.e. satoshis) spent by all miners trying to win this block.  This does _not_ 
+include burnchain transaction fees.
 
 * `miner-spend-winner`: This property returns a `uint` value for the number of burnchain tokens (i.e. satoshis) spent by the winning miner for this Stacks block.  Note that
-this value is less than or equal to the value for `miner-spend-total` at the same block height.
+this value is less than or equal to the value for `miner-spend-total` at the same block height.  This does _not_ include burnchain transaction fees.
 
 **Rationale**: These changes to `get-block-info?` empower developers to
 determine how many burnchain tokens (e.g. satoshis) are spent for STX on a
@@ -1221,7 +1267,7 @@ previous PoX anchor block.
 
 With this knowledge, the node can partition the set of Stacks forks that could
 exist (based on the block-commits) into disjoint fork sets, where two forks are in
-the same set if they conain the same sequence of PoX anchor blocks.  The
+the same set if they contain the same sequence of PoX anchor blocks.  The
 canonical fork _must_ contain the highest possible number of PoX anchor blocks;
 all forks that contain fewer than this _must_ be non-canonical.  The node then
 proceeds to ignore (i.e. store but not process) PoX anchor blocks for
@@ -1284,9 +1330,9 @@ Prior to 2.1, the transaction-processing logic followed this procedure:
 2. Run the transaction
 3. Debit the fee from the spending account
 
-The benefits of this approach are two-fold.  First, a transaction can "come up with" the
-requisite STX to pay its fee in step 3, so a too-low fee is not a
-barrier-to-entry for new users.  Second, a user will not be
+The benefits of this approach are two-fold.  First, a transaction can earn the
+paying account the requisite STX to pay its fee in step 3, so a too-low balance is not
+necessarily a barrier-to-entry for new users.  Second, a user will not be
 penalized in a contract-call or contract-publish transaction if the act of
 running the transaction spends more STX than they anticipated.
 
@@ -1312,7 +1358,10 @@ a user's pending transactions cannot be blocked by a dependent transaction in
 the mempool which is unmineable simply because the balance was ultimately too
 low.  Eliminating this class of errors with this alternative processing
 procedure is deemed to itself be beneficial to the user experience above and
-beyond what the original benefits offerred.
+beyond what the original benefits offerred.  Furthermore, both the newly-added
+`to-consensus-buff` and `from-consensus-buff` Clarity functions and the
+existence of sposnored transactions already enable users to send signed Clarity
+data to the Stacks blockchain without possessing any STX of their own.
 
 ### Changed: Analysis Errors are Runtime Errors
 
@@ -1350,7 +1399,7 @@ pass on any transactions the user sends.
 
 This change also helps users because it means that transactions that encounter
 check errors will get cleared from the mempool without any further action on
-their parts.  Today, users must either replace-by-fee (RBF) the problematic
+their parts.  Today, users must replace-by-fee (RBF) the problematic
 transaction.
 
 # Related Work
@@ -1385,7 +1434,7 @@ uses these reserved words for any other purpose.  However, already-deployed
 contracts are not affected -- they were published under Clarity 1 rules, and
 will continue to be usable as-is.
 
-As mentioned above, Stacking will no longer be possible in `pox`.  Calls to
+As mentioned above, Stacking will no longer be possible in the `pox` contract.  Calls to
 Stacking operations in `pox` will fail.  All future Stacking operations happen
 through the new `pox-2` contract.  However, the read-only contract calls in `pox`
 will continue to be available for posterity.
@@ -1403,11 +1452,11 @@ must be met in order to determine that there is sufficient support for
 this SIP: one set for Stacked STX holders, one set for un-Stacked STX
 holders, and one set for miners.  These critera are meant to broaden the set of
 participating users above and beyond what has been done in the past.  In
-particular, users who do not Stack are invited to vote on this SIP, as ar users
+particular, users who do not Stack are invited to vote on this SIP, as are users
 who Stack in pools.
 
 In all cases, voting will take place during reward cycles 46 and 47.  This
-window is estimated to begin **starting November 10, 20222** and **ending
+window is estimated to begin **starting November 10, 2022** and **ending
 December 8, 2022**.
 
 ## For Stackers

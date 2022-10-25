@@ -72,7 +72,7 @@ The following items would be considered out-of-scope for this CAB:
 
 We choose to adopt the bylaws Steering Committee member @jcnelson set out in this doc: https://gist.github.com/jcnelson/3fcc635ede20ce98d1eae60941eb127a
 
-Starting form those bylaws, this CAB will continue to evaluate what works, what doesn't work, and use the feedback and lessons learned to improve the process and increase involvement along the way.
+Starting from those bylaws, this CAB will continue to evaluate what works, what doesn't work, and use the feedback and lessons learned to improve the process and increase involvement along the way.
 
 ---
 

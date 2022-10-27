@@ -11,7 +11,7 @@ Members:
 - Jamil Dhanani <jamil@gamma.io>
 - Jesse Wiley <jesse@stacks.org>
 - Mike Cohen <mike@claritylab.dev>
-- Terje Norderhaug <terje@in-progress.com>>
+- Terje Norderhaug <terje@in-progress.com>
 - Thomas Osmonson a.k.a aulneau <thomas@fungible.systems>
 
 Discussions-to: https://github.com/stacksgov/sips

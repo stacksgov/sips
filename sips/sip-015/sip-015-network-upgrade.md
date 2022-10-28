@@ -1635,6 +1635,15 @@ example, if Alice had 100 STX at the time of the snapshot and Stacks 90 STX,
 then she can vote with her 90 STX via the Stacker voting procedure above with
 her 90 STX and can vote with the Non-Stacker procedure with her 10 STX.
 
+To prevent exchanges and large liquid holders from interfering with the vote,
+each address will only be permitted to vote with a maximum amount of STX equal
+to the reward cycle's minimum Stacking threshold in the reward cycle in which
+they vote.  For example, if Alice has 1 million liquid STX, but votes in a reward cycle
+in which the minimum Stacking threshold is 120,000 STX, then only 120,000 of her
+STX will be counted.  This, combined with the fact that the STX balances are
+calculated from a frozen snapshot that precedes this vote, ensure that a whale
+cannot work around this maximum by distributing their STX across many addresses.
+
 ## For Miners
 
 There is only one criterion for miners to activate this SIP: they must mine the

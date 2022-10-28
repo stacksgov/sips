@@ -1014,9 +1014,17 @@ send them to the smart contract on their behalf.
 
 The `replace-at` function takes in a sequence, an index, and an element, 
 and returns a new sequence with the data at the index position replaced with the given element. 
-The given element's type must match the type of the sequence, and must correspond to a single 
-index of the input sequence. The return type on success is the same type as the input sequence. 
-The sequence can be a list, buffer, string-ascii, or string-utf8.
+
+The supported sequence types are `string-ascii`, `string-utf8`, `buff`, and
+`list`.
+
+* If `(sequence Y)` is either `(string-ascii ...)` or `(string-utf8...)`, then `(value Y)`
+must be a `(string-ascii 1)` or a `(string-utf8 1)`, respectively.
+
+* If `(sequence Y)` is `(buff ...)`, then `(value Y)` must be a `(buff 1)`.
+
+* If `(sequence Y)` is a `(list Y ...)` (i.e. a list of values of type `Y`), then `(value Y)` 
+must be a value of type `Y`.
 
 If the provided index is out of bounds, this functions returns `none`.
 

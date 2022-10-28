@@ -5,12 +5,11 @@ SIP Number: 015
 Title: Stacks Upgrade of Proof-of-Transfer and Clarity
 
 Authors:
-    Muneeb Ali <muneeb@trustmachines.co>,
     Aaron Blankstein <aaron@hiro.so>,
     Mike Cohen <mjoecohen@gmail.com>,
     Greg Coppola <greg@hiro.so>,
     Brice Dobry <brice@hiro.so>,
-    Hero Gamer <TDB>
+    Hero Gamer <herogamerthesht572@gmail.com>
     Matthew Little <matthew@blockstack.com>,
     Jenny Mith <jenny@stacks.org>,
     Jude Nelson <jude@stacks.org>,
@@ -287,6 +286,16 @@ The special case handler for the PoX contract in the Clarity VM will
 check this method's return value and set the locked amount in the
 stacker's STX account to correspond to the increased amount.
 
+### Changed: `delegate-stx`
+
+This method has been changed so that the user can call it even while their STX
+are locked.  This is meant to enable the user to increase their STX allowance to
+their delegator can lock up for them while their STX are locked.  In such cases,
+the user would call `revoke-delegate-stx` and then `delegate-stx` with their
+higher STX allowance, and the delegator would subsequently call
+`delegate-stack-increase` and `stack-aggregation-commit` to increase the user's 
+locked-and-committed STX.
+
 ### Changed: Auto-Unlock
 
 This SIP proposes that if the user's STX do not earn a single
@@ -344,7 +353,7 @@ The type of a PoX address is now `(tuple (hashbytes (buff 32)) (version (buff
 addition, new values for `version` are supported to represent these encodings:
 
    * `0x04` means this is a pay-to-witness-public-key-hash (p2wpkh) address, and `hashbytes` is the 20-byte hash160 of the witness script
-   * `0x05` means this is a pay-to-script-hash (p2wsh) address, and `hashbytes` is the 32-byte sha256 of the witness script
+   * `0x05` means this is a pay-to-witness-script-hash (p2wsh) address, and `hashbytes` is the 32-byte sha256 of the witness script
    * `0x06` means this is a pay-to-taproot (p2tr) address, and `hashbytes` is the 32-byte sha256 of the witness script
 
 ### Fixed: Expiration of `contract-caller` Allowances
@@ -391,7 +400,21 @@ without cooldown may do the following:
      ...)
 ```
 
-2. That contract-call *locks but does not commit* the user's funds. In
+2. If the user wishes to *increase* the amount of STX they have stacked, then
+   the user must first reset their delegated STX allowance:
+
+```clarity
+   (contract-call SP000000000000000000002Q6VF78.pox-2 revoke-delegate-stx
+      ...)
+   (contract-call SP000000000000000000002Q6VF78.pox-2 delegate-stx
+      ...)
+```
+
+   Then, the delegator must separately issue a `delegate-stack-increase` call
+   which locks but does not commit the increased funds.
+
+
+3. The aforementioned contract-calls *lock but do not commit* the user's funds. In
    order for the delegation operator to register the reward address for
    those funds, they must invoke the aggregation commit function (just as
    when they invoke `delegate-stack-stx`):
@@ -400,10 +423,6 @@ without cooldown may do the following:
    (contract-call SP000000000000000000002Q6VF78.pox-2 stack-aggregation-commit
      ...)
 ```
-
-3. If the delegator wishes to *increase* the amount that the user has
-   stacked, they must separately issue a `delegate-stack-increase` call
-   which locks but does not commit the increased funds.
 
 ### Usecase: Stacking with Multiple PoX Addresses
 
@@ -467,6 +486,16 @@ Existing, pre-2.1 contracts will all be Clarity 1. New contracts will
 default to Clarity 2, and a new Stacks transaction wire format for publishing
 smart contracts will allow contract publishers to choose the version that
 their contract should use.
+
+Note that the act of adding, changing, or removing a native Clarity function or native
+Clarity global variable necessitates the creation of a new version of the
+Clarity language, and must be treated as a breaking change.
+This is because adding, changing, or removing either of these
+things alters the rules for block validation, which makes these 
+consensus-level changes.  This SIP proposes introducing a new version of Clarity
+(Clarity 2) _while also_ preserving the current version of Clarity (Clarity 1).  This
+shall not be construed as setting a precedent -- a future SIP may remove the
+ability to publish new smart contracts with older versions of Clarity.
 
 ### New method: `stx-account`
 
@@ -537,7 +566,9 @@ Bitcoin owner signed some data, or also controlled some Stacks data.
 
 ### New method: `principal-construct`
 
-* **Input Signature:** `(principal-construct (buff 1) (buff 20) [(string-ascii 40)])`,
+* **Input Signatures:**
+   * `(principal-construct (buff 1) (buff 20))`
+   * `(principal-construct (buff 1) (buff 20) (string-ascii 40))`
 * **Output Signature:** `(response principal { error_code: uint, value: (optional principal) })`
 
 A principal value represents either a set of keys, or a smart contract.
@@ -553,6 +584,7 @@ depending on which form is used.  To create a standard principal,
 `principal-construct` would be called with two arguments: it
 takes as input a `(buff 1)` which encodes the principal address's
 `version-byte`, a `(buff 20)` which encodes the principal address's `hash-bytes`.
+
 To create a contract principal, `principal-construct` would be called with
 three arguments: the `(buff 1)` and `(buff 20)` to represent the standard principal
 that created the contract, and a `(string-ascii 40)` which encodes the contract's name.
@@ -854,7 +886,7 @@ have been much more expensive to use.
 
 ### New method: `stx-transfer-memo?`
 
-* **Input Signature:** `(stx-transfer? (amount uint) (sender principal) (recipient principal) (memo buff))`
+* **Input Signature:** `(stx-transfer? (amount uint) (sender principal) (recipient principal) (memo (buff 34)))`
 * **Output Signature:** `(response bool uint)`
 
 `stx-transfer-memo?` is similar to `stx-transfer?`, except that it
@@ -875,7 +907,7 @@ to interact with exchanges that follow this convention.
 ```clarity
 (as-contract
   (stx-transfer? u50 'SP3X6QWWETNBZWGBK6DRGTR1KX50S74D3433WDGJY tx-sender 0x00)) ;; Returns (err u4)
-(stx-transfer-memo? u60 tx-sender 'SP3X6QWWETNBZWGBK6DRGTR1KX50S74D3433WDGJY 0x010203)) ;; Returns (ok true)
+(stx-transfer-memo? u60 tx-sender 'SP3X6QWWETNBZWGBK6DRGTR1KX50S74D3433WDGJY 0x010203) ;; Returns (ok true)
 ```
 
 ### New method: `is-standard`
@@ -1123,7 +1155,22 @@ trait.
 In Clarity version 2, these binary comparators will be extended to support
 comparison of `string-ascii`, `string-utf8` and `buff`.
 
-These comparisons are done using a lexicographical comparison. 
+These comparisons are executed as follows:
+
+* For `buff` and `string-ascii`, comparison is done on a byte-by-byte basis
+  until a difference is found, or until the end of one sequence is reached.  In
+  the first case, the differing bytes are compared with the comparator.  In the
+  second case, the shorter of the two sequences is considered to be "less than"
+  the other.
+
+* For `string-utf8`, comparison is done on a codepoint-by-codepoint basis.
+  Each codepoint occupies between 1 and 4 bytes.  Comparing two codepoints is
+  the act of comparing them on a byte-by-byte basis, just as if they were `(buff 4)`s.
+  Comparison proceeds until either a difference is found, or until the end of
+  one sequence is reached. In the first case, the differing codepoints are
+  compared with the comparator. In the second case, the shorter of the two
+  sequences (as measured by number of codepoints) is considered to be "less than"
+  the other.
 
 Examples:
 ```
@@ -1136,6 +1183,15 @@ Examples:
 (< "aaa" "baa") ;; Returns true
 (< "aa" "aaa") ;; Returns true
 (< 0x01 0x02) ;; Returns true
+(< 0x01 0x0100) ;; Returns true
+(< 0x01ff 0x01) ;; Returns false
+(> 0x01ff 0x01) ;; Returns true
+(< 0x01ff 0x02) ;; Returns true
+(< u"\u{0380}" u"Z") ;; Returns false
+(< u"\u{5a}" u"\u{5b}") ;; Returns true
+(<= u"\u{5a}" u"Z") ;; Returns true
+(>= u"\u{5a}" u"Z") ;; Returns true
+(< u"stacks" u"st\u{c3a4}cks") ;; Returns true
 ```
 
 ### Changed: `get-block-info?`
@@ -1203,9 +1259,9 @@ smart contract**.  Its encoding is described as follows:
         It contains a length-prefixed name and a length-prefixed code body.  See
         SIP-005 for details.
 
-## New Burnchain Transaction: `delegate-stack-stx`
+## New Burnchain Transaction: `delegate-stx`
 
-This SIP proposes adding support for issuing a `delegate-stack-stx` call to PoX
+This SIP proposes adding support for issuing a `delegate-stx` call to PoX
 from the burnchain, similar to how `stx-transfer?` and `stack-stx` are supported
 as burnchain-hosted transactions in SIP-007.  The rationale for this is that
 users may wish to maintain ownership of their STX tokens via burnchain

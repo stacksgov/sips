@@ -19,7 +19,7 @@ Authors:
     Igor Sylvester <igor@trustmachines.co>,
     Jesse Wiley <jw@stacks.org>,
 
-Consideration: Technical, Governance
+Consideration: Technical, Governance, Economics
 
 Type: Consensus
 

@@ -488,7 +488,8 @@ smart contracts will allow contract publishers to choose the version that
 their contract should use.
 
 Note that the act of adding, changing, or removing a native Clarity function or native
-Clarity global variable necessitates the creation of a new version of the
+Clarity global variable (including comparators and operators, which are
+themselves native functions) necessitates the creation of a new version of the
 Clarity language, and must be treated as a breaking change.
 This is because adding, changing, or removing either of these
 things alters the rules for block validation, which makes these 
@@ -626,7 +627,7 @@ contract addresses.
 (principal-construct 0x1a 0xfa6bf38ed557fe417333710d6033e9419391a320 "foo[") ;; Returns (err (tuple (error_code u2) (value none)))
 ```
 
-### New method `get-burn-block-info?`
+### New method: `get-burn-block-info?`
 
 * **Input Signature:** `(get-burn-block-info? (prop-name BurnBlockPropertyName) (block-height uint))`
 * **Output Signature:** `(optional buff) | (optional (tuple (addrs (list 2 (tuple (hashbytes (buff 32)) (version (buff 1))))) (payout uint)))`
@@ -951,11 +952,14 @@ Clarity value. Not all values can be serialized: some value's
 consensus serialization is too large to fit in a Clarity buffer (this
 is because of the type prefix in the consensus serialization).
 
-If the value cannot fit as serialized into the maximum buffer size,
+If the value cannot fit as serialized into the maximum buffer size (1 MB),
 this returns `none`, otherwise, it will be
 `(some consensus-serialized-buffer)`. During type checking, the
 analyzed type of the result of this method will be the maximum possible
 consensus buffer length based on the inferred type of the supplied value.
+Note that it is possible to construct a valid Clarity value whose buffer
+serialization exceeds 1 MB; however, this is highly unlikely to happen by
+accident.
 
 **Rationale:** This method is used to facilitate interactions with off-chain
 services, and to export data from a smart contract that can be consumed
@@ -983,6 +987,7 @@ buffer into a Clarity value, using the SIP-005 serialization of the
 Clarity value. The type that `from-consensus-buff` tries to deserialize
 into is provided by `type-signature`. If it fails
 to deserialize the `buff` argument to this type, the method returns `none`.
+Note that the given `buff` argument cannot represent more than 1 MB of data.
 
 **Rationale:** This method is used to facilitate interactions with off-chain
 services, and to implement "transaction-less transactions.""  The ability to
@@ -1357,6 +1362,8 @@ In the event that two fork sets represent different PoX anchor blocks, but
 represent the same _number_ of PoX anchor blocks, the canonical fork will reside
 in the fork set whose PoX anchor block was mined last.
 
+Details on how this feature works can be found in [6] and [7].
+
 ## Changed: Burnchain Transaction Grace Period
 
 To address the usability limitations of on-burnchain Stacks operations, this SIP proposes allowing
@@ -1715,3 +1722,8 @@ https://github.com/stacks-network/stacks-blockchain/tree/next.
 [4] https://github.com/stacksgov/sips/blob/main/sips/sip-012/sip-012-cost-limits-network-upgrade.md
 
 [5] https://github.com/stacksgov/sips/blob/main/sips/sip-000/sip-000-stacks-improvement-proposal-process.md
+
+[6] https://docs.google.com/presentation/d/1iXvQlVZJ30xEB25v3ILHlcKU8eXB9MqpcMUPtoISpM4/edit?usp=sharing
+
+[7] https://us06web.zoom.us/rec/share/vWdVjQ9I_rHsqRiLyo_FBdZFJbsr33tvVl2BdajfwJRFcxxGWrxyyfTuIXfrd-cP.LltAXR2SgAv7H_Vf?startTime=1623866540000
+   * Passcode: nHU@4ENY

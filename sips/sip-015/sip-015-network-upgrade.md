@@ -1105,33 +1105,47 @@ the change takes effect.
 
 Over the lifetime of Clarity 1, it was discovered that there are a few
 surprising behaviors of the current trait semantics.  Clarity 2 proposes the
-following trait semantics:
+following new trait semantics:
 
-* **No more trait type**.  The Clarity 2 type system will not distinguish between trait
-  concretizations and principals in the type system.  Consequentially, traits can be used in any way that principals
-  can.  They can be stored within lists, tuples, optionals, and responses, and
-dynamic dispatch to their methods will be permitted.
+* **Traits are real types.** The Clarity 2 type system will analyze and propagate
+  the type of a trait value in the same ways that it does with other types. This
+means that in Clarity 2, trait values can be embedded into complex types (lists,
+tuples, optionals, and responses) and maintain their ability to enable dynamic
+dispatch. The only limitation on the trait type is that trait values may not be
+persisted (e.g. in a data-var or map). Persisting a trait value, and maintaining
+the ability to perform dynamic dispatch would inhibit static analysis of a
+contract.
 
-* **Dynamic dispatch follows data flow**.  Because trait concretizations are
-  treated as principals, the Clarity 2 VM preserves the concretization attribute
-across data flows.  That is, when a trait concretization is bound to one or more
-variable names, dynamic dispatch to the trait concretization's functions is
-permitted on the bound variables.  This property is preserved even if the trait
-concretization is embedded within a larger structure.
+* **Trait values may be coerced into compatible trait types.**  When type
+  checking a trait value against another trait type, the expected trait type
+need not be the identical trait type of the value; instead, the trait value is
+checked for compatibility with the expected type, meaning that if the expected
+trait type is a subset of the trait value's type, then the coercion is legal.
+See below for an example.
 
-* **Dynamic dispatch is lost on persistence**.  Although it follows data flow, a trait
-concretization is _not_ preserved on data persistence -- the act of storing a
-principal that represents a trait concretization to a data var or a data map is
-the act of first coercing it to a bare principal.  The associated trait concretization is
-lost upon storage.  So, when loaded from storage again, the data will be a bare
-principal -- the Clarity VM will not permit code to call methods in the trait
-concretization it previosuly represented.
+* **Trait values may be locally bound.** A trait value can be bound in a local
+  scope and maintain its trait type and dynamic dispatch functionality. Binding
+in a local scope includes `let` expressions and `match` expressions.
 
-* **Dynamic dispatch follows type compatibility**.  When type-checking a trait
-  concretization, it is sufficient that the trait concretization implements the
-functions indicated by the trait definition.  The trait concretization does
-_not_ need to implement the _same_ trait; it only needs to implement a _compatible_
-trait.
+* **Traits may not be defined with duplicate function names.**  In Clarity 1 a
+  trait could be defined with duplicated function names in its signature. This
+resulted in only the last instance (in program order) being kept as part of the
+trait's definition. In Clarity 2, a trait defined with a duplicate function name
+will trigger an analysis error, preventing it from being mined in a block.
+
+* **Contract principals stored in constants are callable.**  Clarity 2 allows a
+  constant contract principal (defined with a `define-constant`) to be callable --
+used to make static dispatch contract calls, or coerced into a trait type.
+
+* **Imported trait name conflicts.** In Clarity 1, there is surprising behavior
+  relating to the names of imported traits (from `use-trait`). The name of a local
+trait will conflict with the trait name of the imported trait. For example, in
+`(use-trait a-alias .a-trait.a)` if a local trait is defined with the name `a`, then
+uses of `a-alias` will refer to the local trait, `a`, instead of the imported trait.
+In Clarity 2, the imported trait can always be referenced by its alias and the
+imported trait name will not conflict with local traits.
+
+Clarity 1 trait semantics are preserved in Clarity 1 code.
 
 #### Examples
 
@@ -1472,6 +1486,17 @@ This change also helps users because it means that transactions that encounter
 check errors will get cleared from the mempool without any further action on
 their parts.  Today, users must replace-by-fee (RBF) the problematic
 transaction.
+
+### Changed: Default Clarity Version
+
+The behavior of the Smart-contract Payload transaction payload variant (see
+SIP-005) is changed such that the Clarity version used to evaluate a new
+contract shall be determined by the current system epoch.  Right now, the system
+epoch is 2.05, in which case, a new smart contract instantiated this way shall
+be processed with Clarity 1 rules.  In epoch 2.1, a new smart contract instantiated this
+way shall be processed with Clarity 2 rules.  Users who wish to publish Clarity
+1 contracts in epoch 2.1 can use the versioned smart contract payload described
+above.
 
 # Related Work
 

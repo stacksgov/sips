@@ -8,7 +8,7 @@
 
 **Date:** Oct 29 2022
 
-**Time:** 1pm ET
+**Time:** 17:00 - 18:00 UTC
 
 **Attendees:**
 
@@ -57,9 +57,9 @@
 
 ## Action Items
 
-- Raise the economic risk created in SIP-015 mentioned above to core SIP authors (Jude) [x]
-- Assemble an xSTX working group []
-- Confirm with the SIP process group if the CAB process itself should default require all CABs (i.e. opt-out, not opt-in) []
+-  [x] Raise the economic risk created in SIP-015 mentioned above to core SIP authors (Jude)
+-  [] Assemble an xSTX working group
+- [] Confirm with the SIP process group if the CAB process itself should default require all CABs (i.e. opt-out, not opt-in)
 
 ## Vote Outcome(s)
 

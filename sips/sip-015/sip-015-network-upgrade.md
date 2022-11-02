@@ -1498,6 +1498,58 @@ way shall be processed with Clarity 2 rules.  Users who wish to publish Clarity
 1 contracts in epoch 2.1 can use the versioned smart contract payload described
 above.
 
+### Fixed: Miner Block-Commit Grace Period
+
+Today, a Stacks miner's probability of winning a sortition is proportional to
+the minimum of the spend from last block-commit mined, and the median spend of the last six
+block-commits sent.  Because a block-commit transaction can be "late" -- i.e. it
+may not be mined in the intended burnchain block, but in a subsequent one -- the
+median block-commit spend is calculated as the median of the last six
+transactions _sent_ by the miner, _including_ those that were late.
+
+There was a bug in the implementation of this calculation whereby a late
+block-commit transaction was treated as absent [8].  This not only prevented
+this block-commit's spend from being considered, but it also prevented all of
+the miner's _prior_ block-commits from being considered.  As a result, the act
+of missing a block-commit had unduely negative impacts on mining -- for the next
+two blocks, their median block-commit spend would be calculated as zero.
+
+Upon further review from the Economics Consideration Advisory Board, it was
+determined that the original algorithm was also flawed.  If a miner's previous
+six transactions would be considered regardless of how late they were, then a
+miner could send all six block-commits in the same burnchain block
+and have a non-zero chance of winning a Stacks block.  This runs counter to the
+incentives this algorithm was designed to create, which were to encourage
+miners to mine persistently.
+
+Furthermore, in the act of validating this finding from the Economics CAB, it
+was discovered that the reference implementation does not check if a late block-commit
+paid to the intended burnchain block's PoX recipients.  This is a logic bug that
+can only be fixed in a breaking change.  Failure to fix this bug would further
+mean that a miner could simply pay themselves in block-commits they knew would
+be treated as late.  This in turn would mean that a miner could (a) mine
+sporadically at the cost of a higher burnchain transaction fee, and (b)
+discount-mine profitably if the miner happend to also own the upcoming PoX
+reward slots.
+
+To address these findings, this SIP proposes two changes to how the grace period
+for late block-commits is handled:
+
+* A block-commit can be late by no more than one burnchain block.  If it is
+  late by two or more burnchain blocks, then none of its prior block-commits'
+spends will be considered for the median spend calculation when the miner mines
+next.  This means that a miner must have mined in at least two consecutive
+burnchain blocks in order to have a non-zero chance of winning (i.e. their
+median spend would be half of the lower of the two spends).  This also means
+that a miner's median spend calculation will not be affected by block-commits
+being late by one block, which is by far the most common miss distance for late
+block-commits.
+
+* A block-commit must always pay to its intended burnchain block's PoX
+  recipients, even if it is late.  If a miner does not do this for a late
+block-commit, their prior block-commits are not considered for their
+subsequent median spend calculations.
+
 # Related Work
 
 Most blockchains regularly execute coordinated breaking changes
@@ -1752,3 +1804,5 @@ https://github.com/stacks-network/stacks-blockchain/tree/next.
 
 [7] https://us06web.zoom.us/rec/share/vWdVjQ9I_rHsqRiLyo_FBdZFJbsr33tvVl2BdajfwJRFcxxGWrxyyfTuIXfrd-cP.LltAXR2SgAv7H_Vf?startTime=1623866540000
    * Passcode: nHU@4ENY
+
+[8] https://github.com/stacks-network/stacks-blockchain/issues/2358

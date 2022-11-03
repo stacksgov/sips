@@ -1,0 +1,66 @@
+# Economic CAB Minutes
+
+## Meeting Information
+
+**Location:** Google Meet
+
+**Materials**: [Sip-015 proposal](https://github.com/stacksgov/sips/blob/feat/sip-015/sips/sip-015/sip-015-network-upgrade.md)
+
+**Date:** Oct 29 2022
+
+**Time:** 17:00 - 18:00 UTC
+
+**Attendees:**
+
+- mattyTokenomics
+- Chiente
+- Xan
+- Pieter
+
+100% attendance
+
+**Topic(s):**
+
+- General CAB process
+- SIP-015
+
+## Meeting Notes
+
+- The change proposed in SIP-015 to count mining creates a *potential* economic risk and attack vector
+  - Specifically the change: "...the median Bitcoin spend of the miner's last six block-commits will include late block-commits."
+  - Depending on how this is implemented, a user could potentially 'spoof' having been *attempting* to mine a majority of the previous 6 blocks
+  - By selectively doing this only when mining happens to be profitable, or when the miners corresponding stacking slot is up for rewards miners can abuse system
+
+- The changes proposed in SIP-015 to stacking methods (namely enabling contintual renewal and increasing of stacking) are critical primitives
+  - As long as these changes are backwards compatible, this CAB sees no economic risks or externalities
+  - Next steps would be to enable liquid stacking by supporting the create of an 'xSTX' token, conceptually similar to 'stETH'. Each 1 xSTX token would represent 1 stacked STX toke that accrues stacking rewards
+  - There are several challenges specific to STX that stETH/ETH does not face, such as that STX accumulates stacking rewards in native BTC, which would need to be programatically claimed/distributed when xSTX is converted back into STX
+  - However, it is this CAB's belief that such an xSTX token would create significant economic benefits to the overall STX ecosystem, as currently all use cases and DeFi applications for STX have to essentially compete with the opportunity cost of earning stacking yield on that STX
+  - Being able to earning stacking yield, *and* productively use STX at the same time (via xSTX) is the next step in stacking improvements
+  - We propose that a working group or similar, with interested parties is formed to lay out the requirements for such an 'xSTX' token. Relevant parties include:
+    - DeFi Protocols:
+      - ALEX (CAB member Chiente)
+      - Arakdiko (CAB member Pieter)
+    - Atomic swaps (for potentially aiding is native BTC yield distribution):
+      - Magic Bridge
+      - lnSwap
+    - Stacking Pools
+      - Friedger's Pool
+      - PlanBetter
+      - Xverse
+
+- CAB Process itself
+  - The Economics CAB was not formally required as a party to sign off on SIP-015
+  - Yet we found an *economic attack motivation* created by the SIP, that depending on *technical implementation* may or may not be viable
+  - The presence of such situations (in the very first CAB review no less) suggests that the overall SIP/CAB process should consider **all** CABs being required on SIPs, and those CABs required to either Approve, Disapprove, or formally indicate the SIP is not relevant to them
+  - This would make the process more burdensome, but given the high stakes and interdependencies involved in such complex systems, may be the wiser approach
+
+## Action Items
+
+-  [x] Raise the economic risk created in SIP-015 mentioned above to core SIP authors (Jude)
+-  [] Assemble an xSTX working group
+- [] Confirm with the SIP process group if the CAB process itself should default require all CABs (i.e. opt-out, not opt-in)
+
+## Vote Outcome(s)
+
+- The board unanimously voted for the Approval of SIP-015 **pending** confirmation that the change to minining behaivor is implemented such that this potential attack can not actually be carried out in practice

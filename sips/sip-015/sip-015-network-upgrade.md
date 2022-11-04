@@ -1629,13 +1629,10 @@ If a user is Stacking, then their STX can be used to vote in one of two ways,
 depending on whether or not they are solo-stacking or stacking through a
 delegate.
 
-The reason voting is streched across two reward cycles is to accommodate users
-whose STX will have unlocked during the voting period.  If a user's STX
-unlock in the first cycle, they can re-Stack them and vote in the second cycle.
-
-In all cases, if a user votes at all, they can only vote in _one_ of the two reward cycles.
-If a user casts a vote in both reward cycles, even if it is for the same
-decision, then the vote is discarded.
+The user must be Stacking in _both_ reward cycles 46 and 47.  Their vote
+contribution will be the number of STX they have locked.  If the user has not
+Stacked in either cycle, then they may vote instead as a non-stacker (see next
+section).
 
 #### Solo Stacking
 
@@ -1663,6 +1660,7 @@ If the PoX address holder votes for both "yes" and "no" by the end of the vote,
 the vote will be discarded.
 
 Note that this voting procedure does _not_ apply to Stacking pool operators.
+Stacking pool operator votes will not be considered.
 
 #### Pooled Stacking
 
@@ -1693,40 +1691,23 @@ proposal in EcosystemDAO [1].  The text of this proposal shall be this SIP.
 The STX in the user's Hiro Web Wallet will be tabulated 
 to count for a "yes" or "no".
 
-To prevent whales from interfering with the vote process, and to prevent
-Stackers from also voting with liquid STX that would unlock during the voting
-period, a _snapshot_ of all Stacks balances and lock-up states will be used to determine
+To prevent an influx of new STX holders from throwing the vote,
+a _snapshot_ of all Stacks balances and lock-up states will be used to determine
 how many STX a user can commit to a "yes" or "no" vote.  The snapshot will
-be back-dated to a Stacks block prior to this SIP's publication, whose hash and
-height shall be provided here before this SIP reaches Recommended status.
+be back-dated to a Stacks block prior to this SIP's activation, whose hash and
+height shall be provided here when voting begins.
+
+To prevent whales who possess many liquid STX from throwing the vote,
+each address will only be permitted to vote with a maximum amount of STX equal
+to the reward cycle's minimum Stacking threshold in the reward cycle in which
+they vote.  This, combined with the snapshot, prevents whales from having too
+much influence, even if they distributed their STX across many addresses.
+For example, if Alice has 1 million liquid STX, but votes in a reward cycle
+in which the minimum Stacking threshold is 120,000 STX, then only 120,000 of her
+STX will be counted.
 
 For this SIP to activate, a 66% majority of liquid STX must vote "yes".  There is no
 threshold for how many STX must participate.
-
-To prevent the STX in this back-dated snapshot from being double-counted,
-the vote tabulation software will only consider the _untouched_ STX balance
-of the address in the snapshot at the _end_ of the voting period.  For example,
-if Alice has 100 STX at the time of the snapshot, but transfers 40 STX during
-the voting period to a new address (or Stacks 40 STX), then only 60 of her STX
-will count for the vote.  Any STX Alice receives after the snapshot will not
-count; if Alice later receives 45 STX, then still only 60 of her unspent STX will be
-counted.
-
-If a user Stacks their STX and votes with their Stacked STX in addition to with
-their liquid STX, then only the unstacked STX will be counted for the liquid STX
-vote.  However, the user may vote with their Stacked STX separately.  So for
-example, if Alice had 100 STX at the time of the snapshot and Stacks 90 STX,
-then she can vote with her 90 STX via the Stacker voting procedure above with
-her 90 STX and can vote with the Non-Stacker procedure with her 10 STX.
-
-To prevent exchanges and large liquid holders from interfering with the vote,
-each address will only be permitted to vote with a maximum amount of STX equal
-to the reward cycle's minimum Stacking threshold in the reward cycle in which
-they vote.  For example, if Alice has 1 million liquid STX, but votes in a reward cycle
-in which the minimum Stacking threshold is 120,000 STX, then only 120,000 of her
-STX will be counted.  This, combined with the fact that the STX balances are
-calculated from a frozen snapshot that precedes this vote, ensure that a whale
-cannot work around this maximum by distributing their STX across many addresses.
 
 ## For Miners
 

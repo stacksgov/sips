@@ -20,8 +20,9 @@ Sign-off: Jude Nelson <jude@stacks.org>, Technical Steering Committee Chair
 
 # Abstract
 
-Non-fungible tokens or NFTs are digital assets registered on blockchain with unique identifiers and properties that distinguish them from each other. 
-It should be possible to uniquely identify, own and transfer a non-fungible token.  This SIP aims to provide a flexible and easy-to-implement standard that can be used by developers on the Stacks blockchain when creating their own NFTs. This standard only specifies a basic set of requirements, non-fungible tokens can have more features than what's specified in this standard.
+Non-fungible tokens or NFTs are digital assets registered on blockchain with unique identifiers and properties that distinguish them from each other.
+It should be possible to uniquely identify, own and transfer a non-fungible token. This SIP aims to provide a flexible and easy-to-implement standard that can be used by developers on the Stacks blockchain when creating their own NFTs. This standard only specifies a basic set of requirements, non-fungible tokens can have more features than what's specified in this standard.
+
 # License and Copyright
 
 This SIP is made available under the terms of the Creative Commons CC0 1.0 Universal license, available at https://creativecommons.org/publicdomain/zero/1.0/
@@ -51,7 +52,7 @@ This function must never return an error response. It can be defined as read-onl
 
 ### Token URI
 
-`(get-token-uri (uint) (response (optional (string-ascii 256)) uint))` 
+`(get-token-uri (uint) (response (optional (string-ascii 256)) uint))`
 
 Takes an NFT identifier and returns a response containing a valid URI which resolves to the NFT's metadata. The URI string must be wrapped in an `optional`. If the corresponding NFT doesn't exist or the contract doesn't maintain metadata, the response must be `(ok none)`. If a valid URI exists for the NFT, the response must be `(ok (some "<URI>"))`. The length of the returned URI is limited to 256 characters. The specification of the metadata should be covered in a separate SIP.
 
@@ -59,15 +60,15 @@ This function must never return an error response. It can be defined as read-onl
 
 ### Owner
 
-`(get-owner (uint) (response (optional principal) uint))` 
+`(get-owner (uint) (response (optional principal) uint))`
 
-Takes an NFT identifier and returns a response containing the principal owning the NFT with the given identifier. The principal must be wrapped in an optional. If the corresponding NFT doesn't exist, the response must be `(ok none)`. The owner can be a contract principal. 
+Takes an NFT identifier and returns a response containing the principal owning the NFT with the given identifier. The principal must be wrapped in an optional. If the corresponding NFT doesn't exist, the response must be `(ok none)`. The owner can be a contract principal.
 
 If a call to function `get-owner` returns some principal `A`, then it must return the same value until the `transfer` function is called with principal `A` as the sender.
 
 For any call to `get-owner` with an ID greater than the last token ID returned by the `get-last-token-id` function, the call must return a response `(ok none)`.
 
-This function must never return an error response. It can be defined as read-only, i.e. `define-read-only`. 
+This function must never return an error response. It can be defined as read-only, i.e. `define-read-only`.
 
 ### Transfer
 
@@ -82,6 +83,7 @@ After a successful call to `transfer`, the function `get-owner` must return the 
 For any call to `transfer` with an ID greater than the last token ID returned by the `get-last-token-id` function, the call must return an error response.
 
 It is recommended to use error codes from standardized list of codes and implement the function for converting the error codes to messages function that are defined in a separate SIP.
+
 ## Trait
 
 ```
@@ -90,7 +92,7 @@ It is recommended to use error codes from standardized list of codes and impleme
     ;; Last token ID, limited to uint range
     (get-last-token-id () (response uint uint))
 
-    ;; URI for metadata associated with the token 
+    ;; URI for metadata associated with the token
     (get-token-uri (uint) (response (optional (string-ascii 256)) uint))
 
      ;; Owner of a given token identifier
@@ -115,7 +117,9 @@ The native asset functions include:
 - `nft-transfer?`
 
 The following requirements for using native asset functions are defined:
+
 ### Transfer
+
 If the `transfer` function is called from a client without a [post-condition](https://docs.blockstack.org/understand-stacks/transactions#post-conditions) in deny mode or without any NFT condition about a changed owner, then the function call must fail with `abort_by_post_condition`.
 
 # Using NFTs in applications
@@ -135,6 +139,7 @@ For example, when applications call the `transfer` function, they should _always
 NFTs are an established asset class on blockchains. Read for example [here](https://www.ledger.com/academy/what-are-nft).
 
 ## EIP 721
+
 Ethereum has [EIP 721](https://eips.ethereum.org/EIPS/eip-721) that defined non-fungible tokens on the Ethereum blockchain. Notable differences are that the transfer function in EIP 721 uses a different ordering of the arguments ending with the token id. The transfer function in this SIP uses the token ID as the first argument which is in line with the other native functions in Clarity. Furthermore, this SIP only defines a function for getting the URI pointing to the metadata of an NFT. The specifications for schema and other properties of the token metadata should be defined in a separate SIP.
 
 # Backwards Compatibility
@@ -150,5 +155,12 @@ A trait that follows this specification is available on mainnet as [`SP2PABAF9FT
 # Reference Implementations
 
 ## Source code
+
 ### Friedger's clarity-smart-contracts
+
 https://github.com/friedger/clarity-smart-contracts/blob/master/contracts/sips/nft-trait.clar
+
+## Deployed Contracts
+
+- mainnet: [SP2PABAF9FTAJYNFZH93XENAJ8FVY99RRM50D2JG9.nft-trait.nft-trait](https://explorer.stacks.co/txid/SP2PABAF9FTAJYNFZH93XENAJ8FVY99RRM50D2JG9.nft-trait?chain=mainnet)
+- testnet: [ST1NXBK3K5YYMD6FD41MVNP3JS1GABZ8TRVX023PT.nft-trait.nft-trait](https://explorer.stacks.co/txid/ST1NXBK3K5YYMD6FD41MVNP3JS1GABZ8TRVX023PT.nft-trait?chain=testnet)

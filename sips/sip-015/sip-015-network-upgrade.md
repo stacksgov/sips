@@ -14,6 +14,7 @@ Authors:
     Jenny Mith <jenny@stacks.org>,
     Jude Nelson <jude@stacks.org>,
     Pavitthra Pandurangan <pavitthra@hiro.so>,
+    Jason Schrader <jason@joinfreehold.com>,
     Rena Shah <rena@trustmachines.co>,
     Hank Stoever <hank@mechanism.so>,
     Igor Sylvester <igor@trustmachines.co>,
@@ -286,6 +287,27 @@ The special case handler for the PoX contract in the Clarity VM will
 check this method's return value and set the locked amount in the
 stacker's STX account to correspond to the increased amount.
 
+### New method: `stack-aggregation-commit-indexed`
+
+This method behaves identically to `stack-aggregation-commit`, except that it
+returns the _index_ of the PoX address in the reward set calculated by the
+`pox-2` contract.  This index can be used as an argument to the
+`stack-aggregation-increase` function (see below), which is used to increase the
+amount of STX locked for a PoX address by amounts that may be smaller than the
+current Stacking minimum.
+
+### New method: `stack-aggregation-increase`
+
+This method behaves identically to `stack-aggregation-commit`, but will permit
+the caller to increase the amount of STX locked up for an _existing_ PoX
+address.  The PoX address is identified by an index returned by the new
+`stack-aggregation-commit-indexed` method.
+
+Unlike `stack-aggregation-commit`, there is no minimum number of STX that
+must have been locked to be added to the
+existing PoX address.  The only requirement is that the _total_ number of STX
+exceeds the _current_ Stacking minimum at the time of the call.
+
 ### Changed: `delegate-stx`
 
 This method has been changed so that the user can call it even while their STX
@@ -349,7 +371,7 @@ get altered to render this impractical.
 ### Changed: Support Segwit PoX Payout Addresses
 
 The type of a PoX address is now `(tuple (hashbytes (buff 32)) (version (buff
-1)))`.  This is to accomodate pay-to-witness-script-hash (p2wsh) and taproot (p2tr) scriptPubKeys on Bitcoin.  In
+1)))`.  This is to accommodate pay-to-witness-script-hash (p2wsh) and taproot (p2tr) scriptPubKeys on Bitcoin.  In
 addition, new values for `version` are supported to represent these encodings:
 
    * `0x04` means this is a pay-to-witness-public-key-hash (p2wpkh) address, and `hashbytes` is the 20-byte hash160 of the witness script
@@ -396,7 +418,7 @@ without cooldown may do the following:
    to re-stack:
    
 ```clarity
-   (contract-call SP000000000000000000002Q6VF78.pox-2 delegate-stack-extend
+   (contract-call? SP000000000000000000002Q6VF78.pox-2 delegate-stack-extend
      ...)
 ```
 
@@ -404,9 +426,9 @@ without cooldown may do the following:
    the user must first reset their delegated STX allowance:
 
 ```clarity
-   (contract-call SP000000000000000000002Q6VF78.pox-2 revoke-delegate-stx
+   (contract-call? SP000000000000000000002Q6VF78.pox-2 revoke-delegate-stx
       ...)
-   (contract-call SP000000000000000000002Q6VF78.pox-2 delegate-stx
+   (contract-call? SP000000000000000000002Q6VF78.pox-2 delegate-stx
       ...)
 ```
 
@@ -417,12 +439,30 @@ without cooldown may do the following:
 3. The aforementioned contract-calls *lock but do not commit* the user's funds. In
    order for the delegation operator to register the reward address for
    those funds, they must invoke the aggregation commit function (just as
-   when they invoke `delegate-stack-stx`):
+   when they invoke `delegate-stack-stx`).
+
+   If this is the _first time_ the delegation operator is Stacking STX for a
+    particular PoX reward address, they would call the new
+   `stack-aggregation-commit-indexed` function, and remember its return value:
 
 ```clarity
-   (contract-call SP000000000000000000002Q6VF78.pox-2 stack-aggregation-commit
+   (contract-call? SP000000000000000000002Q6VF78.pox-2 stack-aggregation-commit-indexed
      ...)
 ```
+
+   If this is a _subsequent time_ locking up user STX -- that is, if the
+   delegation operator has already earned a PoX reward address, or did so during
+   this reward cycle, then they can _increase_ the amount of STX locked to it as
+   follows:
+
+```clarity
+   (contract-call? SP000000000000000000002Q6VF78.pox-2 stack-aggregation-increase
+     ...)
+```
+
+   This permits the delegation operator to lock additional user STX, even if
+   they do not by themselves exceed the Stacking minimum (a limitation imposed
+   by the older `stack-aggregation-commit` function).
 
 ### Usecase: Stacking with Multiple PoX Addresses
 

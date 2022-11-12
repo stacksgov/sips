@@ -133,13 +133,13 @@ complement).
 
 ## Bitwise Left Shift (`<<`)
 
-`(<< i1 i2)`
+`(<< i1 shamt)`
 
 - **Inputs:** int, uint | uint, uint
 - **Outputs:** int | uint
 
-Shifts all the bits in `i1` to the left by the number of places specified in
-`i2`. New bits are filled with zeros.
+Shifts all bits in `i1` to the left by the number of places specified in `shamt`
+modulo 128 (the bit width of Clarity integers). New bits are filled with zeros.
 
 ### Examples
 
@@ -149,20 +149,21 @@ Shifts all the bits in `i1` to the left by the number of places specified in
 (<< -64 u1) ;; Returns -128
 (<< u4 u2) ;; Returns u16
 (<< u240282366920938463463374607431768211327 u3) ;; Returns 30756142965880123323311949751266331049856
-(<< u123 u24028236699) ;; Returns 0
+(<< u123 u24028236699) ;; Returns 16508780544 (123 << 27)
 ```
 
 ## Bitwise Right Shift (`>>`)
 
-`(>> i1 i2)`
+`(>> i1 shamt)`
 
 - **Inputs:** int, uint | uint, uint
 - **Output:** int | uint
 
 Shifts all the bits in `i1` to the right by the number of places specified in
-`i2`. When `i1` is a `uint` (unsigned), new bits are filled with zeros. When
-`i1` is an `int` (signed), the sign is preserved, meaning that new bits are
-filled with the value of the previous sign-bit.
+`shamt` modulo 128 (the bit width of Clarity integers). When `i1` is a `uint`
+(unsigned), new bits are filled with zeros. When `i1` is an `int` (signed), the
+sign is preserved, meaning that new bits are filled with the value of the
+previous sign-bit.
 
 ### Examples
 
@@ -171,8 +172,9 @@ filled with the value of the previous sign-bit.
 (>> 128 u2) ;; Returns 32
 (>> -64 u1) ;; Returns -32
 (>> u128 u2) ;; Returns u32
-(>> u240282366920938463463374607431768211327 u2402823) ;; Returns u0
-(>> -3 u300) ;; Returns -1
+(>> u240282366920938463463374607431768211327 u127) ;; Returns 0
+(>> u123 u2402820) ;; Returns 7 (u123 >> 4)
+(>> -3 u12) ;; Returns -1
 ```
 
 # Related work

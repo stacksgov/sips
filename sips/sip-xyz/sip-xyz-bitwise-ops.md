@@ -46,11 +46,12 @@ by the Stacks Open Internet Foundation.
 # Introduction
 
 Bitwise operations are common in other programming languages. Common algorithms,
-including many used in encryption for example, would be much more difficult to
-implement without the use of these operations. When executing a contract using
-these operations, the common hardware on which miners and nodes are likely to be
-running can all perform these operations very efficiently -- these are typically
-single cycle operations.
+including many used in encryption, or the ability to set and check flags in a
+bit field for example, would be much more difficult to implement without the use
+of these operations. When executing a contract using these operations, the
+common hardware on which miners and nodes are likely to be running can all
+perform these operations very efficiently -- these are typically single cycle
+operations.
 
 # Specification
 

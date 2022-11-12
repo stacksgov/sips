@@ -119,8 +119,11 @@ inputs.
 - **Inputs:** int | uint
 - **Output:** int | uint
 
-Returns the result of bitwise not, effectively reversing the bits of `i1` (1's
-complement).
+Returns the one's compliment (sometimes also called the bitwise compliment or
+not operator) of `i1`, effectively reversing the bits in `i1`.
+
+In other words, every bit that is `1` in `ì1` will be `0` in the result.
+Conversely, every bit that is `0` in `i1` will be `1` in the result.
 
 ### Examples
 
@@ -195,3 +198,5 @@ This SIP will be a rider on SIP-015. It will be considered activated if SIP-015
 # Reference Implementations
 
 - https://github.com/stacks-network/stacks-blockchain/pull/3389
+- See also discussions in
+  https://github.com/stacks-network/stacks-blockchain/pull/3382

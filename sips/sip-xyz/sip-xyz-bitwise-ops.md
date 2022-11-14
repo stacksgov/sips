@@ -51,7 +51,8 @@ bit field for example, would be much more difficult to implement without the use
 of these operations. When executing a contract using these operations, the
 common hardware on which miners and nodes are likely to be running can all
 perform these operations very efficiently -- these are typically single cycle
-operations.
+operations. Note that the addition of these bitwise operations commits the
+Clarity VM to using 2's complement to represent integers.
 
 # Specification
 
@@ -144,6 +145,8 @@ Conversely, every bit that is `0` in `i1` will be `1` in the result.
 
 Shifts all bits in `i1` to the left by the number of places specified in `shamt`
 modulo 128 (the bit width of Clarity integers). New bits are filled with zeros.
+When `i1` is a `uint` (unsigned), this is a logical shift. When `i1` is an `int`
+(signed), this is an arithmetic shift, preserving the sign.
 
 ### Examples
 
@@ -193,8 +196,8 @@ this SIP is activated, and valid after it is activated.
 
 # Activation
 
-This SIP will be a rider on SIP-015. It will be considered activated if SIP-015
-(and Stacks 2.1) is activated.
+This SIP will be a rider on SIP-015. It will be considered activated if and only
+if SIP-015 (and Stacks 2.1) is activated.
 
 # Reference Implementations
 

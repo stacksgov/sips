@@ -1,6 +1,6 @@
 # Preamble
 
-SIP Number: XYZ
+SIP Number: 020
 
 Title: Bitwise Operations in Clarity
 

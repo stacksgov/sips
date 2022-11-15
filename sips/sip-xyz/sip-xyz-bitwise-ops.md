@@ -66,6 +66,24 @@ Clarity VM to using 2's complement to represent integers.
 Returns the result of bitwise exclusive or'ing a variable number of integer
 inputs.
 
+| Bit in i1 | Bit in i2 | Bit in Output |
+| --------- | --------- | ------------- |
+| 0         | 0         | 0             |
+| 0         | 1         | 1             |
+| 1         | 0         | 1             |
+| 1         | 1         | 0             |
+
+The following example uses only 8 bits to make it easier to follow. Actual
+Clarity values are 128 bits.
+
+```
+(bit-xor 17 30) ;; Return 15
+;; Binary representation:
+;; i1 (17):     00010001
+;; i2 (30):     00011110
+;; Output (15): 00001111
+```
+
 ### Examples
 
 ```
@@ -84,6 +102,24 @@ inputs.
 - **Output:** int | uint
 
 Returns the result of bitwise and'ing a variable number of integer inputs.
+
+| Bit in i1 | Bit in i2 | Bit in Output |
+| --------- | --------- | ------------- |
+| 0         | 0         | 0             |
+| 0         | 1         | 0             |
+| 1         | 0         | 0             |
+| 1         | 1         | 1             |
+
+The following example uses only 8 bits to make it easier to follow. Actual
+Clarity values are 128 bits.
+
+```
+(bit-and 17 30) ;; Return 16
+;; Binary representation:
+;; i1 (17):     00010001
+;; i2 (30):     00011110
+;; Output (16): 00010000
+```
 
 ### Examples
 
@@ -104,6 +140,24 @@ Returns the result of bitwise and'ing a variable number of integer inputs.
 
 Returns the result of bitwise inclusive or'ing a variable number of integer
 inputs.
+
+| Bit in i1 | Bit in i2 | Bit in Output |
+| --------- | --------- | ------------- |
+| 0         | 0         | 0             |
+| 0         | 1         | 1             |
+| 1         | 0         | 1             |
+| 1         | 1         | 1             |
+
+The following example uses only 8 bits to make it easier to follow. Actual
+Clarity values are 128 bits.
+
+```
+(bit-or 17 30) ;; Return 31
+;; Binary representation:
+;; i1 (17):     00010001
+;; i2 (30):     00011110
+;; Output (31): 00011111
+```
 
 ### Examples
 
@@ -127,6 +181,21 @@ not operator) of `i1`, effectively reversing the bits in `i1`.
 In other words, every bit that is `1` in `ì1` will be `0` in the result.
 Conversely, every bit that is `0` in `i1` will be `1` in the result.
 
+| Bit in i1 | Bit in Output |
+| --------- | ------------- |
+| 0         | 1             |
+| 1         | 0             |
+
+The following example uses only 8 bits to make it easier to follow. Actual
+Clarity values are 128 bits.
+
+```
+(bit-not u41) ;; Return u214
+;; Binary representation:
+;; i1 (41):      00101001
+;; Output (214): 11010110
+```
+
 ### Examples
 
 ```
@@ -149,6 +218,16 @@ modulo 128 (the bit width of Clarity integers). New bits are filled with zeros.
 Note that there is a deliberate choice made to ignore arithmetic overflow for
 this operation. In use cases where overflow should be detected, developers
 should use `*`, `/`, and `pow` instead of the shift operators.
+
+The following example uses only 8 bits to make it easier to follow. Actual
+Clarity values are 128 bits.
+
+```
+(bit-shift-left 6 u3) ;; Return 48
+;; Binary representation:
+;; Input  (6):  00000110
+;; Output (48): 00110000
+```
 
 ### Examples
 
@@ -178,6 +257,16 @@ previous sign-bit.
 Note that there is a deliberate choice made to ignore arithmetic overflow for
 this operation. In use cases where overflow should be detected, developers
 should use `*`, `/`, and `pow` instead of the shift operators.
+
+The following example uses only 8 bits to make it easier to follow. Actual
+Clarity values are 128 bits.
+
+```
+(bit-shift-right u170 u1) ;; Return u85
+;; Binary representation:
+;; Input  (u170): 10101010
+;; Output (u85):  01010101
+```
 
 ### Examples
 

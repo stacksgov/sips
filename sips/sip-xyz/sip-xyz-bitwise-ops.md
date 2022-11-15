@@ -29,12 +29,12 @@ This SIP adds bitwise operations to the Clarity language which could simplify
 the implementation of smart contracts that require manipulation of bits. The
 changes include the addition of the following operations:
 
-- Bitwise Xor (`^`)
-- Bitwise And (`&`)
-- Bitwise Or (`|`)
-- Bitwise Not (`~`)
-- Binary Left Shift (`<<`)
-- Binary Right Shift (`>>`)
+- Bitwise Xor (`bit-xor`)
+- Bitwise And (`bit-and`)
+- Bitwise Or (`bit-or`)
+- Bitwise Not (`bit-not`)
+- Binary Left Shift (`bit-shift-left`)
+- Binary Right Shift (`bit-shift-right`)
 
 # License and Copyright
 
@@ -56,9 +56,9 @@ Clarity VM to using 2's complement to represent integers.
 
 # Specification
 
-## Bitwise Xor (`^`)
+## Bitwise Xor (`bit-xor`)
 
-`(^ i1 i2...)`
+`(bit-xor i1 i2...)`
 
 - **Inputs:** int, ... | uint, ...
 - **Output:** int | uint
@@ -69,16 +69,16 @@ inputs.
 ### Examples
 
 ```
-(^ 1 2) ;; Returns 3
-(^ 120 280) ;; Returns 352
-(^ -128 64) ;; Returns -64
-(^ u24 u4) ;; Returns u28
-(^ 1 2 4 -1) ;; Returns -8
+(bit-xor 1 2) ;; Returns 3
+(bit-xor 120 280) ;; Returns 352
+(bit-xor -128 64) ;; Returns -64
+(bit-xor u24 u4) ;; Returns u28
+(bit-xor 1 2 4 -1) ;; Returns -8
 ```
 
-## Bitwise And (`&`)
+## Bitwise And (`bit-and`)
 
-`(& i1 i2...)`
+`(bit-and i1 i2...)`
 
 - **Inputs:** int, ... | uint, ...
 - **Output:** int | uint
@@ -88,16 +88,16 @@ Returns the result of bitwise and'ing a variable number of integer inputs.
 ### Examples
 
 ```
-(& 24 16) ;; Returns 16
-(& 28 24 -1) ;; Returns 24
-(& u24 u16) ;; Returns u16
-(& -128 -64) ;; Returns -128
-(& 28 24 -1) ;; Returns 24
+(bit-and 24 16) ;; Returns 16
+(bit-and 28 24 -1) ;; Returns 24
+(bit-and u24 u16) ;; Returns u16
+(bit-and -128 -64) ;; Returns -128
+(bit-and 28 24 -1) ;; Returns 24
 ```
 
-## Bitwise Or (`|`)
+## Bitwise Or (`bit-or`)
 
-`(& i1 i2...)`
+`(bit-or i1 i2...)`
 
 - **Inputs:** int, ... | uint, ...
 - **Outputs:** int | uint
@@ -108,15 +108,15 @@ inputs.
 ### Examples
 
 ```
-(| 4 8) ;; Returns 12
-(| 1 2 4) ;; Returns 7
-(| 64 -32 -16) ;; Returns -16
-(| u2 u4 u32) ;; Returns u38
+(bit-or 4 8) ;; Returns 12
+(bit-or 1 2 4) ;; Returns 7
+(bit-or 64 -32 -16) ;; Returns -16
+(bit-or u2 u4 u32) ;; Returns u38
 ```
 
-## Bitwise Not (`~`)
+## Bitwise Not (`bit-not`)
 
-`(~ i1)`
+`(bit-not i1)`
 
 - **Inputs:** int | uint
 - **Output:** int | uint
@@ -130,15 +130,15 @@ Conversely, every bit that is `0` in `i1` will be `1` in the result.
 ### Examples
 
 ```
-(~ 3) ;; Returns -4
-(~ u128) ;; Returns u340282366920938463463374607431768211327
-(~ 128) ;; Returns -129
-(~ -128) ;; Returns 127
+(bit-not 3) ;; Returns -4
+(bit-not u128) ;; Returns u340282366920938463463374607431768211327
+(bit-not 128) ;; Returns -129
+(bit-not -128) ;; Returns 127
 ```
 
-## Bitwise Left Shift (`<<`)
+## Bitwise Left Shift (`bit-shift-left`)
 
-`(<< i1 shamt)`
+`(bit-shift-left i1 shamt)`
 
 - **Inputs:** int, uint | uint, uint
 - **Outputs:** int | uint
@@ -153,18 +153,18 @@ should use `*`, `/`, and `pow` instead of the shift operators.
 ### Examples
 
 ```
-(<< 16 u2) ;; Returns 64
-(<< -64 u1) ;; Returns -128
-(<< u4 u2) ;; Returns u16
-(<< 123 u9999999999) ;; Returns -170141183460469231731687303715884105728 (== 123 << 127)
-(<< u123 u9999999999) ;; Returns u170141183460469231731687303715884105728 (== u123 << 127)
-(<< -1 u7) ;; Returns -128
-(<< -1 u128) ;; Returns -1
+(bit-shift-left 16 u2) ;; Returns 64
+(bit-shift-left -64 u1) ;; Returns -128
+(bit-shift-left u4 u2) ;; Returns u16
+(bit-shift-left 123 u9999999999) ;; Returns -170141183460469231731687303715884105728 (== 123 bit-shift-left 127)
+(bit-shift-left u123 u9999999999) ;; Returns u170141183460469231731687303715884105728 (== u123 bit-shift-left 127)
+(bit-shift-left -1 u7) ;; Returns -128
+(bit-shift-left -1 u128) ;; Returns -1
 ```
 
-## Bitwise Right Shift (`>>`)
+## Bitwise Right Shift (`bit-shift-right`)
 
-`(>> i1 shamt)`
+`(bit-shift-right i1 shamt)`
 
 - **Inputs:** int, uint | uint, uint
 - **Output:** int | uint
@@ -182,16 +182,16 @@ should use `*`, `/`, and `pow` instead of the shift operators.
 ### Examples
 
 ```
-(>> 2 u1) ;; Returns 1
-(>> 128 u2) ;; Returns 32
-(>> -64 u1) ;; Returns -32
-(>> u128 u2) ;; Returns u32
-(>> 123 u9999999999) ;; Returns 0
-(>> u123 u9999999999) ;; Returns u0
-(>> -128 u7) ;; Returns -1
-(>> -256 u1) ;; Returns -128
-(>> 5 u2) ;; Returns 1
-(>> -5 u2) ;; Returns -2
+(bit-shift-right 2 u1) ;; Returns 1
+(bit-shift-right 128 u2) ;; Returns 32
+(bit-shift-right -64 u1) ;; Returns -32
+(bit-shift-right u128 u2) ;; Returns u32
+(bit-shift-right 123 u9999999999) ;; Returns 0
+(bit-shift-right u123 u9999999999) ;; Returns u0
+(bit-shift-right -128 u7) ;; Returns -1
+(bit-shift-right -256 u1) ;; Returns -128
+(bit-shift-right 5 u2) ;; Returns 1
+(bit-shift-right -5 u2) ;; Returns -2
 ```
 
 # Related work

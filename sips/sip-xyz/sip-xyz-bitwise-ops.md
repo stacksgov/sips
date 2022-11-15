@@ -145,18 +145,21 @@ Conversely, every bit that is `0` in `i1` will be `1` in the result.
 
 Shifts all bits in `i1` to the left by the number of places specified in `shamt`
 modulo 128 (the bit width of Clarity integers). New bits are filled with zeros.
-When `i1` is a `uint` (unsigned), this is a logical shift. When `i1` is an `int`
-(signed), this is an arithmetic shift, preserving the sign.
+
+Note that there is a deliberate choice made to ignore arithmetic overflow for
+this operation. In use cases where overflow should be detected, developers
+should use `*`, `/`, and `pow` instead of the shift operators.
 
 ### Examples
 
 ```
-(<< 2 u1) ;; Returns 4
 (<< 16 u2) ;; Returns 64
 (<< -64 u1) ;; Returns -128
 (<< u4 u2) ;; Returns u16
-(<< u240282366920938463463374607431768211327 u3) ;; Returns 30756142965880123323311949751266331049856
-(<< u123 u24028236699) ;; Returns 16508780544 (123 << 27)
+(<< 123 u9999999999) ;; Returns -170141183460469231731687303715884105728 (== 123 << 127)
+(<< u123 u9999999999) ;; Returns u170141183460469231731687303715884105728 (== u123 << 127)
+(<< -1 u7) ;; Returns -128
+(<< -1 u128) ;; Returns -1
 ```
 
 ## Bitwise Right Shift (`>>`)
@@ -172,6 +175,10 @@ Shifts all the bits in `i1` to the right by the number of places specified in
 sign is preserved, meaning that new bits are filled with the value of the
 previous sign-bit.
 
+Note that there is a deliberate choice made to ignore arithmetic overflow for
+this operation. In use cases where overflow should be detected, developers
+should use `*`, `/`, and `pow` instead of the shift operators.
+
 ### Examples
 
 ```
@@ -179,9 +186,12 @@ previous sign-bit.
 (>> 128 u2) ;; Returns 32
 (>> -64 u1) ;; Returns -32
 (>> u128 u2) ;; Returns u32
-(>> u240282366920938463463374607431768211327 u127) ;; Returns 0
-(>> u123 u2402820) ;; Returns 7 (u123 >> 4)
-(>> -3 u12) ;; Returns -1
+(>> 123 u9999999999) ;; Returns 0
+(>> u123 u9999999999) ;; Returns u0
+(>> -128 u7) ;; Returns -1
+(>> -256 u1) ;; Returns -128
+(>> 5 u2) ;; Returns 1
+(>> -5 u2) ;; Returns -2
 ```
 
 # Related work

@@ -191,30 +191,55 @@ The new PoX contract operates exclusively with PoX state that was
 created in the new contract. It will not "import" state from the
 original PoX contract. In order to allow for this, a particular reward
 cycle `N` is chosen as the "Last PoX-1" reward cycle, and then the
-"First PoX-2" reward cycle is the subsequent cycle (`N+1`).
+"First PoX-2" reward cycle is the subsequent cycle (`N+1`).  In-between these
+two cycles, there exists a burnchain block height `v1_unlock_height` at which
+all of the STX tokens in PoX-1 will unlock, so that they can be locked up again
+in PoX-2 before cycle `N+1` starts.
 
 This defines three periods of PoX operation:
 
-Period 1 | Period 2 | Period 3
--- | -- | --
-2.0 Consensus Rules in Effect | 2.1 Consensus Rules enacted, but first PoX-2 reward cycle has not begun | First PoX-2 reward cycle has begun
-_This is the period of time before the 2.1 fork._ | _This is after the 2.1 fork in cycle N, but before cycle (N+1)._ | _This is the start of cycle (N+1), and all cycles afterward.  The original PoX contract state will no longer have any impact on reward sets, account lock status, etc._
+Period 1 | Period 2a | Period 2b | Period 3
+-- | -- | -- | --
+2.0 Consensus Rules in Effect | 2.1 Consensus Rules enacted, PoX-2 exists, but PoX-1 is still active | PoX-1 deactivates, all tokens locked in the original PoX contract unlock, but first PoX-2 reward cycle has not begun | First PoX-2 reward cycle has begun
+_This is the period of time before the 2.1 fork._ | _This is the period of time between after the 2.1 fork, and before `v1_unlock_height` (inclusive)_ | _This is the period of time between `v1_unlock_height + 1` and the start of cycle N+1) |  _This is the start of cycle (N+1), and all cycles afterward.  The original PoX contract state will no longer have any impact on reward sets, account lock status, etc._
 
-- Every account that is locked by the original contract for cycle `N`
-  and beyond is unlocked at the end of Cycle `N`.
-- Every account that is locked (whether by PoX-1 or PoX-2) is eligible
-  for a call to `pox-2.stack-extend`, which allows an account to
-  re-lock for some subsequent number of reward cycles while still
-  being locked.
-    - This would also be true for `pox-2.delegate-stack-extend`
-- Calls to PoX 2 which would attempt to create state for a cycle
-  _before_ `(N+1)` will fail
-- Calls to the original PoX contract which would attempt to create
-  state for a cycle `>= N+1` will be made to fail and any state after
+- Every account that is locked by PoX-1 for cycle `N`
+  and beyond is unlocked at the end of period 2a, once the burnchain block
+height `v1_unlock_height` passes.
+- Accounts locked in PoX-2 will remain locked.  It will be possible to do this
+  with unlocked STX at the start of period 2a.
+- Every account that is locked in PoX-2 is eligible
+  for the new calls to PoX-2 described in this document, including those that
+extend the lock period and those that increase the amount locked.
+- Calls to PoX-2 which would attempt to create state for a cycle
+  _before_ `(N+1)` will fail.  Accounts cannot "back-date" their PoX-2 lockups.
+- Calls to the PoX-1 contract which would attempt to create
+  state for a cycle `>= N+1` will be made to fail, and any state after
   `N+1` is ignored.  This requires interposing on contract-calls
   during period 2 and checking the reward cycles arguments: the
   relevant functions are `stack-stx`, `delegate-stack-stx`,
   `stack-aggregation-commit`, and `reject-pox`.
+
+PoX-2 is available at the start of period 2a.  Accounts can begin to lock up
+their liquid STX into PoX-2 at the start of this period, even though PoX-1 is
+still active.
+
+Once period 2a finishes, PoX-1 is defunct.  It will only be possible to call its
+read-only functions.  Calling any functions that create or modify state will
+fail.  All tokens locked in PoX-1 (but not PoX-2) will unlock at the end of
+period 2a.
+
+PoX reward payouts contine to happen for cycle `N`, even though PoX-1 will be
+disabled between cycle `N` and `N+1`.  This is because the reward set is chosen
+at the _start_ of the reward cycle, and used to schedule miner payouts over the
+course of the cycle.  Cycle `N` is the last reward cycle in which PoX-1 will be
+queried to calculate the reward set.  Starting in cycle `N+1`, PoX-2 will be
+queried for the reward set.
+
+The value for `v1_unlock_height` will be determined before this SIP activates.
+It will fall as close to the start of cycle `N` as possible in order to give
+users the maximum amount of time to re-lock their now-unlocked STX into PoX-2,
+if they so desire.
 
 ### New method: `stack-extend`
 

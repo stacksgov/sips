@@ -201,7 +201,7 @@ This defines three periods of PoX operation:
 Period 1 | Period 2a | Period 2b | Period 3
 -- | -- | -- | --
 2.0 Consensus Rules in Effect | 2.1 Consensus Rules enacted, PoX-2 exists, but PoX-1 is still active | PoX-1 deactivates, all tokens locked in the original PoX contract unlock, but first PoX-2 reward cycle has not begun | First PoX-2 reward cycle has begun
-_This is the period of time before the 2.1 fork._  |  _This is the period of time between after the 2.1 fork, and before `v1_unlock_height` (inclusive)_ | _This is the period of time between `v1_unlock_height + 1` and the start of cycle N+1) |  _This is the start of cycle (N+1), and all cycles afterward.  The original PoX contract state will no longer have any impact on reward sets, account lock status, etc._
+_This is the period of time before the 2.1 fork._  |  _This is the period of time between after the 2.1 fork, and before `v1_unlock_height` (inclusive)_ | _This is the period of time between `v1_unlock_height + 1` and the start of cycle N+1)_ |  _This is the start of cycle (N+1), and all cycles afterward.  The original PoX contract state will no longer have any impact on reward sets, account lock status, etc._
 
 - Every account that is locked by PoX-1 for cycle `N`
   and beyond is unlocked at the end of period 2a, once the burnchain block

@@ -1363,8 +1363,47 @@ and secured burnchain wallets to hold their STX.
 
 The burnchain wire format is as follows:
 
-* For the Bitcoin chain:
-   (TODO; PR still in review) 
+* The first transaction input must consume a `PreSTX` operation's second output
+  (see SIP-007).
+
+* The first transaction output must contain an `OP_RETURN` payload:
+   * **Bytes 0-2** are the magic bytes that identify this as a Stacks transaction
+   * **Bytes 2-3** is the opcode, which shall be `#` (0x23).
+   * **Bytes 3-19** is the number of uSTX to delegate, as a 128-bit big-endian
+     integer.  This corresponds to the `amount-ustx` argument to `delegate-stx`.
+   * **Bytes 19-23** is the optional index of the transaction output.
+      * If **Byte 19** is set to `0x00`, then this field is ignored.  This
+        corresponds to passing `none` to the `pox-addr` argument in
+`delegate-stx`.
+      * If **Byte 19** is set to `0x01`, then **bytes 20-23** are interpreted as
+        a 32-bit big-endian integer, which shall index one of the transaction
+outputs _after_ the `OP_RETURN` output.  For example, the output at index 0 is
+the first output after the `OP_RETURN` output, index 1 is the second after, etc.
+The output's address, if it decodes to a valid PoX address tuple, will be used
+as the `pox-addr` argument to `delegate-stx`.
+   * **Bytes 24-33** is the optional last burnchain block height for which these
+     uSTX are delegated.
+      * If **Byte 24** is set to `0x00`, then this field is ignored.  It
+        corresponds to passing `none` to the `until-burn-ht` argument in
+`delegate-stx`.
+      * If **Byte 24** is set to `0x01`, then this field is the 128-bit
+        big-endian integer that encodes the burnchain block height at which this
+delegation expires.  This value corresponds to the `until-burn-ht` argument in
+`delegate-stx`.
+
+* The second transaction output encodes the Stacks address to which the STX are
+  delegated.  This output must decode to a Stacks address.  This field corresponds to the
+`delegate-to` argument in `delegate-stx`.
+
+If the index that represents `pox-addr` in **bytes 19-23** does not correspond
+to an existing output, or does not decode to a valid PoX address, then the
+transaction is ignored.
+
+The effect of sending a well-formed burnchain transaction with the above data is
+to materialize a contract-call to `delegate-stx` in `pox-2` with the
+aforementioned argument values.  Calls to `delegate-stx` will happen after the
+calls to `stack-stx` and `transfer-stx` are materialized from burnchain
+transactions.
 
 ### Changed: PoX with Forkable PoX Anchor Blocks
 

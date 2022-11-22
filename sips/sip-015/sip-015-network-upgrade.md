@@ -229,7 +229,7 @@ read-only functions.  Calling any functions that create or modify state will
 fail.  All tokens locked in PoX-1 (but not PoX-2) will unlock at the end of
 period 2a.
 
-PoX reward payouts contine to happen for cycle `N`, even though PoX-1 will be
+PoX reward payouts continue to happen for cycle `N`, even though PoX-1 will be
 disabled between cycle `N` and `N+1`.  This is because the reward set is chosen
 at the _start_ of the reward cycle, and used to schedule miner payouts over the
 course of the cycle.  Cycle `N` is the last reward cycle in which PoX-1 will be

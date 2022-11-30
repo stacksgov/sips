@@ -11,7 +11,7 @@ Consideration: Technical, Governance
 
 Type: Consensus
 
-Status: Recommended
+Status: Activation-in-Progress
 
 Created: 12 November 2022
 

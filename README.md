@@ -8,8 +8,10 @@ may submit a SIP.
 
 ## SIPs in the Process of Being Activated
 
+* [SIP-015](https://github.com/stacksgov/sips/pull/95): Stacks Upgrade of Proof-of-Transfer and Clarity
 * [SIP-018](https://github.com/stacksgov/sips/pull/57): Signed Structured Data
 * [SIP-019](https://github.com/stacksgov/sips/pull/72): Notifications for Token Metadata Updates
+* [SIP-020](https://github.com/stacksgov/sips/pull/106): Bitwise Operations in Clarity
 
 ## Ratified SIPs
 

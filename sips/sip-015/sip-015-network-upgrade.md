@@ -24,13 +24,13 @@ Consideration: Technical, Governance, Economics
 
 Type: Consensus
 
-Status: Draft
+Status: Activation-in-Progress
 
 Created: 1 December 2021
 
 License: BSD 2-Clause
 
-Sign-off:
+Sign-off: Brice Dolby <brice@hiro.so>, Jason Shrader <jason@joinfreedhold.com>
 
 Discussions-To: https://github.com/stacksgov/sips
 

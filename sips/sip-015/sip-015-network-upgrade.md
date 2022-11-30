@@ -584,9 +584,9 @@ entirely visible even in `pox` or `pox-2`.
 (stx-account (as-contract tx-sender)) ;; Returns (tuple (locked u0) (unlock-height u0) (unlocked u1000))
 ```
 
-### New method: `principal-destruct`
+### New method: `principal-destruct?`
 
-* **Input Signature:** `(principal-destruct (principal-address principal))`
+* **Input Signature:** `(principal-destruct? (principal-address principal))`
 * **Output Signature:** `(response { hash-bytes: (buff 20), name: (optional (string-ascii 40)), version: (buff 1) } { hash-bytes: (buff 20), name: (optional (string-ascii 40)), version: (buff 1) })`
 
 A principal value represents either a set of keys, or a smart contract.
@@ -597,7 +597,7 @@ and a `(buff 20)` *public key hash*, characterizing the principal's unique ident
 The latter, a _contract principal_, is encoded as a standard principal concatenated with
 a `(string-ascii 40)` *contract name* that identifies the code body.
 
-`principal-destruct` will decompose a principal into its component parts.  Standard principals will 
+`principal-destruct?` will decompose a principal into its component parts.  Standard principals will
 be decomposed into a tuple containing the **version byte** and **public key
 hash**.  Decomposed contract principals contain the same data as standard
 principals, as well as a **name** element that contains the human-readable
@@ -624,17 +624,17 @@ Bitcoin owner signed some data, or also controlled some Stacks data.
 **Examples:**
 
 ```clarity
-(principal-destruct 'STB44HYPYAT2BB2QE513NSP81HTMYWBJP02HPGK6) ;; Returns (ok (tuple (hash-bytes 0x164247d6f2b425ac5771423ae6c80c754f7172b0) (name none) (version 0x1a)))
-(principal-destruct 'STB44HYPYAT2BB2QE513NSP81HTMYWBJP02HPGK6.foo) ;; Returns (ok (tuple (hash-bytes 0x164247d6f2b425ac5771423ae6c80c754f7172b0) (name (some "foo")) (version 0x1a)))
-(principal-destruct 'SP3X6QWWETNBZWGBK6DRGTR1KX50S74D3433WDGJY) ;; Returns (err (tuple (hash-bytes 0xfa6bf38ed557fe417333710d6033e9419391a320) (name none) (version 0x16)))
-(principal-destruct 'SP3X6QWWETNBZWGBK6DRGTR1KX50S74D3433WDGJY.foo) ;; Returns (err (tuple (hash-bytes 0xfa6bf38ed557fe417333710d6033e9419391a320) (name (some "foo")) (version 0x16)))
+(principal-destruct? 'STB44HYPYAT2BB2QE513NSP81HTMYWBJP02HPGK6) ;; Returns (ok (tuple (hash-bytes 0x164247d6f2b425ac5771423ae6c80c754f7172b0) (name none) (version 0x1a)))
+(principal-destruct? 'STB44HYPYAT2BB2QE513NSP81HTMYWBJP02HPGK6.foo) ;; Returns (ok (tuple (hash-bytes 0x164247d6f2b425ac5771423ae6c80c754f7172b0) (name (some "foo")) (version 0x1a)))
+(principal-destruct? 'SP3X6QWWETNBZWGBK6DRGTR1KX50S74D3433WDGJY) ;; Returns (err (tuple (hash-bytes 0xfa6bf38ed557fe417333710d6033e9419391a320) (name none) (version 0x16)))
+(principal-destruct? 'SP3X6QWWETNBZWGBK6DRGTR1KX50S74D3433WDGJY.foo) ;; Returns (err (tuple (hash-bytes 0xfa6bf38ed557fe417333710d6033e9419391a320) (name (some "foo")) (version 0x16)))
 ```
 
-### New method: `principal-construct`
+### New method: `principal-construct?`
 
 * **Input Signatures:**
-   * `(principal-construct (buff 1) (buff 20))`
-   * `(principal-construct (buff 1) (buff 20) (string-ascii 40))`
+   * `(principal-construct? (buff 1) (buff 20))`
+   * `(principal-construct? (buff 1) (buff 20) (string-ascii 40))`
 * **Output Signature:** `(response principal { error_code: uint, value: (optional principal) })`
 
 A principal value represents either a set of keys, or a smart contract.
@@ -645,13 +645,13 @@ and a `(buff 20)` *public key hash*, characterizing the principal's unique ident
 The latter, a _contract principal_, is encoded as a standard principal concatenated with
 a `(string-ascii 40)` *contract name* that identifies the code body.
 
-The `principal-construct` function allows users to create either standard or contract principals,
+The `principal-construct?` function allows users to create either standard or contract principals,
 depending on which form is used.  To create a standard principal, 
-`principal-construct` would be called with two arguments: it
+`principal-construct?` would be called with two arguments: it
 takes as input a `(buff 1)` which encodes the principal address's
 `version-byte`, a `(buff 20)` which encodes the principal address's `hash-bytes`.
 
-To create a contract principal, `principal-construct` would be called with
+To create a contract principal, `principal-construct?` would be called with
 three arguments: the `(buff 1)` and `(buff 20)` to represent the standard principal
 that created the contract, and a `(string-ascii 40)` which encodes the contract's name.
 On success, this function returns either a standard principal or contract principal, 
@@ -681,15 +681,15 @@ contract addresses.
 **Examples:**
 
 ```clarity
-(principal-construct 0x1a 0xfa6bf38ed557fe417333710d6033e9419391a320) ;; Returns (ok ST3X6QWWETNBZWGBK6DRGTR1KX50S74D3425Q1TPK)
-(principal-construct 0x1a 0xfa6bf38ed557fe417333710d6033e9419391a320 "foo") ;; Returns (ok ST3X6QWWETNBZWGBK6DRGTR1KX50S74D3425Q1TPK.foo)
-(principal-construct 0x16 0xfa6bf38ed557fe417333710d6033e9419391a320) ;; Returns (err (tuple (error_code u0) (value (some SP3X6QWWETNBZWGBK6DRGTR1KX50S74D3433WDGJY))))
-(principal-construct 0x16 0xfa6bf38ed557fe417333710d6033e9419391a320 "foo") ;; Returns (err (tuple (error_code u0) (value (some SP3X6QWWETNBZWGBK6DRGTR1KX50S74D3433WDGJY.foo))))
-(principal-construct 0x   0xfa6bf38ed557fe417333710d6033e9419391a320) ;; Returns (err (tuple (error_code u1) (value none)))
-(principal-construct 0x16 0xfa6bf38ed557fe417333710d6033e9419391a3)   ;; Returns (err (tuple (error_code u1) (value none)))
-(principal-construct 0x20 0xfa6bf38ed557fe417333710d6033e9419391a320) ;; Returns (err (tuple (error_code u1) (value none)))
-(principal-construct 0x1a 0xfa6bf38ed557fe417333710d6033e9419391a320 "") ;; Returns (err (tuple (error_code u2) (value none)))
-(principal-construct 0x1a 0xfa6bf38ed557fe417333710d6033e9419391a320 "foo[") ;; Returns (err (tuple (error_code u2) (value none)))
+(principal-construct? 0x1a 0xfa6bf38ed557fe417333710d6033e9419391a320) ;; Returns (ok ST3X6QWWETNBZWGBK6DRGTR1KX50S74D3425Q1TPK)
+(principal-construct? 0x1a 0xfa6bf38ed557fe417333710d6033e9419391a320 "foo") ;; Returns (ok ST3X6QWWETNBZWGBK6DRGTR1KX50S74D3425Q1TPK.foo)
+(principal-construct? 0x16 0xfa6bf38ed557fe417333710d6033e9419391a320) ;; Returns (err (tuple (error_code u0) (value (some SP3X6QWWETNBZWGBK6DRGTR1KX50S74D3433WDGJY))))
+(principal-construct? 0x16 0xfa6bf38ed557fe417333710d6033e9419391a320 "foo") ;; Returns (err (tuple (error_code u0) (value (some SP3X6QWWETNBZWGBK6DRGTR1KX50S74D3433WDGJY.foo))))
+(principal-construct? 0x   0xfa6bf38ed557fe417333710d6033e9419391a320) ;; Returns (err (tuple (error_code u1) (value none)))
+(principal-construct? 0x16 0xfa6bf38ed557fe417333710d6033e9419391a3)   ;; Returns (err (tuple (error_code u1) (value none)))
+(principal-construct? 0x20 0xfa6bf38ed557fe417333710d6033e9419391a320) ;; Returns (err (tuple (error_code u1) (value none)))
+(principal-construct? 0x1a 0xfa6bf38ed557fe417333710d6033e9419391a320 "") ;; Returns (err (tuple (error_code u2) (value none)))
+(principal-construct? 0x1a 0xfa6bf38ed557fe417333710d6033e9419391a320 "foo[") ;; Returns (err (tuple (error_code u2) (value none)))
 ```
 
 ### New method: `get-burn-block-info?`
@@ -734,12 +734,12 @@ for Stacking pools and other Stacking-centric programs.
 (get-burn-block-info? pox-addrs u677050) ;; Returns (some (tuple (addrs ((tuple (hashbytes 0x395f3643cea07ec4eec73b4d9a973dcce56b9bf1) (version 0x00)) (tuple (hashbytes 0x7c6775e20e3e938d2d7e9d79ac310108ba501ddb) (version 0x01)))) (payout u123)))
 ```
 
-### New method: `slice`
+### New method: `slice?`
 
-* **Input Signature:** `(slice (sequence sequence_A) (left-position uint) (right-position uint))`
+* **Input Signature:** `(slice? (sequence sequence_A) (left-position uint) (right-position uint))`
 * **Output Signature:** `(optional sequence_A)`
 
-The `slice` function attempts to return a sub-sequence of `sequence_A` that starts
+The `slice?` function attempts to return a sub-sequence of `sequence_A` that starts
 at `left-position` (inclusive), and ends at `right-position`
 (non-inclusive).
 
@@ -754,25 +754,25 @@ Values in `sequence_A` are zero-based.  That is, the first item in `sequence_A`
 is at index 0. 
 
 **Rationale:** This method facilitates parsing user-supplied encoded data, such
-as data from oracles and other off-chain services.  While a variant of `slice`
+as data from oracles and other off-chain services.  While a variant of `slice?`
 could be implemented entirely in Clarity, it would be much slower and much more
 expensive than supplying a native method.
 
 **Examples:**
 
 ```clarity
-(slice "blockstack" u5 u10) ;; Returns (some "stack")
-(slice (list 1 2 3 4 5) u5 u9) ;; Returns none
-(slice (list 1 2 3 4 5) u3 u4) ;; Returns (some (4))
-(slice "abcd" u0 u2) ;; Returns (some "ab")
-(slice "abcd" u1 u3) ;; Returns (some "bc")
-(slice "abcd" u2 u2) ;; Returns (some "")
-(slice "abcd" u3 u1) ;; Returns none
+(slice? "blockstack" u5 u10) ;; Returns (some "stack")
+(slice? (list 1 2 3 4 5) u5 u9) ;; Returns none
+(slice? (list 1 2 3 4 5) u3 u4) ;; Returns (some (4))
+(slice? "abcd" u0 u2) ;; Returns (some "ab")
+(slice? "abcd" u1 u3) ;; Returns (some "bc")
+(slice? "abcd" u2 u2) ;; Returns (some "")
+(slice? "abcd" u3 u1) ;; Returns none
 ```
 
-### New method: `string-to-int`
+### New method: `string-to-int?`
 
-* **Input Signature:** `(string-to-int (input (string-ascii|string-utf8)))`
+* **Input Signature:** `(string-to-int? (input (string-ascii|string-utf8)))`
 * **Output Signature:** `(optional int)`
 
 Converts a string, either `string-ascii` or `string-utf8`, to an
@@ -787,14 +787,14 @@ have been much more expensive to use.
 **Examples:**
 
 ```clarity
-(string-to-int "1") ;; Returns (some 1)
-(string-to-int u"-1") ;; Returns (some -1)
-(string-to-int "a") ;; Returns none
+(string-to-int? "1") ;; Returns (some 1)
+(string-to-int? u"-1") ;; Returns (some -1)
+(string-to-int? "a") ;; Returns none
 ```
 
-### New method: `string-to-uint`
+### New method: `string-to-uint?`
 
-* **Input Signature:** `(string-to-uint (input (string-ascii|string-utf8)))`
+* **Input Signature:** `(string-to-uint? (input (string-ascii|string-utf8)))`
 * **Output Signature:** `(optional uint)`
 
 Converts a string, either `string-ascii` or `string-utf8`, to an
@@ -809,9 +809,9 @@ have been much more expensive to use.
 **Examples:**
 
 ```clarity
-(string-to-uint "1") ;; Returns (some u1)
-(string-to-uint u"1") ;; Returns (some u1)
-(string-to-uint "a") ;; Returns none
+(string-to-uint? "1") ;; Returns (some u1)
+(string-to-uint? u"1") ;; Returns (some u1)
+(string-to-uint? "a") ;; Returns none
 ```
 
 ### New method: `int-to-ascii`
@@ -1006,12 +1006,12 @@ this check is of paramount importance to avoid loss-of-funds.
 (is-standard 'SZ2J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKQ9H6DPR) ;; returns false on both mainnet and testnet
 ```
 
-### New method: `to-consensus-buff`
+### New method: `to-consensus-buff?`
 
-* **Input Signature:** `(to-consensus-buff x)`
+* **Input Signature:** `(to-consensus-buff? x)`
 * **Output Signature:** `(optional buff))`
 
-The `to-consensus-buff` function is a special function that will serialize any
+The `to-consensus-buff?` function is a special function that will serialize any
 Clarity value into a buffer, using the SIP-005 serialization of the
 Clarity value. Not all values can be serialized: some value's
 consensus serialization is too large to fit in a Clarity buffer (this
@@ -1033,23 +1033,23 @@ off-chain.
 **Examples:**
 
 ```clarity
-(to-consensus-buff 1) ;; Returns (some 0x0000000000000000000000000000000001)
-(to-consensus-buff u1) ;; Returns (some 0x0100000000000000000000000000000001)
-(to-consensus-buff true) ;; Returns (some 0x03)
-(to-consensus-buff false) ;; Returns (some 0x04)
-(to-consensus-buff none) ;; Returns (some 0x09)
-(to-consensus-buff 'SZ2J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKQ9H6DPR) ;; Returns (some 0x051fa46ff88886c2ef9762d970b4d2c63678835bd39d)
-(to-consensus-buff { abc: 3, def: 4 }) ;; Returns (some 0x0c00000002036162630000000000000000000000000000000003036465660000000000000000000000000000000004)
+(to-consensus-buff? 1) ;; Returns (some 0x0000000000000000000000000000000001)
+(to-consensus-buff? u1) ;; Returns (some 0x0100000000000000000000000000000001)
+(to-consensus-buff? true) ;; Returns (some 0x03)
+(to-consensus-buff? false) ;; Returns (some 0x04)
+(to-consensus-buff? none) ;; Returns (some 0x09)
+(to-consensus-buff? 'SZ2J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKQ9H6DPR) ;; Returns (some 0x051fa46ff88886c2ef9762d970b4d2c63678835bd39d)
+(to-consensus-buff? { abc: 3, def: 4 }) ;; Returns (some 0x0c00000002036162630000000000000000000000000000000003036465660000000000000000000000000000000004)
 ```
 
-### New method: `from-consensus-buff`
+### New method: `from-consensus-buff?`
 
-* **Input Signature:** `(from-consensus-buff type-signature buff)`
+* **Input Signature:** `(from-consensus-buff? type-signature buff)`
 * **Output Signature:** `(optional t)`
 
-The `from-consensus-buff` function is a special function that will deserialize a
+The `from-consensus-buff?` function is a special function that will deserialize a
 buffer into a Clarity value, using the SIP-005 serialization of the
-Clarity value. The type that `from-consensus-buff` tries to deserialize
+Clarity value. The type that `from-consensus-buff?` tries to deserialize
 into is provided by `type-signature`. If it fails
 to deserialize the `buff` argument to this type, the method returns `none`.
 Note that the given `buff` argument cannot represent more than 1 MB of data.
@@ -1067,22 +1067,22 @@ send them to the smart contract on their behalf.
 **Examples:**
 
 ```clarity
-(from-consensus-buff int 0x0000000000000000000000000000000001) ;; Returns (some 1)
-(from-consensus-buff uint 0x0000000000000000000000000000000001) ;; Returns none
-(from-consensus-buff uint 0x0100000000000000000000000000000001) ;; Returns (some u1)
-(from-consensus-buff bool 0x0000000000000000000000000000000001) ;; Returns none
-(from-consensus-buff bool 0x03) ;; Returns (some true)
-(from-consensus-buff bool 0x04) ;; Returns (some false)
-(from-consensus-buff principal 0x051fa46ff88886c2ef9762d970b4d2c63678835bd39d) ;; Returns (some SZ2J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKQ9H6DPR)
-(from-consensus-buff { abc: int, def: int } 0x0c00000002036162630000000000000000000000000000000003036465660000000000000000000000000000000004) ;; Returns (some (tuple (abc 3) (def 4)))
+(from-consensus-buff? int 0x0000000000000000000000000000000001) ;; Returns (some 1)
+(from-consensus-buff? uint 0x0000000000000000000000000000000001) ;; Returns none
+(from-consensus-buff? uint 0x0100000000000000000000000000000001) ;; Returns (some u1)
+(from-consensus-buff? bool 0x0000000000000000000000000000000001) ;; Returns none
+(from-consensus-buff? bool 0x03) ;; Returns (some true)
+(from-consensus-buff? bool 0x04) ;; Returns (some false)
+(from-consensus-buff? principal 0x051fa46ff88886c2ef9762d970b4d2c63678835bd39d) ;; Returns (some SZ2J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKQ9H6DPR)
+(from-consensus-buff? { abc: int, def: int } 0x0c00000002036162630000000000000000000000000000000003036465660000000000000000000000000000000004) ;; Returns (some (tuple (abc 3) (def 4)))
 ```
 
-### New method: `replace-at`
+### New method: `replace-at?`
 
-* **Input Signature:** `(replace-at (x (sequence Y)) (i uint) (value Y))`
+* **Input Signature:** `(replace-at? (x (sequence Y)) (i uint) (value Y))`
 * **Output Signature:** `(optional (sequence Y))`
 
-The `replace-at` function takes in a sequence, an index, and an element, 
+The `replace-at?` function takes in a sequence, an index, and an element,
 and returns a new sequence with the data at the index position replaced with the given element. 
 
 The supported sequence types are `string-ascii`, `string-utf8`, `buff`, and
@@ -1109,12 +1109,12 @@ make Clarity more approachable to new developers.
 **Examples:**
 
 ```clarity
-(replace-at u"ab" u1 u"c") ;; Returns (some u"ac")
-(replace-at 0x00112233 u2 0x44) ;; Returns (some 0x00114433)
-(replace-at "abcd" u3 "e") ;; Returns (some "abce")
-(replace-at (list 1) u0 10) ;; Returns (some (10))
-(replace-at (list (list 1) (list 2)) u0 (list 33)) ;; Returns (some ((33) (2)))
-(replace-at (list 1 2) u3 4) ;; Returns none
+(replace-at? u"ab" u1 u"c") ;; Returns (some u"ac")
+(replace-at? 0x00112233 u2 0x44) ;; Returns (some 0x00114433)
+(replace-at? "abcd" u3 "e") ;; Returns (some "abce")
+(replace-at? (list 1) u0 10) ;; Returns (some (10))
+(replace-at? (list (list 1) (list 2)) u0 (list 33)) ;; Returns (some ((33) (2)))
+(replace-at? (list 1 2) u3 4) ;; Returns none
 ```
 
 ### New global: `tx-sponsor?`
@@ -1151,6 +1151,18 @@ limited to) subnets.
 subnets are instances of Stacks.  Enabling smart contracts to differentiate
 between which environments they run in would empower developers to add
 (or rely on) chain-specific features.
+
+### Added method alias: `element-at?`
+
+This method aliases the existing method `element-at`, which returns the element at the specified index in the provided sequence.
+
+**Rationale**: This alias is added so that there is consistent usage of the `?` suffix in builtin Clarity methods (used when the return value is a `response` or an `optional`). `element-at` from Clarity1 is left for compatibility, though tools should encourage use of the new spelling.
+
+### Added method alias: `index-of?`
+
+This method aliases the existing method `index-of`, which returns the first index at which the specified item can be found in the provided sequence.
+
+**Rationale**: This alias is added so that there is consistent usage of the `?` suffix in builtin Clarity methods (used when the return value is a `response` or an `optional`). `index-of` from Clarity1 is left for compatibility, though tools should encourage use of the new spelling.
 
 ### New feature: Faster Clarity Parser
 
@@ -1548,7 +1560,7 @@ the mempool which is unmineable simply because the balance was ultimately too
 low.  Eliminating this class of errors with this alternative processing
 procedure is deemed to itself be beneficial to the user experience above and
 beyond what the original benefits offerred.  Furthermore, both the newly-added
-`to-consensus-buff` and `from-consensus-buff` Clarity functions and the
+`to-consensus-buff?` and `from-consensus-buff?` Clarity functions and the
 existence of sposnored transactions already enable users to send signed Clarity
 data to the Stacks blockchain without possessing any STX of their own.
 

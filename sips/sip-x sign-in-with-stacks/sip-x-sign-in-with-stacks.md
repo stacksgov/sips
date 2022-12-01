@@ -24,9 +24,9 @@ Discussions-To: https://github.com/stacksgov/sips
 
 # Abstract
 
-Web application often provide their services only to authenticated users. In
+Web applications often provide their services only to authenticated users. In
 Web2, this was done through username and password or federated logins. In Web3,
-users can proof their digital identity by cryptographically signing that the
+users can prove their digital identity by cryptographically signing that the
 user ownes the private key associated with that digital identity.
 
 SIP-018 defines the structure of signatures in general. This SIP defines the
@@ -52,12 +52,11 @@ Sign-In with Stacks works as follows:
 
 | name            | type                        | description                                                                                                                                                                        |
 | --------------- | --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| title           | (string-ascii 126)          | Must be the application's domain name (max 80) followed by ` wants you to sign in with your Stacks account`                                                                        |
-| address         | principal                   | The address of the signer                                                                                                                                                          |
+| domain           | (string-ascii 126)          | Must be the application's domain name (max 80) followed by ` wants you to sign in with your Stacks account`                                                                        |
+| address         | string-ascii                   | The address of the signer in CAPI-10 format, including the chain id.                                                                                                                                                          |
 | statement       | (string-ascii 80)           | (optional) Describes the terms and conditions the user agrees to by using the application.                                                                                         |
-| URI             | (string-ascii 80)           | An RFC 3986 URI referring to the resource that is the subject of the signing (as in the subject of a claim).                                                                       |
-| version         | uint                        | is the current version of the message, which MUST be X for this specification.                                                                                                     |
-| chain-id        | uint                        | (optional) the chain ID to which the session is bound. This must correspond to the version of the address.                                                                         |
+| uri             | (string-ascii 80)           | An RFC 3986 URI referring to the resource that is the subject of the signing (as in the subject of a claim).                                                                       |
+| version         | string                        | is the current version of the message, which MUST be X for this specification.                                                                                                     |
 | nonce           | (string-ascii 64)           | randomized token used to prevent replay attacks, at least 8 alphanumeric characters.                                                                                               |
 | issued-at       | (string-ascii 27)           | The ISO 8601 datetime string of the current time.                                                                                                                                  |
 | expiration-time | (string-ascii 27)           | (optional) The ISO 8601 datetime string that, if present, indicates when the signed authentication message is no longer valid.                                                     |
@@ -70,6 +69,9 @@ Sign-In with Stacks works as follows:
 TODO
 
 # Related work
+
+## Stacks Auth
+The Stacks authentication protocol uses a signed JWT with data similar to this SIP to authenticate the user to the app. However, this signed token contains data that should not be shared outside the app without the users' consent.
 
 ## Ethereum EIP4361
 

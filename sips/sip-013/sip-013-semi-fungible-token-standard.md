@@ -10,13 +10,13 @@ Consideration: Technical
 
 Type: Standard
 
-Status: Accepted
+Status: Ratified
 
 Created: 12 September 2021
 
 License: CC0-1.0
 
-Sign-off: 
+Sign-off: Jude Nelson <jude@stacks.org>, Brice Dobry <brice@hiro.so>
 
 Layer: Traits
 

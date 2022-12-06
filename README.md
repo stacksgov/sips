@@ -34,6 +34,7 @@ may submit a SIP.
   for Non-Fungible Tokens
 * [SIP-010](./sips/sip-010/sip-010-fungible-token-standard.md): Standard Trait Definition for Fungible Tokens
 * [SIP-012](./sips/sip-012/sip-012-cost-limits-network-upgrade.md):  Burn Height Selection for a Network Upgrade to Introduce New Cost-Limits
+* [SIP-013](./sips/sip-013/sip-013-semi-fungible-token-standard.md):  Standard Trait Definition for Semi-Fungible Tokens
 * [SIP-016](./sips/sip-016/sip-016-token-metadata.md): Metadata for Tokens
 
 ## How to Get Involved

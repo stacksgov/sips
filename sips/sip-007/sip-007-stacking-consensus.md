@@ -92,7 +92,7 @@ converting electricity and computing power to newly minted tokens, nor
 are they staking their cryptocurrency. Rather they use an existing PoW
 cryptocurrency to secure a new, separate blockchain.
 
-This SIP is currently a draft and proposes to change the mining
+This SIP proposes to change the mining
 mechanism of the Stacks blockchain from proof-of-burn (SIP-001) to
 proof-of-transfer.
 

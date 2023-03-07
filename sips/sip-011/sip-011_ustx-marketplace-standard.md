@@ -2,7 +2,7 @@
 
 SIP Number: 011
 
-Title: Standard for non-custodial Marketplace traits
+Title: The buy-in-ustx Standard for non-custodial Marketplace traits
 
 Authors: werner.btc (werner at stx.fan), Friedger, Mike, Jason and Jamil.
 

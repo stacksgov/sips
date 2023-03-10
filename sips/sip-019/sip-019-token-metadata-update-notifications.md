@@ -38,12 +38,13 @@ information in their applications.
 
 # Introduction
 
-Smart contracts that declare NFTs and FTs conform to a standard set of traits used to describe each
-token (see [SIP-009](../sip-009/sip-009-nft-standard.md) and
-[SIP-010](../sip-010/sip-010-fungible-token-standard.md)). One of these traits is `get-token-uri`,
-which should return a URI string that resolves to a token's metadata usually in the form of a JSON
-file. There is currently no defined structure for this data, and it is not considered to be
-immutable.
+Smart contracts that declare NFTs, FTs and SFTs conform to a standard set of traits used to describe
+each token (see [SIP-009](../sip-009/sip-009-nft-standard.md),
+[SIP-010](../sip-010/sip-010-fungible-token-standard.md) and
+[SIP-013](https://github.com/stacksgov/sips/blob/main/sips/sip-013/sip-013-semi-fungible-token-standard.md)).
+One of these traits is `get-token-uri`, which should return a URI string that resolves to a token's
+metadata usually in the form of a JSON file. There is currently no defined structure for this data,
+and it is not considered to be immutable.
 
 To illustrate a common use of `get-token-uri`, we'll look at the
 [`SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2`](https://explorer.stacks.co/txid/0x969192220b1c478ef9d18d1cd413d7c79fe02937a9b33af63d441bd5519d1715?chain=mainnet)
@@ -196,6 +197,26 @@ it shall call `print` with a tuple with the following structure:
 If a notification does not contain a value for `payload.token-ids`, it means it is requesting an
 update for all tokens.
 
+## Semi-Fungible Tokens
+
+When a contract needs to notify the network that metadata has changed for a **Semi-Fungible Token**,
+it shall call `print` with a tuple with the following structure:
+
+```clarity
+{ notification: "token-metadata-update", payload: { token-class: "sft", token-ids: (list u100, u101), contract-id: <token contract id> }}
+```
+
+| Key                   | Value                                                                  |
+|-----------------------|------------------------------------------------------------------------|
+| `notification`        | The string `"token-metadata-update"`                                   |
+| `payload.token-class` | The string `"sft"`                                                     |
+| `payload.contract-id` | The contract id (principal) of the contract that declared the tokens   |
+| `payload.token-ids`   | A list with the uint token ids that need to be refreshed               |
+| `payload.update-mode` | _[optional]_ Metadata update mode (see section below)                  |
+| `payload.ttl`         | _[optional]_ Time-to-live for `payload.update-mode: dynamic`           |
+
+Notifications for SFTs must include a value for `payload.token-ids`.
+
 ## Metadata update modes
 
 Applications may use tokens for very different purposes. Some of these could require none or very
@@ -230,8 +251,8 @@ reasonable amount of time between refreshes by adding an estimated value (define
 For a token metadata update notification to be considered valid by metadata indexers, it must meet
 the following requirements:
 
-1. Its payload structure should be correct whether it is updating a [FT](#fungible-tokens) or a
-   [NFT](#non-fungible-tokens).
+1. Its payload structure should be correct whether it is updating a [FT](#fungible-tokens), an
+   [NFT](#non-fungible-tokens) or an [SFT](#semi-fungible-tokens).
 1. Either the `contract_identifier` field of the contract event must be equal to the
    `payload.contract-id` (i.e., the event was produced by the contract that owns the metadata) or
    the transaction's `tx-sender` principal should match the principal contained in the

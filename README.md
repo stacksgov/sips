@@ -6,12 +6,9 @@ of the Stacks 2.0 blockchain.  The SIP process
 describes how to make a SIP and get it ratified.  Anyone in the Stacks community
 may submit a SIP.
 
-## SIPs in the Process of Being Activated
+## SIPs in the Process of Activation
 
-* [SIP-015](https://github.com/stacksgov/sips/pull/95): Stacks Upgrade of Proof-of-Transfer and Clarity
-* [SIP-018](https://github.com/stacksgov/sips/pull/57): Signed Structured Data
 * [SIP-019](https://github.com/stacksgov/sips/pull/72): Notifications for Token Metadata Updates
-* [SIP-020](https://github.com/stacksgov/sips/pull/106): Bitwise Operations in Clarity
 
 ## Ratified SIPs
 
@@ -35,7 +32,10 @@ may submit a SIP.
 * [SIP-010](./sips/sip-010/sip-010-fungible-token-standard.md): Standard Trait Definition for Fungible Tokens
 * [SIP-012](./sips/sip-012/sip-012-cost-limits-network-upgrade.md):  Burn Height Selection for a Network Upgrade to Introduce New Cost-Limits
 * [SIP-013](./sips/sip-013/sip-013-semi-fungible-token-standard.md):  Standard Trait Definition for Semi-Fungible Tokens
+* [SIP-015](./sips/sip-015/sip-015-network-upgrade.md): Stacks Upgrade of Proof-of-Transfer and Clarity
 * [SIP-016](./sips/sip-016/sip-016-token-metadata.md): Metadata for Tokens
+* [SIP-018](./sips/sip-018/sip-018-signed-structured-data.md): Signed Structured Data
+* [SIP-020](./sips/sip-020/sip-020-bitwise-ops.md): Bitwise Operations in Clarity
 
 ## How to Get Involved
 

@@ -11,13 +11,13 @@ Consideration: Technical, Governance
 
 Type: Consensus
 
-Status: Activation-in-Progress
+Status: Ratified
 
 Created: 12 November 2022
 
 License: CC0-1.0
 
-Sign-off: Jason Schrader <jason@joinfreehold.com>, Jesse Wiley <jesse@stacks.org>
+Sign-off: Jason Schrader <jason@joinfreehold.com>, Jesse Wiley <jesse@stacks.org>, Jude Nelson <jude@stacks.org>
 
 Layer: Consensus (hard fork)
 

@@ -34,6 +34,7 @@ may submit a SIP.
 * [SIP-015](./sips/sip-015/sip-015-network-upgrade.md): Stacks Upgrade of Proof-of-Transfer and Clarity
 * [SIP-016](./sips/sip-016/sip-016-token-metadata.md): Metadata for Tokens
 * [SIP-018](./sips/sip-018/sip-018-signed-structured-data.md): Signed Structured Data
+* [SIP-020](./sips/sip-020/sip-020-bitwise-ops.md): Bitwise Operations in Clarity
 
 ## How to Get Involved
 

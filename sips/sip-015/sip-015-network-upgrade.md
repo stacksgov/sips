@@ -24,7 +24,7 @@ Consideration: Technical, Governance, Economics
 
 Type: Consensus
 
-Status: Activation-in-Progress
+Status: Ratified
 
 Created: 1 December 2021
 
@@ -1898,7 +1898,16 @@ A copy of the scripts used to tabulate the solo and pool stacking can be found
 
 The reference implementation of this SIP can be found in the `develop` branch of
 the Stacks blockchain reference implementation.  It is available at
-https://github.com/stacks-network/stacks-blockchain/tree/develop.
+https://github.com/stacks-network/stacks-blockchain.
+
+## Errata
+
+The reference implementation is known to have the following inconsistencies with
+SIP-015:
+
+* `get-burn-block-info?` only returns data for Bitcoin blocks of the grandparent
+  block.  It does not return data for the parent of the block in which it is
+evaluated.
 
 # References
 

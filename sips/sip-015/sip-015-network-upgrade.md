@@ -973,7 +973,7 @@ to interact with exchanges that follow this convention.
 
 ```clarity
 (as-contract
-  (stx-transfer? u50 'SP3X6QWWETNBZWGBK6DRGTR1KX50S74D3433WDGJY tx-sender 0x00)) ;; Returns (err u4)
+  (stx-transfer-memo? u50 'SP3X6QWWETNBZWGBK6DRGTR1KX50S74D3433WDGJY tx-sender 0x00)) ;; Returns (err u4)
 (stx-transfer-memo? u60 tx-sender 'SP3X6QWWETNBZWGBK6DRGTR1KX50S74D3433WDGJY 0x010203) ;; Returns (ok true)
 ```
 

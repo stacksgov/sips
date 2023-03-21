@@ -6,7 +6,7 @@ of the Stacks 2.0 blockchain.  The SIP process
 describes how to make a SIP and get it ratified.  Anyone in the Stacks community
 may submit a SIP.
 
-## SIPs in the Process of Activation
+## SIPs in the Process of Being Activated
 
 * [SIP-019](https://github.com/stacksgov/sips/pull/72): Notifications for Token Metadata Updates
 

@@ -10,13 +10,13 @@ Consideration: Technical
 
 Type: Standard
 
-Status: Activation-in-Progress
+Status: Ratified
 
 Created: 28 December 2021
 
 License: CC0-1.0
 
-Sign-off:
+Sign-off: Jude Nelson <jude@stacks.org>
 
 Layer: Applications
 

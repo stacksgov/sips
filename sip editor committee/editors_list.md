@@ -7,6 +7,7 @@ Members:
 - Binaya.btc <binayatripathi@gmail.com>
 - cargocult <cargocultstacks@gmail.com>
 - Cryptocracy.btc
+- Cyle.btc <cyle.witruk@ccwtechnologies.com>
 - dartman.btc
 - DeeList <DeeList.btc.us@gmail.com>
 - j2p2 <i.digg.tech@gmail.com>
@@ -32,6 +33,7 @@ Invite tree:
      * Binaya.btc
      * cargocult
      * Cryptocracy.btc
+     * Cyle.btc
      * dartman.btc
      * DeeList
      * j2p2
@@ -57,6 +59,8 @@ Advocating for Stacks tech to fully inherit Bitcoin hash power where an individu
 **cargocult**: Software Engineer, C/C++/Clojure/Clarity - former software engineer for a variety of trading companies over a 10+ year period.  Currently working in a more traditional software engineering role using Clojure/Scala.  Given my background, I have a fair amount of knowledge of the technical and practical functioning of electronic capital marketplaces.  Beyond advancing the general BTC/STX ecosystem, my main area of interest revolves around how these technologies interest with traditional finance systems.
 
 **Cryptocracy.btc**: I have been working with Stacks since 2016. Developed previous projects on older versions of Blockstack, was among the first developers to implement sending BTC by Name. Aside from the long history with developing with Stacks, I also worked as an admin of an ISP and telephone company for the greater part of a decade. Currently working with other developers to integrate existing functionality such as Mining and Stacking in the Derupt application.
+
+**Cyle.btc**: Tech-interested since a young age, started developing at 11yrs old and never stopped. Extensive experience in architecture, infrastructure (networking, servers & cloud), and many years of professional programming experience. I have spent my last 10 years with more focus on IT management, however I constantly find myself drawn back to “the source”.  Relatively new to the crypto ecosystem, however, I believe strongly in its associated fundamentals. While there are a number of smart contract languages available on various blockchains, the potential that Stacks brings, being based on Bitcoin, has enticed me to become more involved in the project.
 
 **dartman.btc**: Blockstack's commitment to the "can't do evil" ethos caught dartman's attention, leading him to explore smart contract development with enthusiasm. His interest in smart contract development grew exponentially after discovering the power of Clarity and the value of the supportive community. As an active contributor to the Stacks ecosystem, he is eager to continue supporting the community and contributing to SIPs to make a positive impact.
 

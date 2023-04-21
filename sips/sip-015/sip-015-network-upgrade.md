@@ -30,7 +30,7 @@ Created: 1 December 2021
 
 License: BSD 2-Clause
 
-Sign-off: Brice Dobry <brice@hiro.so>, Jason Shrader <jason@joinfreedhold.com>,
+Sign-off: Brice Dobry <brice@hiro.so>, Jason Schrader <jason@joinfreehold.com>,
           MattyTokenomics, Jude Nelson <jude@stacks.org>
 
 Discussions-To: https://github.com/stacksgov/sips

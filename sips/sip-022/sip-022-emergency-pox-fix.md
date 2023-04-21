@@ -133,7 +133,7 @@ equal to the `total-ustx` field that was erroneously set in `stack-increase`.
 Considering these consequences with respect to the [blockchain catastrophic
 failure and recovery guidelines](https://github.com/stacksgov/sips/pull/10),
 this bug would be categorized as requiring an _immediate_ hard fork to rectify.
-THe network has not yet crashed, but it is in imminent danger of crashing and
+The network has not yet crashed, but it is in imminent danger of crashing and
 there is insufficient time to execute a fair, public SIP vote as has been customary for
 past hard forks. This SIP instead proposes that this hard fork activate at the
 start of the next reward cycle at the time of this writing.

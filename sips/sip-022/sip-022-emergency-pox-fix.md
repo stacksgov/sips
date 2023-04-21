@@ -200,7 +200,7 @@ that minted too much BTC.
 
 The activation of this SIP does _not_ mean that the ability to increase one's locked STX is 
 disabled.  The `delegate-stack-increase` function is not affected by this bug.
-Solo stackers who want to contineu increasing their locked STX will need to
+Solo stackers who want to continue increasing their locked STX will need to
 delegate their STX to an address they control, and use this API to increase
 their locked STX going forward.
 

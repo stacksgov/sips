@@ -62,9 +62,12 @@ SIP-001 describes some Seflish mining mitigation strategies. However, the curren
 mining suggests that a coalition of miners achieved that new miners are prevented from participating
 in mining through creating orphaned blocks.
 
+The proposed solution of this SIP was described in https://github.com/stacks-network/stacks-blockchain/issues/3657.
+
 Other solutions like pre-commit voting, fork temperature or mining off Bitcoin chain were 
 discussed [here](https://github.com/stacks-network/stacks/discussions/468) and 
 [here](https://forum.stacks.org/t/orphan-mev/14806).
+
 
 # Backwards Compatibility
 

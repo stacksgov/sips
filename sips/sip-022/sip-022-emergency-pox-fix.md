@@ -96,7 +96,7 @@ This bug was first triggered in the wild by Stacks transaction
 
 The immediate consequences for PoX of this bug being triggered are as follows:
 
-* The total STX locked to the PoX address owned by caller of `stack-increase`
+* The total STX locked to the PoX address owned by the caller of `stack-increase`
   will be potentially higher than the amount of STX that the caller possesses.
 The caller will receive PoX payouts _as if_ they had locked that much STX.  So,
 the caller receives undue BTC.
@@ -193,7 +193,7 @@ It is unusual that this SIP proposes two hard forks in rapid succession without
 a Stacker-based vote for activating the new rules.  The
 reason for this is because PoX must first be disabled prior to the start of
 reward cycle #58 in order to avert a network-wide
-crash.  This cannot be delayed, but there is insufficent time to prepare `pox-3`
+crash.  This cannot be delayed, but there is insufficient time to prepare `pox-3`
 or even execute a Stacker-based vote before this bug must be addressed.
 Therefore, the first hard fork must happen immediately.
 
@@ -216,7 +216,7 @@ would not be possible to retroactively compute the correct values for the
 tactic would require the node to calculate the correct values for
 `reward-cycle-pox-address-list` as the blocks in reward cycle #57 were
 processed, which in turn meant that nodes would need to boot from genesis to
-derive the correct data with which to repare the data map at the start of reward
+derive the correct data with which to repair the data map at the start of reward
 cycle #58.  There is insufficient time to implement, test, and deploy this
 approach.
 

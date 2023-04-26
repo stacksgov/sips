@@ -279,6 +279,6 @@ their Stacks 2.1 nodes to Stacks 2.2, and at least three days to upgrade from
 # Reference Implementation
 
 The reference implementation of this SIP can be found in the
-`feat/address-pox-increase` branch of
+`feat/sip-022-pox-disable` branch of
 the Stacks blockchain reference implementation.  It is available at
 https://github.com/stacks-network/stacks-blockchain.

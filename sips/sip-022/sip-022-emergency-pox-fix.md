@@ -53,7 +53,7 @@ account has locked STX.  The `stack-increase` function calls an internal functio
 the increase.
 
 The `increase-reward-cycle-entry` function has a bug in this code path.  The bug
-itself is annotated with a comment lines starting with "(BUG)".
+itself is annotated with comment lines starting with "(BUG)".
 
 ```clarity
 (let ((existing-entry (unwrap-panic (map-get? reward-cycle-pox-address-list { reward-cycle: reward-cycle, index: reward-cycle-index })))
@@ -144,7 +144,7 @@ start of the next reward cycle (#58) at the time of this writing.
 
 There is less than one reward cycle remaining to fix this
 problem, and yet a Stacker vote would require at least one complete reward cycle
-to carry out vote (not accounting for any additional time required for
+to carry out a vote (not accounting for any additional time required for
 sending out adequate public communications and tabulating the vote afterwards).
 A subsequent hard fork to re-enable PoX would have the effect of restoring
 Stacker voting.

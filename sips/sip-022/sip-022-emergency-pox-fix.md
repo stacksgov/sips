@@ -6,7 +6,10 @@ Title: Emergency Fix to PoX Stacking Increases
 
 Authors:
     Aaron Blankstein <aaron@hiro.so>,
-    Jude Nelson <jude@stacks.org>
+    Brice Dobry <brice@hiro.so>,
+    Friedger Mþffke <mail@friedger.de>,
+    Jude Nelson <jude@stacks.org>,
+    Pavitthra Pandurangan <pavi@stacks.org>,
 
 Consideration: Technical, Governance
 

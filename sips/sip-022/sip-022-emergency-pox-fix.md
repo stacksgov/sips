@@ -157,7 +157,7 @@ Given the lack of time to conduct a Stacker vote to activate this SIP, the
 proposed fix in this SIP is as parsimonious and discreet as possible.  It will
 execute as a set of **two hard forks**.
 
-The first hard fork, which activates at the start of reward cycle #58 will disable PoX.
+The first hard fork, which activates before the start of reward cycle #58, will disable PoX beginning with cycle #58.
 The `pox-2` contract will be considered defunct, just as the pre-2.1 `pox`
 contract is.  This hard fork would do the following:
 

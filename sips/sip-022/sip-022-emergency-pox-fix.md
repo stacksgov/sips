@@ -104,6 +104,10 @@ the caller receives undue BTC.
 * The stacking threshold is raised to account for the PoX contract's reported
   increase in STX locked.
 
+Similar consequences are expected when a stacker contributes to two different PoX addresses and 
+at least one PoX address would benefit from auto-unlocking. This behaviour has not been seen in the wild.
+
+
 Furthermore, if this bug is triggered enough times, the Stacks network will crash.  This is
 because of a runtime assertion in the PoX reward set calculation logic that
 verifies that the total locked STX does not exceed the total liquid STX.  This
@@ -171,12 +175,13 @@ implementation `pox-3`.  The `pox-3` contract code will:
 
 * Fix the aforementioned `stacks-increase` bug.
 
-* Add a `delegated-to` field in the `stacking-state` data map, so that the
-  `stacking-state` entry for a PoX user will indicate the principal to which
-their STX are delegated (if they are using delegated stacking).
+* Prevent stackers from contributing to two or more PoX addresses. In particular,
+    * Add a `delegated-to` field in the `stacking-state` data map, so that the 
+    `stacking-state` entry for a PoX user will indicate the principal to which 
+    their STX are delegated (if they are using delegated stacking).
 
-* Add checks to the delegated stacking public functions that validate the
-  `delegated-to` field in the Stacker's `stacking-state` map entry.
+    * Add checks to the delegated stacking public functions that validate the 
+    `delegated-to` field in the Stacker's `stacking-state` map entry.
 
 * Set the minimum required block-commit memo bits to `0x08`.  All block-commits
   after the Bitcoin block activation height must have a memo value of at least

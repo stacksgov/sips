@@ -214,7 +214,7 @@ expedient restoration.
 A less-disruptive alternative approach of repairing the
 `reward-cycle-pox-address-list` data map was considered.  This would have only
 required a single hard fork, and no disruption of PoX payouts (however,
-`stack-extend` would have been disabled).  This approach was ultimately dropped
+`stack-increase` would have been disabled).  This approach was ultimately dropped
 because of the interactions between delegated stacking and solo stacking -- it
 would not be possible to retroactively compute the correct values for the
 `reward-cycle-pox-address-list` data map.  This, in turn, meant that any repair

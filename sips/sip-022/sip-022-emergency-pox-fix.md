@@ -21,7 +21,7 @@ Created: 19 April 2023
 
 License: BSD 2-Clause
 
-Sign-off: 
+Sign-off: Brice Dobry <brice@hiro.so> (Technical CAB Chair)
 
 Discussions-To: https://github.com/stacksgov/sips
 

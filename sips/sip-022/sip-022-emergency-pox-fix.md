@@ -104,9 +104,8 @@ the caller receives undue BTC.
 * The stacking threshold is raised to account for the PoX contract's reported
   increase in STX locked.
 
-Similar consequences are expected when a stacker contributes to two different PoX addresses and 
-at least one PoX address would benefit from auto-unlocking. This behaviour has not been seen in the wild.
-
+Similar consequences are expected when a Stacker contributes to two different PoX addresses and 
+at least one PoX address would benefit from auto-unlocking. This behavior has not been seen in the wild.
 
 Furthermore, if this bug is triggered enough times, the Stacks network will crash.  This is
 because of a runtime assertion in the PoX reward set calculation logic that
@@ -156,7 +155,8 @@ proposed fix in this SIP is as parsimonious and discreet as possible.  It will
 execute as a set of **two hard forks**.
 
 The first hard fork, which activates at the start of reward cycle #58 will disable PoX.
-This hard fork would do the following:
+The `pox-2` contract will be considered defunct, just as the pre-2.1 `pox`
+contract is.  This hard fork would do the following:
 
 * Prevent all stacking functions from being called in `pox-2`.  The `pox-2`
   contract would be considered defunct, like the `pox` contract is now.
@@ -170,12 +170,16 @@ be able to mine in Stacks 2.2.
   nodes that do not upgrade to Stacks 2.2 will not be able to talk to Stacks
 2.2 nodes.
 
-The second hard fork will deactivate `pox-2` and instantiate a new PoX
-implementation `pox-3`.  The `pox-3` contract code will:
+* Set the testnet peer network version bits to `0xfacade07`.  This ensures that
+  testnet follower nodes that do not upgrade to Stacks 2.2 will not be able to
+talk to Stacks 2.2 nodes.
+
+The second hard fork will instantiate a new PoX
+implementation `pox-3`. The `pox-3` contract code will:
 
 * Fix the aforementioned `stacks-increase` bug.
 
-* Prevent stackers from contributing to two or more PoX addresses. In particular,
+* Prevent Stackers from contributing to two or more PoX addresses. In particular,
     * Add a `delegated-to` field in the `stacking-state` data map, so that the 
     `stacking-state` entry for a PoX user will indicate the principal to which 
     their STX are delegated (if they are using delegated stacking).
@@ -191,6 +195,10 @@ be able to mine in Stacks 2.3.
 * Set the mainnet peer network version bits to `0x18000008`.  This ensures that follower
   nodes that do not upgrade to Stacks 2.3 will not be able to talk to Stacks
 2.3 nodes.
+
+* Set the testnet peer network version bits to `0xfacade08`.  This ensures that
+  testnet follower nodes that do not upgrade to Stacks 2.3 will not be able to
+talk to Stacks 2.3 nodes.
 
 ## Alternative Approaches Considered
 

@@ -26,10 +26,10 @@ Discussions-To: https://github.com/stacksgov/sips
 # Abstract
 
 On 1 May 2023, it was discovered that pre-2.1 contracts exposing public methods with
-trait arguments could not be invoked with previously working trait implementating
+trait arguments could not be invoked with previously working trait-implementing
 contract arguments.
 
-This bug was caused by the activation of Stacks Epoch 2.2.
+This bug was caused by the activation of Stacks Epoch 2.2 (https://github.com/stacksgov/sips/blob/main/sips/sip-022/sip-022-emergency-pox-fix.md).
 
 This SIP proposes an **immediate consensus-breaking change** to
 introduce a new Stacks Epoch 2.3 that corrects this regression.
@@ -52,7 +52,7 @@ method performed an exact check for the current epoch:
     }
 ```
 
-Therefore, a Pre-2.1 with trait arguments that is invoked in Epoch 2.2
+Therefore, a pre-2.1 function with trait arguments that is invoked in Epoch 2.2
 will fail to canonicalize its trait arguments, and abort with a
 runtime error.
 

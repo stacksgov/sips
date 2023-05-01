@@ -20,10 +20,9 @@ Sign-off: -
 
 # Abstract
 
-Multisig transactions work by requiring multiple private keys to sign off on a transaction before it can be executed on the Stacks network. For example, a Stacks wallet may require two out of three private keys to be used in order to authorize a transaction. This means that all three parties involved in the transaction must agree to the terms of the transaction and sign off on it before the funds can be moved. Overall, multisig transactions provide an extra layer of security and control over Stacks transactions, making them a valuable tool for anyone looking to protect their funds.
+Multisig transactions require multiple private keys to sign off on a transaction before it can be executed on the Stacks network. For example, a Stacks wallet may require the use of two out of three private keys to authorize a transaction. This means that multiple parties involved in the transaction must agree to the terms of the transaction and sign off on it before the funds can be transferred. Multisig transactions offer an additional layer of security and control over Stacks transactions, making them an essential tool for anyone looking to safeguard their funds.
 
-For such transactions to be really flexible and useful for common users, DAOs, dApps, and companies - it is important for signatures to be order-independent. Current restrictions in signature orders prevent multisignature solutions to emerge.
-
+For these transactions to be genuinely flexible and useful for common users, DAOs, dApps, and Stacks ecosystem projects, it is essential for signatures to be order-independent. Current restrictions on signature orders impede the emergence of multisignature solutions. Implementing this feature will result in an easier user experience and increased security when using Multisig wallets within the Stacks ecosystem. This will provide a user-friendly approach for multiple parties to cooperate in a secure environment to participate in Staking STX, Treasury Management for DAOs, and interact with dApps.
 
 # License and Copyright
 

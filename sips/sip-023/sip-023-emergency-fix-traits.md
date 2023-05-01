@@ -54,7 +54,7 @@ method performed an exact check for the current epoch:
 
 Therefore, a pre-2.1 function with trait arguments that is invoked in Epoch 2.2
 will fail to canonicalize its trait arguments, and abort with a
-runtime error. More specifically, a contract call transaction will be rejected by the mempool
+runtime error. Specifically, if a miner includes a contract call transaction in a block, it will be rejected by the mempool
 with a type error, and a read-only call will fail with a runtime error.
 
 # Specification

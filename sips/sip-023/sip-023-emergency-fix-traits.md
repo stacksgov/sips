@@ -25,23 +25,29 @@ Discussions-To: https://github.com/stacksgov/sips
 
 # Abstract
 
-On 1 May 2023, it was discovered that pre-2.1 contracts exposing public methods with
+On 1 May 2023, it was discovered that smart contracts deployed prior to Stacks 2.1
+that exposed public methods with
 trait arguments could not be invoked with previously working trait-implementing
 contract arguments.
 
 This bug was caused by the activation of Stacks Epoch 2.2 (https://github.com/stacksgov/sips/blob/main/sips/sip-022/sip-022-emergency-pox-fix.md).
 
 This SIP proposes an **immediate consensus-breaking change** to
-introduce a new Stacks Epoch 2.3 that corrects this regression.
+introduce a new Stacks epoch 2.3 that corrects this regression.
 
 **This SIP proposes a Bitcoin activation height of 788,287**
 
-# Epoch 2.2 Bug Behavior
+# Introduction
 
-Stacks Epoch 2.1 introduced a new type checker and type system which
+Clarity 2, introduced in Stacks 2.1, includes a new type checker and type system which
 impacts trait invocations. In order for existing contracts to remain
-compatible, their types must be _canonicalized_. The canonicalization
-method performed an exact check for the current epoch:
+compatible, their types must be _canonicalized_. In the context of traits, 
+the type canonicalization rules implement the new trait semantics introduced in
+[SIP-015](./sips/sip-015/sip-015-network-upgrade.md).
+
+## Epoch 2.2 Bug Behavior
+
+The type canonicalization method performed an exact check for the current epoch:
 
 ```rust
     pub fn canonicalize(&self, epoch: &StacksEpochId) -> TypeSignature {
@@ -52,19 +58,44 @@ method performed an exact check for the current epoch:
     }
 ```
 
-Therefore, a pre-2.1 function with trait arguments that is invoked in Epoch 2.2
+Therefore, a pre-2.1 function with trait arguments that is invoked in Stacks 2.2
 will fail to canonicalize its trait arguments, and abort with a
-runtime error. Specifically, if a miner includes a contract call transaction in a block, it will be rejected by the mempool
-with a type error, and a read-only call will fail with a runtime error.
+runtime analysis error. Specifically:
+
+* If a miner includes a contract call transaction with trait arguments in a block, the transaction will abort with a runtime error.
+
+* If a user submits a contract call transaction with trait arguments to the
+  mempool, it will be rejected.
+
+* A read-only contract-call with trait arguments will fail with a runtime
+  analysis error.
 
 # Specification
 
-The Epoch 2.3 hard fork will do the following:
+This hard fork will do the following:
 
-* Update the `canonicalize()` method to match on all epochs, setting
-  the Epoch 2.3 behavior to `self.canonicalize_v2_1()`, and the Epoch
-  2.2 behavior to `self.clone()`.
-  
+* In epoch 2.2, the current buggy behavior will be preserved.  All
+  contract-calls with trait arguments must fail with a runtime analysis error.
+
+* In epoch 2.3, the desired behavior will be restored.  The trait semantics
+  described in SIP-015 will be restored, and trait arguments in
+  contract-calls will be treated as they were in Stacks 2.1.
+
+* Set the minimum required block-commit memo bits to `0x08`.  All block-commits
+  after the Bitcoin block activation height must have a memo value of at least
+`0x08`.  This ensures that miners that do not upgrade from Stacks 2.2 will not
+be able to mine in Stacks 2.3.
+
+* Set the mainnet peer network version bits to `0x18000008`.  This ensures that follower
+  nodes that do not upgrade to Stacks 2.3 will not be able to talk to Stacks
+2.3 nodes.
+
+* Set the testnet peer network version bits to `0xfacade08`.  This ensures that
+  testnet follower nodes that do not upgrade to Stacks 2.3 will not be able to
+talk to Stacks 2.3 nodes.
+
+The reference implementation will update the `canonicalize()` method to match on all epochs, setting
+the epoch 2.3 behavior to `self.canonicalize_v2_1()`, and the epoch 2.2 behavior to `self.clone()`.
 This will preserve the buggy 2.2 behavior during the 2.2 epoch (so that the
 hard fork does not require rollback), but fix the behavior after activation
 of the 2.3 epoch.
@@ -75,7 +106,6 @@ Several potential workarounds were explored first to try to solve this issue wit
 Unfortunately, attempts to wrap pre-2.1 contracts with 2.2 contracts can avoid the mempool rejection, 
 but still hit the same error in the form of a runtime type-checker error. 
 Upon further inspection into the code paths, a hard-fork option was determined to be the only viable option in this case.
-
 
 Consensus bugs requiring immediate attention such as this
 have been detected and fixed in other blockchains.  In the

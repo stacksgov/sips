@@ -35,7 +35,7 @@ This bug was caused by the activation of Stacks Epoch 2.2 (https://github.com/st
 This SIP proposes an **immediate consensus-breaking change** to
 introduce a new Stacks epoch 2.3 that corrects this regression.
 
-**This SIP proposes a Bitcoin activation height of 788,287**
+**This SIP proposes a Bitcoin activation height of 788,240**
 
 # Introduction
 

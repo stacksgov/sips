@@ -71,6 +71,12 @@ of the 2.3 epoch.
 
 # Related Work
 
+Several potential workarounds were explored first to try to solve this issue without a hard-fork. 
+Unfortunately, attempts to wrap pre-2.1 contracts with 2.2 contracts can avoid the mempool rejection, 
+but still hit the same error in the form of a runtime type-checker error. 
+Upon further inspection into the code paths, a hard-fork option was determined to be the only viable option in this case.
+
+
 Consensus bugs requiring immediate attention such as this
 have been detected and fixed in other blockchains.  In the
 absence of a means of gathering user comments on proposed fixes, the task of

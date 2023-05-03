@@ -46,10 +46,14 @@ This SIP would constitute two consensus-rules version bumps.  During cycle #58, 
 version would be Stacks 2.2.  During and after cycle #59, the system would be
 Stacks 2.3.
 
-# Introduction
+# Addendum
 
-**Note**: [SIP-023](./sips/sip-023/sip-023-emergency-fix-traits.md), which was accepted by the required CAB's on May 2nd, 2023 necessitates some changes to this SIP. The changes introduced in [SIP-023](./sips/sip-023/sip-023-emergency-fix-traits.md) are in response to a bug introduced by the first hard fork here, referred to later in this SIP as `Stacks 2.2`. To address the issue, an intermediary version `Stacks 2.3` was created which supercedes the second hard fork as defined here. 
-As a result, the second hard fork defined later in this SIP, `Stacks 2.3` **is changed to `Stacks 2.4`** due to the intermediary release required as a result of the first hard fork here, `Stacks 2.2`.
+*The following was added after this SIP was accepted, where some version number changes were necessary. The following section addresses these changes **without** changing the ratified text* 
+
+[SIP-023](./sips/sip-023/sip-023-emergency-fix-traits.md), which was accepted by the required CAB's on May 2nd, 2023 necessitates some changes to this SIP. The changes introduced in [SIP-023](./sips/sip-023/sip-023-emergency-fix-traits.md) are in response to a bug introduced by the first hard fork, referred to later in this SIP as `Stacks 2.2`. To address the issue, an intermediary version `Stacks 2.3` was created which supercedes the second hard fork as defined here. 
+As a result, the second hard fork defined later in this SIP, `Stacks 2.3` **is now changed to `Stacks 2.4`** due to the intermediary release required as a result of the first hard fork `Stacks 2.2`.
+
+# Introduction
 
 [SIP-015](./sips/sip-015/sip-015-network-upgrade.md) proposed a new PoX smart
 contract, `pox-2`, which included a new public function `stack-increase`.  This

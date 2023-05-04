@@ -19,7 +19,7 @@ Created: 1 May 2023
 
 License: BSD 2-Clause
 
-Sign-off: 
+Sign-off: Jesse Wiley <jesse@stacks.org> (Acting Technical CAB Chair), Jason Schrader <jason@joinfreehold.com> (Governance CAB Chair)
 
 Discussions-To: https://github.com/stacksgov/sips
 

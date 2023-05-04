@@ -13,7 +13,7 @@ Consideration: Technical, Governance
 
 Type: Consensus
 
-Status: Draft
+Status: Accepted
 
 Created: 1 May 2023
 

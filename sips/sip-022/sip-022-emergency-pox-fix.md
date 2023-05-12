@@ -68,7 +68,7 @@ Current text:
 > The second hard fork will take effect 200 Bitcoin blocks prior to the start of reward cycle #59, which is Bitcoin block height 789751.
 
 Is now changed to the following:
-> The second hard fork will take effect 500 Bitcoin blocks prior to the start of the prepare phase for cycle #60, which is Bitcoin block height 791551.
+> The second hard fork will take effect 400 Bitcoin blocks prior to the start of the prepare phase for cycle #60, which is Bitcoin block height 791551.
 
 
 The 3 values changed:

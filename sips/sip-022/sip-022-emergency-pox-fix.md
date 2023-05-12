@@ -54,8 +54,30 @@ Stacks 2.3.
 As a result, the second hard fork defined later in this SIP, `Stacks 2.3` **is now changed to `Stacks 2.4`** due to the intermediary release required as a result of the first hard fork `Stacks 2.2`. 
 
 In addition to the version number change, [SIP-023](./sips/sip-023/sip-023-emergency-fix-traits.md) also necessitates a change to the peer network version defined later in this SIP as follows:
+
 * Change the mainnet peer network version bits from `0x18000008` to `0x18000009`. 
 * Change the testnet peer network version bits from `0xfacade08` to `0xfacade09`. 
+
+# Addendum II
+
+_The following was added after this SIP was accepted to reflect the updated activation height for cycle 60, where the current text addresses cycle 59 activation height. The following section addresses these changes **without** changing the ratified text_
+
+[SIP-023](./sips/sip-023/sip-023-emergency-fix-traits.md), which was accepted by the required CAB's on May 2nd, 2023 defines specific [activation criteria](./sips/sip-022/sip-022-emergency-pox-fix.md#activation) for cycle #59. As a result of more testing being done prior to the release, this window shall be missed and the new target activation will be in cycle #60, or Bitcoin block `792051`.
+
+Current text:
+> The second hard fork will take effect 200 Bitcoin blocks prior to the start of reward cycle #59, which is Bitcoin block height 789751.
+
+Is now changed to the following:
+> The second hard fork will take effect 500 Bitcoin blocks prior to the start of the prepare phase for cycle #60, which is Bitcoin block height 791551.
+
+
+The 3 values changed:
+
+- Reward cycle is changing from `59` to `60`
+- Activation height is change from `789751` to `791551 `
+- Blocks prior to activation height for the start of the reward cycle is changed from `200` to `400` to allow more time for contract deployments and stacking transactions
+
+
 
 # Introduction
 

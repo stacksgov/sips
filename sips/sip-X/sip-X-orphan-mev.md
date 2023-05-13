@@ -1,6 +1,6 @@
 # Preamble
 
-SIP Number: 023
+SIP Number: X
 
 Title: Fix to Orphan MEV
 
@@ -34,7 +34,7 @@ This SIP proposes an **consensus-breaking change** that increases the cost for
 miners to create orphan blocks.
 
 This SIP would constitute a consensus-rules version bump. The resulting system
-version would be Stacks 2.3.
+version would be Stacks 2.5.
 
 # Introduction
 
@@ -52,8 +52,13 @@ be added:
 * The coinbase reward is NOT distributed to the leader who mined the block if there exists
   a Stacks block mined in the previous Bitcoin block that is not part of the canonical chain.
 
-Furthermore, the peer network version bits to `0x18000008`.  This ensures that follower 
-nodes that do not upgrade to Stacks 2.3 will not be able to talk to Stacks 2.3 nodes.
+Furthermore, the network should get a new version. 
+
+* Set the minimum required block-commit memo bits to 0x0a. All block-commits after the Bitcoin block activation height must have a memo value of at least 0x08. This ensures that miners that do not upgrade from Stacks 2.4 will not be able to mine in Stacks 2.5.
+
+* Set the mainnet peer network version bits to 0x1800000a. This ensures that follower nodes that do not upgrade to Stacks 2.5 will not be able to talk to Stacks 2.5 nodes.
+
+* Set the testnet peer network version bits to 0xfacade0a. This ensures that testnet follower nodes that do not upgrade to Stacks 2.5 will not be able to talk to Stacks 2.5 nodes.
 
 
 # Related Work
@@ -76,12 +81,12 @@ It does not affect database schemas or chain state semantics.
 
 # Activation
 
-The SIP shall be activated at the same block height as SIP 22 is activated.
+The SIP shall be activated ...
 
-The node software for Stacks 2.3 shall be merged to the `master` branch of the
+The node software for Stacks 2.5 shall be merged to the `master` branch of the
 reference implementation no later than three days prior to the activation
 height.  This means that everyone shall have at least three days to upgrade
-their Stacks 2.2 nodes to Stacks 2.3.
+their Stacks 2.4 nodes to Stacks 2.5.
 
 # Reference Implementation
 

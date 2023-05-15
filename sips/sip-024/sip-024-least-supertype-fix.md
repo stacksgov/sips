@@ -48,20 +48,18 @@ to be included in lists with tuples with fewer fields:
 ```
 
 The Clarity runtime will treat each item of this list as if it only
-had the field `a`. This creates an issue for database reads and writes.
+had the field `a`, which creates an issue for the database on reads and writes.
 On database reads, the Clarity database checks if the found type
 matches the expected type, and discovers a mismatch. This mismatch
-led to the DoS on 8 May 2023, and was fixed by converting the node
+led to a DoS on 8 May 2023, and was fixed by converting the node
 crash into a transaction invalidation.
 
 However, transaction invalidation is _not_ sufficient as a long-term
-solution:
+solution due to the following:
 
 1. Miners must be able to charge for these kinds of failures
 2. Contracts which do not directly rely on this behavior could still
-   receive buggy values because of the behavior. They should not
-   have storage failures because of buggy values they could not
-   control.
+   receive buggy values because of the behavior (which could lead to storage failures).
 
 # Specification
 
@@ -91,21 +89,21 @@ matter of hours.
 Everyone who runs a 2.3 node will be able to run a Stacks 2.4 node 
 off of their existing chainstate. There are no changes to the chainstate database schemas in this SIP.
 
-Stacks 2.4 nodes will not interact with Stacks 2.1 nodes on the peer network after the 
-Bitcoin block activation height passes. In addition, Stacks 2.4 nodes
+Stacks 2.4 nodes will not interact with Stacks 2.3 nodes on the peer network (defined in SIP-022)
+after the Bitcoin block activation height of `791551`. In addition, Stacks 2.4 nodes
 will ignore block-commits from Stacks 2.3 nodes (as well as from nodes on prior versions). 
 Similar changes were made for Stacks 2.05 and Stacks 2.1 to ensure that the new network
 cleanly separates from stragglers still following the old rules.
 
 # Activation 
 The changes described in this SIP will ship in the same release as the changes described in SIP-022, which discusses
-a proposes a fix to the proof of transfer protocol.
+and proposes a fix to the proof of transfer protocol.
 
-This release will ship 400 blocks prior to reward cycle 60, which is Bitcoin block height 791,651. 
-This gives stackers ample time (almost 3 days) to stack through the new contract. 
+This release will ship 500 blocks prior to reward cycle 60, which is Bitcoin block height 791,551. 
+This gives stackers ample time (~3 days) to stack through the new contract. 
 
 The node software for Stacks 2.4 shall be merged to the `master` branch of the
-reference implementation no later than three days prior to the activation
+reference implementation no later than four days prior to the activation
 height.  This means that everyone shall have at least three days to upgrade
 their Stacks 2.3 nodes to Stacks 2.4. This change does not require a sync from genesis.
 

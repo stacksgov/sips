@@ -109,5 +109,5 @@ their Stacks 2.3 nodes to Stacks 2.4. This change does not require a sync from g
 
 # Reference Implementation
 The reference implementation of this SIP can be found in the
-[TODO] branch of the Stacks blockchain reference implementation.  It is available at
+`feat/epoch-2.4-sanitize` branch of the Stacks blockchain reference implementation.  It is available at
 https://github.com/stacks-network/stacks-blockchain.

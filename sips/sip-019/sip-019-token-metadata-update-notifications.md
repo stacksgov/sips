@@ -10,13 +10,13 @@ Consideration: Technical
 
 Type: Standard
 
-Status: Activation-in-Progress
+Status: Ratified
 
 Created: 17 May 2022
 
 License: GPL-3.0
 
-Sign-off: Jude Nelson (jude@stacks.org), Aaron Blankstein (aaron@hiro.so)
+Sign-off: Jude Nelson (jude@stacks.org), Aaron Blankstein (aaron@hiro.so), Marvin Janssen (http://github.com/MarvinJanssen)
 
 Layer: Traits
 

@@ -20,7 +20,7 @@ Created: 11 May 2023
 
 License: BSD 2-Clause
 
-Sign-off: Jason Shrader <jason@joinfreehold.com> (Governance CAB Chair), Brice Dobry <brice@hiro.so> (Technical CAB Chair), Jude Nelson <jude@stacks.org> (Steering Committee Chair)
+Sign-off: Jason Schrader <jason@joinfreehold.com> (Governance CAB Chair), Brice Dobry <brice@hiro.so> (Technical CAB Chair), Jude Nelson <jude@stacks.org> (Steering Committee Chair)
 
 Discussions-To: https://github.com/stacksgov/sips
 

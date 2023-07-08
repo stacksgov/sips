@@ -14,13 +14,13 @@ Consideration: Technical, Governance
 
 Type: Consensus
 
-Status: Draft
+Status: Ratified
 
 Created: 11 May 2023
 
 License: BSD 2-Clause
 
-Sign-off: 
+Sign-off: Jason Schrader <jason@joinfreehold.com> (Governance CAB Chair), Brice Dobry <brice@hiro.so> (Technical CAB Chair), Jude Nelson <jude@stacks.org> (Steering Committee Chair)
 
 Discussions-To: https://github.com/stacksgov/sips
 

@@ -13,13 +13,13 @@ Consideration: Technical, Governance
 
 Type: Consensus
 
-Status: Accepted
+Status: Ratified
 
 Created: 1 May 2023
 
 License: BSD 2-Clause
 
-Sign-off: Rafael Cárdenas <rafael@hiro.so> (SIP Editor), Jesse Wiley <jesse@stacks.org> (Acting Technical CAB Chair), Jason Schrader <jason@joinfreehold.com> (Governance CAB Chair)
+Sign-off: Rafael Cárdenas <rafael@hiro.so> (SIP Editor), Jesse Wiley <jesse@stacks.org> (Acting Technical CAB Chair), Jason Schrader <jason@joinfreehold.com> (Governance CAB Chair), Jude Nelson <jude@stacks.org> (Steering Committee Chair)
 
 Discussions-To: https://github.com/stacksgov/sips
 

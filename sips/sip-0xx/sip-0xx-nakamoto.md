@@ -29,6 +29,8 @@ The subsequent output(s) in this transaction are the PoX outputs:
    - If the number of remaining addresses in the reward set, N, is less than 20, then the producer set enrollment must burn BTC by including (20-N) burn outputs
 2. Otherwise, the second output must be a burn address.
 
+During a reward cycle, this enrollment transaction will include a somewhat large number of outputs: one `OP_RETURN`, twenty stacker rewards, and one change address, totaling 22 outputs. While this might seem like a substantial transaction, it effectively replaces ten separate transactions under the SIP-007 leader block commit scheme, each of which would have four outputs (one `OP_RETURN`, two stacker rewards, and one change address). Furthermore, the enrollment window's duration of ten blocks potentially allows would-be producers to take advantage of lower transaction fees during one of those blocks. Despite the higher fee for this larger transaction, the cost can be spread out or amortized across the ten blocks of the set, resulting in a lower overall cost compared to the previous system.
+
 ### Censorship Resistance
 
 The producer set enrollments for set _N_ can be included in any of the 10 Bitcoin blocks in producer set _N-2_. This makes it extremely difficult for a Bitcoin miner to censor these transactions, since to do so, they would need to control all 10 Bitcoin blocks in that term.

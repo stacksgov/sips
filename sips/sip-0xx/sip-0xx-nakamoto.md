@@ -47,4 +47,4 @@ During a term, producers in the set are eligible to receive a portion of the coi
 
 The producer set is then incentivized to continue producing blocks throughout the term by the transaction fees. Transaction fees are paid only to producer set participants who signed the blocks produced. For each block, _B_, the total BTC spent by all signers block _B_ is computed, then the transaction fees for all transactions in block _B_ are distributed proportionally based on BTC spent by each signer in their producer set enrollment.
 
-**\*Question:** Does this incentivize some kind of race to submit a block to the stackers to sign, before all of the producers have had a chance to sign it (after 67% have signed)?\*
+_**Question:** Does this incentivize some kind of race to submit a block to the stackers to sign, before all of the producers have had a chance to sign it (after 67% have signed)?_

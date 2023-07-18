@@ -89,7 +89,7 @@ in
 [SIP-001](https://github.com/stacksgov/sips/blob/main/sips/sip-001/sip-001-burn-election.md)
 and amended in
 [SIP-007](https://github.com/stacksgov/sips/blob/main/sips/sip-007/sip-007-stacking-consensus.md),
-would-be producers issue a Bitcoin transaction known as a producer set transfer.
+would-be producers issue a Bitcoin transaction known as a producer set enrollment.
 
 ## Producer Set Enrollments
 
@@ -168,12 +168,6 @@ outputs described in "Producer Set Enrollments" is used to select the producer
 set. Would-be producers are ranked by these BTC expenditures, and the top 100
 will be selected for the producer set.
 
-_TODO: Think more about the rollover of credits for would-be producers that were
-not in the top 100. Is this necessary to avoid disadvantaging small miners? Does
-this open another DoS attack? Maybe it should have some minimum amount, some
-maximum number of consecutive terms that credits can rollover, and/or some
-maximum number of producers._
-
 # Producer Rewards
 
 During a term, producers in the set are eligible to receive a portion of the
@@ -192,7 +186,3 @@ participants who signed the blocks produced. For each block, _B_, the total BTC
 spent by all signers block _B_ is computed, then the transaction fees for all
 transactions in block _B_ are distributed proportionally based on BTC spent by
 each signer in their producer set enrollment.
-
-_**Question:** Does this incentivize some kind of race to submit a block to the
-stackers to sign, before all of the producers have had a chance to sign it
-(after 67% have signed)?_

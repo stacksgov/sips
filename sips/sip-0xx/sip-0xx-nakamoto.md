@@ -89,7 +89,8 @@ in
 [SIP-001](https://github.com/stacksgov/sips/blob/main/sips/sip-001/sip-001-burn-election.md)
 and amended in
 [SIP-007](https://github.com/stacksgov/sips/blob/main/sips/sip-007/sip-007-stacking-consensus.md),
-would-be producers issue a Bitcoin transaction known as a producer set enrollment.
+would-be producers issue a Bitcoin transaction known as a producer set
+enrollment.
 
 ## Producer Set Enrollments
 

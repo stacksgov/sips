@@ -17,7 +17,7 @@ Sign-Off:
 
 Discussions-To: 
 
-Supersedes: SIP-001, SIP-007
+Supersedes: SIP-001, SIP-007, SIP-021
 
 # Abstract
 
@@ -114,9 +114,9 @@ Stacks nodes.  Subsequent blocks must be built atop it -- Stacks forks are no
 longer permitted.
 
 3. Every so often, Stackers and miners must collectively produce a Bitcoin
-   transaction that commits to the state of the Stacks chain in order for block
-production to continue.  Any Stacks block must descend from the chain state this snapshot represents.
-This _finalizes_ all blocks that produced this snapshot, such that retroactively
+   transaction that commits to the state of the Stacks chain in order to continue
+to receive block rewards.  Any Stacks block must descend from the chain state this snapshot represents.
+This _finalizes_ all blocks represented by the snapshot, such that retroactively
 changing Stacks chain history will be as expensive as retroactivelly changing Bitcoin
 history, regardless of the future valuation of STX and regardless of the
 intentions of miners and stackers.
@@ -124,18 +124,19 @@ intentions of miners and stackers.
 With these principal changes, Stacks block production is no longer inherently tied to
 Bitcoin block production.  As described in more detail below, miners no longer commit
 to each block they produce via Bitcoin transactions,
-but instead submit Bitcoin transactions only to join a _producer set_ of miners.
+but instead submit Bitcoin transactions only to join a _producer set_ of miners
+and to periodically snapshot the chain state.
 Block production now happens via a dedicated peer network maintained by the producer set.
 
-In this new system, transaction confirmation latency now depends on
+In this proposed system, transaction confirmation latency now depends on
 how quickly a Stacks block that contains it
 can be produced and accepted -- this takes on the order of seconds, instead of hours.
 In addition, the security budget of a transaction confirmed this way is substantially higher
 than it is today -- due to BFT agreement in steps 1 and 2, the budget is equal to the sum of 67% of the
 miners' Bitcoin spends for that block plus 67% of the worth of the stackers'
 locked STX.  At the time of this writing (1 STX = $0.63 USD, 1 BTC = $29,747 USD,
-Stacks reward cycle 63), this represents a security budget increase from $234.18 USD per block to 
-$213,908,185.70 per block -- nearly 6 orders of magnitude higher!  The
+Stacks reward cycle 63), this represents a security budget increase from $234.18 USD per block (cumulative)
+to $213,908,185.70 per block -- nearly 6 orders of magnitude higher!  The
 requirement for miners and stackers to periodically snapshot the Stacks chain
 state further increases this budget to that of Bitcoin's security budget,
 regardless of how cheap or easy it may be in the future to monopolize subsequent
@@ -179,11 +180,11 @@ in order to achieve the following high level properties:
 Rather than competition among miners to mine blocks, each block is mined by a
 single, globally visible, producer set. A producer set collaborates to mine
 blocks during fixed length _terms_. For a given term, every Stacks block is
-assembled and signed by that term's producer set.
+assembled and signed by a Byzantine fault-tolerant majority of that term's producer set.
 
 The producer set is a collection of weighted public keys. Each member of the
 producer set is associated with a public key and is assigned a weight according
-to the proportion of bitcoin committed during the term's selection (see
+to the proportion of Bitcoin committed during the term's selection (see
 [Producer Set Selection](#producer-set-selection)).
 
 For a block to be validated, it must be signed by over `67%` of the producer set
@@ -211,8 +212,9 @@ the only limit applied to the term is the overall cost limit (which may be
 increased through application of a VDF, see
 [Extension: Overdue Term](#overdue-terms)).
 
-The first block of a term always builds off the last bitcoin-announced block of
-the prior term. Producers may not choose to reorg a prior term, but any
+The first block of a term always builds off the last-known block of
+the prior term, which itself is a descendant of the last on-Bitcoin snapshot.
+Producers may not choose to reorganize a prior term, but any
 unannounced blocks from the prior term are dropped.
 
 ### Producer Set Collaboration
@@ -263,8 +265,8 @@ following data:
 ```
             0      2  3     7     9    13    15           48            80
             |------|--|-----|-----|-----|-----|------------|-------------|
-             magic  op set   set   key   key     signing      state root
-                       block txoff block txoff   pubkey          hash
+             magic  op set   set   key   key     signing      padding
+                       block txoff block txoff   pubkey          
 ```
 
 Where `op = @` and:
@@ -279,12 +281,10 @@ Where `op = @` and:
 - `signing_pubkey` is the compressed secp256k1 public key used by this producer
   to sign FROST signature-generation messages to be consumed by other
 producers.
-- `state_root_hash` is the hash of the chain state MARF as of the last block
-  processed, identified by (`set_block`, `set_txoff`).
 
 The subsequent output(s) in this transaction are the PoX outputs:
 
-1. If the producer set enrollment is in a reward cycle, then outputs 1 through
+1. If the producer set enrollment is in a reward phase, then outputs 1 through
    20 must go to the chosen PoX recipients.
    - Recipients are chosen as described in "Stacking Consensus Algorithm" in
      SIP-007, using the final block announcement of term N-3 as the source:
@@ -299,7 +299,8 @@ The subsequent output(s) in this transaction are the PoX outputs:
    - If the number of remaining addresses in the reward set, N, is less than 20,
      then the producer set enrollment must burn BTC by including (20-N) burn
      outputs
-2. Otherwise, the second output must be a burn address.
+2. Otherwise, the second output must be a burn address (i.e. the enrollment
+   falls into a prepare phase).
 
 During a reward cycle, this enrollment transaction will include a somewhat large
 number of outputs: one `OP_RETURN`, twenty stacker rewards, and one change
@@ -313,7 +314,7 @@ the higher fee for this larger transaction, the cost can be spread out or
 amortized across the ten blocks of the set, resulting in a lower overall cost
 compared to the previous system.
 
-### Censorship Resistance
+### Enrollment Censorship Resistance
 
 The producer set enrollments for set _N_ can be included in any of the 10
 Bitcoin blocks in producer set _N-2_. This makes it extremely difficult for a
@@ -353,6 +354,24 @@ each signer in their producer set enrollment.
 
 ## Block Signing and Announcement
 
+Creating a new block requires two parties to sign it: the current tenure's
+producers, and the current reward cycle's stackers.  The reasons for involving
+the stackers in this process are two-fold:
+
+* **Block availability**.  By requiring stackers to sign the block, the
+  producers are compelled to divulge the blocks they produce.  They cannot work
+on a hidden fork, nor can they build atop blocks that are not readiliy available
+to the peer network.
+
+* **Transaction linearizability**.  Stackers will only accept blocks that constitute a
+  linearized transaction history.  Even if producers create multiple conflicting
+blocks, at most one block will be appended to the Stacks chain.  Moreover, if
+a Bitcoin fork arises that invalidates some Bitcoin-dependent transactions,
+Stackers ensure that any non-Bitcoin-dependent transactions that were previously
+accepted remain accepted (see "Extension: Fixed Transaction Orders").
+
+### Facilities for Signature Generation
+
 For each Bitcoin block, it is unambiguous as to which producer set and
 stacker set are active.  All Stacks nodes which share the same view of the
 Bitcoin and Stacks chains can independently determine which tenure and reward
@@ -365,9 +384,8 @@ block is only appended to the Stacks chain if it contains two Schnorr
 signatures -- one from the producers and one from the stackers -- which are
 valid with respect to these two public keys.
 
-### Facilities for Signature Generation
-
-FROST is a threshold signature scheme in which _M_ out of _N_ signers cooperate to produce
+The reader will recall that FROST is a threshold signature scheme
+in which _M_ out of _N_ signers cooperate to produce
 a single Schnorr signature.  If all signers faithfully cooperate, they can
 generate signatures with a single round of communication per signature.
 However, this requires a pre-computation protocol to be executed by the signers
@@ -375,11 +393,11 @@ beforehand.
 
 In the pre-computation step, each signer must generate and share _N - 1_ encrypted
 messages with each other signer.  When there are hundreds of signers, as will be 
-the case for this proposal, the size of the digital representation of this data is
-on the order of megabytes.  Moreover, the pre-computation step must be re-executed each
+the case for this proposal, the size of the digital representation of this data will
+be on the order of megabytes.  Moreover, the pre-computation step must be re-executed each
 time the set of signers change, or if at least one signer misbehaved.
 
-In order to employ the FROST signing algorithm for block producers and stackers,
+In order to employ FROST signing for block producers and stackers,
 this SIP defines a standard communication medium by which hundreds of
 signers can readily carry out the pre-computation step, accommodating even the
 degenerate case of having to perform it _N - M_ times in order to exclude
@@ -445,6 +463,8 @@ compressed secp256k1 public key as a JSON struct, conforming to the following sp
    }
 }
 ```
+
+Note that chunk versions are serialized Clarity unsigned integers.
 
 A chunk with version `0x000000000000000000` is always an empty chunk, and has 
 a `chunk` field with zero length.  It is used to represent a chunk that has not been written.
@@ -531,8 +551,8 @@ stacker can reliably participate in FROST signature generation.  The producer
 Stacker DB contract is controlled through
 `SP000000000000000000002Q6VF78.block-producers` (henceforth referred to as
 `.block-producers` for brevity), and the Stacker DB contract for
-stackers is controlled through a new PoX contract `SP000000000000000000002Q6VF78.pox-5`
-(henceforth referred to as `.pox-5`).
+stackers is controlled through a new PoX contract `SP000000000000000000002Q6VF78.pox-4`
+(henceforth referred to as `.pox-4`).
 
 Like with the PoX contract, the data spaces for these two contracts are
 controlled directly by the Stacks node.  In particular, the data space for
@@ -540,14 +560,14 @@ controlled directly by the Stacks node.  In particular, the data space for
 of the tenure's block producers that will be used to validate DB chunks for the coming
 tenure.  These keys are obtained from the enrollment transaction on Bitcoin.
 
-The `.pox-5` contract will become the current PoX contract if this SIP
+The `.pox-4` contract will become the current PoX contract if this SIP
 activates.  This PoX implementation behaves identically to the current version,
 except in two ways.  First, the signatures of
-the `stack-stx` and `delegate-stx` functions in `.pox-5` are
+the `stack-stx` and `delegate-stx` functions in `.pox-4` are
 modified to accept an additional `(buff 33)` argument, which encodes a
 compressed secp256k1 public key.  This effectively requires stackers to supply a
 chunk-signing key when they stack.  Second, this state is stored in a new data
-map within `.pox-5`, which will be queried by the Stacker DB interface to
+map within `.pox-4`, which will be queried by the Stacker DB interface to
 authenticate chunk writes.
 
 Both contracts will have read-only getter functions so that other smart
@@ -555,7 +575,7 @@ contracts can query the chunk-signing keys for their own purposes.
 
 ### Signature Generation
 
-In both `.block-producers` and `.pox-5`, the concept of "signature weight" is
+In both `.block-producers` and `.pox-4`, the concept of "signature weight" is
 embodied by the number of signers that each producer or stacker represents.  A
 _signer_ in this context refers to a fixed-sized portion of the threshold
 signature.  For block production, there are 100 signers, and at least 67 of them
@@ -602,23 +622,22 @@ signers' data and uploads them to their assigned slots.  The producer then
 fetches and decrypts the messages from the other producers' signers in order to
 obtain the necessary FROST state required to produce signatures.
 
-When proposing blocks, each block producer submits a candidate assembled block
-to their assigned block slots (i.e. slots 200-299).  Producers execute one or
-more rounds of BFT two-phase commit in which they vote to submit the candidate
-block with the highest total transaction fees.  Producers stop acknowledging
-candidates after a certain amount of wall-clock time has passed, at which they
-vote to terminate the protocol with a final candidate block.  This final
-candidate block is then marked as such and available to stacker signers, which
-simply download it from the `.pox-5` Stacker DBs on their trusted Stacks nodes.
+When proposing blocks, each block producer may submit a candidate assembled block
+to their assigned block slots (i.e. slots 200-299) for other producers to see.
+Producers then collectively decide on which candidate block to sign.  The protocol
+for agreeing on the block is implementation-defined and not consensus-critical,
+but this SIP requires the implementation to provide a necessary ingredient
+to Byzantine fault-tolerant implementations: each block must be signed by at
+least 67% of the producers' signers.
 
 #### Stacker Signer DB Setup
 
-Like the `.block-producers` contract, the `.pox-5` contract maintains a set of
+Like the `.block-producers` contract, the `.pox-4` contract maintains a set of
 DB slots for storing FROST pre-computed data and signature data.  The stacker
 signer DB has 8,000 slots.  The first 4,000 are allotted to stackers based on
 how many reward slots they earn.  These slots are assigned to stackers
 in contiguous ranges, based on the order in which their STX were stacked for this reward
-cycle (i.e. as determined by the `.pox-5` contract's
+cycle (i.e. as determined by the `.pox-4` contract's
 `reward-cycle-pox-address-list` map), and are used to hold each stackers'
 signers' FROST pre-computation state.  The last 4,000 are similarly alloted to
 stackers, but are used to contain in-flight signature metadata regarding the
@@ -629,30 +648,249 @@ proposed block.
 Stacker signers monitor the producer Stacker DB to watch for a completed, valid,
 sufficiently-signed producer-proposed block.  If such a block is created, then
 each stacker attempts to append the block to its local node's chainstate.  If
-the block is accepted, then stackers execute a BFT two-phase commit
-to sign it by submitting their proposed signers' signature components
-to their allotted signature slots.  Once enough
+the block is acceptable, then stackers execute the FROST signature algorithm to
+produce the signature by storing their signature shares to their allotted signature slots.  Once enough
 signature slots have been acknowledged and filled for this block, then the block and both
 producer and stacker signatures are replicated to the broader peer network.
 
+Because the block production algorithm is implementation-defined for producers,
+it is possible that the producer set creates two or more blocks that are signed
+by at least 67% of the producer signers.  To resolve this conflict, the stackers
+collectively choose the block whose header's SHA512/256 hash is the numerically
+smallest of all candidates.  Stackers execute multiple rounds of
+signature-generation if need be in the event that two or more blocks are
+discovered; each subsequent round commits the Stacker to a block whose hash is
+numerically smaller than the prior block's hash.  Signing stops once _any_
+block's stacker signature reaches at least 67% of the stacker signers, even if a
+produced block at the same height is later discovered with a lower hash.
+
 ### State Snapshots
 
+Once per tenure, stackers and the producer set create a "snapshot" Bitcoin transaction that
+contains a recent digest of the Stacks chain history.  Specifically, the
+stackers and producer set who are active in tenure N must send a snapshot
+transaction that contains the hash of the last block produced in tenure N-2
+(i.e. the block that all blocks in tenure N-1 build upon, which has subsequently
+received at least 10 Bitcoin confirmations).  The presence of this
+transaction in the Bitcoin chain prevents any future set of producers and
+stackers from producing a conflicting chain history.  All blocks represented by
+the snapshot transaction are treated as finalized -- the act of creating
+an alternative transaction history is tantamount to reorganizing the Bitcoin
+chain to remove conflicting snapshot transactions.
 
+Crafting and sending this transaction is not free.  To ensure that it gets
+mined on-time, producer block reward disbursal for tenure N will not happen until a snapshot for
+tenure N-2 _or later_ is mined on Bitcoin.  To similarly incentivize stackers to cooperate
+with producers to create the snapshot, PoX payouts during subsequent tenures are
+diverted to a Bitcoin burn address and their STX are indefinitely locked
+until the snapshot for tenure N-2 (or later)
+is mined on Bitcoin.  In other words, producers and stackers can only get paid
+if they create and broadcast the snapshot on Bitcoin in a timely fashion.  To
+avoid missed payments, stackers and producers are encouraged to produce the
+snapshot for tenure N-2 at the start of tenure N.
 
+The wire format for a snapshot transaction's `OP_RETURN` payload is as follows:
+
+```
+            0      2  3     7                 39                         80
+            |------|--|-----|------------------|-------------------------|
+             magic  op tenure   block hash       padding
+                       id
+```
+
+Where `op = 0x73` (ASCII `s`) and:
+
+- `tenure_id` is the tenure number (i.e. N-2)
+- `block_hash` is the SHA512/256 hash of the last block in the identified tenure
+
+In addition, the snapshot transaction must contain at least two inputs:  a FROST-generated Schnorr
+signature from the producer set in tenure N, and a FROST-generated Schnorr
+signature from the stackers in the current reward cycle.  The producer set funds
+the transaction fee; the stackers sign the transaction with
+`SIGHASH_ANYONECANPAY`.
+
+## sBTC Concerns
+
+This SIP proposes incorporating the sBTC system described in SIP-021, but with
+the following changes.
+
+### sBTC Wallet Operations
+
+The act of sending BTC to the stacker-controlled Bitcoin wallet would not
+materialize sBTC until the Bitcoin transaction had received at least one tenure
+of Bitcoin confirmations.  Similarly, withdrawing BTC for sBTC would require at least one
+tenure of Bitcoin confirmations before its effects materialized on Stacks,
+as would transferring the wallet's BTC from one set of stackers
+to the next.  Because there are no longer any Stacks forks, a BTC withdrawal would no longer
+require 150 Bitcoin confirmations.
+
+### sBTC Transfers
+
+Because Stacks no longer forks, sBTC transfers would be treated as any other
+SIP-010 token transfer.  They can be mined as quickly as any other Stacks
+transaction, and do not need to be materialized on the Bitcoin chain.
+
+### Chain Consensus Rules
+
+Because Stacks no longer forks, there is no longer a need for the system to
+identify blocks as unconfirmed or frozen.  Also, there is no longer a need for
+stacker blessings.  Instead, this SIP makes it so that the concerns these
+protocols were meant to address no longer arise. 
+
+## Extension: Fixed Transaction Orders
+
+This SIP proposes that Stacks continue to support on-Bitcoin transactions for `stack-stx`,
+`transfer-stx`, and `delegate-stx`.  However, the absence of Stacks forks makes
+it possible for non-finalized Stacks chain state to become inconsistent with the
+Bitcoin chain.  For example, if Alice send 10 STX to Bob via a `stack-stx`, but
+the `stack-stx` is mined in a Bitcoin block that later gets orphaned, then
+Alice's and Bob's new balances are inconsistent with Bitcoin -- a node
+attempting to bootstrap from the Bitcoin and Stacks chains would not process the
+now-missing `stack-stx` transaction, and would be unable to authenticate the
+Stacks blocks against subsequent state snapshots (and thus be unable to finish
+booting).
+
+Bitcoin forks are rare events, and forks lasting longer than six blocks are
+extremely unlikely.  This SIP proposes that a Bitcoin transaction which receives
+at least one tenure of Bitcoin confirmations (i.e. at least 10 Bitcoin
+confirmations) is sufficiently confirmed that it can be assumed that it will
+remain confirmed forever.
+
+Nevertheless, short-lived Bitcoin forks arise often.
+A naive stawman way of dealing with Stacks chain state inconsistency created by
+these short-lived forks is presented below for illustrative purposes:
+
+* Process all on-Bitcoin transactions at the end of the block, instead of the
+  beginning (as it is done today).  Then, the transactions in the block that are
+not on-Bitcoin are at least not causally-dependent on the on-Bitcoin
+transactions.
+
+* Do not process on-Bitcoin transactions that arise in tenure N until the state
+  snapshot for tenure N is mined.  This all but guarantees that these on-Bitcoin
+transactions will never be orphaned.
+
+* Report only Bitcoin data as of the last state snapshot via Clarity functions.
+  For example, `get-burn-block-info?` would only report Bitcoin state up to the
+Bitcoin block which contained the last state snapshot.
+
+While this naive approach would work, the problem is that the second and third requirements introduce a
+very high transaction confirmation latency for Bitcoin-dependent transactions -- users
+would need to wait for over two tenures (over 20 Bitcoin blocks) before their
+Bitcoin-dependent transactions could be processed.
+
+Because Bitcoin forks are rare, this SIP proposes a form of speculative execution whereby 
+Bitcoin-dependent transactions are processed as soon as they are available (and
+Bitcoin-dependent information exposed to Clarity as soon as available), but with
+the caveat that any resulting state is _tainted_.  Tainted state, including
+account balances, may be rolled back by the network if a Bitcoin fork occurs
+(i.e. because it is not yet finalized).  Tainted state becomes untainted once a
+subsequent state snapshot finalizes it.
+
+The Clarity VM would be instrumented to track tainted state.  Any
+transactions that causally depend on tainted state would also be tainted.  While
+on-chain smart contracts may interact with tainted state, systems that use the
+blockchain to carry out off-chain tasks (like exchanges and bridges) would only
+act on untainted state.  The Stacks blockchain would report whether or not a
+particular piece of state is tainted, and report when the taint is expected to
+disappear.
+
+To reduce the quantity of transactions that can be tainted through causal
+dependency, this SIP requires that producers apply on-Bitcoin transactions at
+the end of their blocks, instead of the beginning.
+
+### Recovery from Bitcoin Forks
+
+In the event that a Bitcoin fork arises and invalidates tainted state, the
+Stacks blockchain would guarantee that _untainted_ transactions would remain
+linearized.  Producer sets and stackers would reproduce the Stacks block history
+from only untainted transactions, such that each untainted transaction is
+mined in the same order as before and appears in the same Stacks block height.
+
+Stackers in particular are responsible for ensuring that they only sign
+reproduced blocks that contain exactly the same sequence of untainted transactions.
+They only sign replacement blocks which contain the same untainted transactions
+as before the Bitcoin fork.
+
+Old Stacks blocks that contain potentially-invalid state are discarded.
+
+### Bitcoin Forks and sBTC
+
+The sBTC wallet operations already require sufficient Bitcoin confirmations that
+it is effectively guaranteed that they will never be orphaned by the time the
+producer set processes them.  As such, sBTC by itself is not treated as tainted
+-- it can only materialize once its deposit transaction is sufficiently
+confirmed, and it can only be destroyed once its withdrawal transaction is
+sufficiently confirmed.  Consequently, sBTC transfers are not inherently
+tainted either (anymore than any other Stacks transaction).
+
+## Extension: Overdue Term
+
+Naively, the execution budget available to block producers can be treated as
+equal to the number of Stacks blocks' budgets today, multipled by the tenure
+length.  Ideally, block producers would produce blocks at a rate such that under
+network congestion, the tenure budget is completely consumed just as the tenure
+ends.
+
+It is very difficult in practice to realize this idealized block production
+schedule, because the length of a tenure has very high variance.  If the block
+producers reach their tenure budget before the tenure is over, then the Stacks
+network stalls, which significantly increases transaction latency.
+
+To eliminate these periods of idle time, this SIP proposes implementing a
+replicated verifiable delay function (VDF) which block producers individually
+run in order to prove that a tenure is taking too long.  If enough block
+producers can submit VDF proofs that indicate that they have waited for the
+expected tenure length, then if the tenure is still ongoing, their tenure's
+execution budget grows by one additional tenure.  The process repeats forever --
+as long as block producers can submit VDF proofs, they earn more execution
+budget until their tenure ends.
+
+TODO: finish
+
+# Related Work
+
+## Rollups
+
+The proposed consensus protocol makes Stacks superficially similar to optimistic
+rollups.  The producer set can be thought of as a replicated BFT block
+sequencer in rollup parlance; the key difference between Stacks and existing
+rollups is that the sequencer implementation is designed from the get-go to
+operate as an open-membership BFT replicated state-machine.
+
+Like rollups, Stacks produces a linearized transaction history that is
+periodically snapshotted to the underlying L1 blockchain.  However, due to
+Bitcoin's limited block space and limited scripting language, Stacks does not
+rely on Bitcoin to store its transaction state nor does it rely on Bitcoin
+script to validate them.  Instead, this responsibility is outsourced to the
+stackers, who are chiefly responsible for keeping transaction data available and
+determining the validity of blocks prior to their acceptance into the Stacks
+chainstate.  Stackers and the producer set record digests of the Stacks chain
+state to Bitcoin once per tenure in order to ensure that no alternative Stacks
+chain history can be produced up until that snapshot without first reorganizing
+the Bitcoin chain.
+
+On-Bitcoin transactions in Stacks are analogous to forced transactions in
+rollups -- the producer set must incorporate them into their blocks in order for
+their blocks to be valid.  Unlike rollups, Stacks applies on-Bitcoin transactions (with the
+exception of sBTC peg-in and peg-out transactions) immediately via speculative
+execution; they are only rolled back in the event that the Bitcoin block
+containing them is orphaned.
+
+## Proof-of-Stake
 
 # Appendix A: Stacker DB Specification
 
-TDB
+TBD
 
 ## Peer Network Wire Formats
 
-TDB
+TBD
 
 ## Smart Contract Traits
 
-TDB
+TBD
 
 ## RPC Endpoints
 
-TDB
+TBD
 

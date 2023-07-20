@@ -352,6 +352,161 @@ spent by all signers block _B_ is computed, then the transaction fees for all
 transactions in block _B_ are distributed proportionally based on BTC spent by
 each signer in their producer set enrollment.
 
+## Blockchain Structure 
+
+Because Stacks block production is no longer tied to Bitcoin block production,
+producers and stackers must explicitly determine the earliest Stacks block
+at which newly-discovered Bitcoin state can be queried.  To achieve this,
+producers propose a special-purpose _checkpoint block_ for each new Bitcoin
+block they see that does not already have one.
+This block does not contain any user-submitted transactions.  Instead,
+it serves to identify the new Bitcoin block header and serve as a Stacks
+blockchain checkpoint hint for Stacks nodes.  When they see a checkpoint block,
+Stacks nodes pause Stacks block-processing in order to ensure that they have
+first processed the identified Bitcoin block.  Once they have done so, they
+can proceed to process Stacks blocks which descend from this checkpoint block.
+
+Checkpoint blocks are necessary to ensure that Stacks transactions which
+are causally-dependent on Bitcoin state are only processed once the referenced
+Bitcoin block has been processed.  Checkpoint blocks ensure that bootstrapping
+Stacks nodes validate Bitcoin-dependent Stacks transactions only once they have
+obtained the relevant Bitcoin state to do so.  As such, there must exist one
+checkpoint block for each Bitcoin block.
+
+The Stacks blockchain is thus composed of long swaths of regular blocks (which
+contain user-transactions) linked together by checkpoint blocks (which contain
+only chain metadata).
+
+### Regular Blocks
+
+This SIP proposes that the structure of a Stacks block remain identical to that of a Stacks microblock
+today (see SIP-005).  It contains:
+
+* A header:
+
+   * A version byte
+
+   * A 2-byte sequence number
+
+   * The SHA512/256 hash of its parent block (which may be a regular block or a
+     checkpoint block)
+
+   * The SHA512/256 hash of a Merkle tree containing the block's transactions
+
+   * A FROST Schnorr signature from the current producer set (replaces the ECDSA signature)
+
+* A body:
+
+   * A 4-byte big-endian number, equal to the number of transactions the block
+     contains
+
+   * The sequence of encoded Stacks transactions
+
+### Checkpoint Blocks
+
+The structure of a checkpoint block is identical to the anchored Stacks
+block structure (see SIP-005).  Like an anchored Stacks block, a checkpoint
+block contains the following data (in the same format):
+
+* A header:
+
+   * A block version byte
+
+   * The total number of Stacks blocks so far
+
+   * The total amount of BTC spent to produce this chain
+
+   * A VRF proof
+
+   * A pointer to the last checkpoint block (its SHA512/256 hash)
+
+   * A pointer to the last Stacks block (its SHA512/256 hash its sequence number)
+
+   * A SHA512/256 merkle tree root hash over a sequence of internal system
+     transactions (which only producers may generate) 
+
+   * The Stacks chainstate root hash as of the end of processing this block and all
+     of its ancestors.
+
+* A body:
+
+   * A 4-byte big-endian number, equal to the number of internal system transactions 
+
+   * The sequence of encoded internal system transactions
+
+Unlike anchored Stacks blocks today, the checkpoint block does not encode a
+microblock public key hash.  This 20-byte space is repurposed as scratch area,
+which stackers and coordinators can use as they see fit.
+
+The checkpoint block contains only internal system transactions, which may only
+be created by producers.  These include:
+
+* A coinbase transaction
+* (NEW) A transaction containing the Bitcoin block header
+* (NEW) A transaction containing the consensus hash calculated over all prior Stacks-specific on-Bitcoin
+  transactions up until this checkpoint block's Bitcoin block (see SIP-005)
+* (NEW) A transaction containing the VDF statistics (see "Extension: Overdue Term")
+
+The wire formats for these new transactions can be found in Appendix B.
+
+### Regular Block Validation
+
+Validating a block stream is similar to validating anchored Stacks blocks and
+microblocks today.  Transactions are processed in order within their blocks, and
+blocks are processed in order by parent/child linkage.  Block-processing
+continues until a checkpoint block is reached, at which the node must proceed to
+process the associated Bitcoin block.  After both the Bitcoin block and
+checkpoint block are processed, the node compares the Stacks chainstate root
+hash to the checkpoint block's root hash.  If they do not match, then the
+checkpoint block is treated as invalid (and producers _must_ try again to
+produce a checkpoint block for the given Bitcoin block).  If they do match, then
+the next stream of regular blocks may be processed.
+
+As it is today with microblocks, each regular block contains a
+monotonically-increasing sequence number to denote the order in which it was
+produced relative to the other regular blocks between checkpoints.
+There can be at most 65,535 regular blocks between two checkpoint blocks,
+and no forks of this regular block stream are allowed to be produced.
+Should a fork be discovered, anyone would be able to submit a `PoisonBlock`
+transaction (identical to today's `PoisonMicroblock` transaction) to the
+blockchain, which when processed would eliminate the block producers' block
+rewards for their tenure and grant the reporter 5% of the coinbase.
+
+The key differences are:
+
+* The block's signature is now a FROST-generated signature, and must be
+  validated with the aggregate public key from the term.
+
+* Each time a regular block is produced, the Stacks chainstate MARF index commits to
+  the block's index hash and height, as well as its parent's index hash and height.
+The index hash is the SHA512/256 hash of the concatenation of the consensus hash
+of the last-processed Bitcoin block (i.e. this is committed to by the last
+checkpoint block), and the hash of the regular block's header.
+Previously, this commitment only occurred when processing anchored Stacks
+blocks, and not microblocks.  This step is now required for Clarity functions like
+`get-block-info?` to work correctly.
+
+* Because regular Stacks blocks do not contain a new VRF proof, the VRF seed for
+  each block is calculated as the SHA512/256 hash of the parent block's encoded
+header and the parent block's VRF seed.  This value is returned by the `get-block-info?`
+function in Clarity for a given Stacks block.
+
+### Checkpoint Block Validation
+
+Validating a checkpoint block is similar to validating an anchored Stacks block
+today.  Like regular Stacks blocks, checkpoint blocks have a distinct block
+height, even though they contain no user-submitted transactions.
+The act of processing a checkpoint block remains the act of updating
+the Stacks chainstate MARF to commit to its height and index hash, as well as
+that of its parent block (be it a checkpoint block or a regular block).
+
+The VRF proof generation and validation logic differs from the system today,
+because the VRF seed is no longer updated only once per Bitcoin block (but
+instead once per Stacks block).  When a block producer proposes a checkpoint block, they
+calculate their VRF proof over the hash of the parent block's VRF seed concatenated with
+the new Bitcoin block's header hash.  Nodes verify this proof as part of
+validating the checkpoint block.
+
 ## Block Signing and Announcement
 
 Creating a new block requires two parties to sign it: the current tenure's
@@ -385,7 +540,7 @@ signatures -- one from the producers and one from the stackers -- which are
 valid with respect to these two public keys.
 
 The reader will recall that FROST is a threshold signature scheme
-in which _M_ out of _N_ signers cooperate to produce
+in which _M_ out of _N_ (where _0 < M <= N_) signers cooperate to produce
 a single Schnorr signature.  If all signers faithfully cooperate, they can
 generate signatures with a single round of communication per signature.
 However, this requires a pre-computation protocol to be executed by the signers
@@ -413,38 +568,45 @@ Instead, it is sufficient for these signer processes to contact a trusted Stacks
 to send, store, and receive this data on its behalf.  This significantly reduces
 the trusted computing base for producer and stacker signer implementations, and
 allows the block production process to benefit from independent improvements to
-the Stacks peer-to-peer network over time.
+the Stacks peer-to-peer network over time.  Furthermore, it allows all Stacks
+nodes to monitor the behavior of block producers and signers, so they can detect
+and handle block equivocation and heal from network partitions (see below).
 
 #### Stacker DBs
 
 To facilitate FROST key and signature generation for producers and stackers,
 the Stacks peer network will be extended to support Stacker DBs.  A _Stacker DB_
-is an eventually-consistent replicated array of bound-sized data chunks,
-administrated by a smart contract.
-
-The data schema for a Stacker DB is very simple.  Each key is an unsigned
-128-bit integer, and each value is a byte buffer with a fixed length.  Keys act
-like array indexes -- the first key/value pair has key `u0`, the second has key
-`u1`, and so on.  The smart contract determines the total number of key/value
-pairs the DB can contain, and it determines the maximum length of a value.
+is an eventually-consistent replicated shared memory system, comprised of an array
+of bound-length slots into which authorized writers may store a single chunk of data
+that fits into the slot's maximum size.
 
 Stacks nodes exchange a list of up to 256 Stacker DBs to which they are
 subscribed when they exchange peer-to-peer handshake messages (see SIP-003).
-Each Stacks node maintains a vector clock for each Stacker DB replica it hosts,
-which it exchanges with peer Stacks nodes that host replicas of the same DB.
+Each Stacks node maintains an ordered list of Lamport clocks, called a 
+_chunk inventory_, for each slot in each Stacker DB replica it hosts,
+which it exchanges with peer Stacks nodes that host replicas of the same DB
+(note that this is _not_ a vector clock; write causality is _not_ preserved).
 Nodes exchange chunk data with one another such that eventually, in the absence
-of in-flight writes, all replicas will contain the same state.  Values with old
-version numbers are discarded by the node, and never replicated again once a new
-version is discovered.
+of in-flight writes and network partitions, all replicas will contain the
+same state.  Chunks with old version numbers are discarded by the node, and
+never replicated again once a new version is discovered.
 
-Chunk values for the DB can be both written and queried via the node's RPC interface.
-Newly-written values will be asynchronously replicated to peer nodes
-via the above best-effort algorithm.  Clients may query a node's
-peer's last-seen vector clocks for a Stacker DB in order to assess the node's
-progress on replicating a written chunk.
+Chunks are replicated asynchronously through the Stacks p2p network through
+gossipping.  A Stacks node will periodically query neighbors
+who replicate the same Stacker DB for their replicas' chunk inventories, as 
+well as the number of inbound and outbound neighbor connections this node
+currently has.  If any slots are discovered that contain "later" versions
+than the local slot, the node will fetch that slot's chunk, authenticate it
+(see below), and store it along with an updated version.  In addition, if the
+node discovers that it has the latest version of a chunk out of all neighbors
+and it discovers a neighbor with an older chunk, it will push its local chunk
+to the neighbor with probability inversely proportional to either the neighbor's
+reported number of total neighbors (if the local node treats this neighbor as
+an outbound neighbor), or to the reported number of outbound neighbors (if the
+local node treats this neighbor as an inbound neighbor).
 
-A "read" to the Stacker DB occurs through an RPC endpoint.  The "read" endpoint
-returns the chunk data, the chunk version (as a Clarity value), and the chunk signer's
+Stacker DB clients (i.e. producers and stackers) read and write chunks via the
+node's RPC interface.  The Stacker DB "read" endpoint returns the chunk data, the chunk version (as a Clarity value), and the chunk signer's
 compressed secp256k1 public key as a JSON struct, conforming to the following specification:
 
 ```json
@@ -492,14 +654,14 @@ but the chunk is different, then the write will be accepted only if the hash of
 the chunk has strictly more leading 0's than the current chunk.  If this is the
 case, or if the version is strictly greater than the last-seen version of this
 chunk, then the node stores the chunk locally,
-updates the DB's vector clock, and announces it to its peer nodes which
+updates the DB's chunk inventory, and announces it to its peer nodes which
 replicate the Stacker DB.  If authentication fails, or if the version is less than
 the last-seen version, or if the version is equal to the last-seen version and
 the hash of the new chunk has less than or equal leading 0-bits in its hash,
  then the Stacks node NACKs the RPC request with an HTTP 403 response.
 
 The reason for accepting chunks with the same version but lesser hashes is to
-allow the system to both heal from and throttle writers that equivocate.  Automatically
+allow the system to both recover from and throttle nodes that equivocate.  Automatically
 resolving conflicts that arise from equivocation keeps all Stacker DB replicas consistent,
 regardless of the schedule by which the equivocated writes are replicated.  The use of the chunk hash
 to resolve equivocation conflicts makes it increasingly difficult
@@ -509,7 +671,7 @@ computing work in expectation.  This, in turn, severely limits the amount of exc
 a Stacks node can be made to perform by the equivocating writer, and severely limits
 the number of distinct states that this version of the chunk can be in.
 
-To support equivocation throttling in this manner, the vector clock for the
+To support equivocation throttling in this manner, the chunk inventory for the
 Stacker DB encodes both the version and the number of leading 0-bits in the
 chunk's hash.
 
@@ -552,13 +714,17 @@ Stacker DB contract is controlled through
 `SP000000000000000000002Q6VF78.block-producers` (henceforth referred to as
 `.block-producers` for brevity), and the Stacker DB contract for
 stackers is controlled through a new PoX contract `SP000000000000000000002Q6VF78.pox-4`
-(henceforth referred to as `.pox-4`).
+(henceforth referred to as `.pox-4`).  Only nodes that act as producers and/or
+stackers need to subscribe to these Stacker DBs; however, each producer and each
+stacker will need to subscribe to both.
 
 Like with the PoX contract, the data spaces for these two contracts are
 controlled directly by the Stacks node.  In particular, the data space for
 `.block-producers` is populated at the start of each term with the public keys
 of the tenure's block producers that will be used to validate DB chunks for the coming
-tenure.  These keys are obtained from the enrollment transaction on Bitcoin.
+tenure, as well as data about the highest-known on-Bitcoin state snapshot.
+The public keys are obtained from the enrollment transactions on Bitcoin for
+this tenure.
 
 The `.pox-4` contract will become the current PoX contract if this SIP
 activates.  This PoX implementation behaves identically to the current version,
@@ -593,8 +759,7 @@ At the start of tenure N, it evicts all signing state for tenure N-1 by
 garbage-collecting each chunk.  It then determines how many slots to allot each producer by distributing them in a
 round-robin fashion from smallest producer by Bitcoin spend to largest producer by
 Bitcoin spend.  It breaks ties by sorting each tied producers' last enrollment
-transaction IDs in lexographic order, and shuffling them using a ChaCha12
-pseudorandom function seeded from the on-chain VRF state sampled tenure N-1's last Bitcoin block.
+transaction IDs in lexographic order.
 
 The number of DB signer slots are assigned to a producer represents the weight of the
 producer's signature.  For example, if four producers each registered for tenure
@@ -611,7 +776,7 @@ at the start of each tenure, which this function queries.
 
 The proposed block slots are alloted to producers in ascending order by BTC
 weight.  In the above example, slot 200 is alloted to the 10% producer, slot 201
-to the 20% producer, slot 202 to the 30% producer, and slot 203 to th3 40%
+to the 20% producer, slot 202 to the 30% producer, and slot 203 to the 40%
 producer.  If there are fewer than 100 producers, then the remaining slots are
 unused.
 
@@ -629,6 +794,9 @@ for agreeing on the block is implementation-defined and not consensus-critical,
 but this SIP requires the implementation to provide a necessary ingredient
 to Byzantine fault-tolerant implementations: each block must be signed by at
 least 67% of the producers' signers.
+
+The signed block is automatically propagated to stackers via the
+`.block-producer` Stacker DB.
 
 #### Stacker Signer DB Setup
 
@@ -648,7 +816,7 @@ proposed block.
 Stacker signers monitor the producer Stacker DB to watch for a completed, valid,
 sufficiently-signed producer-proposed block.  If such a block is created, then
 each stacker attempts to append the block to its local node's chainstate.  If
-the block is acceptable, then stackers execute the FROST signature algorithm to
+the block is acceptable, then stackers execute the distributed FROST signature algorithm to
 produce the signature by storing their signature shares to their allotted signature slots.  Once enough
 signature slots have been acknowledged and filled for this block, then the block and both
 producer and stacker signatures are replicated to the broader peer network.
@@ -659,8 +827,8 @@ by at least 67% of the producer signers.  To resolve this conflict, the stackers
 collectively choose the block whose header's SHA512/256 hash is the numerically
 smallest of all candidates.  Stackers execute multiple rounds of
 signature-generation if need be in the event that two or more blocks are
-discovered; each subsequent round commits the Stacker to a block whose hash is
-numerically smaller than the prior block's hash.  Signing stops once _any_
+discovered; each subsequent round must commit the Stacker to a block whose hash is
+numerically smaller than the prior block's hash.  The stackers stop signing once _any_
 block's stacker signature reaches at least 67% of the stacker signers, even if a
 produced block at the same height is later discovered with a lower hash.
 
@@ -730,7 +898,7 @@ Because Stacks no longer forks, sBTC transfers would be treated as any other
 SIP-010 token transfer.  They can be mined as quickly as any other Stacks
 transaction, and do not need to be materialized on the Bitcoin chain.
 
-### Chain Consensus Rules
+### sBTC Consensus Rules
 
 Because Stacks no longer forks, there is no longer a need for the system to
 identify blocks as unconfirmed or frozen.  Also, there is no longer a need for
@@ -789,8 +957,8 @@ subsequent state snapshot finalizes it.
 The Clarity VM would be instrumented to track tainted state.  Any
 transactions that causally depend on tainted state would also be tainted.  While
 on-chain smart contracts may interact with tainted state, systems that use the
-blockchain to carry out off-chain tasks (like exchanges and bridges) would only
-act on untainted state.  The Stacks blockchain would report whether or not a
+blockchain to carry out off-chain tasks (like exchanges and bridges) would be
+advised to only act on untainted state.  The Stacks blockchain would report whether or not a
 particular piece of state is tainted, and report when the taint is expected to
 disappear.
 
@@ -809,7 +977,7 @@ mined in the same order as before and appears in the same Stacks block height.
 Stackers in particular are responsible for ensuring that they only sign
 reproduced blocks that contain exactly the same sequence of untainted transactions.
 They only sign replacement blocks which contain the same untainted transactions
-as before the Bitcoin fork.
+in the same order and same block assignment as before the Bitcoin fork.
 
 Old Stacks blocks that contain potentially-invalid state are discarded.
 
@@ -821,7 +989,7 @@ producer set processes them.  As such, sBTC by itself is not treated as tainted
 -- it can only materialize once its deposit transaction is sufficiently
 confirmed, and it can only be destroyed once its withdrawal transaction is
 sufficiently confirmed.  Consequently, sBTC transfers are not inherently
-tainted either (anymore than any other Stacks transaction).
+tainted either, anymore than any other Stacks transaction.
 
 ## Extension: Overdue Term
 
@@ -832,20 +1000,131 @@ network congestion, the tenure budget is completely consumed just as the tenure
 ends.
 
 It is very difficult in practice to realize this idealized block production
-schedule, because the length of a tenure has very high variance.  If the block
-producers reach their tenure budget before the tenure is over, then the Stacks
-network stalls, which significantly increases transaction latency.
+schedule, because the length of a tenure has very high variance and is not known
+in advance.  If the block producers reach their tenure budget before the
+tenure is over, then the Stacks network stalls, which significantly increases
+transaction latency and degrades the user experience.
 
 To eliminate these periods of idle time, this SIP proposes implementing a
 replicated verifiable delay function (VDF) which block producers individually
 run in order to prove that a tenure is taking too long.  If enough block
 producers can submit VDF proofs that indicate that they have waited for the
 expected tenure length, then if the tenure is still ongoing, their tenure's
-execution budget grows by one additional tenure.  The process repeats forever --
+execution budget is increased for an additional tenure.  The process repeats indefinitely --
 as long as block producers can submit VDF proofs, they earn more execution
-budget until their tenure ends.
+budget until their tenure is terminated by the arrival of the first Bitcoin
+block of the next tenure.
 
-TODO: finish
+### VDF Execution 
+
+Concurrent with producing blocks, members of the producer set continuously
+evaluate a VDF for a protocol-defined number of "ticks" (i.e. one pass of the
+VDF's sequential proof-generation algorithm).  The VDF proof must
+show that the producer evaluated the VDF for at least as many ticks.
+
+Producers are incentivized to evaluate their local VDFs as quickly as possible,
+because gaining additional tenure execution budget means more transaction fees
+are available to them.  Each time they can create a VDF proof, they submit it as
+a transaction to the mempool.  Because the tenure execution budget grows only
+once at least 67% of producers (weighted by BTC spend) submit a VDF proof, each
+producer is incentivized to confirm a new VDF proof transaction as soon as
+possible by including it in the next block they propose.
+
+Once enough valid VDF proofs have materialized in the blockchain, the tenure's
+budget expands.
+
+### VDF Calibration
+
+The consensus rules for checkpoint blocks require that the first checkpoint
+block in a tenure reports an adjusted number of ticks required to produce a valid
+VDF proof in this tenure.  The tick count is adjusted over many tenures
+such that a producer running the VDF as fast as they
+can in the current tenure would complete a VDF proof in the expected duration of 
+the tenure (i.e. 100 minutes).  The number of ticks can be adjusted up or down, depending
+on historical tenure data.
+
+To calculate the minimum number of ticks for tenure N, a node will load
+the following data for the past 15 tenures (about 25 hours of data):
+
+* The wall-clock time of the tenure, calculated as the difference in the UNIX
+  epoch timestamps between the last and first Bitcoin blocks in the tenure
+(as an array `TIMES`).
+* The consumed execution budget for the tenure (as an array `EXECUTION`).
+* The minimum number of ticks for the tenure (as an array `TICKS`).
+* The integer number of times the execution budget was increased in the tenure
+  (as an array `EXCEEDED`).
+
+The node then calculates the scaled average number of times the tenure budget
+was exceeded as:
+
+```
+s = (sum(TIMES) / 1500) * (sum(EXCEEDED) / 15)
+```
+
+If `s >= 0.5`, then it means that in the average tenure in this sample,
+producers were able to earn expanded tenures with over 50% probability.
+This indicates that the tick count needs to be increased, because producers
+were able to regularly evaluate the VDF faster than the tenures completed.
+In this case, it is multiplicatively incrased by a factor of `min(2.0, s / 0.5)`, and rounded
+down to the nearest integer.
+
+If `s < 0.5`, then in the average tenure, producers did not expand the budget
+over 50% of the time.  This could be due to any of three reasons:
+
+* The average tenure length was less than 10 minutes, so the budget was never
+  exceeded and no VDF proofs were produced
+
+* There was no network congestion, so producers simply didn't need to submit any VDF
+  proofs
+
+* There was network congestion, but the minimum tick count was so high that
+  producers were unable to earn more budget to address it
+
+
+We are interested in distinguishing that last case from the others, which do not
+warrant a minimum tick decrease.  To do so, the node examines each consumed
+budget in `EXECUTION[i]` where `TIMES[i] > 6000`.  If the majority of each such
+`EXECUTION[i]` contains a cost parameter that is over 95% of the allotted budget,
+we can infer that the network was congested but producers were unable to ask for
+more budget (i.e. Bitcoin didn't terminate their tenure early).  In this case, 
+the minimum tick count is multiplicatively decreased by a factor of `min(2.0,
+a)` where `a` is an adjusted scale factor, calculated to only consider tenures
+where producers really did need to increase the budget:
+
+```
+n = len(EXCEEDED[i] where TIMES[i] > 6000 and EXECUTION[i] has a near-full cost parameter)
+a = (sum(TIMES) / 1500) * (sum(EXCEEDED) / n)
+```
+
+The final tick count reported in the checkpoint block can be as low as 1, or as
+high as `u128::MAX`.  The initial tick count will be calculated once a VDF
+implementation is written and tested.
+
+The initial tick count is unconditionally used for the first 15 tenures.
+
+### VDF On-Chain State
+
+Each checkpoint block will contain a special-purpose transaction from the producers which
+contains the new tick count.  Each Stacks node independently performs the VDF
+calibration above; the VDF calibration transaction merely announces it.
+
+The VDF tick counts are recorded to a boot code contract `SP000000000000000000002Q6VF78.vdf`, 
+and exposed via read-only functions so that Clarity contracts can act on them.
+
+# Activation
+
+This SIP activates concurrently or before SIP-021.  Before this SIP can
+activate, the following additional tasks must be performed:
+
+* SIP-021 must be updated to depend on this SIP.
+
+* A VDF implementation must be written, so as to calculate the initial VDF tick
+  count
+
+* A stacker vote must take place, by which at least 67% of STX holders vote in
+  one reward cycle (TBD) to ratify this SIP.  This must occur before or during
+the early implementation of this SIP -- stackers will be voting to authorize
+this change, instead of rubber-stamping a ready-to-go implementation.
 
 # Related Work
 
@@ -878,6 +1157,31 @@ containing them is orphaned.
 
 ## Proof-of-Stake
 
+This proposal bears some superficial similarity to proof-of-stake (PoS) systems in that
+it now requires stackers to accept a block.  However, there are two significant
+differences between this SIP and PoS that render it decidedly _not_ PoS:
+
+* **Block production and acceptance are decoupled**.  Block production only
+  requires spending BTC; block producers do not need to hold or stake STX.  This
+means that anyone who can acquire BTC can be a block producer; stackers cannot
+influence this by controlling the liquid supply of STX.  This ensures that
+block production remains an open-membership protocol.  By contrast, PoS
+systems require block producres to hold and stake the system's native token,
+whose availability is subject to sales by the existing block producers.
+
+* **Block finalization and acceptance are decoupled**.  While stackers determine
+  which blocks get accepted to the chain, they are not responsible for
+finalizing the chain state.  This is instead achieved through state snapshots to
+Bitcoin.  This way, the cost to produce multiple alternative histories of the
+Stacks chain is at least as costly as producing multiple alternative histories
+of Bitcoin.  By contrast, nothing stops PoS systems' block producers from
+crafting multiple chain histories, since the cost to doing so is negligeable.
+The only thing that prevents this in PoS is that the block producers would
+potentially lose their staked tokens (provided that proofs of equivocation could
+be accepted into all equivocated histories).  In this proposal, generating
+alternative histories is as difficult as reorganizing the Bitcoin chain _even
+if_ 100% of block producers and stackers were determined to do so.
+
 # Appendix A: Stacker DB Specification
 
 TBD
@@ -893,4 +1197,9 @@ TBD
 ## RPC Endpoints
 
 TBD
+
+# Appendix B: New System Transactions
+
+## VDF Calibration
+
 

@@ -322,8 +322,8 @@ including too many accounts, as this could slow down event processing and even
 open a DoS vector. This cap will also prevent the block-signing process from
 becoming too CPU- and bandwidth-intensive. To this end, the total amount of BTC spent in the
 outputs described in "Producer Set Enrollments" is used to select the producer
-set. Would-be producers are ranked by these BTC expenditures, and the top 100
-will be selected for the producer set.
+set. Any would-be producer that spends at least 1% of the total will be included
+in the set. This naturally limits the total number of producers to 100.
 
 ## Producer Rewards
 

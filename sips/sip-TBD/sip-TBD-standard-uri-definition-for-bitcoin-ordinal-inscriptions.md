@@ -22,24 +22,42 @@ Layer: Applications
 
 # Abstract
 
-[Bitcoin Ordinal Inscriptions](https://docs.ordinals.com/inscriptions.html) have exploded in
-popularity ever since they were first proposed. One of their main applications is the decentralized
-and censorship-resistant storage of arbitrary data in the Bitcoin blockchain, a feature which is
-most commonly used by artists and token creators to store artwork or metadata.
+One of the main use cases of [Bitcoin Ordinal
+Inscriptions](https://docs.ordinals.com/inscriptions.html) is the decentralized and
+censorship-resistant storage of arbitrary data in the Bitcoin blockchain, a feature which is most
+commonly used by artists and token creators to store artwork or metadata.
 
-Given that the Stacks network has a very close relationship to Bitcoin
+Given that the Stacks network has a very close relationship to Bitcoin, Stacks developers are
+looking for a standardized way to reference the contents of inscriptions to use within their smart
+contracts or applications.
 
-This SIP defines a simple URI format that Stacks developers can use to make a reference to content
-stored in a Bitcoin Ordinal Inscription so it can be used in applications, token metadata, etc.
+This SIP defines a simple URI format that Stacks developers can use to make such a reference so that
+content can be used in applications, token metadata, etc. This format supports referencing an
+inscription by its Inscription ID, Inscription number, Satoshi ordinal number, and Satoshi name.
 
 # Introduction
 
-A URI, or _Uniform Resource Identifier_, is a string of characters used to identify a resource on
-the internet. It provides a way to uniquely identify a resource, such as a web page, a file, an
-image, or any other resource accessible via a network. URIs are used to address and access resources
-in various contexts, such as in web browsers, APIs, and other software applications.
+Stacks developers usually need to reference external resources from within their Clarity smart
+contracts or their Stacks applications. For example, [SIP-010 defines a `get-token-uri`
+function](https://github.com/stacksgov/sips/blob/main/sips/sip-010/sip-010-fungible-token-standard.md#token-uri)
+that allows them to reference an off-chain JSON file which provides metadata for a Fungible Token.
 
-IPFS, Arweave are common storage places for Token metadata
+Instead of keeping these files in centralized servers, developers choose to use storage protocols
+like as IPFS or Arweave to save this data to ensure the decentralized storage, authenticity,
+permanence, and accessibility of its contents.
+
+Ever since Bitcoin Ordinal Inscriptions became popular, however, developers identified its use as an
+improved storage protocol that immediately replicates stored contents across all the Bitcoin network
+once included in a block. This provides a significant advantage over IPFS or Arweave which depend on
+other factors for reliable content replication.
+
+As such, Stacks developers have been looking for a standardized way to reference inscriptions as an
+off-chain storage mechanism. They could use inscriptions to store token metadata JSON files,
+artwork, or other resources.
+
+This SIP proposes a URI (_Uniform Resource Identifier_) format that Stacks developers can use in
+their smart contracts or application code to instruct other applications, chain indexers, or network
+participants to retrieve and use the contents of the referenced Bitcoin Ordinal Inscription.
 
 # Specification
 
@@ -61,7 +79,7 @@ Examples for each format are defined below.
 
 ## Inscription URI
 
-The Inscription ID URIs all begin with `ord://i/` and have two variants:
+Inscription ID URIs begin with `ord://i/` and have two variants:
 
 ### Inscription ID URI
 
@@ -86,6 +104,8 @@ ord://i/-76400
 ```
 
 ## Satoshi URI
+
+Satoshi ID URIs begin with `ord://s/` and have two variants:
 
 ### Satoshi ordinal number URI
 

@@ -137,15 +137,22 @@ For example, given the URI
 
 # Related work
 
-x
+An alternative to standardizing inscription URIs is to keep absolute URLs to one of the many public
+Bitcoin indexer services such as the ones mentioned above.
 
-# Backwards compatibility
-
-x
+The obvious disadvantage of this is that if that any of these services ever goes down, the URL is
+broken and manual steps have to be taken to replace it with a newer valid URL.
 
 # Activation
 
-x
+This SIP will be activated when the following conditions are met:
+
+* At least 10 Stacks smart contracts make use of this URI format.
+* At least 5 Stacks applications or indexers support the use of these URIs to retrieve inscription
+  contents.
+
+If the Stacks blockchain reaches block height 250000 and the above has not happened, this SIP will
+be considered rejected.
 
 # Reference implementations
 

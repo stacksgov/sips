@@ -129,11 +129,16 @@ Developers may use any public or private service or API to retrieve the contents
 from a URI.
 
 For example, given the URI
-`ord://i/ca7e4261f3d695810903d06565ac3555828fcdf4a583506d5df1b91e8eb561c3i0`, the following (non-exhaustive list of) services could be used by extracting the `<identifier>` and inserting it in any of the following valid URLs:
+`ord://i/ca7e4261f3d695810903d06565ac3555828fcdf4a583506d5df1b91e8eb561c3i0`, the following
+(non-exhaustive list of) services could be used by extracting the `<identifier>` and inserting it in
+any of the following valid URLs:
 
-* Hiro's Ordinals API: https://api.hiro.so/ordinals/inscriptions/ca7e4261f3d695810903d06565ac3555828fcdf4a583506d5df1b91e8eb561c3i0/content
-* Ordinals.com: https://ordinals.com/content/ca7e4261f3d695810903d06565ac3555828fcdf4a583506d5df1b91e8eb561c3i0
-* Ord.io: https://www.ord.io/preview/ca7e4261f3d695810903d06565ac3555828fcdf4a583506d5df1b91e8eb561c3i0?type=image/png&raw=true
+* Hiro's Ordinals API:
+  https://api.hiro.so/ordinals/inscriptions/ca7e4261f3d695810903d06565ac3555828fcdf4a583506d5df1b91e8eb561c3i0/content
+* Ordinals.com:
+  https://ordinals.com/content/ca7e4261f3d695810903d06565ac3555828fcdf4a583506d5df1b91e8eb561c3i0
+* Ord.io:
+  https://www.ord.io/preview/ca7e4261f3d695810903d06565ac3555828fcdf4a583506d5df1b91e8eb561c3i0?type=image/png&raw=true
 
 # Related work
 

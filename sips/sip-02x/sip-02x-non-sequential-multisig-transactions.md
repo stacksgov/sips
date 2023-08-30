@@ -40,7 +40,75 @@ For a transaction with *n* signers, the final signature is generated in the foll
 signature_n(...(signature_2(signature_1(tx))))
 ```
 
+There are a few drawbacks to doing it this way:
+
+- The order in which the signers must sign is fixed as soon as funds are send to a multisig account, which limits flexibility when creating a spending transaction from a multisig account
+- The process of signing a transaction requires each signer to validate the entire signature chain before signing, in order to make sure it matches the transaction, leading to `O(n^2)` signing times
+- This does not reduce the size of a transaction, as each intermediate signature must still be included
+- There algorithm for doing this is complex, and based on my own experience and discussions with others, developers have a hard time understanding and implementing it correctly
+
+This document proposes having each signer sign the transaction directly:
+
+```
+signature_1(tx), signature_2(tx), ..., signature_n(tx)
+```
+
+This would address all of the concerns listed above, and would not increase transaction size or make it easier to forge a signature
+
 # Specification
+
+This section should be interpreted as a patch to the existing "[Specification](https://github.com/stacksgov/sips/blob/main/sips/sip-005/sip-005-blocks-and-transactions.md#specification)" section of SIP-005.
+For anything not mentioned here, the rules from SIP-005 still apply.
+
+## Transactions
+
+### Transaction Encoding
+
+#### Transaction Authorization
+
+Add new hash mode `0x05`. We use a non-sequential odd number in order to maintain the relationship `is_multisig = hash_mode & 0x1`
+
+| Hash mode | Spending Condition | Mainnet version | Hash algorithm |
+| --------- | ------------------ | --------------- | -------------- |
+| `0x00` | Single-signature | 22 | Bitcoin P2PKH |
+| `0x01` | Multi-signature | 20 | Bitcoin redeem script P2SH |
+| `0x02` | Single-signature | 20 | Bitcoin P2WPK-P2SH |
+| `0x03` | Multi-signature | 20 | Bitcoin P2WSH-P2SH |
+| `0x05` | Non-sequential multi-signature | 20 | Bitcoin P2WSH-P2SH |
+
+#### Transaction Signing and Verifying
+
+The steps for signing a non-sequential multisig transaction (hash mode `0x05`) shall be as follows:
+
+0. Set the spending condition address, and optionally, its signature count.
+1. Clear the other spending condition fields, using the appropriate algorithm below.
+   If this is a sponsored transaction, and the signer is the origin, then set the sponsor spending condition
+   to the "signing sentinel" value (see below).
+2. Serialize the transaction into a byte sequence, and hash it to form an
+   initial `sighash`.
+3. Calculate the `presign-sighash` over the `sighash` by hashing the 
+   `sighash` with the authorization type byte (0x04 or 0x05), the fee (as an 8-byte big-endian value),
+   and the nonce (as an 8-byte big-endian value).
+4. Calculate the ECDSA signature over the `presign-sighash` by treating this
+   hash as the message digest.  Note that the signature must be a `libsecp256k1`
+   recoverable signature. Store the message signature and public key encoding byte as a signature auth field.
+5. Repeat steps 2-4 until the signer threshold is reached.
+
+The steps for verifying a non-sequential multisig transaction (hash mode `0x05`) shall be as follows:
+
+0. Extract the public key(s) and signature(s) from the spending condition.
+1. Clear the spending condition.
+2. Serialize the transaction into a byte sequence, and hash it to form an
+   initial `sighash`.
+3. Calculate the `presign-sighash` from the `sighash`, authorization type byte,
+   fee, and nonce.
+4. Use the `presign-sighash` and the next (public key encoding byte,
+   ECDSA recoverable signature) pair to recover the public key that generated it.
+   byte,
+6. Repeat step 4 for each signature, so that all of the public keys are
+   recovered.
+7. Verify that the sequence of public keys hash to the address, using
+   the address's indicated public key hashing algorithm.
 
 # Related Work
 

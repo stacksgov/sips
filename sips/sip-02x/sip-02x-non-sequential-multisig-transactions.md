@@ -66,7 +66,10 @@ For anything not mentioned here, the rules from SIP-005 still apply.
 
 #### Transaction Authorization
 
-Add new hash mode `0x05`. We use a non-sequential odd number in order to maintain the relationship `is_multisig = hash_mode & 0x1`
+Add new hash modes `0x05` and `0x07`. These numbers were chosen in order to used in order to maintain the following relationships:
+ - `is_multisig = hash_mode & 0x1`
+ - `is_p2wsh_p2sh = hash_mode & 0x2`
+ - `is_non_sequential_multisig = hash_mode & 0x4`
 
 | Hash mode | Spending Condition | Mainnet version | Hash algorithm |
 | --------- | ------------------ | --------------- | -------------- |
@@ -74,11 +77,12 @@ Add new hash mode `0x05`. We use a non-sequential odd number in order to maintai
 | `0x01` | Multi-signature | 20 | Bitcoin redeem script P2SH |
 | `0x02` | Single-signature | 20 | Bitcoin P2WPK-P2SH |
 | `0x03` | Multi-signature | 20 | Bitcoin P2WSH-P2SH |
-| `0x05` | Non-sequential multi-signature | 20 | Bitcoin P2WSH-P2SH |
+| `0x05` | Non-sequential multi-signature | 20 | Bitcoin redeem script P2SH |
+| `0x07` | Non-sequential multi-signature | 20 | Bitcoin P2WSH-P2SH |
 
 #### Transaction Signing and Verifying
 
-The steps for signing a non-sequential multisig transaction (hash mode `0x05`) shall be as follows:
+The steps for signing a non-sequential multisig transaction (hash modes `0x05` and `0x07`) shall be as follows:
 
 0. Set the spending condition address, and optionally, its signature count.
 1. Clear the other spending condition fields, using the appropriate algorithm below.
@@ -94,7 +98,7 @@ The steps for signing a non-sequential multisig transaction (hash mode `0x05`) s
    recoverable signature. Store the message signature and public key encoding byte as a signature auth field.
 5. Repeat steps 2-4 until the signer threshold is reached.
 
-The steps for verifying a non-sequential multisig transaction (hash mode `0x05`) shall be as follows:
+The steps for verifying a non-sequential multisig transaction (hash modes `0x05` and `0x07`) shall be as follows:
 
 0. Extract the public key(s) and signature(s) from the spending condition.
 1. Clear the spending condition.

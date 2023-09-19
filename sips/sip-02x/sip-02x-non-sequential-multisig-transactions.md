@@ -90,13 +90,13 @@ The steps for signing a non-sequential multisig transaction (hash modes `0x05` a
    to the "signing sentinel" value (see below).
 2. Serialize the transaction into a byte sequence, and hash it to form an
    initial `sighash`.
-3. Calculate the `presign-sighash` over the `sighash` by hashing the 
+3. Calculate the `presign-sighash` over the `sighash` by hashing the
    `sighash` with the authorization type byte (0x04 or 0x05), the fee (as an 8-byte big-endian value),
    and the nonce (as an 8-byte big-endian value).
 4. Calculate the ECDSA signature over the `presign-sighash` by treating this
    hash as the message digest.  Note that the signature must be a `libsecp256k1`
    recoverable signature. Store the message signature and public key encoding byte as a signature auth field.
-5. Repeat steps 2-4 until the signer threshold is reached.
+5. Repeat step 4 until the signer threshold is reached.
 
 The steps for verifying a non-sequential multisig transaction (hash modes `0x05` and `0x07`) shall be as follows:
 

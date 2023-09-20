@@ -114,7 +114,7 @@ The extension of the SIP-010 trait with allowances and the ability to transfer t
 
 ### Limiting Phishing 
 
-With this new approach that has only a check for `sender == contract-caller`, and in case of successful phishing attemp, the malicious Dapp has to ask for allowance for the specific token an drain that token, so the they have to request 2 transactions and can only drain 1 token. The previous standard, and the de-facto check of `sender == tx-sender`, and the phishing attemp is successful, with a single transaction they can drain all of our standard tokens (several contracts) that only check the `tx-sender`.
+With this new approach that has only a check for `(is-eq sender contract-caller)`, and in case of successful phishing attemp, the malicious Dapp has to ask for allowance for the specific token an drain that token, so the they have to request 2 transactions and can only drain 1 token. The previous standard, and the de-facto check of `(is-eq sender tx-sender)`, and the phishing attemp is successful, with a single transaction they can drain all of our standard tokens (several contracts) that only check the `tx-sender`.
 
 ### DeFi Composability Pattern
 

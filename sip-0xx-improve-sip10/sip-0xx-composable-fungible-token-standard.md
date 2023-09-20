@@ -112,6 +112,21 @@ This extended trait, `sip-0xx-trait`, includes the functions from the original `
 
 The extension of the SIP-010 trait with allowances and the ability to transfer tokens using allowances addresses the limitations of the previous standard. By introducing allowances, users can grant explicit permission for third parties to spend tokens on their behalf, improving the security and composability of DeFi contracts. The inclusion of additional functions from SIP-010 ensures compatibility with existing standards.
 
+### Limiting Phishing 
+
+With this new approach that has only a check for `sender == contract-caller`, and in case of successful phishing attemp, the malicious Dapp has to ask for allowance for the specific token an drain that token, so the they have to request 2 transactions and can only drain 1 token. The previous standard, and the de-facto check of `sender == tx-sender`, and the phishing attemp is successful, with a single transaction they can drain all of our standard tokens (several contracts) that only check the `tx-sender`.
+
+### DeFi Composability Pattern
+
+The most common DeFi pattern, that is supported by this new standard is:
+
+1. The Dapp (decentralized application) _D_ generates a `approve` transaction for a single standard token _T_ and a single Dapp contract _C_.
+2. The User signs the `approve` transaction and submits to blockchain.
+3. The token _T_ get the allowance updated when the transactions ends on-chain.
+4. The Dapp (decentralized application) _D_ generates a service `example-defi-service` transaction to start the service.
+5. The User sign the `example-defi-service` and submits to blockchain.
+6. The Dapp _D_ executes `example-defi-service` on-chain, this includes calling `transfer-from` to retrieve the tokens from User and, eventually, forwarding the tokens to a third-party service with `approve`, thus allowing for _Composability_.
+
 ## Backwards Compatibility
 
 This proposal aims to maintain compatibility with the existing SIP-010 standard while introducing new functionality. Existing fungible token contracts can continue to use the SIP-010 functions without modification. Contracts that wish to utilize allowances and composable fungible tokens can implement the extended trait.

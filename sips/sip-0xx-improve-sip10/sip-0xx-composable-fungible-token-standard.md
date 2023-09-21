@@ -32,7 +32,7 @@ This proposal extends the SIP-010 trait with the following functions:
 
 `(transfer (from principal) (to principal) (amount uint) (response bool uint))`
 
-Transfer the specified amount of tokens from one principal to another. The `from` principal must always match the contract caller `contract-caller`, ensuring that only authorized parties can initiate transfers. Do not check and allow the execution if `sender` is `tx-sender`, this results in security weaknesses that make phishing and arbitrary token execution very dangerous (read https://www.coinfabrik.com/blog/tx-sender-in-clarity-smart-contracts/).
+This is the SIP-10 function signature but this improved SIP requires a certain security model. Transfer the specified amount of tokens from one principal to another. The `from` principal must always match the contract caller `contract-caller`, ensuring that only authorized parties can initiate transfers. Do not check and allow the execution if `sender` is `tx-sender`, this results in security weaknesses that make phishing and arbitrary token execution very dangerous (read https://www.coinfabrik.com/blog/tx-sender-in-clarity-smart-contracts/).
 
 #### transfer-from
 

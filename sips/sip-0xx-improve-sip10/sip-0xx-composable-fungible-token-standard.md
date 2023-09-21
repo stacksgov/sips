@@ -116,6 +116,27 @@ The extension of the SIP-010 trait with allowances and the ability to transfer t
 
 With this new approach that has only a check for `(is-eq sender contract-caller)`, and in case of successful phishing attempt, the malicious Dapp has to ask for allowance for the specific token and drain that token, so the they have to request 2 transactions and can only drain 1 token. The previous standard, and the de-facto check of `(is-eq sender tx-sender)`, and the phishing attempt is successful, with a single transaction they can drain all of our standard tokens (several contracts) that only check the `tx-sender`.
 
+### Challenges in Composable DeFi Contracts
+
+In the context of DeFi, where _DeFiA_ represents a Yield Aggregator service and _DeFiB_ acts as a Yield service, there are scenarios where the current approaches with SIP-010 may face limitations:
+
+1. **Attempted Double Transfer**
+    1. A user initiates a transaction by calling `defi-service` from _DeFiA_.
+    2. _DeFiA attempts to transfer tokens from the user to itself (`transfer(User, DeFiA)`), which is valid with the transaction sender as the user.
+    3. However, within the same transaction, _DeFiA_ encounters an issue when trying to further transfer tokens to _DeFiB_ (`transfer(DeFiA, DeFiB)`) because the transaction sender remains the user.
+2. **Direct User-to-DeFiB Transfer**
+    1. A user initiates a transaction by calling `defi-service` from _DeFiA_.
+    2. _DeFiA_ attempts to directly transfer tokens from the user to _DeFiB_ (`transfer(User, DeFiB)`), which is valid as the transaction sender is the user.
+    3. Unfortunately, this approach is flawed since DeFiB may not support receiving tokens from third parties without the intermediary step of calling `another-defi-service` from _DeFiB_.
+3. **Attempted Indirect Transfer**
+   1. A user initiates a transaction by calling `defi-service` from _DeFiA_.
+   2. _DeFiA_ initially transfers tokens from the user to itself (`transfer(User, DeFiA)`), maintaining the user as the transaction sender.
+   3. _DeFiA_ then attempts to call `another-defi-service` from _DeFiB_.
+   4. This approach also encounters an issue as the transaction sender remains the user, and if _DeFiB_ attempts to call `transfer(DeFiA, DeFiB)`, it lacks the necessary permissions.
+  
+These scenarios highlight the need for a more robust approach to composable DeFi contracts to ensure seamless interaction between different DeFi components.
+
+
 ### DeFi Composability Pattern
 
 The most common DeFi pattern, that is supported by this new standard is:

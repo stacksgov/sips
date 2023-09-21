@@ -14,7 +14,7 @@ Sign-off: [Sign-off Name] <signoff@example.com>
 
 ## Abstract
 
-This proposal extends the SIP-010 standard trait for fungible tokens on the Stacks blockchain to support composable fungible tokens with allowances. It adds further requirements to the previous standard, which is the bare minimum to have a standard for a fungible token, featuring mainly token tranfers. There are no specifications how to make transfers via third-party services. For atomic and composable transfers we introduce allowances. The new trait includes functions for transferring tokens (`transfer` limited to the `contract-caller` sender), approving allowances (`approve` and `revoke`), checking allowances (`allowance`), and transferring tokens leveraging allowances (`transfer-from`). The recommended implementation of `approve` uses incremental allowances to avoid race conditions and double transfering.
+This proposal extends the SIP-010 standard trait for fungible tokens on the Stacks blockchain to support composable fungible tokens with allowances. It adds further requirements to the previous standard, which is the bare minimum to have a standard for a fungible token, featuring mainly token tranfers. There are no specifications how to make transfers via third-party services. For atomic and composable transfers we introduce allowances. The new trait includes functions for transferring tokens (`transfer` limited to the `contract-caller` sender), approving allowances (`approve` and `revoke`), checking allowances (`get-allowance`), and transferring tokens leveraging allowances (`transfer-from`). The recommended implementation of `approve` uses incremental allowances to avoid race conditions and double transfering.
 
 ## Motivation
 
@@ -54,7 +54,7 @@ Revoke an existing allowance granted to a specific principal or contract. This f
 
 #### allowance
 
-`(allowance (owner principal) (spender principal) (response uint uint))`
+`(get-allowance (owner principal) (spender principal) (response uint uint))`
 
 Check the remaining allowance of tokens that the `spender` principal is authorized to transfer on behalf of the `owner` principal. This function is useful for applications that need to verify the available allowance before initiating token transfers.
 
@@ -101,12 +101,12 @@ The extended trait `sip-0xx-trait` that includes the functions from `sip-010-tra
     (revoke (principal) (response bool uint))
 
     ;; Check the remaining allowance of tokens for a spender
-    (allowance (principal principal) (response uint uint))
+    (get-allowance (principal principal) (response uint uint))
   )
 )
 ```
 
-This extended trait, `sip-0xx-trait`, includes the functions from the original `sip-010-trait` and adds the new functions introduced in SIP-0XX: `transfer-from`, `approve`, `revoke`, and `allowance`. Developers can use this trait as a reference when implementing composable fungible tokens with allowances on the Stacks blockchain.
+This extended trait, `sip-0xx-trait`, includes the functions from the original `sip-010-trait` and adds the new functions introduced in SIP-0XX: `transfer-from`, `approve`, `revoke`, and `get-allowance`. Developers can use this trait as a reference when implementing composable fungible tokens with allowances on the Stacks blockchain.
 
 ## Rationale
 

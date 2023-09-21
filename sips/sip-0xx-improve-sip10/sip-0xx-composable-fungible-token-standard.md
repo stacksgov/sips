@@ -152,6 +152,8 @@ The most common DeFi pattern, that is supported by this new standard is:
 
 This proposal aims to maintain compatibility with the existing SIP-010 standard while introducing new functionality. Existing fungible token contracts can continue to use the SIP-010 functions without modification. Contracts that wish to utilize allowances and composable fungible tokens can implement the extended trait.
 
+The current SIP10 Tokens are compatibles in the sense that they both will work on User Wallet using the same `(transfer(amount, user,recipient)`. Also to use a Single DeFi service, no Composability. If you use `transfer` to use a simple DeFi service like current approaches it will also work. Current SIP10 approach is not supporting properly combining a fungible token with two DeFi services, such as a Yield Aggregator using different Yield Services.
+
 ## Activation
 
 The activation of this proposal will require deployment to the Stacks blockchain's mainnet. The activation criteria and timeline should be defined in accordance with the Stacks Improvement Proposal process.

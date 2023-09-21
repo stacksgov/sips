@@ -14,7 +14,7 @@ Sign-off: [Sign-off Name] <signoff@example.com>
 
 ## Abstract
 
-This proposal extends the SIP-010 standard trait for fungible tokens on the Stacks blockchain to support composable fungible tokens with allowances. It addresses the limitations of the previous standard, which did not provide sufficient support for composability and security. The new trait includes functions for transferring tokens, approving allowances, checking allowances, and transferring tokens using allowances. The recommended implementation of `approve` used incremental allowances to avoid rance conditions and double transfering.
+This proposal extends the SIP-010 standard trait for fungible tokens on the Stacks blockchain to support composable fungible tokens with allowances. It addresses the limitations of the previous standard, which did not provide sufficient support for composability and security. The new trait includes functions for transferring tokens, approving allowances, checking allowances, and transferring tokens using allowances. The recommended implementation of `approve` uses incremental allowances to avoid race conditions and double transfering.
 
 ## Motivation
 
@@ -44,13 +44,13 @@ Transfer a specified amount of tokens from one principal to another using an all
 
 `(approve (spender principal) (amount uint) (response bool uint))`
 
-Approve an incremental allowance for a specific principal or contract to spend a certain amount of tokens on behalf of the sender. This function is similar to signing a check, granting permission for a third party to make token transfers within the specified limit. This allowance must be incremental (it adds on top of previous allowances) to avoid race condition situations where and `transfer-from` call is executed before the `approve` and then another after the `approve` call.
+Approve an incremental allowance for a specific principal or contract to spend a certain amount of tokens on behalf of the sender. This function is similar to signing a check, granting permission for a third party to make token transfers within the specified limit. This allowance must be incremental (it adds on top of previous allowances) to avoid race condition situations where an `transfer-from` call is executed before the `approve` and then another after the `approve` call.
 
 #### revoke
 
 `(revoke (spender principal) (response bool uint))`
 
-Revoke an existing allowance granted to a specific principal or contract. This function sets the allowance for the specified spender to 0, effectively removing their permission to spend tokens on behalf of the sender. It provides a mechanism for the sender to revoke previously granted permissions when they are no longer needed or desired. You usually give a limited or exact allowance to a DeFi service, this service will grab the amount of token you approved and then do provide some financial service. Is common practice in Web3 to give infinite or large allowance to Dapps to do only one `approve` call per token. But if you have given an infinite or large allowance to the Defi contract (a convenient common practice) and after the DeFi services has grabbed your tokens, you can revoke the infinite allowance by calling `revoke`. This helps mitigates the impact of bugs found in the DeFi contract in the future where an attacker might try to grab more of you tokens. If you intent to use the DeFi services only once or you no longer trust the service, you should call `revoke` inmediately.
+Revoke an existing allowance granted to a specific principal or contract. This function sets the allowance for the specified spender to 0, effectively removing their permission to spend tokens on behalf of the sender. It provides a mechanism for the sender to revoke previously granted permissions when they are no longer needed or desired. You usually give a limited or exact allowance to a DeFi service, this service will grab the amount of token you approved and then provide some financial service. Is common practice in Web3 to give infinite or large allowance to Dapps to do only one `approve` call per token. But if you have given an infinite or large allowance to the Defi contract (a convenient common practice) and after the DeFi services have grabbed your tokens, you can revoke the infinite allowance by calling `revoke`. This helps mitigate the impact of bugs found in the DeFi contract in the future where an attacker might try to grab more of your tokens. If you intend to use the DeFi services only once or you no longer trust the service, you should call `revoke` immediately.
 
 #### allowance
 
@@ -114,7 +114,7 @@ The extension of the SIP-010 trait with allowances and the ability to transfer t
 
 ### Limiting Phishing 
 
-With this new approach that has only a check for `(is-eq sender contract-caller)`, and in case of successful phishing attemp, the malicious Dapp has to ask for allowance for the specific token an drain that token, so the they have to request 2 transactions and can only drain 1 token. The previous standard, and the de-facto check of `(is-eq sender tx-sender)`, and the phishing attemp is successful, with a single transaction they can drain all of our standard tokens (several contracts) that only check the `tx-sender`.
+With this new approach that has only a check for `(is-eq sender contract-caller)`, and in case of successful phishing attempt, the malicious Dapp has to ask for allowance for the specific token and drain that token, so the they have to request 2 transactions and can only drain 1 token. The previous standard, and the de-facto check of `(is-eq sender tx-sender)`, and the phishing attempt is successful, with a single transaction they can drain all of our standard tokens (several contracts) that only check the `tx-sender`.
 
 ### DeFi Composability Pattern
 
@@ -122,9 +122,9 @@ The most common DeFi pattern, that is supported by this new standard is:
 
 1. The Dapp (decentralized application) _D_ generates a `approve` transaction for a single standard token _T_ and a single Dapp contract _C_.
 2. The User signs the `approve` transaction and submits to blockchain.
-3. The token _T_ get the allowance updated when the transactions ends on-chain.
+3. The token _T_ get the allowance updated when the transaction ends on-chain.
 4. The Dapp (decentralized application) _D_ generates a service `example-defi-service` transaction to start the service.
-5. The User sign the `example-defi-service` and submits to blockchain.
+5. The User signs the `example-defi-service` and submits to blockchain.
 6. The Dapp _D_ executes `example-defi-service` on-chain, this includes calling `transfer-from` to retrieve the tokens from User and, eventually, forwarding the tokens to a third-party service with `approve`, thus allowing for _Composability_.
 
 ## Backwards Compatibility
@@ -148,4 +148,5 @@ This SIP is made available under the terms of the Creative Commons CC0 1.0 Unive
 ## Acknowledgments
 
 The author acknowledges Trust Machines and the Stacks community and contributors for their input and feedback in the development of this proposal.
+
 

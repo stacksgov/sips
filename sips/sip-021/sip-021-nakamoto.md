@@ -157,7 +157,7 @@ alters the probability that a miner wins sortition such that the probability
 of winning has the following properties:
 
 * The probability of winning is non-zero only if the miner attempted to mine in the majority of the past
-five cryptographic sortitions.  This is not true today -- if a miner is the sole
+ten cryptographic sortitions.  This is not true today -- if a miner is the sole
 miner in a Bitcoin block, then it has 100% chance of winning.  In this system,
 it can be the case that no miner has a non-zero chance of winning.  A
 Bitcoin MEV miner who spends a _de minimis_ PoX payout in Bitcoin blocks it
@@ -166,7 +166,7 @@ the Bitcoin miner also has the majority of Bitcoin mining power.
 
 * The probability of winning is inversely proportional to the larger of
 either the system's total commits in the current block, or the system's median
-total commits over the past five blocks.  This means that a sudden decrease in
+total commits over the past ten blocks.  This means that a sudden decrease in
 the Bitcoin block's total PoX payout, such as due to the exclusion of other
 Stacks miners' `block-commit`s by a Bitcoin MEV miner, does _not_ increase the
 likelihood that the MEV miner's _de minimis_ `block-commit` wins.
@@ -597,11 +597,11 @@ coinbase and transaction fees before the MEV mitigation is applied.
 
 In the ATC-C algorithm, Nakamoto would use the document's recommended
 assumed total commitment function: the median total PoX spend across all miners
-for the past five Bitcoin blocks.  It would additionally use the document's
+for the past ten Bitcoin blocks.  It would additionally use the document's
 recommended carryforward function for missed sortitions' coinbases:  the
 coinbase for a Bitcoin block without a sortition would be available to winning
-miners across the next five tenures.  That is, if a miner whose tenure begins
-during the next five tenure-changes manages to produce a Stacks block with a
+miners across the next ten tenures.  That is, if a miner whose tenure begins
+during the next ten tenure-changes manages to produce a Stacks block with a
 `Coinbase`, then they receive a 20% of the coinbase that was lost.
 
 The reason ATC (and ATC-C) were not considered as viable anti-MEV strategies
@@ -623,42 +623,128 @@ is not a concern in this proposal.  If the null miner wins tenure _N_, then the 
 non-null miner continues to produce blocks in tenure _N_.  They receive
 transaction fees, but no coinbase for tenure _N_.
 
+This proposal advocates for one additional change to ATC-C as described in the
+above report:  if a miner does not mine in at least five of the ten prior
+Bitcoin blocks, it has zero chance of winning.  This requires a Bitcoin MEV
+miner to participate as an honest miner for the majority of blocks it produces,
+such that even if they pay a _de minimis_ PoX payout each time, they are still
+paying Bitcoin transaction fees to other miners.
+
+### Example
+
+The need for this additional tweak becomes apparent when considering the
+consequences for a real Bitcoin MEV miner who is active on the Stacks network
+today: F2Pool.
+
+Consider what happens to F2Pool, who spends 200 sats on PoX and zero sats
+on transaction fees for their block-commit. Suppose the median total BTC spend
+over the last ten Bitcoin blocks was 500,000 sats (about what it is right now).
+With ATC-C alone, their probability of winning sortition would be 200 / max(500,000,
+200), or about 0.04% chance. The miner would need to send 2,500 such
+block-commits before winning a Stacks coinbase (worth about 500 USD). F2Pool had
+13.89% of Bitcoin's mining power over the past three months, so it would take
+them about 4 months to win a single STX coinbase (which is a very long time
+horizon). Right now, it costs 22 sats/vbyte to get a Bitcoin transaction mined
+in the next Bitcoin block; this is what Stacks miners pay. A block-commit tx is
+about 250 vbytes, so that's 5500 sats, or about 1.41 USD with today's BTC price.
+So, F2Pool would lose money by MEV mining at their current rate if prices stay
+the same over those 4 months -- they'd forfeit about 3,525 USD in Bitcoin
+transaction fees (lost by excluding other Bitcoin transactions in order to
+include their block-commit) for a Stacks coinbase worth 500 USD. They'd have to
+pay about 1410 sats per block-commit just to break even, and they'd only recoup
+their investment on average once every 4 months.
+
+This by itself is not a significant improvement -- F2Pool would be required to go from
+paying 200 sats to 1410 sats.  However, with this proposal's tweek, F2Pool would be required to
+_additionally_ win five Bitcoin blocks in a row in order to mine this cheaply.
+Given that they have 13.89% of the mining power today, the odds of this
+happening by chance are only 0.005%.  Since this is unlikely -- about once every
+20,000 Bitcoin blocks (once every 138.9 days) -- F2Pool would instead be required to send legitimate
+`block-commit` transactions in at least 50% of the Bitcoin blocks.
+In 87.11% of those, they would be paying the same transaction fees as every other Stacks miner.  This alone
+would cost them $106.13 USD/day.  With the additional _de minimis_ PoX payout,
+this rises to $212.25 USD/day.  In other words, they would expect to pay
+$29,481.51 USD just to be able to mine one Stacks block for a _de minimis_ PoX payout.
+This is more expensive than mining honestly!
+
+If the largest Bitcoin mining pool -- Foundry USA, at 30% of the Bitcoin mining
+power -- wanted to become a Bitcoin MEV miner on Stacks, then the given
+parameter choice still renders this unprofitable.  There is a 0.243% chance that
+they win five blocks in a row, and can thus mine a _de-minimis_ `block-commit`
+and be guaranteed to win.  This happens about once every 2.85 days (every 411.5
+Bitcoin blocks), so they'd be spending about $604.91 USD just to mine one Stacks
+block for free (which is not profitable either).
+
+## Financial Incentives and Security Budgets
+
+Miners remain incentivized to mine blocks because they earn STX by spending BTC.
+This dynamic is not affected by this change.
+
+Stackers have the new-found power to sign blocks in order to append them to the
+Stacks chain.  However, some of them could refuse to sign, and ensure that no
+block ever reaches the 70% signature threshold.  While this can happen by
+accident, this is not economically rational behavior -- if they stall the chain
+for too long, their STX lose their value, and furthermore, they cannot re-stack
+or liquidate their STX or activate PoX to earn BTC.
+
+Stackers may refuse to sign blocks that contain transactions they do not like,
+for various reasons.  In the case of `stack-stx`, `delegate-stx`, and
+`transfer-stx`, users have the option to _force_ Stackers to accept the block by
+sending these transactions as Bitcoin transactions.  Then, all
+subsequently-mined blocks _must_ include these transactions in order to be
+valid.  This forces Stackers to choose between signing the block and stalling
+the network forever.
+
+Stackers who do not wish to be in this position should evaluate whether or not
+to continue Stacking.  Furthermore, Stackers may delegate their signing
+authority to a third party if they feel that they cannot participate directly in
+block signing.
+
+That all said, the security budget of the chain is considerably larger in this
+proposal than before.  In order to reorg the Stacks chain, someone must take
+control of at least 70% of the STX that are currently Stacked.  If acquired at
+market prices, then at the time of this writing, that amounts to spending about
+$191 million USD.  By contrast, Stacks miners today spend a few hundred USD per
+Bitcoin block to mine a Stacks block.  Reaching the same economic resistence to
+reorgs provided by a signature from 70% of all stacked STX would take
+considerably longer.
+
 ## Future Work: Transaction Replay on Bitcoin Forks
 
-The Bitcoin chain can fork.  This can be a problem, because Stacks
-transactions can be causally dependent on the now-orphaned Bitcoin state.  For
-example, any Stacks transaction that uses `(get-burn-block-info?)` may have a
-different execution outcome if evaluated after the Bitcoin block state from
-which it was mined no longer exists.
+The Bitcoin chain can fork.  This can be a problem, because Stacks transactions
+can be causally dependent on the now-orphaned Bitcoin state.  For example, any
+Stacks transaction that uses `(get-burn-block-info?)` may have a different
+execution outcome if evaluated after the Bitcoin block state from which it was
+mined no longer exists.
 
-To recover from Bitcoin forks, and the loss of data that may result,
-this proposal calls for dropping any previously-mined but now-invalid
-Stacks transactions from the Stacks chain history, but re-mining the set of
-Stacks transactions which remain valid across the Bitcoin fork in the same order
-in which they were previously mined.  That is, **transactions that were _not_
+To recover from Bitcoin forks, and the loss of data that may result, this
+proposal calls for dropping any previously-mined but now-invalid Stacks
+transactions from the Stacks chain history, but re-mining the set of Stacks
+transactions which remain valid across the Bitcoin fork in the same order in
+which they were previously mined.  That is, **transactions that were _not_
 causally dependent on lost Bitcoin state would remain confirmed on Stacks, in
 the same (relative) order in which they were previously mined.**
 
-To do so, Stackers would first observe that a
-Bitcoin fork has occurred, and vote on which Bitcoin block(s) were orphaned
-(even if it means sending the orphaned data to each other, since not all Stacks
-nodes may have seen it).  Once Stackers agree on the sequence of orphaned
-Bitcoin blocks, they identify which Stacks blocks would be affected.  From
-there, they each replay the affected Stacks blocks' transactions in the same
-order, and in doing so, identify which transactions are now invalid and which
-ones remain valid.  Once they have this subsequence of still-valid transactions,
-they advertise it to miners, and only sign off on Stacks blocks that include a
-prefix of this subsequence that has not yet been re-mined (ignoring `Coinbase`,
-`TenureChange`, and `TenureExtension` transactions).  This way, the Stacks miners are compelled to
-replay the still-valid Stacks transactions in their same relative order, thereby
-meeting this guarantee.
+To do so, Stackers would first observe that a Bitcoin fork has occurred, and
+vote on which Bitcoin block(s) were orphaned (even if it means sending the
+orphaned data to each other, since not all Stacks nodes may have seen it).  Once
+Stackers agree on the sequence of orphaned Bitcoin blocks, they identify which
+Stacks blocks would be affected.  From there, they each replay the affected
+Stacks blocks' transactions in the same order, and in doing so, identify which
+transactions are now invalid and which ones remain valid.  Once they have this
+subsequence of still-valid transactions, they advertise it to miners, and only
+sign off on Stacks blocks that include a prefix of this subsequence that has not
+yet been re-mined (ignoring `Coinbase`, `TenureChange`, and `TenureExtension`
+transactions).  This way, the Stacks miners are compelled to replay the
+still-valid Stacks transactions in their same relative order, thereby meeting
+this guarantee.
 
 Importantly, this transaction replay feature is directed exclusively by Stacker
 and miner policy logic.  It is not consensus-critical, and in fact cannot be
 because not all miners or Stackers may have even seen the orphaned Bitcoin state
 (which precludes them from independently identifying replay transactions; they
-must instead _work together_ to do so off-chain).  Therefore, this
-feature's implementation can be deferred until after this SIP is ratified.
+must instead _work together_ to do so off-chain).  Therefore, this feature's
+implementation can be deferred until after this SIP is ratified.
 
 # Backwards Compatibility
 
@@ -685,11 +771,11 @@ system in a separate category of blockchains from PoS:
 
 * Anyone can produce blocks in Stacks by pending BTC.  How they get their BTC is
   not important; all that matters is that they spend it  This is not true in PoS
-  systems -- users must stake existing tokens to have a say in block
-production, which means that they must acquire them from existing stakers.  This
-_de facto_ means that producing blocks in PoS systems requires the permission of
-at least one staker -- they have to sell you some tokens.  However, because BTC
-is produced via proof-of-work, no such permission is needed to produce Stacks
+systems -- users must stake existing tokens to have a say in block production,
+which means that they must acquire them from existing stakers.  This _de facto_
+means that producing blocks in PoS systems requires the permission of at least
+one staker -- they have to sell you some tokens.  However, because BTC is
+produced via proof-of-work, no such permission is needed to produce Stacks
 blocks.
 
 * Stackers do not earn the native STX tokens for signing off on blocks.
@@ -772,8 +858,9 @@ If the user is stacking in a pool, then they must send a minimal amount of STX
 from their Stacking address to one of the following Stacks addresses to commit
 their STX to a vote:
 
-* For **"yes"**, the address is `SP00000000000003SCNSJTCSE62ZF4MSE`.  This is the
-  c32check-encoded Bitcoin address for "yes" (`11111111111111X6zHB1bPW6NJxw6`) above.
+* For **"yes"**, the address is `SP00000000000003SCNSJTCSE62ZF4MSE`.  This is
+  the c32check-encoded Bitcoin address for "yes"
+(`11111111111111X6zHB1bPW6NJxw6`) above.
 
 * For **"no"**, the address is `SP00000000000000DSQJTCSE63RMXHDP`.  This is the
   c32check-encoded Bitcoin address for "no" (`1111111111111117Crbcbt8W5dSU7`)
@@ -798,16 +885,17 @@ cycles between cycle 75 and the end of the voting period, PoX must activate.
 ### Voting "yes" as a solo Stacker
 
 Suppose Alice has stacked 100,000 STX to `1LP3pniXxjSMqyLmrKHpdmoYfsDvwMMSxJ`
-during at least one of the voting period's reward cycles.  To vote,
-she sends 5500 satoshis for **yes** to `11111111111111X6zHB1bPW6NJxw6`.  Then, her 100,000
+during at least one of the voting period's reward cycles.  To vote, she sends
+5500 satoshis for **yes** to `11111111111111X6zHB1bPW6NJxw6`.  Then, her 100,000
 STX are tabulated as "yes".
 
 ### Voting "no" as a pool Stacker
 
 Suppose Bob has Stacked 1,000 STX in a Stacking pool and wants to vote "no", and
 suppose it remains locked in PoX during at least one reward cycle in the voting
-period.  Suppose his Stacks address is `SP2REA2WBSD3XMVMYS48NJKS3WB22JTQNB101XRRZ`.  To
-vote, he sends 1 uSTX from `SP2REA2WBSD3XMVMYS48NJKS3WB22JTQNB101XRRZ` for **no** to
+period.  Suppose his Stacks address is
+`SP2REA2WBSD3XMVMYS48NJKS3WB22JTQNB101XRRZ`.  To vote, he sends 1 uSTX from
+`SP2REA2WBSD3XMVMYS48NJKS3WB22JTQNB101XRRZ` for **no** to
 `SP00000000000000DSQJTCSE63RMXHDP`. Then, his 1,000 STX are tabulated as "no."
 
 # Reference Implementation
@@ -835,20 +923,19 @@ contract.
 
 StackerDB is a feature that will ship prior to this SIP's activation.  It allows
 users to store data within the Stacks peer-to-peer network by means of a
-specially-crafted smart contract, and a connected overlay network.
-The smart contract describes the parameters of the data
-(e.g. who can write to it; how much data can be stored; and so on);
-the data itself is stored off-chain.  A StackerDB-aware node maintains
-connections to other StackerDB-aware nodes who replicate the same StackerDBs as
-itself.
+specially-crafted smart contract, and a connected overlay network.  The smart
+contract describes the parameters of the data (e.g. who can write to it; how
+much data can be stored; and so on); the data itself is stored off-chain.  A
+StackerDB-aware node maintains connections to other StackerDB-aware nodes who
+replicate the same StackerDBs as itself.
 
 The StackerDB data schema is an array of fixed-sized chunks.  Each chunk has an
-slot index, a monotonically-increasing version, and a signer (e.g. a Stacks address).
-A user writes a chunk by POST-ing new chunk data for the slot, as well as a new
-version number and a signature over both the data and the version.  If the chunk
-is newer than the chunk already stored (as identified by version number), then
-the node stores the chunk and replicates it to other nodes subscribed to the
-same StackerDB instance.
+slot index, a monotonically-increasing version, and a signer (e.g. a Stacks
+address).  A user writes a chunk by POST-ing new chunk data for the slot, as
+well as a new version number and a signature over both the data and the version.
+If the chunk is newer than the chunk already stored (as identified by version
+number), then the node stores the chunk and replicates it to other nodes
+subscribed to the same StackerDB instance.
 
 Stacks nodes announce which StackerDB replicas they subscribe to when they
 handshake with one another.  If both the handshaker and its peer support the

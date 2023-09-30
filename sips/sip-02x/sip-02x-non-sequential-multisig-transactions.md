@@ -28,7 +28,7 @@ It does not remove support for the current format, rather it is intended to co-e
 The issue with the current format is that it establishes a signer order when funds are sent to multisig account address, and requires signers to sign in the same order to spend the funds.
 In practice, the current format has proven proven difficult for developers to understand and implement, as evidenced by the lack of Stacks multisig implementations today.
 
-This new format intendeds to simplify the signing algorithm and remove the requirement for in-order signing, without comprimising on security or increasing transaction size.
+This new format intends to simplify the signing algorithm and remove the requirement for in-order signing, without comprimising on security or increasing transaction size.
 It is expected that this will lead to better wallet support for Stacks multisig transactions.
 
 # Introduction
@@ -45,7 +45,7 @@ There are a few drawbacks to doing it this way:
 - The order in which the signers must sign is fixed as soon as funds are send to a multisig account, which limits flexibility when creating a spending transaction from a multisig account
 - The process of signing a transaction requires each signer to validate the entire signature chain before signing, in order to make sure it matches the transaction, leading to `O(n^2)` signing times
 - This does not reduce the size of a transaction, as each intermediate signature must still be included
-- There algorithm for doing this is complex, and based on my own experience and discussions with others, developers have a hard time understanding and implementing it correctly
+- The algorithm for doing this is complex, and several developers have a hard time understanding and implementing it correctly
 
 This document proposes having each signer sign the transaction directly:
 
@@ -116,7 +116,15 @@ The steps for verifying a non-sequential multisig transaction (hash modes `0x05`
 
 # Related Work
 
-This section will be expanded upon after this SIP is ratified.
+[PR #139](https://github.com/stacksgov/sips/pull/139): This draft SIP was created earlier but lacked the technical specifications for implementation. The author has since closed this PR in favor of this draft
+
+# Layer
+
+Consensus (hard fork)
+
+# Requires
+
+[SIP-005](https://github.com/stacksgov/sips/blob/main/sips/sip-005/sip-005-blocks-and-transactions.md)
 
 # Backwards Compatibility
 

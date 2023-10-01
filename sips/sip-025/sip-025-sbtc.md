@@ -6,13 +6,18 @@ Title: A Trustless 2-way Bitcoin Peg for Stacks
 
 Authors:
 * Aaron Blankstein <aaron@hiro.so>
+* Mike Cohen <mjoecohen@gmail.com>
 * Brice Dobry <brice@hiro.so>
+* Marvin Janssen
+* Friedger Müffke <mail@friedger.de>
+* Jesus Najera 
 * Jude Nelson <jude@stacks.org>
 * Don Park <donp@trustmachines.co>
 * Alie Slade <aslade@hiro.so>
 * Andre Serrano <andre@resident.stacks.org>
+* @Soju-Drinker 
 * Igor Sylvester <igor@trustmachines.co>
-* Joey Yandle ¿¼<joey@trustmachines.co> 
+* Joey Yandle <joey@trustmachines.co> 
 
 Consideration: Technical, Governance
 

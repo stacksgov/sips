@@ -12,7 +12,7 @@ Authors:
 * Alie Slade <aslade@hiro.so>
 * Andre Serrano <andre@resident.stacks.org>
 * Igor Sylvester <igor@trustmachines.co>
-* Joey Yandle ¿¼<joey@trustmachines.co> 
+* Joey Yandle Â¿Â¼<joey@trustmachines.co> 
 
 Consideration: Technical, Governance
 
@@ -214,7 +214,7 @@ or to process a wallet hand-off at the end of a reward cycle.  Either way, the
 user's BTC will be spent by Stackers before they can reclaim it via the spending
 fulfillment script.
 
-# Figure 1 Goes Here
+![Nakamoto Flow Diagrams](https://github.com/stacksgov/sips/assets/459947/62229151-6777-4eb9-b902-2b4192bdcf1c)
 
 _Figure 1: Protocol diagram of an sBTC peg-in.  The user submits a Bitcoin
 transaction, and eventually, the equivalent number of sBTC tokens materialize in
@@ -336,9 +336,12 @@ their signer daemons) observe and react to.  When the transaction confirms, the
 user's requested sBTC is locked until the end of the next reward cycle -- the
 user cannot spend it while Stackers are considering the request.
 
-# FIGURE 2 GOES HERE
+![Nakamoto Flow Diagrams (1)](https://github.com/stacksgov/sips/assets/459947/e8da8826-1303-4891-83fb-a568ec9d3f9d)
 
-_Figure 2:_
+_Figure 2: Protocol diagram for a successful peg-out request.  The user submits
+a peg-out request to Stacks, which locks their requested sBTC tokens until the
+start of the next reward cycle.  If the peg-out succeeds, then they receive BTC from
+the Stackers (minus a BTC transaction fee), and their sBTC gets burnt._
 
 When Stackers see the peg-out request, and if they are able to act on it (i.e.
 the wallet has enough UTXOs free), they execute a WSTS signing round to
@@ -508,7 +511,17 @@ SIP-021 already for signing blocks.  The latter is needed for users to correctly
 produce a peg-in UTXO, which contains the hash of a redeem script; the redeem
 script determines the peg wallet's address.
 
-# FIGURE 3 GOES HERE
+![Nakamoto Flow Diagrams (2)](https://github.com/stacksgov/sips/assets/459947/7e5bd105-71d4-46e4-afe9-9e68053696a6)
+
+_Figure 3: Protocol diagram of a peg-transfer.  Once the PoX anchor block is known,
+the new Stackers proceed to execute a WSTS DKG and post the new aggregate public key and
+wallet redeem script to Stacks.  The old Stackers help them do this by requiring miners
+to include their votes in their blocks as a prerequisite for signing them.  Once the
+new public key and wallet redeem script have reached 70% support, the old Stackers send
+one or more Bitcoin transactions which consume all of the current wallet's UTXOs (including those
+for in-flight peg-outs) and create new ones for the new peg wallet.  Once all old UTXOs
+are consumed, then the hand-off completes.  The act of processing a peg-transfer transaction
+updates the .sbtc contract's wallet UTXO tracker per the consensus rules._
 
 The Stackers write the aggregate public key and BTC redeem script 
 through an on-chain vote.  The new Stackers submit their votes as zero-fee Stacks

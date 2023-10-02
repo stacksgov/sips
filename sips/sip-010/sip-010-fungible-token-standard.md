@@ -236,3 +236,8 @@ Other examples of Clarity contracts that implement fungible tokens, although not
 
 - [@psq's trait and implementation](https://github.com/psq/flexr/blob/master/contracts/src20-trait.clar)
 - [@friedger's fungible token implementation](https://github.com/friedger/clarity-smart-contracts/blob/master/contracts/tokens/fungible-token.clar)
+
+## Deployed Contracts
+
+- mainnet: [SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.sip-010-trait](https://explorer.stacks.co/txid/SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard?chain=mainnet)
+- testnet: [ST1NXBK3K5YYMD6FD41MVNP3JS1GABZ8TRVX023PT.sip-010-trait-ft-standard.sip-010-trait](https://explorer.stacks.co/txid/ST1NXBK3K5YYMD6FD41MVNP3JS1GABZ8TRVX023PT.sip-010-trait-ft-standard?chain=testnet)

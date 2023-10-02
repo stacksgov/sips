@@ -8,8 +8,7 @@ may submit a SIP.
 
 ## SIPs in the Process of Being Activated
 
-* [SIP-018](https://github.com/stacksgov/sips/pull/57): Signed Structured Data
-* [SIP-019](https://github.com/stacksgov/sips/pull/72): Notifications for Token Metadata Updates
+* None
 
 ## Ratified SIPs
 
@@ -32,7 +31,15 @@ may submit a SIP.
   for Non-Fungible Tokens
 * [SIP-010](./sips/sip-010/sip-010-fungible-token-standard.md): Standard Trait Definition for Fungible Tokens
 * [SIP-012](./sips/sip-012/sip-012-cost-limits-network-upgrade.md):  Burn Height Selection for a Network Upgrade to Introduce New Cost-Limits
+* [SIP-013](./sips/sip-013/sip-013-semi-fungible-token-standard.md):  Standard Trait Definition for Semi-Fungible Tokens
+* [SIP-015](./sips/sip-015/sip-015-network-upgrade.md): Stacks Upgrade of Proof-of-Transfer and Clarity
 * [SIP-016](./sips/sip-016/sip-016-token-metadata.md): Metadata for Tokens
+* [SIP-018](./sips/sip-018/sip-018-signed-structured-data.md): Signed Structured Data
+* [SIP-019](./sips/sip-019/sip-019-token-metadata-update-notifications.md): Notifications for Token Metadata Updates
+* [SIP-020](./sips/sip-020/sip-020-bitwise-ops.md): Bitwise Operations in Clarity
+* [SIP-022](./sips/sip-022/sip-022-emergency-pox-fix.md): Emergency Fix to PoX Stacking Increases
+* [SIP-023](./sips/sip-023/sip-023-emergency-fix-traits.md): Emergency Fix to Trait Invocation Behavior
+* [SIP-024](./sips/sip-024/sip-024-least-supertype-fix.md): Emergency Fix to Data Validation and Serialization Behavior
 
 ## How to Get Involved
 

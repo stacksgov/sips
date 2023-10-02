@@ -24,13 +24,14 @@ Consideration: Technical, Governance, Economics
 
 Type: Consensus
 
-Status: Activation-in-Progress
+Status: Ratified
 
 Created: 1 December 2021
 
 License: BSD 2-Clause
 
-Sign-off: Brice Dolby <brice@hiro.so>, Jason Shrader <jason@joinfreedhold.com>
+Sign-off: Brice Dobry <brice@hiro.so>, Jason Schrader <jason@joinfreehold.com>,
+          MattyTokenomics, Jude Nelson <jude@stacks.org>
 
 Discussions-To: https://github.com/stacksgov/sips
 
@@ -972,7 +973,7 @@ to interact with exchanges that follow this convention.
 
 ```clarity
 (as-contract
-  (stx-transfer? u50 'SP3X6QWWETNBZWGBK6DRGTR1KX50S74D3433WDGJY tx-sender 0x00)) ;; Returns (err u4)
+  (stx-transfer-memo? u50 'SP3X6QWWETNBZWGBK6DRGTR1KX50S74D3433WDGJY tx-sender 0x00)) ;; Returns (err u4)
 (stx-transfer-memo? u60 tx-sender 'SP3X6QWWETNBZWGBK6DRGTR1KX50S74D3433WDGJY 0x010203) ;; Returns (ok true)
 ```
 
@@ -1876,14 +1877,38 @@ the Stacker vote criteria.
 
 ## Activation Status
 
-This section will be expanded as the voting proceeds, and shall record the
-history of events leading to the activation or rejection of this SIP.
+At the end of cycle 47, the following vote was calculated.  A total of
+142,239,429 STX participated.
+
+* For solo stacking, 135,287,693 STX voted YES (from 36 accounts), and 0 voted
+  NO.
+
+* For pool stacking, 6,173,363 STX voted YES (from 176 accounts), and 5,000 voted NO (from 2 accounts).
+
+* For non-stackers, 612,756 STX voted YES (from 262 accounts), and 159,616 voted
+  NO (from 5 accounts).
+
+All voting criteria from STX holders have been met.  A breakdown of the
+transactions can be found
+[here](https://stx.eco/dao/voting/results/SP3JP0N1ZXGASRJ0F7QAHWFPGTVK9T2XNXDB908Z.edp015-sip-activation).
+
+A copy of the scripts used to tabulate the solo and pool stacking can be found
+[here](./sip015-vote-main.zip).
 
 # Reference Implementation 
 
-The reference implementation of this SIP can be found in the `next` branch of
+The reference implementation of this SIP can be found in the `develop` branch of
 the Stacks blockchain reference implementation.  It is available at
-https://github.com/stacks-network/stacks-blockchain/tree/next.
+https://github.com/stacks-network/stacks-blockchain.
+
+## Errata
+
+The reference implementation is known to have the following inconsistencies with
+SIP-015:
+
+* `get-burn-block-info?` only returns data for Bitcoin blocks of the grandparent
+  block.  It does not return data for the parent of the block in which it is
+evaluated.
 
 # References
 

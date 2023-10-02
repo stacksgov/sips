@@ -37,7 +37,7 @@ reward in a base cryptocurrency by actively participating in the
 consensus algorithm.
 
 This SIP proposes to change the mining mechanism of the Stacks
-blockchain. [SIP-001](./sip-001-burn-election.md) introduced
+blockchain. [SIP-001](../sip-001/sip-001-burn-election.md) introduced
 proof-of-burn (PoB) where a base cryptocurrency is destroyed to
 participate in mining of a new cryptocurrency. This proposal argues
 that a new mining mechanism called proof-of-transfer (PoX) will be an
@@ -92,7 +92,7 @@ converting electricity and computing power to newly minted tokens, nor
 are they staking their cryptocurrency. Rather they use an existing PoW
 cryptocurrency to secure a new, separate blockchain.
 
-This SIP is currently a draft and proposes to change the mining
+This SIP proposes to change the mining
 mechanism of the Stacks blockchain from proof-of-burn (SIP-001) to
 proof-of-transfer.
 

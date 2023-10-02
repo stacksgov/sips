@@ -737,7 +737,46 @@ enough BTC to cover all outstanding sBTC tokens.
 
 # Related Work
 
-@andrerserrano to fill in
+There are several other systems which implement a wrapped BTC asset on a
+different chain.  The key difference between most of them and sBTC is that the
+nodes which control the BTC wallet use a closed-membership protocol to decide
+which parties can enter and leave the set.  In detail:
+
+## wBTC 
+
+This is a closed membership system.  It is made up of
+50+ merchants and custodians with keys to the wBTC
+multi-sig contract on Ethereum. End users purchase wBTC directly from
+authorized merchants, and often the experience is fast.  However, wBTC deposits and
+withdrawals can only be performed by authorized merchants and custodians. 
+
+## RBTC
+
+This is a closed membership system.  Nine organizations supporting the Powpeg,
+and there is no direct control of Bitcoin multi-sig private keys. Peg operations
+settle to Bitcoin via merge mining on RSK side-chain.
+
+## BTC.b
+
+This is a closed membership system.  It is operated by eight wardens (relayers)
+and a private codebase, secured by an SGX enclave. The SGX enclave only
+processes transfers when it receives approvals from at least 6 of the 8 Warden nodes.
+
+## LBTC
+
+This is a closed membership system.  Over 50 members of Liquid Federation manage multi-sig
+contract.  Only federation members can process peg-outs.
+
+## tBTC
+
+This is an open membership system, where the BTC is managed by a
+rotating set of randomly selected nodes which manage a threshold
+wallet.  However, it incurs fork risk because it does not operate atop Bitcoin.
+
+sBTC implements a state of the art solution whereby network validation is open
+and permissionless -- anyone can run a validator to secure the sBTC network
+ -- and where transactions settle to Bitcoin which benefit from 100% of
+Bitcoin's reorg resistance.
 
 # Backwards Compatibility
 

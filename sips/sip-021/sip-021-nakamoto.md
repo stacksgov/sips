@@ -9,6 +9,7 @@ Authors:
 * Brice Dobry <brice@hiro.so>
 * Jacinta Ferrent <jacinta@trustmachines.co>
 * Jude Nelson <jude@stacks.org>
+* Ashton Stephens <ashton@trustmachines.co>
 * Joey Yandle <joey@trustmachines.co>
 
 Consideration: Governance, Technical
@@ -39,54 +40,54 @@ major version would be bumped from 2 to 3.  The first Nakamoto release would be
 
 # Introduction
 
+## Glossary
+
+| Term | Definition |
+|:-:|:-|
+|MEV| **Miner Extractable Value:** It is any extra amount of value that a miner can extract from the network by deviating from expected behavior: including, excluding, or reordering transactions in a block. |
+| cryptographic sortition | A process of randomly selecting one or more entities from a set using cryptography. This is a decentralized and verifiable way to select participants for a variety of tasks, such as consensus protocols, lotteries, and auctions. Further details are in [SIP-001][SIP-001-LINK]. |
+| stacker | Someone who locks up their STX tokens in order to support the network and earn Bitcoin rewards. Read more about [how stacking helps the network][HOW-STACKING-HELPS-THE-NETWORK-GIST]. |
+| stacks miner | Someone who spends Bitcoin to participate in miner elections and create the new block on the Stacks blockchain. Miners are rewarded with STX tokens. |
+| PoX | **Proof of Transfer:** Miners commit Bitcoin to the Stacks network in order to be eligible to mine blocks. The more Bitcoin a miner commits, the higher their chances of winning the block lottery selected via cryptographic sortition. If a miner wins the block lottery, they are awarded STX tokens as a reward. Further details are in [SIP-007][SIP-007-LINK]. |
+| Bitcoin finality | The level of difficulty inherent to reversing a confirmed Bitcoin transaction by means of producing a Bitcoin fork with a higher total chainwork which excludes said transaction. |
+
+## Current Design
+
 The Stacks blockchain today produces blocks in accordance to the algorithms
-described in SIP-001 and SIP-007.  Miners compete to append a block to the
-blockchain through a cryptographic sortition proces.  Miners submit a
+described in [SIP-001][SIP-001-LINK] and [SIP-007][SIP-007-LINK]. Miners compete to append a block to the
+blockchain through a cryptographic sortition process.  Miners submit a
 `block-commit` transaction to the underlying burnchain (i.e. Bitcoin), which
 commits to the hash of the block the miner intends to append.  The cryptographic
 sortition process selects at most one `block-commit` in the subsequent burnchain
 block, which entitles the submitter to propagate their block and earn a block
 reward.
 
-The current Stacks blockchain is a single-leader blockchain -- at most one miner is
-involved in producing a block.  An economically-rational miner builds atop the
-Stacks block that they believed was the canonical Stacks chain tip at the
-time they submitted their `block-commit`.  However, such a system is necessarily
-best-effort: the miner can crash before it replicates is block, the miner could
-produce an invalid block, or the miner could replicate their block well after
-subsequent cryptographic sortitions have happened.  These possibilities require
-that the current Stacks blockchain admit blockchain forks -- the Stacks
-blockchain must support forks independently of the underlying burnchain.
+## Problem Statement
 
-Experience from the past three years of the system's operation have shown that
-forks and missing blocks are disruptive to on-chain applications.  Specifically,
-the act of waiting to produce a new block until after a cryptographic sortition 
-necessarily ties best-case Stacks block production rate to the block production
+
+Over the last three years the stacks community has identified several issues:
+
+1. **Forks and missing blocks are disruptive to on-chain applications.** The act of
+waiting to produce a new block until after a cryptographic sortition
+ties best-case Stacks block production rate to the block production
 rate of its underlying burnchain, leading to very high transaction confirmation
-latency.  While microblocks had the potential to mitigate both of these effects,
-they did not work in practice, mainly because there was no way to have any
-assurance that microblocks would be confirmed until the next sortition happened.
-
-Furthermore, the tolerance of Stacks forks had two unintended negative
-consequences to the Stacks blockchain's operation.  First, the existence of
-Stacks forks implies an independent security budget for the Stacks blockchain.
+latency. While microblocks have the potential to mitigate both of these effects,
+they did not work in practice because the protocol cannot ensure that microblocks will
+be confirmed until the next sortition happens.
+1. **Stacks forks imply an independent security budget for the Stacks blockchain.**
 The cost to reorg the last _N_ blocks in the Stacks blockchain is the cost to
-produce the next _N + 1_ Stacks blocks.  This proposal describes a way of
-achieving a much higher security budget.  Second, Stacks forks have been shown
-to arise due to poorly-connected miners.  If a set of miners has a hard time
+produce the next _N + 1_ Stacks blocks.
+1. **Stacks forks arise due to poorly-connected miners.** If a set of miners has a hard time
 learning the canonical Stacks chain tip when they submit `block-commit`s, then
 they will collectively orphan other miners who are better-connected.  This
 appears to have borne out in practice.
+1. **Some Bitcoin miners run their own Stacks miners and deliberately exclude other Stacks miners' `block-commit`s from their Bitcoin blocks.**
+Once the STX block reward became sufficiently large this allowed them to pay a trivial
+PoX payout while guaranteeing that they would win the cryptographic sortition in their
+Bitcoin block. This was anticipated in the original design but the regularity with which
+it happens today is greater than the original protocol accounted for, and thus must be addressed now.
 
-Another shortcoming discovered from experience is that once the STX block reward
-became sufficiently large, Bitcoin miners began to run their own Stacks miners
-and deliberately exclude other Stacks miners' `block-commit`s from their Bitcoin
-blocks.  This allowed them to pay a _de minimis_ PoX payout while guaranteeing
-that they would win the cryptographic sortition in their Bitcoin block.  This is
-a form of miner-extractable value (MEV) that was anticipated in the current
-design, but because it did not affect chain liveness or chain safety, was not
-sufficiently addressed.  The fact that it happens with some regularity today
-means that the time has come to fix it.
+## Proposed Solution
 
 To address these shortcomings, this proposal calls for four fundamental changes
 to the way Stacks works.
@@ -97,7 +98,7 @@ instead of tens of minutes.  This is achieved by separating block production
 from cryptographic sortitions -- a winning miner may produce many blocks between
 two subsequent sortitions.
 * **Bitcoin finality**: Once a transaction is confirmed, reversing it is at
-  least as hard as reversing a Bitcoin transaction.  The Stacks blockchain no
+least as hard as reversing a Bitcoin transaction.  The Stacks blockchain no
 longer forks on its own.
 * **Bitcoin fork resistance**: If there is a Bitcoin reorg, then Stacks
   transactions which remain valid after the fork are re-mined in the same order
@@ -110,72 +111,55 @@ ensure that Bitcoin miners do not have an advantage as Stacks
 miners.  They must spend competitive amounts of BTC to have a chance of
 earning STX.
 
-To achieve fast block times, this proposal advocates for decoupling Stacks
-tenure changes from Bitcoin block arrivals.  A miner may create many Stacks
-blocks per Bitcoin block, and the next miner must confirm _all of them_.  There
-are no more microblocks or Bitcoin-anchored blocks; instead, there are only
-Nakamoto Stacks blocks. 
+## Design
 
-To ensure that miners are able to confirm all prior Stacks blocks, and ensure
-that they do not produce forks, PoX Stackers are now required to collectively
-validate, store, sign, and replicate each Stacks block the miner produces before
-the next block can be produced.  Stackers must do this in order to earn their
-PoX payouts and unlock their STX (i.e. PoX is now treated as compensation from
-the miner for playing this essential role).  In the proposed system, a
-cryptographic sortition only selects a new
+To achieve these goals this proposal makes the following changes to the stacks protocol:
+
+1. **Decouple Stacks tenure changes from Bitcoin block arrivals.** A miner may
+create many Stacks blocks per Bitcoin block, and the next miner must confirm
+_all of them_. There are no more microblocks or Bitcoin-anchored blocks; instead,
+there are only Nakamoto Stacks blocks. **This will achieve fast block times.**
+1. **Require stackers to collaborate before the next block can be produced.**
+PoX Stacksrs will need to collectively validate, store, sign, and replicate each
+Stacks block the miner produces before the next block can be produced to be selected
+by cryptographic sortition. Stackers must do this in order to earn their PoX payouts and unlock their STX
+(i.e. PoX is now treated as compensation from the miner for playing this essential
+role).  In the proposed system, a cryptographic sortition only selects a new
 miner; it does not give the miner the power to orphan confirmed transactions as it
-does today.  Instead, a cryptographic sortition causes the Stackers to
-carry out a _tenure change_ by (a) agreeing on a "last-signed" block from
-the current miner, and (b) agreeing to only sign blocks from the new miner
-which descend from this last-signed block.  Thus, Stackers police miner behavior
+does today. This will ensure that miners **do not produce fork and are
+able to confirm all prior Stacks blocks prior to selection.**
+1. **Use stackers to police miner behavior.**  A cryptographic sortition causes
+the Stackers to carry out a _tenure change_ by (a) agreeing on a "last-signed" block
+from the current miner, and (b) agreeing to only sign blocks from the new miner
+which descend from this last-signed block. Thus, Stackers police miner behavior
 --  Stackers prevent miners from mining forks during their tenure, and ensure
-that they begin their tenures by building atop the canonical chain tip.
+that they begin their tenures by building atop the canonical chain tip. This **further
+prevents miners from forking the stacks blockchain.**
+1. **Require Stacks miners to commit the _indexed block hash_ of the first block produced by the last Stacks miner in their block-commit transactions on Bitcoin.**
+This is the SHA512/256 hash of both the _consensus hash_ of all previously-accepted
+burnchain transactions that Stacks recognizes, as well as the hash of the block
+itself (a `block-commit` today only contains the hash of the Stacks block).
+This will anchor the Stacks chain history to Bitcoin up to the start of the previous
+miner's tenure, _as well as_ all causally-dependent Bitcoin state that Stacks has
+processed. This **ensures Bitcoin finality**, **resolves miner connectivity issues** by putting fork prevention on stackers,
+and allows nodes with up-to-date copies of the Stacks chain state to **identify which Stacks blocks are affected by a
+Bitcoin reorg** and recover the affected Stacks transactions.
+1. **Stackers identify the sequence of orphaned transactions after a fork for transaction replay.**
+This can be implemented after this SIP is ratified because it is not consensus-critical, and can be
+deployed incrementally because it only requires sufficient numbers of Stackers to cooperate.
+1. **Adopt a Bitcoin MEV solution which punishes block-commit censorship.** The probability should be altered such that:
+    1. The probability of winning is non-zero only if the miner attempted to mine in the majority of the past ten cryptographic sortitions. This is not true today -- if a miner is the sole miner in a
+    Bitcoin block, then it has 100% chance of winning. In this system, it can be the case that no miner
+    has a non-zero chance of winning. A Bitcoin MEV miner who spends a _de minimis_ PoX payout in Bitcoin
+    blocks it wins, but does not compete in other blocks, will _never_ win sortition unless the Bitcoin
+    miner also has the majority of Bitcoin mining power.
+    1. The probability of winning is inversely proportional to the larger of either the system's total commits in the current block, or the system's median total commits over the past ten blocks.
+    This means that a sudden decrease in the Bitcoin block's total PoX payout, such as due to
+    the exclusion of other Stacks miners' `block-commit`s by a Bitcoin MEV miner, does _not_
+    increase the likelihood that the MEV miner's _de minimis_ `block-commit` wins.
+    1. The probability of winning is absolute, not relative. The sum of each miner's probability of winning may be less than 1.0, meaning that there is a chance that a cryptographic sortition chooses no winner even if there are `block-commit`s present.  This outcome is treated as an empty sortition.
 
-To ensure Bitcoin finality, Stacks miners commit to the _indexed block hash_
-of the first block produced by the last Stacks miner in their
-block-commit transactions on Bitcoin.  This is the SHA512/256 hash of both
-the _consensus hash_ of all previously-accepted burnchain transactions that
-Stacks recognizes, as well as the hash of the block itself (a `block-commit`
-today only contains the hash of the Stacks block).  This anchors the Stacks chain history to
-Bitcoin up to the start of the previous miner's tenure, _as well as_ all
-causally-dependent Bitcoin state that Stacks has processed.  This ensures that the history of
-tenure changes up to (but excluding) the most recent tenure change is written to
-Bitcoin, and thus as difficult to erase as any other Bitcoin transaction.  It
-further ensures that a node with an up-to-date copy of the Stacks chain state
-can identify which Stacks blocks are affected by a Bitcoin reorg, so it can
-begin recovering the affected Stacks transactions.
-
-This proposal advocates for a Stacker-driven approach to Bitcoin reorg recovery.
-If a Bitcoin reorg happens, Stackers identify the sequence of now-orphaned
-Stacks transactions that miners must replay in order to preserve them in the
-Stacks blockchain across the fork.  This can be implemented after this SIP
-is ratified because it is not consensus-critical, and can be deployed incrementally because it only
-requires sufficient numbers of Stackers to cooperate.
-
-Finally, this proposal advocates for adopting a Bitcoin MEV solution which
-alters the probability that a miner wins sortition such that the probability
-of winning has the following properties:
-
-* The probability of winning is non-zero only if the miner attempted to mine in the majority of the past
-ten cryptographic sortitions.  This is not true today -- if a miner is the sole
-miner in a Bitcoin block, then it has 100% chance of winning.  In this system,
-it can be the case that no miner has a non-zero chance of winning.  A
-Bitcoin MEV miner who spends a _de minimis_ PoX payout in Bitcoin blocks it
-wins, but does not compete in other blocks, will _never_ win sortition unless
-the Bitcoin miner also has the majority of Bitcoin mining power.
-
-* The probability of winning is inversely proportional to the larger of
-either the system's total commits in the current block, or the system's median
-total commits over the past ten blocks.  This means that a sudden decrease in
-the Bitcoin block's total PoX payout, such as due to the exclusion of other
-Stacks miners' `block-commit`s by a Bitcoin MEV miner, does _not_ increase the
-likelihood that the MEV miner's _de minimis_ `block-commit` wins.
-
-* The probability of winning is absolute, not relative.  The sum of each miner's
-  probability of winning may be less than 1.0, meaning that there is a chance
-that a cryptographic sortition chooses no winner even if there are
-`block-commit`s present.  This outcome is treated as an empty sortition.
-
+All together these changes will achieve the goals outlined in section 2.4, resolving key areas of improvement for the stacks protocol.
 
 # Specification
 
@@ -425,7 +409,7 @@ The `TenureChange` transaction encodes the following data:
 * A bitmap of which Stackers contributed to the WSTS Schnorr signature
 
 When produced, the `TenureChange` transaction will be made available to miners
-for download, so that miners can include it in their first block. 
+for download, so that miners can include it in their first block.
 Miners _N_ and _N+1_ will both monitor the availability of this data
 in order to determine when the former must stop producing blocks and the latter
 may begin producing blocks.  Once miner _N+1_ receives this data,
@@ -503,7 +487,7 @@ signatures on blocks.
 In the event that PoX does not activate, the chain halts.  If there are no
 Stackers, then block production cannot happen.
 
-### Changes to PoX 
+### Changes to PoX
 
 To support tenure changes, this proposal calls for a new PoX contract, `.pox-4`.
 The `.pox-4` contract would be altered over the current PoX contract (`.pox-3`)
@@ -572,7 +556,7 @@ In this proposal, a block is valid if and only if the following are true:
 * The block is well-formed
     * It has the correct version and mainnet/testnet flag
     * **(NEW)** Its header contains the same Bitcoin block hash as the Bitcoin
-      block that contains its tenure's block-commit transaction 
+      block that contains its tenure's block-commit transaction
     * The transaction Merkle tree root is consistent with the transactions
     * The state root hash matches the MARF tip root hash once all transactions
       are applied
@@ -1024,6 +1008,10 @@ signing responsibility.
 
 # References
 
-[1] https://eprint.iacr.org/2020/852.pdf
+- [1] https://eprint.iacr.org/2020/852.pdf
+- [2] https://trust-machines.github.io/wsts/wsts.pdf
 
-[2] https://trust-machines.github.io/wsts/wsts.pdf
+
+[SIP-001-LINK]: https://github.com/stacksgov/sips/blob/main/sips/sip-001/sip-001-burn-election.md
+[SIP-007-LINK]: https://github.com/stacksgov/sips/blob/main/sips/sip-007/sip-007-stacking-consensus.md
+[HOW-STACKING-HELPS-THE-NETWORK-GIST]: https://gist.github.com/jcnelson/802d25994721d88ab7c7991bde88b0a9

@@ -42,25 +42,14 @@ major version would be bumped from 2 to 3.  The first Nakamoto release would be
 
 ## Glossary
 
-| Term | Definition | |:-:|:-| |MEV| **Miner Extractable Value:** It is any
-extra amount of value that a miner can extract from the network by deviating
-from expected behavior: including, excluding, or reordering transactions in a
-block. | | cryptographic sortition | A process of randomly selecting one or more
-entities from a set using cryptography. This is a decentralized and verifiable
-way to select participants for a variety of tasks, such as consensus protocols,
-lotteries, and auctions. Further details are in [SIP-001][SIP-001-LINK]. | |
-stacker | Someone who locks up their STX tokens in order to support the network
-and earn Bitcoin rewards. Read more about [how stacking helps the
-network][HOW-STACKING-HELPS-THE-NETWORK-GIST]. | | stacks miner | Someone who
-spends Bitcoin to participate in miner elections and create the new block on the
-Stacks blockchain. Miners are rewarded with STX tokens. | | PoX | **Proof of
-Transfer:** Miners commit Bitcoin to the Stacks network in order to be eligible
-to mine blocks. The more Bitcoin a miner commits, the higher their chances of
-winning the block lottery selected via cryptographic sortition. If a miner wins
-the block lottery, they are awarded STX tokens as a reward. Further details are
-in [SIP-007][SIP-007-LINK]. | | Bitcoin finality | The level of difficulty
-inherent to reversing a confirmed Bitcoin transaction by means of producing a
-Bitcoin fork with a higher total chainwork which excludes said transaction. |
+| Term | Definition |
+|:-:|:-|
+|MEV| **Miner Extractable Value:** It is any extra amount of value that a miner can extract from the network by deviating from expected behavior: including, excluding, or reordering transactions in a block. |
+| cryptographic sortition | A process of randomly selecting one or more entities from a set using cryptography. This is a decentralized and verifiable way to select participants for a variety of tasks, such as consensus protocols, lotteries, and auctions. Further details are in [SIP-001][SIP-001-LINK]. |
+| stacker | Someone who locks up their STX tokens in order to support the network and earn Bitcoin rewards. Read more about [how stacking helps the network][HOW-STACKING-HELPS-THE-NETWORK-GIST]. |
+| stacks miner | Someone who spends Bitcoin to participate in miner elections and create the new block on the Stacks blockchain. Miners are rewarded with STX tokens. |
+| PoX | **Proof of Transfer:** Miners commit Bitcoin to the Stacks network in order to be eligible to mine blocks. The more Bitcoin a miner commits, the higher their chances of winning the block lottery selected via cryptographic sortition. If a miner wins the block lottery, they are awarded STX tokens as a reward. Further details are in [SIP-007][SIP-007-LINK]. |
+| Bitcoin finality | The level of difficulty inherent to reversing a confirmed Bitcoin transaction by means of producing a Bitcoin fork with a higher total chainwork which excludes said transaction. |
 
 ## Current Design
 

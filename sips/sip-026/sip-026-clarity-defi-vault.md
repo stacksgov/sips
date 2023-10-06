@@ -36,6 +36,8 @@ However, Clarity's design differs significantly. It does not allow contract depl
 # Specification
 The proposed solution is to create a common interface for contracts that hold SIP-010 assets. While Clarity does not permit contract deployment during transactions, different entities can be logically separated within the same contract. If the Stacks Explorer implements this common interface, users will be able to view their collateral positions distinctly, providing a user experience similar to DeFi on other blockchain platforms like Ethereum and Solana.
 
+New vault IDs are generated incrementally starting from 0. Vaults are separated logically based on this ID with a numerical value.
+
 The SIPXXX Vault trait, `sipxxx-vault-trait`, has 3 functions. These functions
 do not update state, they are view-only and they allow for a common interface:
 ## Trait functions
@@ -44,6 +46,12 @@ do not update state, they are view-only and they allow for a common interface:
 `(asset-contract ((vault-id uint)) (response principal uint))`
 
 Returns the principal of the asset being held by the vault identified by `vault-id`.
+
+Returns the token type balance `token-id` of a specific principal `who` as an
+unsigned integer wrapped in an `ok` response. It has to respond with `u0` if the
+principal does not have a balance of the specified token or if no token with
+`token-id` exists. The function should never return an `err` response and is
+recommended to be defined as read-only.
 
 ### holdings
 

@@ -8,7 +8,7 @@ Authors:
 * Aaron Blankstein <aaron@hiro.so>
 * Brice Dobry <brice@hiro.so>
 * Jacinta Ferrent <jacinta@trustmachines.co>
-* Jude Nelson <jude@stacks.org>
+* Jude Nelson <jude@Stacks.org>
 * Ashton Stephens <ashton@trustmachines.co>
 * Joey Yandle <joey@trustmachines.co>
 
@@ -65,18 +65,21 @@ block and earn a block reward.
 ## Problem Statement
 
 
-Over the last three years the stacks community has identified several issues:
+Over the last three years the Stacks community has identified several issues:
 
-1. **Forks and missing blocks are disruptive to on-chain applications.** The act
+1. **Slow Bitcoin blocks, Stacks forks, and missed sortitions are disruptive to on-chain applications.** The act
 of waiting to produce a new block until after a cryptographic sortition ties
 best-case Stacks block production rate to the block production rate of its
 underlying burnchain, leading to very high transaction confirmation latency.
 While microblocks have the potential to mitigate both of these effects, they did
 not work in practice because the protocol cannot ensure that microblocks will be
 confirmed until the next sortition happens.
-1. **Stacks forks imply an independent security budget for the Stacks
-blockchain.** The cost to reorg the last _N_ blocks in the Stacks blockchain is
-the cost to produce the next _N + 1_ Stacks blocks.
+1. **Stacks forks are not tied to Bitcoin forks, allowing cheap reorgs**
+The cost to reorg the last _N_ blocks in the Stacks blockchain is
+the cost to produce the next _N + 1_ Stacks blocks (i.e. by spending BTC), which
+is cheap compared to the cost of reorging Bitcoin. This SIP describes an
+opportunity to tie the canonical Stacks fork to Bitcoin, so that the act of
+reorging Stacks chain history is at least as expensive as reorging Bitcoin.
 1. **Stacks forks arise due to poorly-connected miners.** If a set of miners has
 a hard time learning the canonical Stacks chain tip when they submit
 `block-commit`s, then they will collectively orphan other miners who are
@@ -114,23 +117,27 @@ must spend competitive amounts of BTC to have a chance of earning STX.
 
 ## Design
 
-To achieve these goals this proposal makes the following changes to the stacks
+To achieve these goals this proposal makes the following changes to the Stacks
 protocol:
 
-1. **Decouple Stacks tenure changes from Bitcoin block arrivals.** A miner may
-create many Stacks blocks per Bitcoin block, and the next miner must confirm
-_all of them_. There are no more microblocks or Bitcoin-anchored blocks;
+1. **Decouple Stacks tenure changes from Bitcoin block arrivals.**  In both
+   today's system and this proposal, miners take turns appending blocks to the
+Stacks blockchain -- the next miner is selected by cryptographic sortition,
+and the miner has the duration of the Bitcoin block (its _tenure_) to announce
+new block state.  This proposal calls for allowing a miner to 
+many Stacks blocks per Bitcoin block instead of one, and requiring the next miner
+to confirm _all of them_. There are no more microblocks or Bitcoin-anchored blocks;
 instead, there are only Nakamoto Stacks blocks. **This will achieve fast block
 times.**
 1. **Require stackers to collaborate before the next block can be produced.**
-PoX Stacksrs will need to collectively validate, store, sign, and replicate each
+PoX Stackers will need to collectively validate, store, sign, and propagate each
 Stacks block the miner produces before the next block can be produced to be
 selected by cryptographic sortition. Stackers must do this in order to earn
 their PoX payouts and unlock their STX (i.e. PoX is now treated as compensation
 from the miner for playing this essential role).  In the proposed system, a
 cryptographic sortition only selects a new miner; it does not give the miner the
 power to orphan confirmed transactions as it does today. This will ensure that
-miners **do not produce fork and are able to confirm all prior Stacks blocks
+miners **do not produce forks and are able to confirm all prior Stacks blocks
 prior to selection.**
 1. **Use stackers to police miner behavior.**  A cryptographic sortition causes
 the Stackers to carry out a _tenure change_ by (a) agreeing on a "last-signed"
@@ -138,7 +145,7 @@ block from the current miner, and (b) agreeing to only sign blocks from the new
 miner which descend from this last-signed block. Thus, Stackers police miner
 behavior --  Stackers prevent miners from mining forks during their tenure, and
 ensure that they begin their tenures by building atop the canonical chain tip.
-This **further prevents miners from forking the stacks blockchain.**
+This **further prevents miners from forking the Stacks blockchain.**
 1. **Require Stacks miners to commit the _indexed block hash_ of the first block
 produced by the last Stacks miner in their block-commit transactions on
 Bitcoin.** This is the SHA512/256 hash of both the _consensus hash_ of all
@@ -177,7 +184,7 @@ chance that a cryptographic sortition chooses no winner even if there are
 `block-commit`s present.  This outcome is treated as an empty sortition.
 
 All together these changes will achieve the goals outlined in section 2.4,
-resolving key areas of improvement for the stacks protocol.
+resolving key areas of improvement for the Stacks protocol.
 
 # Specification
 
@@ -265,7 +272,7 @@ its `BlockHeaderHash`), but instead is the index block hash (i.e.
 `StacksBlockId`) of the _previous_ miner's first-ever produced block.
 
 ![Untitled presentation
-(12)](https://github.com/stacks-network/stacks-blockchain/assets/459947/fb669bc7-3d61-4154-a941-0e22beb73ad0)
+(12)](https://github.com/Stacks-network/Stacks-blockchain/assets/459947/fb669bc7-3d61-4154-a941-0e22beb73ad0)
 
 <em>Figure 1: Overview of the relationship between Bitcoin blocks (and
 sortitions), Stacks blocks, and the inventory bitmaps exchanged by Stacks nodes.
@@ -321,7 +328,7 @@ fetching the tenure-start blocks in step 2 is the act of obtaining these
 4. **Download and validate the continuity of each block sequence between
 consecutive block commits**.  Now that the node knows the number of blocks
 between two consecutive winning block-commits, as well as the hashes of the
-first and last block in this sequence, the node can do this in a bound amount of
+first and last block in this sequence, the node can do this in a bounded amount of
 space and time.  There is no risk of a malicious node serving an endless stream
 of well-formed but invalid blocks to a booting-up node, because the booting-up
 node knows exactly how many blocks to expect and knows what hashes they must
@@ -399,7 +406,7 @@ new miner cannot orphan recently-confirmed transactions from the old miner
 they are not adequate for addressing this proposal's concerns).
 
 ![Untitled presentation
-(11)](https://github.com/stacks-network/stacks-blockchain/assets/459947/98381aa0-f8ff-4842-b15b-881f4c4424ab)
+(11)](https://github.com/Stacks-network/Stacks-blockchain/assets/459947/98381aa0-f8ff-4842-b15b-881f4c4424ab)
 
 <em>Figure 2: Tenure change overview.  When a new Bitcoin block arrives,
 Stackers begin the process of deciding the last block they will sign from miner
@@ -440,7 +447,7 @@ sortition _N_).
 transaction as its first transaction.
 3. It begins mining transactions out of the mempool to produce Stacks blocks.
 
-If miner _N_ cannott obtain or observe the `TenureChange` transaction, then it
+If miner _N_ cannot,  obtain or observe the `TenureChange` transaction, then it
 will keep producing blocks.  However, Stackers will not sign them, so as far as
 the rest of the network is concerned, these blocks never materialized.  If miner
 _N+1_ does not see the `TenureChange` transaction, it does not start mining; a
@@ -465,7 +472,7 @@ Stacks block.  This can happen for banal reasons, such as (but not limited to):
 In all cases, the tenure would be empty (Figure 3).
 
 ![Untitled presentation
-(13)](https://github.com/stacks-network/stacks-blockchain/assets/459947/4f971f6b-e1a7-4994-8fca-cb82d70764e4)
+(13)](https://github.com/Stacks-network/Stacks-blockchain/assets/459947/4f971f6b-e1a7-4994-8fca-cb82d70764e4)
 
 
 <em>Figure 3: Tenures N+1 and N+2 are empty.  Stackers recover from this by
@@ -557,17 +564,17 @@ is as follows:
 condition variant is encoded as follows:
   * A 65-byte **Schnorr signature**, consisting of:
     * The 33-byte signed x-coordinate of the signature curve point
-    * The 32-byte scalar derived from the hash of the generator raised to the
-      _k_th power and the message
+    * The 32-byte scalar derived from the hash of the generator _g_ raised to the
+      _k_th power and the message (where _k_ is the message-specific nonce)
   * A 33-byte **compressed secp256k1 public key**, consisting of its signed
     x-coordinate
 
 To verify the transaction signature, the node both verifies that the public
 key's hash160 is equal to the spending condition's 20-byte hash, and verifies
-that the Schnorr signature over the `presign-sighash` value of the transaction
-was generated by corresponding private key.
+the Schnorr signature over the `presign-sighash` value with the given
+public key.
 
-The address of a principal who signs a transaction with the WSTS Schnorr
+The address of a principal who signs a transaction with the Schnorr
 signature algorithm is identical to that of a single-sig ECDSA signer.  They
 have the same address versions -- i.e. on mainnet, the address starts with `SP`,
 and on testnet, it starts with `ST`.
@@ -618,7 +625,7 @@ today, as well as a VRF proof for this tenure.
 
 The Nakamoto system will use a variation of the Assumed Total Commitment with
 Carryforward (ATC-C) MEV mitigation strategy described in [this
-document](https://forum.stacks.org/uploads/short-url/bqIX4EQ5Wgf2PH4UtiZHZBqJvYE.pdf)
+document](https://forum.Stacks.org/uploads/short-url/bqIX4EQ5Wgf2PH4UtiZHZBqJvYE.pdf)
 to allocate block rewards to miners.  Unlike Stacks today, there is no 40/60 fee
 split between two consecutive miners.  Each miner nominally receives the entire
 coinbase and transaction fees before the MEV mitigation is applied.
@@ -630,7 +637,7 @@ carryforward function for missed sortitions' coinbases:  the coinbase for a
 Bitcoin block without a sortition would be available to winning miners across
 the next ten tenures.  That is, if a miner whose tenure begins during the next
 ten tenure-changes manages to produce a Stacks block with a `Coinbase`, then
-they receive a 20% of the coinbase that was lost.
+they receive a 10% of the coinbase that was lost.
 
 The reason ATC (and ATC-C) were not considered as viable anti-MEV strategies
 before is because a decrease in the PoX total spend can lead to a Bitcoin block
@@ -638,10 +645,10 @@ with no sortition. This is a deliberate design choice in ATC-C, because it has
 the effect of lowering the expected return of MEV mining.  In ATC-C, the
 probability of a miner winning a sortition is _equal to_ (i.e. no longer
 proportional to) the miner's BTC spend, divided by the maximum of either the
-assumed total commit (median total BTC spend in the last 5 blocks) or the total
+assumed total commit (median total BTC spend in the last 10 blocks) or the total
 BTC spend in this Bitcoin block.  This means that the sum of each miners'
 winning probabilities is not guaranteed to be 1.  The system deals with this by
-creating a virtual "nul" miner that participates in each sortition, such that
+creating a virtual "null" miner that participates in each sortition, such that
 its probability of the null miner winning is _1 -
 sum(probabilities-of-all-other-miners)_.  If the null miner wins, then the
 sortition is treated as empty.
@@ -666,7 +673,7 @@ today: F2Pool.
 
 Consider what happens to F2Pool, who spends 200 sats on PoX and zero sats on
 transaction fees for their block-commit. Suppose the median total BTC spend over
-the last ten Bitcoin blocks was 500,000 sats (about what it is right now).  With
+the last ten Bitcoin blocks was 500,000 sats (about what it is at the time of this writing).  With
 ATC-C alone, their probability of winning sortition would be 200 / max(500,000,
 200), or about 0.04% chance. The miner would need to send 2,500 such
 block-commits before winning a Stacks coinbase (worth about 500 USD). F2Pool had
@@ -798,7 +805,7 @@ This new system bears superficial similarity to proof-of-stake (PoS) systems.
 However, there are several crucial differences that place the Nakamoto Stacks
 system in a separate category of blockchains from PoS:
 
-* Anyone can produce blocks in Stacks by pending BTC.  How they get their BTC is
+* Anyone can produce blocks in Stacks by spending BTC.  How they get their BTC is
   not important; all that matters is that they spend it  This is not true in PoS
 systems -- users must stake existing tokens to have a say in block production,
 which means that they must acquire them from existing stakers.  This _de facto_
@@ -927,7 +934,7 @@ period.  Suppose his Stacks address is
 # Reference Implementation
 
 The reference implementation can be found at
-https://github.com/stacks-network/stacks-blockchain.
+https://github.com/Stacks-network/Stacks-blockchain.
 
 ## Stacker Responsibilities
 
@@ -976,6 +983,12 @@ the replica.  If one node discovers that another node has a newer version of the
 chunk, it will download it and forward it to other StackerDB-aware nodes in the
 overlay that also need it.  In doing so, every StackerDB-aware node in the
 overlay eventually receives an up-to-date replica of the StackerDB chunks.
+
+The Stacks node re-evaluates the StackerDB's controlling smart contract each
+time it processes a new Bitcoin block in order to determine who is allowed to
+write to which chunks.  At each such reconfiguration, a slot's data whose signer
+_changes_ will be evicted from the replica.  Data for slots whose signers do not
+change is preserved.
 
 ## DKG and Signing Rounds
 

@@ -57,19 +57,18 @@ This would address all of the concerns listed above, and would not increase tran
 
 ## Examples
 
-Imagine a DAO that has a management team comprised of five members. They decide to make a 3 out of 5 multisig on Stacks.
-The existing system mandates that transactions be signed in a sequential order based on the creation hierarchy. To illustrate:
+Imagine a DAO that has a management team comprised of five members.
+They create a 3 out of 5 multisig account on Stacks.
+The existing multisig standard mandates that all transactions from this account be signed in an order which is established upon account creation.
+The ordering requirement creates a hierarchy where keys near the start of the sequence have more flexibility than those near the end. 
+To illustrate some of the limitations this creates:
 
-- After the signature of the 3rd member, only the 4th and 5th members are eligible to provide subsequent signatures.
-- Once the 5th member has signed a transaction, further signatures are restricted.
+- In a scenario where the 1st member initiates a transaction and the 4th signs it, it prohibits the 2nd and 3rd members from signing. The responsibility then falls solely on the 5th member to finalize the transaction.
+- Once the 5th member has signed a transaction, no further signatures are possible.
+- If the 3rd member initiates a transaction, only the 4th and 5th members are eligible to provide subsequent signatures.
+- Initiating a transaction by the 4th or 5th member is impossible, as there are insufficient subsequent members to complete the signing process.
 
-This leads to a problem where members positioned earlier in the sequence possess more flexibility compared to those later in the order, for instance:
-
-- Initiating a transaction by the 4th or 5th member is impractical, as there are insufficient subsequent members to complete the signing process.
-- In a scenario where the 1st member initiates a transaction and the 4th signs it, it restricts the 2nd and 3rd members from signing. The responsibility then falls solely on the 5th member to finalize the transaction. This becomes cumbersome if, for instance, the 5th member is unavailable, forcing others to await their signature.
-- Similarly, if the 3rd member both initiates and signs a transaction, it requires signatures from both the 4th and 5th members. The 1st and 2nd members are sidelined unless a new transaction sequence is initiated.
-
-To summarize, while such a multisig setup might suffice for smaller teams, its effectiveness dwindles as the number of signatories increases, especially with four or more participants. It complicates transaction initiation and obtaining the needed signatures.
+To summarize, while such a multisig setup might suffice for smaller teams, as the number of required signers increases, it becomes increasingly difficult to create a transaction. This SIP aims to remove these limitations.
 
 # Specification
 

@@ -4,7 +4,7 @@ SIP Number: 02x
 
 Title: Non-sequential Multisig Transactions
 
-Author: Jeff Bencin <jbencin@hiro.so>
+Authors: Jeff Bencin <jbencin@hiro.so>, Vlad Bespalov <vlad@asigna.io>
 
 Consideration: Technical
 
@@ -54,6 +54,21 @@ signature_1(tx), signature_2(tx), ..., signature_n(tx)
 ```
 
 This would address all of the concerns listed above, and would not increase transaction size or make it easier to forge a signature
+
+## Examples
+
+Imagine a DAO that has a management team comprised of five members.
+They create a 3 out of 5 multisig account on Stacks.
+The existing multisig standard mandates that all transactions from this account be signed in an order which is established upon account creation.
+The ordering requirement creates a hierarchy where keys near the start of the sequence have more flexibility than those near the end. 
+To illustrate some of the limitations this creates:
+
+- In a scenario where the 1st member initiates a transaction and the 4th signs it, it prohibits the 2nd and 3rd members from signing. The responsibility then falls solely on the 5th member to finalize the transaction.
+- Once the 5th member has signed a transaction, no further signatures are possible.
+- If the 3rd member initiates a transaction, only the 4th and 5th members are eligible to provide subsequent signatures.
+- Initiating a transaction by the 4th or 5th member is impossible, as there are insufficient subsequent members to complete the signing process.
+
+To summarize, while such a multisig setup might suffice for smaller teams, as the number of required signers increases, it becomes increasingly difficult to create a transaction. This SIP aims to remove these limitations.
 
 # Specification
 

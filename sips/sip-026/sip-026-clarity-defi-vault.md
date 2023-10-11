@@ -34,7 +34,9 @@ In Solidity, the Ethereum smart contract language, contracts can be deployed by 
 However, Clarity's design differs significantly. It does not allow contract deployment during transaction execution to maintain deterministic behavior and avoid infinite recursion. Consequently, representing entities that hold SIP-010 assets requires implementing logic within a single contract address.
 
 # Specification
-The proposed solution is to create a common interface for contracts that hold SIP-010 assets. While Clarity does not permit contract deployment during transactions, different entities can be logically separated within the same contract. If the Stacks Explorer implements this common interface, users will be able to view their collateral positions distinctly, providing a user experience similar to DeFi on other blockchain platforms like Ethereum and Solana.
+The proposed solution is to create a common interface for contracts that hold SIP-010 assets. While Clarity does not permit contract deployment during transactions, different entities can be logically separated within the same contract. This is used in the Arkadiko protocol contracts to differentiate between different vaults. If the Stacks Explorer implements this common interface, users will be able to view their collateral positions distinctly, providing a user experience similar to DeFi on other blockchain platforms like Ethereum and Solana.
+
+New vault IDs are generated incrementally starting from 0. Vaults are separated logically based on this ID with a numerical value.
 
 The SIPXXX Vault trait, `sipxxx-vault-trait`, has 3 functions. These functions
 do not update state, they are view-only and they allow for a common interface:
@@ -44,6 +46,12 @@ do not update state, they are view-only and they allow for a common interface:
 `(asset-contract ((vault-id uint)) (response principal uint))`
 
 Returns the principal of the asset being held by the vault identified by `vault-id`.
+
+Returns the token type balance `token-id` of a specific principal `who` as an
+unsigned integer wrapped in an `ok` response. It has to respond with `u0` if the
+principal does not have a balance of the specified token or if no token with
+`token-id` exists. The function should never return an `err` response and is
+recommended to be defined as read-only.
 
 ### holdings
 
@@ -79,7 +87,7 @@ If the implementation does not group the vault assets by owner, return `0`.
 The dicussion on a vault Solidity implementation can be found here [Forum Discussion](https://www.usenix.org/conference/atc16/technical-sessions/presentation/ali)
 
 # Backwards Compatibility
-N/A
+The vault implementation was inspired by the vaults used in the Arkadiko protocol. Specifically, the Vault manager contract that is meant to abstract the data used in Arkadiko vaults. A vault trait contract can be deployed to interface with the Vault manager contract to be compliant with the standard (wrapping the original contract).
 
 # Activation
 

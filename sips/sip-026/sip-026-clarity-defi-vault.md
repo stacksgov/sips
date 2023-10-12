@@ -5,7 +5,7 @@ Title: Clarity DeFi Vault
 Author: Tycho Onnasch, Fernando Foy, Philip de Smedt, Christian Hresko
 Consideration: Technical
 Type: Standard
-Status: Draft
+Status: Accepted
 Created: Sep 7, 2023
 Last-Modified: Sep 7, 2023
 Sign-off:

@@ -13,10 +13,10 @@ Authors:
 * Jesus Najera 
 * Jude Nelson <jude@stacks.org>
 * Don Park <donp@trustmachines.co>
-* Alie Slade <aslade@hiro.so>
+* Alie Slade
 * Andre Serrano <andre@resident.stacks.org>
 * @Soju-Drinker 
-* Igor Sylvester <igor@trustmachines.co>
+* Igor Sylvester
 * Joey Yandle <joey@trustmachines.co> 
 
 Consideration: Technical, Governance
@@ -37,11 +37,11 @@ Discussions-To: https://github.com/stacksgov/sips
 
 # Abstract
 
-This SIP proposes the creation of a **trustless two-way peg** in which BTC (the
+This SIP proposes the creation of a **trustless 2-way peg** in which BTC (the
 tokens of the current Stacks burnchain) can be manifested on Stacks as a
 SIP-010-compliant fungible token, called sBTC, and later redeemed for the same
 number of BTC.  This proposal redefines the act of Stacking to be the act of
-maintaining a _peg wallet_, which is used to hold BTC and process sBTC
+maintaining an _sBTC wallet_, which is used to hold BTC and process sBTC
 redemptions.  Stackers are collectively responsible for ensuring that all
 liquid sBTC are backed by an equal number of BTC, and that redemptions are
 processed in a timely manner.  As a reward, they continue to receive PoX
@@ -52,17 +52,17 @@ payouts.
 The lack of a stateful smart contract system on Bitcoin necessitates the
 construction of systems in which a representation of locked Bitcoin is traded
 within a separate smart-contract-powered blockchain.  These systems aim to
-provide a "2-way peg" between the representation of the locked BTC ("wrapped
+provide a _2-way peg_ between the representation of the locked BTC ("wrapped
 BTC") and the BTC itself.  At a high level, these systems seek to provide two
 primitive operations:
 
-* "Peg-in": a BTC holder rids themselves of their BTC, and in doing so,
+* "Deposit": a BTC holder rids themselves of their BTC, and in doing so,
 receives the equivalent amount of wrapped BTC on the smart contract chain
 
-* "Peg-out": a wrapped BTC holder destroys their wrapped BTC on the smart
+* "Withdraw": a wrapped BTC holder destroys their wrapped BTC on the smart
 contract chain, and receives an equivalent amount of BTC on the Bitcoin chain
 
-While peg-in/peg-out operations are trivial to implement if a trusted
+While deposit/withdraw operations are trivial to implement if a trusted
 intermediary (a "custodian") can be found to exchange the wrapped BTC for the
 BTC and vice versa, a robust, incentive-compatible system remains elusive.  We
 identify two key shortcomings in the state-of-the-art 2-way peg systems that we
@@ -77,27 +77,27 @@ users, who would need to vet intermediaries before trusting them with large
 sums of BTC.
 
 * **Reliance on under-incentivized intermediaries.**  State-of-the-art 2-way
-peg systems rely on one or more intermediaries to maintain the peg state, but
+peg systems rely on one or more intermediaries to maintain the wallet state, but
 do not reward them proportional to the value they create.  Specifically, these
-peg intermediaries provide value even when the peg transaction volume is low,
+intermediaries provide value even when the transaction volume is low,
 because user confidence in the system depends on the belief that the
 intermediaries are nevertheless always available and trustworthy.  For example,
 the reason blockchains have a large coinbase relative to their transaction fees
 is to incentivize miners to always be available to process transactions.  But
-today, there is no 2-way peg system we are aware of that rewards peg
-intermediaries in this manner -- there is no "peg coinbase."  Collateralized
-pegs suffer a similar shortcoming -- there is little upside to honest
+today, there is no 2-way peg system we are aware of that rewards
+intermediaries in this manner -- there is no "2-way peg coinbase."  Collateralized
+2-way pegs suffer a similar shortcoming -- there is little upside to honest
 participation, but tremendous downside to going offline, which creates a high
 barrier-to-entry for participating as an intermediary.
 
 The system we present, called "sBTC," addresses these two short-comings by
 leveraging unique properties of the Stacks blockchain.  Our key insight is that
-Stacks' PoX consensus algorithm offers a way to _recover from_ peg safety
-failures while also _properly rewarding_ peg intermediaries for the value they
+Stacks' PoX consensus algorithm offers a way to _recover from_ 2-way peg safety
+failures while also _properly rewarding_ intermediaries for the value they
 provide.  Specifically:
 
 * We use the fact that the Stacks blockchain "forks with" the Bitcoin
-blockchain to propose an open-membership peg wallet maintained by Stackers.
+blockchain to propose an open-membership sBTC wallet maintained by Stackers.
 If Bitcoin forks, then both the Stacker set and their wallet forks with it, and
 the two resulting Stacker sets and wallets each own BTC on their respective
 forks.  This means that Stackers do not lose money from forks, nor do forks
@@ -105,47 +105,47 @@ pose a risk to the safety of users' BTC.
 
 * We use the fact that PoX pays BTC
 to STX holders to propose a liveness recovery mechanism, whereby some BTC
-payouts are repurposed to fulfill peg-out requests should the custodian fail.
+payouts are repurposed to fulfill withdraw requests should the custodian fail.
 
-* We reward Stackers for staying online to process peg operations by
+* We reward Stackers for staying online to process 2-way peg operations by
 compensating them with BTC via PoX, regardless of the peg's operation volume.  Stackers
 are compensated proportional to their signing power on the peg (i.e how many
-STX they locked) regardless of how many peg transactions they process.
+STX they locked) regardless of how many deposit and withdrawal transactions they process.
 
 By leveraging these properties, sBTC offers the following advantages over the
 state-of-the-art:
 
 * **If a majority of Stackers are honest, then sBTC remains safe.**  Every BTC
-peg-out is paired with an equivalent, legitimate request from a wrapped BTC
+withdraw is paired with an equivalent, legitimate request from a wrapped BTC
 holder, _even if every miner is malicious_.  This is achieved by ensuring that
-all Stacking and peg-maintenance operations materialize in all Stacks forks.
+all Stacking and wallet maintenance operations materialize in all Stacks forks.
 
 * **If a Byzantine fault-tolerant (BFT) majority of miners are honest, then sBTC
-remains live**.  All peg-out requests are eventually fulfilled, _even if every
+remains live**.  All withdraw requests are eventually fulfilled, _even if every
 Stacker is malicious_.  This is because Stackers do not have a say in block
-production, and Stackers that do not fulfill peg-outs lose their PoX-driven BTC
+production, and Stackers that do not fulfill withdraws lose their PoX-driven BTC
 income from miners.
 
-* **Peg-outs of arbitrary amounts of BTC are fulfilled in
+* **Withdraws of arbitrary amounts of BTC are fulfilled in
 a fixed amount of time on the happy path** if both Stackers and miners operate with a BFT honest
-majority.  If they do not, then peg-outs of arbitrary amounts of BTC 
-are fulfilled eventually by _redirecting_ Stackers' PoX payouts to fund peg-out
+majority.  If they do not, then withdraws of arbitrary amounts of BTC 
+are fulfilled eventually by _redirecting_ Stackers' PoX payouts to fund withdraw
 requests.
 
 To support this, sBTC offers two modes of operation:
 the Normal mode, and the Recovery mode.  In **Normal mode**, the sBTC asset is
 backed 1:1 by BTC sent to a wallet controlled by a large fraction of Stackers,
 as measured by the fraction of locked STX they represent.  Each time BTC is
-sent to this wallet (a peg-in operation), an equal number of sBTC are
+sent to this wallet (a deposit operation), an equal number of sBTC are
 automatically minted to an address of the sender's choosing.  Stackers respond
-to peg-out requests by sending BTC to the requester's Bitcoin address, thereby
-maintaining the peg.  The act of responding to peg-out requests automatically
+to withdraw requests by sending BTC to the requester's Bitcoin address, thereby
+maintaining the peg.  The act of responding to withdraw requests automatically
 destroys the requester's equivalent amount of sBTC on the Stacks chain.
 
 If the Normal mode encounters a liveness failure for any reason (including loss
 of BTC), the system transitions to a Recovery mode until enough Stackers come
 back online.  In **Recovery mode**, a fraction of the PoX payouts are
-redirected to peg-out requests such that eventually, all outstanding requests
+redirected to withdraw requests such that eventually, all outstanding requests
 will be fulfilled, even if the Stackers _never_ come back online.  While
 considerably slower than Normal mode, the design of Recovery mode ensures all
 sBTC can be redeemed so long as the Stacks blockchain and PoX are online.
@@ -163,9 +163,9 @@ SIP cannot activate without this SIP first being ratified.
 
 The proposed SIP-021 upgrade would do away with Stacks forks, which vastly
 simplifies the sBTC design.  Importantly, miners and Stackers cannot "roll back"
-sBTC operations, meaning that peg-in and peg-out operations follow at-most-once
+sBTC operations, meaning that deposit and withdraw operations follow at-most-once
 semantics.  This lack of "fork risk" means that the system can support
-arbitrarily large amounts of BTC pegged-in and pegged-out, assuming that at
+arbitrarily large amounts of BTC deposited and withdrawn, assuming that at
 least 70% of Stackers by weight are trustworthy.
 
 The sBTC system state is materialized in a boot contract called `.sbtc`.  This
@@ -175,87 +175,88 @@ via a private function that only the node can call), so that it can be accessed
 by smart contracts in Stacks.
 
 The following sections describe the Normal mode of operation.  Recovery mode is
-left for future work, but is described in a separate section after Normal mode.
+left for future work, but is summarized in a separate section after Normal mode.
+This SIP can activate without Recovery mode.
 
-## Peg-In
+## Deposit
 
-A peg-in operation is initiated as a Bitcoin transaction with a special payload
+A deposit operation is initiated as a Bitcoin transaction with a special payload
 in an `OP_RETURN` output (Figure 1).  Because this is a Stacks-on-Bitcoin
 transaction, a miner in a subsequent tenure is required by the consensus rules
 to process it as part of producing the first block in its tenure.  The Stacks
-node records the existence of this peg-in operation in the data space of the
+node records the existence of this deposit operation in the data space of the
 `.sbtc` smart contract, where it is marked as a _pending_ operation that
 Stackers must act upon.  Namely, the relevant parts of the transaction are
 extracted and translated in to Clarity values and made available via internal data maps.
 
 Stackers, via their signer daemons, already subscribe to the Stacks blockchain
-for events.  The act of writing new sBTC peg-in state to the `.sbtc` contract
+for events.  The act of writing new sBTC deposit state to the `.sbtc` contract
 generates such an event -- an event that alerts the signer daemons to begin a
-signing round to act on the peg-in.
+signing round to act on the deposit.
 
-In the happy path, at least 70% of Stackers agree that the peg-in transaction is
+In the happy path, at least 70% of Stackers agree that the deposit transaction is
 valid, and they generate a contract-call to the `.sbtc` contract to
-_authorize_ the peg-in by minting the equivalent number of sBTC tokens to
+_authorize_ the deposit by minting the equivalent number of sBTC tokens to
 an account address of the user's choice.  Crucially, the transaction is signed 
 collectively by Stackers via a WSTS signing round -- it is authenticated via a
 Schnorr proof and the Stacker's aggregate public key.  This way, _only_ the
-Stackers can authorize the peg-in, and only via a 70%+ majority vote.
+Stackers can authorize the deposit, and only via a 70%+ majority vote.
 
 Once stackers generate the authorization transaction, they make it available to
 miners via their StackerDB instance, and require the current miner to include it
 in the next block they produce.  If the miner does not do so, then the Stackers
-will not sign the block; this all but compells the miner to include the
+will not sign the block; this all but compels the miner to include the
 transaction.
 
-The user must wait until their peg-in transaction confirms on Bitcoin before the
+The user must wait until their deposit transaction confirms on Bitcoin before the
 sBTC tokens materialize.  This is required because Stacks miners only process
 pending Stacks-on-Bitcoin transactions for Bitcoin blocks up to but _excluding_
 the Bitcoin block in which their `block-commit` landed.
 
-The act of fulfilling a peg-in with an affirmative vote is effectively a promise
+The act of fulfilling a deposit with an affirmative vote is effectively a promise
 made by Stackers to users to ensure that the sBTC minted wll remain fully backed
-by the BTC the user submitted.  This BTC may only be spent to fulfill peg-outs,
+by the BTC the user submitted.  This BTC may only be spent to fulfill withdraws,
 or to process a wallet hand-off at the end of a reward cycle.  Either way, the
 user's BTC will be spent by Stackers before they can reclaim it via the spending
 fulfillment script.
 
 ![Nakamoto Flow Diagrams](https://github.com/stacksgov/sips/assets/459947/62229151-6777-4eb9-b902-2b4192bdcf1c)
 
-_Figure 1: Protocol diagram of an sBTC peg-in.  The user submits a Bitcoin
+_Figure 1: Protocol diagram of an sBTC deposit.  The user submits a Bitcoin
 transaction, and eventually, the equivalent number of sBTC tokens materialize in
 the account of the user's choosing_.
 
-### Peg-in Bitcoin Transaction
+### Deposit Bitcoin Transaction
 
-The peg-in Bitcoin transaction contains the following data:
+The deposit Bitcoin transaction contains the following data:
 
 * An `OP_RETURN` data output, which contains the account address to which sBTC
   should be minted
 
-* A payment to the sBTC peg wallet maintained by the current Stackers.  This
+* A payment to the sBTC sBTC wallet maintained by the current Stackers.  This
   payment UTXO is the hash of a script that has two spending fulfillment
 conditions:  either the Stackers spend the UTXO before the end of the next
 reward cycle, or the sender can spend the UTXO once the end of the next reward
 cycle has passed.
 
 The payment must be above a `.sbtc`-defined threshold, in satoshis.  This
-_minimum peg-in_ value is used to prevent users from spamming the system with
-dust peg-ins.  Stackers can vote to adjust the minimum peg-in.
+_minimum deposit_ value is used to prevent users from spamming the system with
+dust deposits.  Stackers can vote to adjust the minimum deposit.
 
 ### Stacker Authorization Transaction
 
 The authorization transaction contains the following data:
 
-* The quantity of BTC sent to the peg wallet.
+* The quantity of BTC sent to the sBTC wallet.
 
 * The address to which the sBTC should be minted.
 
-* A vote "yes", "no", or "abstain" to carry out the peg-in, to deny the peg-in,
+* A vote "yes", "no", or "abstain" to carry out the deposit, to deny the deposit,
   or to record that no agreement could be reached (respectively).
 
 * A bitmap of which stackers voted.
 
-* A pointer to the peg-in transaction's UTXO
+* A pointer to the deposit transaction's UTXO
 
 , * The Bitcoin redeem script for the user's payment.  The Stackers must verify
   that the script contains the aforementioned spending fulfillment conditions,
@@ -276,11 +277,11 @@ block signatures until it is included.
 
 ### Failure Modes and Recovery
 
-There are several places where a peg-in can fail.  First, the Stackers may fail
+There are several places where a deposit can fail.  First, the Stackers may fail
 to complete a signing round that achieves the 70% threshold.  One of the
 following outcomes will happen:
 
-* The Stackers produce a peg-in authorization with at least 70% of the STX
+* The Stackers produce a deposit authorization with at least 70% of the STX
   voting against it.  In this case, the sBTC is not minted, and the user can
 later reclaim their BTC once the subsequent reward cycle finishes (i.e. the
 reward cycle _after_ this current reward cycle).
@@ -292,16 +293,16 @@ minted, but a record of how each Stacker voted is preserved.  The user later
 reclaims their BTC once the subsequent reward cycle finishes.
 
 * A new set of Stackers come online as part of a new reward cycle starting while
-  the peg-in request is pending.  In this case, the peg-in request is cancelled
+  the deposit request is pending.  In this case, the deposit request is cancelled
 -- the new Stackers cannot act on it.  The spending conditions of the
-peg-in script will permit the user to reclaim their Bitcoin later.
+deposit script will permit the user to reclaim their Bitcoin later.
 
 * The Stackers are unable to complete a WSTS signing round.  In this case, the
   sBTC system freezes until the Stackers are able to come back online -- no
-peg-ins or peg-outs will be processed.  Freezing
+deposits or withdraws will be processed.  Freezing
 and thawing the system are discussed in a subsequent section.
 
-Second, the miner can fail to include the peg-in authorization transaction from
+Second, the miner can fail to include the deposit authorization transaction from
 the Stackers.  This would prevent the Stackers' vote from being recorded in
 `.sbtc`.  If this happens, then Stackers refuse to sign any blocks until they
 see a block which contains the as-yet-unmined authorization transaction(s).  If
@@ -310,22 +311,22 @@ push their transactions through.
 
 ### Transaction Fees
 
-The user pays the transaction fee for their sBTC peg-in transaction.  Stackers
+The user pays the transaction fee for their sBTC deposit transaction.  Stackers
 do not pay a STX transaction fee, but instead require miners to include their
-peg-in authorization transaction in the next block they sign.
+deposit authorization transaction in the next block they sign.
 
-### Two-phase Peg-In
+### Two-phase Deposit
 
 Users may not be able to send a Bitcoin transaction with an `OP_RETURN` output.
 For example, this is difficult to do or is unsupported in some Bitcoin wallets,
 especially custodial wallets.  To support these users, a 3rd party could simply
-send peg-in transaction on their behalf.  The user would simply pay the 3rd
-party the requisite Bitcoin to peg-in, and the 3rd party would generate and send
-the peg-in transaction for them.
+send deposit transaction on their behalf.  The user would simply pay the 3rd
+party the requisite Bitcoin to deposit, and the 3rd party would generate and send
+the deposit transaction for them.
 
-## Peg-Out
+## Withdraw
 
-Pegging out is the act of redeeming sBTC for BTC (Figure 2).
+Withdrawing is the act of redeeming sBTC for BTC (Figure 2).
 To redeem sBTC for BTC, the user first sends a Stacks trnsaction to `.sbtc`
 to indicate the following:
 
@@ -343,39 +344,39 @@ user cannot spend it while Stackers are considering the request.
 
 ![Nakamoto Flow Diagrams (1)](https://github.com/stacksgov/sips/assets/459947/e8da8826-1303-4891-83fb-a568ec9d3f9d)
 
-_Figure 2: Protocol diagram for a successful peg-out request.  The user submits
-a peg-out request to Stacks, which locks their requested sBTC tokens until the
-start of the next reward cycle.  If the peg-out succeeds, then they receive BTC from
+_Figure 2: Protocol diagram for a successful withdraw request.  The user submits
+a withdraw request to Stacks, which locks their requested sBTC tokens until the
+start of the next reward cycle.  If the withdraw succeeds, then they receive BTC from
 the Stackers (minus a BTC transaction fee), and their sBTC gets burnt._
 
-When Stackers see the peg-out request, and if they are able to act on it (i.e.
+When Stackers see the withdraw request, and if they are able to act on it (i.e.
 the wallet has enough UTXOs free), they execute a WSTS signing round to
-generate a Bitcoin transaction from the peg wallet's UTXOs which pays out to the
-user's requested address.  Because all pegged-in BTC is spendable by the current
+generate a Bitcoin transaction from the sBTC wallet's UTXOs which pays out to the
+user's requested address.  Because all deposited BTC is spendable by the current
 set of Stackers via an aggregate Schnorr signature, Stackers simply create the
 scriptSigs for sufficiently many UTXOs to fund a fulfillment UTXO for the user.
 
 Because fulfilling the redemption request occurs through WSTS, there is a
 possibility of a quorum failure.  As such, the Stackers may instead vote to
-abstain or even to refuse the peg-out request.  This is explained in the
+abstain or even to refuse the withdraw request.  This is explained in the
 "Failure Modes" section.
 
 The BTC redemption transaction contains the following fields:
 
-* An `OP_RETURN` identifying the peg-out request in the `.sbtc` contract
+* An `OP_RETURN` identifying the withdraw request in the `.sbtc` contract
 
 * A new UTXO that redeems the user's sBTC for BTC
 
 * A change UTXO that consolidates the remaining unused BTC from the consumed
   wallet UTXOs
 
-Once the Stackers have created the BTC redemption transaction, they both send it
+Once the Stackers have created the BTC redemption transaction, they send it
 to the Bitcoin peer, and send a Stacks transaction with a copy of the Bitcoin
 transaction to `.sbtc`, so that the transaction is _also_ stored publicly in the
 `.sbtc` contract's data space.  This is done for failure recovery: if the
 Bitcoin transaction does not confirm quickly, the Stackers can try again (see
 below).  Also, the existence of the signed Bitcoin transaction in the `.sbtc`
-data space serves as proof that the Stackers handled the peg-out request in a
+data space serves as proof that the Stackers handled the withdraw request in a
 timely manner, even if it was not confirmed on Bitcoin as quickly as desired.
 When the `.sbtc` contract processes the copy of the BTC redemption transaction,
 it marks the UTXOs it consumes as "tentatively used" so that a
@@ -384,25 +385,25 @@ concurrently-generated BTC redemption transaction dees not also use them.
 Once the BTC redemption transaction confirms on Bitcoin, a Stacks miner
 processes it as a Stacks-on-Bitcoin transaction.  The act of processing this
 transaction is the act of calling into the `.sbtc` contract to mark the pending
-sBTC peg-out as fulfilled.  This burns the user's locked sBTC, and marks the
-peg-out operation as complete.  It also updates the `.sbtc` transaction's
+sBTC withdraw as fulfilled.  This burns the user's locked sBTC, and marks the
+withdraw operation as complete.  It also updates the `.sbtc` transaction's
 knowledge of the wallet's UTXO set by clearing the UTXOs consumed by the
 fulfillment, and adding the change UTXO as a new UTXO that the wallet controls.
 
-### Peg-Out Congestion
+### Withdraw Congestion
 
 A key responsibility of the `.sbtc` wallet is to keep track of which Bitcoin
-UTXOs are under the control of the peg wallet, and which ones are tentatively
+UTXOs are under the control of the sBTC wallet, and which ones are tentatively
 consumed and tentatively produced by in-flight BTC redemption transactions.
 This is necessary because the system has no way of guaranteeing that a BTC
 redemption transaction will ever be confirmed.  Instead, by keeping track of the
 in-flight UTXOs this way, Stackers may process multiple BTC redemptions in
 parallel while waiting for them to confirm.
 
-That said, the rate at which sBTC peg-out requests arrive may exceed the rate at
+That said, the rate at which sBTC withdraw requests arrive may exceed the rate at
 which Stackers can fulfill them.  If there are not enough unused UTXOs to
-fulfill a peg-out request, then Stackers _instead_ send a collectively-signed
-Stacks transaction to `.sbtc` that NACKs the peg-out request.  This unlocks the
+fulfill a withdraw request, then Stackers _instead_ send a collectively-signed
+Stacks transaction to `.sbtc` that NACKs the withdraw request.  This unlocks the
 user's sBTC.  The user may try again later.
 
 It is possible that the BTC redemption transaction does not confirm for some
@@ -414,7 +415,7 @@ Stackers have a few tactics to handle this congestion:
 
 1. They can replace-by-fee (RBF) in-flight transactions, such as by prioritizing the transactions
 whose inputs represent the highest value. The extra BTC to pay the fee would come from
-the peg wallet UTXOs.
+the sBTC wallet UTXOs.
 
 2. If there is not enough BTC in the consumed UTXOs to do the above, then the Stackers would
 double-spend the in-flight transactions by consuming additional wallet UTXOs
@@ -423,7 +424,7 @@ invalidate some other in-flight transactions; these transactions would need to
 be re-issued.
 
 3. If there is insufficient BTC available to increase the fee, then Stackers themselves would
-need to create a UTXO for the peg wallet from their personal funds (e.g. their
+need to create a UTXO for the sBTC wallet from their personal funds (e.g. their
 PoX payouts) to cover the fee.
 
 Regardless of which tactic is taken, the Stackers would need to also _replace_ the
@@ -434,18 +435,18 @@ before, Stackers would require miners to include this transaction in their
 blocks in order for the blocks to be signed.
 
 The act of replacing an in-flight transaction in `.sbtc` is also the act of
-updating its knowledge of how much _extra_ BTC was spent out of the peg wallet
+updating its knowledge of how much _extra_ BTC was spent out of the sBTC wallet
 to cover the additional transaction fee.  This is important for the hand-off
 (see below).
 
 ### Transaction Fees
 
 Bitcoin transaction fees are unavoidable.  This proposal calls for users to pay
-the BTC transaction fee for both their peg-ins and peg-outs.  As such, there
+the BTC transaction fee for both their deposits and withdraws.  As such, there
 exists a minimum BTC redemption amount:  a given redemption request, minus the
 fees required to produce a BTC redemption transaction, must be worth more than
 the Bitcoin dust minimum (5,500 satoshis).  If it is not, then the Stackers NACK
-the peg-out request.
+the withdraw request.
 
 The minimum BTC redemption is determined by the set of UTXOs that would need to
 be consumed to produce the transaction.  If the Stackers cannot find a
@@ -461,7 +462,7 @@ transaction fees on Bitcoin are spiking.
 
 ### Failure Modes and Recovery
 
-A peg-out operation can fail in the following ways, and has the following
+A withdraw operation can fail in the following ways, and has the following
 remediations:
 
 * The Stackers may not produce the redeem transaction.  If they cannot reach
@@ -473,16 +474,16 @@ selected, permitting them to try again.
 
 * There may not be enough free UTXOs to create a redeem transaction.  If this
   happens, then Stackers must collectively sign a Stacks transaction
-that instead marks the peg-out request.  This unlocks the user's sBTC, so they can try
+that instead marks the withdraw request.  This unlocks the user's sBTC, so they can try
 again once the system is no longer congested.
 
 * The redeem transaction may never confirm.  If this happens, then the Stackers
   use one of the aforementioned tactics to retry the transaction.  They must do
 this in order to free up the UTXOs that this transaction consumes.
 
-* The set of Stackers expires when they hand off the peg-wallet BTC to a new set
-  of Stackers.  If this happens, then all pending sBTC peg-out requests for the
-old set of Stackers are cancelled.  Users will need to re-request a peg-out to
+* The set of Stackers expires when they hand off the sBTC wallet's BTC to a new set
+  of Stackers.  If this happens, then all pending sBTC withdraw requests for the
+old set of Stackers are cancelled.  Users will need to re-request a withdraw to
 the new Stackers.
 
 * The Stackers may fail to run a WSTS signing round after a given time out (e.g.
@@ -490,9 +491,9 @@ the new Stackers.
   system freezes until enough Stackers can come online.  This has penalties,
 which are described in a following section.
 
-## Peg Hand-Off
+## BTC Transfer
 
-A new set of Stackers assumes responsibility for the peg wallet during the
+A new set of Stackers assumes responsibility for the sBTC wallet during the
 prepare phase for their reward cycle.  Due to SIP-021, the Stacks blockchain
 never forks, which means that the new set of Stackers is known immediately after
 the last non-prepare-phase Stacks block is mined (since this block is guaranteed
@@ -507,25 +508,25 @@ at the end of the prepare phase, and only writes the state into the sortition
 database's MARF; this proposal calls for doing this at the start of the prepare
 phase, and writing this information into both places.
 
-### Deciding the New Peg Wallet
+### Deciding the New sBTC Wallet
 
 Once the new set of Stackers is known, they have 99 Bitcoin blocks to carry out
 a WSTS DKG round amongst themselves and write the aggregate public key and BTC
 redeem script into the `.sbtc` contract (Figure 3).  The former is needed by
 SIP-021 already for signing blocks.  The latter is needed for users to correctly
-produce a peg-in UTXO, which contains the hash of a redeem script; the redeem
-script determines the peg wallet's address.
+produce a deposit UTXO, which contains the hash of a redeem script; the redeem
+script determines the sBTC wallet's address.
 
 ![Nakamoto Flow Diagrams (2)](https://github.com/stacksgov/sips/assets/459947/7e5bd105-71d4-46e4-afe9-9e68053696a6)
 
-_Figure 3: Protocol diagram of a peg-transfer.  Once the PoX anchor block is known,
+_Figure 3: Protocol diagram of a BTC-transfer.  Once the PoX anchor block is known,
 the new Stackers proceed to execute a WSTS DKG and post the new aggregate public key and
 wallet redeem script to Stacks.  The old Stackers help them do this by requiring miners
 to include their votes in their blocks as a prerequisite for signing them.  Once the
 new public key and wallet redeem script have reached 70% support, the old Stackers send
 one or more Bitcoin transactions which consume all of the current wallet's UTXOs (including those
-for in-flight peg-outs) and create new ones for the new peg wallet.  Once all old UTXOs
-are consumed, then the hand-off completes.  The act of processing a peg-transfer transaction
+for in-flight withdraws) and create new ones for the new sBTC wallet.  Once all old UTXOs
+are consumed, then the hand-off completes.  The act of processing a BTC-transfer transaction
 updates the .sbtc contract's wallet UTXO tracker per the consensus rules._
 
 The Stackers write the aggregate public key and BTC redeem script 
@@ -534,48 +535,48 @@ transactions, which they share with existing Stackers so they can compel miners
 include them in blocks (and should this fail for any reason, Stackers can also send
 their votes as normal Stacks transactions).  Once the aggregate public key and
 BTC redeem script clinches at least 70% support as weighted by the new stackers'
-stacked STX, then the new Stackers are treated as active and ready to execute the peg wallet
+stacked STX, then the new Stackers are treated as active and ready to execute the sBTC wallet
 hand-off.
 
 By executing this vote, Stackers are granted a degree of agility in determining
 the terms of the BTC redeem script.  For example, they can require users to wait
-for two reward cycles to receive their BTC back in the event of a peg-in
-failure, instead of one.  As another example, they can pass control of the peg
+for two reward cycles to receive their BTC back in the event of a deposit
+failure, instead of one.  As another example, they can pass control of the sBTC
 wallet to a user-controlled DAO in the event that there is no spending activity
 for a number of reward cycles.
 
 ### Passing the BTC
 
 Once the new Stackers have voted on the new wallet redeem script with 70%
-support, the old Stackers transfer the BTC to the new peg wallet address.  These
+support, the old Stackers transfer the BTC to the new sBTC wallet address.  These
 transactions are Stacks-on-Bitcoin transactions, and contain an `OP_RETURN` that
 marks them as such to all Stacks nodes.
 
-Miners process a peg-transfer transaction by updating the data space of the
+Miners process a BTC-transfer transaction by updating the data space of the
 `.sbtc` contract as follows:
 
-* The pointers to old UTXOs consumed by the peg-transfer are deleted, and
+* The pointers to old UTXOs consumed by the BTC-transfer are deleted, and
   pointers to the new wallet's UTXOs are inserted.  If the UTXOs for a pending
-BTC redemption transaction are instead consumed by a peg-transfer, then not only
+BTC redemption transaction are instead consumed by a BTC-transfer, then not only
 are these UTXOs deleted, but also the transaction is queued for re-try by the
 new Stackers.  See below.
 
 * The `.sbtc` contract's BTC balance for the next reward cycle is updated by the amount transferred.
 
-Once all of the outstanding UTXOs have been consumed by peg-transfers, the new
-Stackers begin handling peg-ins and peg-outs for the next reward cycle.
+Once all of the outstanding UTXOs have been consumed by BTC-transfers, the new
+Stackers begin handling deposits and withdraws for the next reward cycle.
 
 ### Recovery of BTC Fees
 
 The transfer is complete once all of the old wallet's UTXOs (both unused and
-pending) are consumed by peg-transfer transactions.  However,
-the total BTC in the peg wallet will be slightly less than the
+pending) are consumed by BTC-transfer transactions.  However,
+the total BTC in the sBTC wallet will be slightly less than the
 total amount of sBTC.  This is because (1) the old Stackers will have had to pay
-transaction fees to send the peg hand-off transactions, and (2) Stackers
+transaction fees to send the BTC-transfer transactions, and (2) Stackers
 may have had to RBF a stuck BTC redeem transaction.
 
 These losses due to BTC fees are distributed across sBTC accounts lazily when the user next
-pegs in BTC, transfers the sBTC, or attempts to redeem it.  The `.sbtc` contract keeps track
+deposits BTC, transfers the sBTC, or attempts to redeem it.  The `.sbtc` contract keeps track
 of the total supply of sBTC, the balance of each account, and the number of
 missing satoshis, so it has enough information to make this happen.  When the user attempts
 to do any of the above with sBTC, the `.sbtc` contract will burn an amount of sBTC equal to
@@ -586,33 +587,33 @@ min(1, (sbtc_balance * missing_satoshis) / sbtc_supply)
 ```
 
 In other words, the sBTC holder will pay a pro-rata share of the missing BTC
-fees, or it will pay a single satoshi of it.  An sBTC holder pays at most one
+fees, or it will pay a single satoshi of it.  An sBTC holder pays at most once
 per reward cycle.  Eventually, as long as there is
 sBTC activity on-chain, the number of sBTC in circulation will be made equal to
-the number of satoshis in the peg wallet.  If this fails to happen by the end of
+the number of satoshis in the sBTC wallet.  If this fails to happen by the end of
 the reward cycle, then the sBTC system freezes and a Stacker may need to
-manually pay BTC into the peg wallet to recover the fee (see "System Recovery
-from Frozen Peg").
+manually pay BTC into the sBTC wallet to recover the fee (see "System Recovery
+from Frozen Wallet").
 
 ### Restarting In-Flight Transactions
 
-If a peg hand-off happens while there are in-flight redemption transactions, then the old
+If a BTC-transfer happens while there are in-flight redemption transactions, then the old
 Stackers must double-spend the in-flight redemption transactions.  The `.sbtc`
 contract identifies which in-flight redemption transactions would be affected by
-observing which UTXOs the peg-transfer transaction consumes.  Each affected in-flight
+observing which UTXOs the BTC-transfer transaction consumes.  Each affected in-flight
 redemption transaction would be marked as cancelled, and the user's sBTC
 unlocks.  The user will need to try the request again.
 
 ### Failure Modes and Recovery
 
-The peg-transfer can fail in the following ways:
+The BTC-transfer can fail in the following ways:
 
 * The user sends BTC to an old wallet address, based on an old redeem script. In
   this case, the redeem script terms automatically guarantee that the user's BTC
 becomes spendable to them after a timeout happens.
 
 * No blocks get mined in the prepare phase.  In this case, the old Stackers
-  proceed with the peg hand-off as soon as block-mining is back online.  If this
+  proceed with the BTC-transfer as soon as block-mining is back online.  If this
 takes until after the prepare phase, then the sBTC system freezes (see below).
 
 * Miners do not mine new stackers' votes.  This is ameliorated by having the
@@ -629,8 +630,8 @@ keeping their STX locked and halting PoX payments until the old Stackers finish
 the hand-off (see below).
 
 * While hand-off is proceeding, an in-flight redemption transaction gets
-  double-spent by a peg-tranfer transaction.  If this happens, then the user
-retries the peg-out request (their request is cancelled automatically once any
+  double-spent by a BTC-tranfer transaction.  If this happens, then the user
+retries the withdraw request (their request is cancelled automatically once any
 of their in-flight redemption transactions' are consumed by a different
 Stacks-on-Bitcoin transaction).
 
@@ -638,7 +639,7 @@ Stacks-on-Bitcoin transaction).
 
 In the preceding sections, there are failure modes whereby the system can
 freeze.  This can happen if the Stackers fail to execute a WSTS signing round or
-DKG, or fail to vote for a new peg wallet redeem script.  If the system freezes,
+DKG, or fail to vote for a new sBTC wallet redeem script.  If the system freezes,
 then STX unlocks do not happen, and PoX payouts do not happen either, for as
 long as the system is frozen.  Instead, miners pay to a burn address, and the PoX
 system refuses to unlock STX.  The only way the STX can unlock and PoX payments
@@ -648,23 +649,23 @@ the subsequent set remain frozen, then the Stacks blockchain halts.
 
 To thaw the system:
 
-* On peg-in, the system can freeze if Stackers cannot complete a WSTS signing
-  round to vote to accept, reject, or abstain from a peg-in request, and the
-peg-in requests remains pending for too long.  To thaw
+* On deposit, the system can freeze if Stackers cannot complete a WSTS signing
+  round to vote to accept, reject, or abstain from a deposit request, and the
+deposit requests remains pending for too long.  To thaw
 the system, the Stackers would need to come back online and acknowledge all
-pending peg-in transactions.  If the system remains frozen across a prepare
+pending deposit transactions.  If the system remains frozen across a prepare
 phase, then the system can be thawed by the Stackers passing the BTC to the new
-set of Stackers, which would cancel the pending peg-in requests.
+set of Stackers, which would cancel the pending deposit requests.
 
-* On peg-out, the system can freeze if Stackers cannot complete a timely signing
-  round to vote to process the peg-out.  To thaw the system, Stackers would need
-to come back online to either fulfill all pending peg-out requests, or NACK them.
+* On withdraw, the system can freeze if Stackers cannot complete a timely signing
+  round to vote to process the withdraw.  To thaw the system, Stackers would need
+to come back online to either fulfill all pending withdraw requests, or NACK them.
 If the system remains frozen across a reward cycle boundary, then it
 thaws if the old Stackers are able to transfer their
-BTC to the new Stackers.  This act will cancel all pending sBTC peg-out
+BTC to the new Stackers.  This act will cancel all pending sBTC withdraw
 requests.
 
-* On peg-transfer, the system can freeze in one of two ways:  the new Stackers
+* On BTC-transfer, the system can freeze in one of two ways:  the new Stackers
 cannot vote on a new aggregate public key and redeem script before the end of
 the reward cycle, or the old Stackers cannot hand off all of the BTC to the new
 Stackers by the start of the new reward cycle. The only way to thaw the system
@@ -673,25 +674,25 @@ send over the BTC before the next PoX anchor block is mined.  If the system
 remains frozen this way, and the next PoX anchor block is mined, then the Stacks
 blockchain halts.
 
-### System Recovery from Frozen Peg
+### System Recovery from Frozen Wallet
 
 In the event that the BTC gets "stuck" and Stackers are unable to access it, the
-system will support a variation of a peg-in transaction called a _donation_.
-The only difference between a peg-in and a donation is that the donation does
+system will support a variation of a deposit transaction called a _donation_.
+The only difference between a deposit and a donation is that the donation does
 not materialize sBTC.  It merely gives Stackers some BTC with which to fulfill
-peg-outs.  This feature is meant to enable Stackers to recover lost BTC and
+withdraws.  This feature is meant to enable Stackers to recover lost BTC and
 unfreeze the system, should the need ever arise.
  
 ## Initial Capital Limits
 
 This SIP proposes that the total amount of sBTC accepted into this system is
 capped by a limit in the `.sbtc` contract.  The `.sbtc` contract will refuse to
-admit a peg-in if it would exceed this limit.  This limit can be increased (but
+admit a deposit if it would exceed this limit.  This limit can be increased (but
 not decreased) by Stacker vote, and it would start at a default value of 100 BTC.
 
 The reason for the limit is to allow the system to be stress-tested while
 minimizing risk to users in the early days.  Once Stackers are comfortable with
-maintaining the peg and running signer daemons to manage the sBTC wallet,
+maintaining the wallet and running signer daemons to manage the sBTC wallet,
 they can increase this limit.  They would remove it by simply setting the limit
 to 21 million BTC.
 
@@ -711,27 +712,27 @@ no ROI for dishonest Stackers to participate if their goal is to steal the BTC.
 This SIP proposes implementing the aforementioned Normal mode for sBTC.  A
 follow-up SIP may propose a Recovery mode, whereby instead of burning BTC while
 the system is frozen, the BTC is instead repurposed to directly fulfill pending
-peg-out requests.  While peg-out fulfillment will be considerably slower, at
+withdraw requests.  While withdraw fulfillment will be considerably slower, at
 least the sBTC users will eventually be made whole in the event of a
 catastrophe.
 
-In Recovery mode, sBTC peg-ins would cease and all pending sBTC peg-ins would be
-cancelled.  Peg-outs would be fulfilled in first-in first-out order from
-redirected PoX payouts.  Once a peg-out request has been
+In Recovery mode, sBTC deposits would cease and all pending sBTC deposits would be
+cancelled.  Withdraws would be fulfilled in first-in first-out order from
+redirected PoX payouts.  Once a withdraw request has been
 satisfied -- i.e. the requester's BTC address has
 received _at least_ as many satoshis as reqeusted from the redirected PoX
-payouts -- then the peg-out request completes and the next requester's peg-out
+payouts -- then the withdraw request completes and the next requester's withdraw
 is processed.
 
 Once the Stacks blockchain supports Recovery Mode, the system would continue
 operating even if the system was frozen for many reward cycles.  The blockchain
-would not halt; instead, it would continue its operation to fulfill all peg-out
+would not halt; instead, it would continue its operation to fulfill all withdraw
 requests while the BTC is seemingly inaccessible to Stackers.  PoX payouts and
 STX unlocks would only resume once the current set of Stackers control
 enough BTC to back each sBTC token, and are able to fulfill pending sBTC
-peg-outs.
+withdraws.
 
-The system would transition back to Normal mode once all pending peg-out
+The system would transition back to Normal mode once all pending withdraw
 transactions have been fulfilled, and once the current set of Stackers possess
 enough BTC to cover all outstanding sBTC tokens.
 
@@ -765,7 +766,7 @@ processes transfers when it receives approvals from at least 6 of the 8 Warden n
 ## LBTC
 
 This is a closed membership system.  Over 50 members of Liquid Federation manage multi-sig
-contract.  Only federation members can process peg-outs.
+contract.  Only federation members can process withdraws.
 
 ## tBTC
 
@@ -800,7 +801,7 @@ activates.
 
 If this SIP does not ship with SIP-021, then a follow-on hard fork will be
 needed to activate it.  To activate this SIP, a Stacker vote will need to be
-taken to assess how they feel about running and maintaining a peg wallet, in
+taken to assess how they feel about running and maintaining the sBTC wallet, in
 addition to their block-signing responsibilities in SIP-021.
 
 In order for this SIP to activate, the following criteria must be met by the set

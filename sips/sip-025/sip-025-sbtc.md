@@ -220,7 +220,7 @@ or to process a wallet hand-off at the end of a reward cycle.  Either way, the
 user's BTC will be spent by Stackers before they can reclaim it via the spending
 fulfillment script.
 
-![Nakamoto Flow Diagrams](https://github.com/stacksgov/sips/assets/459947/62229151-6777-4eb9-b902-2b4192bdcf1c)
+![Figure 1](./001-sip-025-figure-1.png)
 
 _Figure 1: Protocol diagram of an sBTC deposit.  The user submits a Bitcoin
 transaction, and eventually, the equivalent number of sBTC tokens materialize in
@@ -342,7 +342,7 @@ their signer daemons) observe and react to.  When the transaction confirms, the
 user's requested sBTC is locked until the end of the next reward cycle -- the
 user cannot spend it while Stackers are considering the request.
 
-![Nakamoto Flow Diagrams (1)](https://github.com/stacksgov/sips/assets/459947/e8da8826-1303-4891-83fb-a568ec9d3f9d)
+![Figure 2](./002-sip-025-figure-2.png)
 
 _Figure 2: Protocol diagram for a successful withdraw request.  The user submits
 a withdraw request to Stacks, which locks their requested sBTC tokens until the
@@ -517,7 +517,7 @@ SIP-021 already for signing blocks.  The latter is needed for users to correctly
 produce a deposit UTXO, which contains the hash of a redeem script; the redeem
 script determines the sBTC wallet's address.
 
-![Nakamoto Flow Diagrams (2)](https://github.com/stacksgov/sips/assets/459947/7e5bd105-71d4-46e4-afe9-9e68053696a6)
+![Figure 3](./003-sip-025-figure-3.png)
 
 _Figure 3: Protocol diagram of a BTC-transfer.  Once the PoX anchor block is known,
 the new Stackers proceed to execute a WSTS DKG and post the new aggregate public key and

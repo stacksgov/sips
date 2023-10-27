@@ -148,4 +148,4 @@ The Stacks Blockchain will continue to treat multisig transactions using the cur
 
 # Reference Implementations
 
-To be implemented in Rust. See https://github.com/blockstack/stacks-blockchain.
+To be implemented in Rust. See https://github.com/stacks-network/stacks-blockchain/pull/3710.

@@ -143,6 +143,7 @@ Consensus (hard fork)
 # Backwards Compatibility
 
 The Stacks Blockchain will continue to treat multisig transactions using the current format as valid.
+Existing multisig accounts will be able to use the new transaction types to spend previously recieved funds.
 
 # Activation
 

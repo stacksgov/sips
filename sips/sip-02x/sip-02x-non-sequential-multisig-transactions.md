@@ -128,6 +128,12 @@ The steps for verifying a non-sequential multisig transaction (hash modes `0x05`
 7. Verify that the sequence of public keys hash to the address, using
    the address's indicated public key hashing algorithm.
 
+#### Additional Recommendations
+
+While this SIP allows signers to sign in any order, the ordering of public keys in the transaction auth fields still affects multisig account address generation.
+When funding a multisig account or creating a transaction, it is strongly recommended, but not required, to order public keys from least to greatest (equivalant to lexographically sorting the hex-encoded strings).
+This will remove the requirement to remember key order and result in consistent address generation.
+
 # Related Work
 
 [PR #139](https://github.com/stacksgov/sips/pull/139): This draft SIP was created earlier but lacked the technical specifications for implementation. The author has since closed this PR in favor of this draft

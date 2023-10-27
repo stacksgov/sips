@@ -153,6 +153,8 @@ Existing multisig accounts will be able to use the new transaction types to spen
 
 # Activation
 
+This SIP will activate with Stacks epoch 3.0
+
 # Reference Implementations
 
 To be implemented in Rust. See https://github.com/stacks-network/stacks-blockchain/pull/3710.

@@ -26,14 +26,14 @@ This SIP proposes a new multisig transaction format which is intended to be easi
 It does not remove support for the current format, rather it is intended to co-exist with the old format and give users a choice of which format to use.
 
 The issue with the current format is that it establishes a signer order when funds are sent to multisig account address, and requires signers to sign in the same order to spend the funds.
-In practice, the current format has proven proven difficult for developers to understand and implement, as evidenced by the lack of Stacks multisig implementations today.
+In practice, the current format has proven difficult to understand and implement, as evidenced by the lack of Stacks multisig implementations today.
 
 This new format intends to simplify the signing algorithm and remove the requirement for in-order signing, without comprimising on security or increasing transaction size.
 It is expected that this will lead to better wallet support for Stacks multisig transactions.
 
 # Introduction
 
-Currently, a multisig transaction requires the first signer to sign the transaction itself, and following signers to sign the signature of the previous signer.
+Currently, a multisig transaction requires the first signer to sign the transaction itself, and subsequent signers to sign the signature of the previous signer.
 For a transaction with *n* signers, the final signature is generated in the following way:
 
 ```
@@ -42,7 +42,7 @@ signature_n(...(signature_2(signature_1(tx))))
 
 There are a few drawbacks to doing it this way:
 
-- The order in which the signers must sign is fixed as soon as funds are send to a multisig account, which limits flexibility when creating a spending transaction from a multisig account
+- The order in which the signers must sign is fixed as soon as funds are sent to a multisig account, which limits flexibility when creating a spending transaction from a multisig account
 - The process of signing a transaction requires each signer to validate the entire signature chain before signing, in order to make sure it matches the transaction, leading to `O(n^2)` signing times
 - This does not reduce the size of a transaction, as each intermediate signature must still be included
 - The algorithm for doing this is complex, and several developers have a hard time understanding and implementing it correctly
@@ -68,7 +68,7 @@ To illustrate some of the limitations this creates:
 - If the 3rd member initiates a transaction, only the 4th and 5th members are eligible to provide subsequent signatures.
 - Initiating a transaction by the 4th or 5th member is impossible, as there are insufficient subsequent members to complete the signing process.
 
-To summarize, while such a multisig setup might suffice for smaller teams, as the number of required signers increases, it becomes increasingly difficult to create a transaction. This SIP aims to remove these limitations.
+While such a multisig setup might suffice for smaller teams, as the number of required signers increases, it becomes increasingly difficult to create a transaction. This SIP aims to remove these limitations.
 
 # Specification
 
@@ -81,7 +81,7 @@ For anything not mentioned here, the rules from SIP-005 still apply.
 
 #### Transaction Authorization
 
-Add new hash modes `0x05` and `0x07`. These numbers were chosen in order to used in order to maintain the following relationships:
+Add new hash modes `0x05` and `0x07`. These numbers were chosen in order to maintain the following relationships:
  - `is_multisig = hash_mode & 0x1`
  - `is_p2wsh_p2sh = hash_mode & 0x2`
  - `is_non_sequential_multisig = hash_mode & 0x4`
@@ -123,7 +123,6 @@ The steps for verifying a non-sequential multisig transaction (hash modes `0x05`
    fee, and nonce.
 4. Use the `presign-sighash` and the next (public key encoding byte,
    ECDSA recoverable signature) pair to recover the public key that generated it.
-   byte,
 6. Repeat step 4 for each signature, so that all of the public keys are
    recovered.
 7. Verify that the sequence of public keys hash to the address, using

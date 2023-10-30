@@ -2,22 +2,27 @@
 
 SIP Number: 022
 
-Title: A Trustless 2-way Bitcoin Peg for Stacks
+Title: A Trust-minimized 2-way Bitcoin Peg for Stacks
 
 Authors:
 * Aaron Blankstein <aaron@hiro.so>
 * Mike Cohen <mjoecohen@gmail.com>
+* Ashton Stephens <ashton@trustmachines.co>
 * Brice Dobry <brice@hiro.so>
-* Marvin Janssen
+* Marvin Janssen <marvin@ryder.id>
 * Friedger Müffke <mail@friedger.de>
-* Jesus Najera 
+* Jesus Najera <jnajera1917@gmail.com>
 * Jude Nelson <jude@stacks.org>
 * Don Park <donp@trustmachines.co>
 * Alie Slade
 * Andre Serrano <andre@resident.stacks.org>
-* @Soju-Drinker 
-* Igor Sylvester
-* Joey Yandle <joey@trustmachines.co> 
+* Sayak Chatterjee <sayak@trustmachines.co>
+* Igor Sylvester <igor@trustmachines.co>
+* Joey Yandle <joey@trustmachines.co>
+* Mike Cohen <mjoecohen@gmail.com>
+* Fernando Foy <fernando@trustmachines.co>
+* Jacinta Ferrant <jacinta@trustmachines.co>
+* Stjepan Golemac <stjepan@trustmachines.co>
 
 Consideration: Technical, Governance
 
@@ -128,7 +133,7 @@ income from miners.
 
 * **Withdraws of arbitrary amounts of BTC are fulfilled in
 a fixed amount of time on the happy path** if both Stackers and miners operate with a BFT honest
-majority.  If they do not, then withdraws of arbitrary amounts of BTC 
+majority.  If they do not, then withdraws of arbitrary amounts of BTC
 are fulfilled eventually by _redirecting_ Stackers' PoX payouts to fund withdraw
 requests.
 
@@ -197,7 +202,7 @@ signing round to act on the deposit.
 In the happy path, at least 70% of Stackers agree that the deposit transaction is
 valid, and they generate a contract-call to the `.sbtc` contract to
 _authorize_ the deposit by minting the equivalent number of sBTC tokens to
-an account address of the user's choice.  Crucially, the transaction is signed 
+an account address of the user's choice.  Crucially, the transaction is signed
 collectively by Stackers via a WSTS signing round -- it is authenticated via a
 Schnorr proof and the Stacker's aggregate public key.  This way, _only_ the
 Stackers can authorize the deposit, and only via a 70%+ majority vote.
@@ -233,7 +238,7 @@ The deposit Bitcoin transaction contains the following data:
 * An `OP_RETURN` data output, which contains the account address to which sBTC
   should be minted
 
-* A payment to the sBTC sBTC wallet maintained by the current Stackers.  This
+* A payment to the sBTC wallet maintained by the current Stackers.  This
   payment UTXO is the hash of a script that has two spending fulfillment
 conditions:  either the Stackers spend the UTXO before the end of the next
 reward cycle, or the sender can spend the UTXO once the end of the next reward
@@ -529,9 +534,9 @@ for in-flight withdraws) and create new ones for the new sBTC wallet.  Once all 
 are consumed, then the hand-off completes.  The act of processing a BTC-transfer transaction
 updates the .sbtc contract's wallet UTXO tracker per the consensus rules._
 
-The Stackers write the aggregate public key and BTC redeem script 
+The Stackers write the aggregate public key and BTC redeem script
 through an on-chain vote.  The new Stackers submit their votes as zero-fee Stacks
-transactions, which they share with existing Stackers so they can compel miners 
+transactions, which they share with existing Stackers so they can compel miners
 include them in blocks (and should this fail for any reason, Stackers can also send
 their votes as normal Stacks transactions).  Once the aggregate public key and
 BTC redeem script clinches at least 70% support as weighted by the new stackers'
@@ -682,7 +687,7 @@ The only difference between a deposit and a donation is that the donation does
 not materialize sBTC.  It merely gives Stackers some BTC with which to fulfill
 withdraws.  This feature is meant to enable Stackers to recover lost BTC and
 unfreeze the system, should the need ever arise.
- 
+
 ## Initial Capital Limits
 
 This SIP proposes that the total amount of sBTC accepted into this system is
@@ -697,7 +702,7 @@ they can increase this limit.  They would remove it by simply setting the limit
 to 21 million BTC.
 
 Importantly, the capital limit is _not_ a function of the STX price.  This is
-because the BTC is safe if at least 30% of the stackers are honest -- they can 
+because the BTC is safe if at least 30% of the stackers are honest -- they can
 deny 69.999...% of dishonest Stackers the ability to abscond with the BTC.  Thus, this
 proposal calls for enabling Stackers to set the capital limit themselves, as
 long as the limit has at least 70% vote support.  To help build user trust
@@ -743,13 +748,16 @@ different chain.  The key difference between most of them and sBTC is that the
 nodes which control the BTC wallet use a closed-membership protocol to decide
 which parties can enter and leave the set.  In detail:
 
-## wBTC 
+## WBTC
 
 This is a closed membership system.  It is made up of
-50+ merchants and custodians with keys to the wBTC
+50+ merchants and custodians with keys to the WBTC
 multi-sig contract on Ethereum. End users purchase wBTC directly from
-authorized merchants, and often the experience is fast.  However, wBTC deposits and
-withdrawals can only be performed by authorized merchants and custodians. 
+authorized merchants, and often the experience is fast.  However, WBTC deposits and
+withdrawals can only be performed by authorized merchants and custodians.
+
+Although the merchants manage issuance and redemption, all BTC backing WBTC is held
+by a single company (BitGo).
 
 ## RBTC
 
@@ -766,7 +774,7 @@ processes transfers when it receives approvals from at least 6 of the 8 Warden n
 ## LBTC
 
 This is a closed membership system.  Over 50 members of Liquid Federation manage multi-sig
-contract.  Only federation members can process withdraws.
+contract.  Only federation members can process withdrawals.
 
 ## tBTC
 

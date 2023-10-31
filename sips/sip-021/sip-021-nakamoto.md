@@ -621,6 +621,38 @@ proposal calls for a new coinbase transaction called the `NakamotoCoinbase`.
 This transaction contains the same data as the `Coinbase` transaction does
 today, as well as a VRF proof for this tenure.
 
+### Miner Signature Validation
+
+Validating a miner's ECDSA signature is performed by:
+    1. Looking up the winning `block-commit` on the Bitcoin block that selected
+       this tenure (or, if a `TenureChange` occurred due to an empty sortition,
+       the most-recent non-empty sortition).
+    2. Find the associated `key-register` operation with that `block-commit`
+       (see SIP-001 [block-commit](sips/sip-001/sip-001-burn-election.md#leader-block-commit)
+        and [vrf-register](sips/sip-001/sip-001-burn-election.md#leader-vrf-key-registrations)).
+    3. Interpret the first 20-bytes of the `key-register` operation's memo field as a Hash160
+       of the miner's public key.
+
+Note that the extension of the `key-register` operation operation makes that operation's
+wire format the following:
+
+Leader VRF key registrations require at least two Bitcoin outputs. The first output is
+an `OP_RETURN` with the following data:
+
+```
+        0      2  3              23                       55                 75       80
+        |------|--|---------------|-----------------------|------------------|--------|
+         magic  op consensus hash    proving public key     hash160(miner pk)   memo
+```
+Where op = ^ and:
+
+* `consensus_hash` is the current consensus hash for the burnchain state of the Stacks blockchain
+* `proving_public_key` is the 32-byte public key used in the miner's VRF proof
+* `hash160(miner_pk)` is the 20-byte `hash_160` of the miner's ECDSA public key 
+* `memo` is a field for including a miner memo
+
+The second output is the address that must be used as an input in any of the miner's block commits.
+
 ## Block Reward Distribution and MEV
 
 The Nakamoto system will use a variation of the Assumed Total Commitment with

@@ -2,7 +2,7 @@
 
 SIP Number: 022
 
-Title: A Trust-minimized 2-way Bitcoin Peg for Stacks
+Title: sBTC: Design of a Decentralized Two-way Peg for Bitcoin
 
 Authors:
 * Aaron Blankstein <aaron@hiro.so>
@@ -19,7 +19,6 @@ Authors:
 * Joey Yandle <joey@trustmachines.co>
 * Jude Nelson <jude@stacks.org>
 * Marvin Janssen <marvin@ryder.id>
-* Mike Cohen <mjoecohen@gmail.com>
 * Mike Cohen <mjoecohen@gmail.com>
 * Sayak Chatterjee <sayak@trustmachines.co>
 * Stjepan Golemac <stjepan@trustmachines.co>

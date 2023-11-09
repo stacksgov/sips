@@ -1,16 +1,27 @@
 # Preamble
 
 SIP-Number: SIP-026
+
 Title: Clarity DeFi Vault
+
 Author: Tycho Onnasch, Fernando Foy, Philip de Smedt, Christian Hresko
+
 Consideration: Technical
+
 Type: Standard
+
 Status: Accepted
+
 Created: Sep 7, 2023
-Last-Modified: Sep 7, 2023
+
+Last-Modified: Nov 9, 2023
+
 Sign-off:
+
 Discussions-To: https://forum.stacks.org/t/clarity-defi-vault-sip/15567
+
 License: Creative Commons CC0 1.0 Universal license
+
 Layer: Trait
 
 # Abstract
@@ -90,7 +101,7 @@ If the implementation does not group the vault assets by owner, return `0`.
 
 # Related Work
 
-The dicussion on a vault Solidity implementation can be found here [Forum Discussion](https://ethereum-magicians.org/t/eip-4626-yield-bearing-vault-standard/7900)
+The dicussion on a vault Solidity implementation can be found here: https://ethereum-magicians.org/t/eip-4626-yield-bearing-vault-standard/7900
 
 # Backwards Compatibility
 

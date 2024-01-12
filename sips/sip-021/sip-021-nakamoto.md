@@ -376,7 +376,7 @@ Importantly, this transaction replay feature is directed exclusively by Stacker 
 
 # Backwards Compatibility
 
-This proposal is a breaking change. However, all smart contracts published prior to this proposal's activation will be usable after this proposal activates. Of particular note is that the block-height Clarity variable will increment at a much faster pace, since blocks will be produced much more quickly.
+This proposal is a breaking change. However, all smart contracts published prior to this proposal's activation will be usable after this proposal activates.
 
 A separate SIP will be written to describe any changes to Clarity that may take effect with the activation of this SIP.
 

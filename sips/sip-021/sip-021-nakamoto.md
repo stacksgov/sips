@@ -286,8 +286,8 @@ In this proposal, a block is valid if and only if the following are true:
   - **(NEW)** The total runtime budget is equal to the runtime budget for one tenure, multiplied by the number of valid `TenureExtension` transactions mined in this tenure.
   - No expression exceeds the maximum nesting depth
   - No supertype is too large
-  - **(NEW)** The `PoisonMicroblock` transaction variant is not supported anymore
-  - **(NEW)** The current `Coinbase` transaction variant is not supported anymore
+  - **(NEW)** The `PoisonMicroblock` transaction variant is no longer supported
+  - **(NEW)** The current `Coinbase` transaction variant is no longer supported
 
 In addition to the new `TenureChange` transaction, this proposal changes coinbase transactions to include VRF proof for the current tenure. As stated above, the existing Coinbase transaction variant is no longer supported.
 

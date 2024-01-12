@@ -11,6 +11,7 @@ Authors:
 * Brice Dobry <brice@hiro.so>
 * Jacinta Ferrent <jacinta@trustmachines.co>
 * Diwaker Gupta <diwaker@hiro.so>
+* Jesus Najera <jnajera1917@gmail.com>
 * Jude Nelson <jude@stacks.org>
 * Ashton Stephens <ashton@trustmachines.co>
 * Joey Yandle <joey@trustmachines.co>

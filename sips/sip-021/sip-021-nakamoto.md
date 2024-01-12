@@ -448,7 +448,7 @@ The user must send a minimal amount of BTC from their PoX reward address to one 
 
 For **"no"**, the address is `1111111111111117Crbcbt8W5dSU7`. This is the base58check encoding of the hash in the Bitcoin script OP_DUP OP_HASH160 `00000000000000000000000000006e6f2d332e30` `OP_EQUALVERIFY` `OP_CHECKSIG`. The value `00000000000000000000000000006e6f2d332e30` encodes "no-3.0" in ASCII, with 0-padding.
 
-From there, the vote tabulation software will track the Bitcoin transaction back to the PoX address in the .pox-3 contract that sent it, and identify the quantity of STX it represents. The STX will count towards a "yes" or "no" based on the Bitcoin address the PoX address sends to.
+From there, the vote tabulation software will track the Bitcoin transaction back to the PoX address in the .pox-3 contract that sent it, and identify the quantity of STX it represents. The STX will count towards a "yes" or "no" based on the Bitcoin address to which the PoX address sends.
 
 If the PoX address holder votes for both "yes" and "no" by the end of the vote, the vote will be discarded.
 

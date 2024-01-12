@@ -65,6 +65,9 @@ Parameters should be considered recommendations for the wallet.
 The user/wallet may choose to ignore/override them.
 Optional params are marked with a `?`.
 
+Methods can be namespaced under `stx_` if used in settings like WebBTC (see WBIP-002).
+In other cases (e.g. WalletConnect), the namespace may already be given by meta-data (e.g. a `chainId` field) and can be omitted.
+
 ### Method Independent
 
 #### Transfer & Transaction Definitions

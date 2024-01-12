@@ -528,9 +528,8 @@ While this does induce some consolidation pressure, we believe it is the least-b
 
 # References
 
-[1] https://eprint.iacr.org/2020/852.pdf
-
-[2] https://trust-machines.github.io/wsts/wsts.pdf
+- [1] https://eprint.iacr.org/2020/852.pdf
+- [2] https://trust-machines.github.io/wsts/wsts.pdf
 
 [SIP-001-link]: https://github.com/stacksgov/sips/blob/main/sips/sip-001/sip-001-burn-election.md
 [SIP-005-link]: https://github.com/stacksgov/sips/blob/main/sips/sip-005/sip-005-blocks-and-transactions.md

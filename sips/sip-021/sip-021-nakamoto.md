@@ -378,8 +378,6 @@ Importantly, this transaction replay feature is directed exclusively by Stacker 
 
 This proposal is a breaking change. However, all smart contracts published prior to this proposal's activation will be usable after this proposal activates.
 
-A separate SIP will be written to describe any changes to Clarity that may take effect with the activation of this SIP.
-
 # Related Work
 
 This new system bears superficial similarity to proof-of-stake (PoS) systems. However, there are several crucial differences that place the Nakamoto Stacks system in a separate category of blockchains from PoS:
@@ -413,7 +411,11 @@ There will be at least one reward cycle between the initiation of Epoch 2.5 and 
 
 ### Updated Block Limits
 
-Block limits in the initial system described in [SIP-001][SIP-001-link] were designed conservatively such that a low compute threshold was required to run a functional node. These cost limits have been updated twice before, as improvements have been made to the stacks-node. This SIP calls for another block limit update to  reflect recent optimizations in the reference Clarity virtual machine.
+Block limits in the initial system described in [SIP-001][SIP-001-link] were designed conservatively such that a low compute threshold was required to run a functional node. These cost limits have been updated twice before, as improvements have been made to the stacks-node. This SIP calls for another block limit update to reflect several changes from both this SIP and improvements to reference implementation of the Clarity virtual machine:
+
+1. Contract calls are less computationally expensive due to practical optimizations in the Clarity virtual machine.
+2. Mining a Stacks block is no longer a race against the next Bitcoin block.
+3. The block limit is now spread over multiple Stacks blocks within a miner's tenure.
 
 A new block limit will be set based on benchmarks of the reference implementation such that a tenure can have its entirety executed over the course of some period less than 10 minutes on reasonable hardware.
 

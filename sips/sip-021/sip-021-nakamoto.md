@@ -524,9 +524,10 @@ Users who Stack may not want to run a 24/7 signing daemon. If not, then they can
 
 While this does induce some consolidation pressure, we believe it is the least-bad option. Some users will inevitably want to outsource the signing responsibility to a third party. However, trying to prevent this programmatically would only encourage users to find work-arounds that are even more risky. For example, requiring users to sign with the same key that owns their STX would simply encourage them to trust a 3rd party to both hold and stack their STX on their behalf, which is worse than just outsourcing the signing responsibility.
 
-References
+# References
 
 [1] https://eprint.iacr.org/2020/852.pdf
+
 [2] https://trust-machines.github.io/wsts/wsts.pdf
 
 [SIP-001-link]: https://github.com/stacksgov/sips/blob/main/sips/sip-001/sip-001-burn-election.md

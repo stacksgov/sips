@@ -1,0 +1,21 @@
+shape: sequence_diagram
+
+bitcoin: Bitcoin
+miner: Miner
+stackers: Stackers
+
+Sortition / Tenure Election : {
+  miner -> bitcoin: send block-commit
+  bitcoin."sortition"
+  bitcoin -> miner: miner observes sortition result
+}
+
+Tenured Miner Loop: {
+  miner."mine Stacks block"
+  miner -> stackers: block to StackerDB
+  stackers -> stackers: StackerDB notification
+  stackers -> stackers: Stackers validate Block
+  stackers -> stackers: Stackers sign block
+  stackers -> miner: Ack
+}
+

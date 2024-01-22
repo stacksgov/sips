@@ -121,4 +121,4 @@ _Note: above considerations subject to changes and iterations from ongoing lesso
 
 ---
 
-_If this SIP Editor Committee interests you and you wish to join the effort, please reach out to @Hero-Gamer or Steering Committee members @jcnelson and @GinaAbrams_
+_If becoming a SIP Editor interests you and you wish to join the effort, please reach out to @Hero-Gamer or Steering Committee members @jcnelson and @GinaAbrams_

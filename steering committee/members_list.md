@@ -23,7 +23,7 @@ Created-by: SIP-000
 
 ## About this Steering Committee
 
-The Steering Committee's overarching duty is to oversee the evolution of the Stacks blockchain’s design, operation, and governance, in a way that is technically sound and feasible, according to the rules and procedures described in this document. The SC shall be guided by and held accountable by the greater community of users, and shall make all decisions with the advice of the relevant Consideration Advisory Boards.
+The overarching duty of the Steering Committee (SC) is to oversee the evolution of the Stacks blockchain’s design, operation, and governance, in a way that is technically sound and feasible, according to the rules and procedures described in this document. The SC shall be guided by and held accountable by the greater community of users, and shall make all decisions with the advice of the relevant Consideration Advisory Boards.
 
 The SC’s role is that of a steward. The SC shall select SIPs for ratification based on how well they serve the greater good of the Stacks users. Given the nature of blockchains, the SC's particular responsibilities pertaining to upgrading the blockchain network are meant to ensure that upgrades happen in a backwards-compatible fashion if at all possible. While this means that more radical SIPs may be rejected or may spend a long amount of time in Recommended status, it also minimizes the chances of an upgrade leading to widespread disruption (the minimization of which itself serves the greater good).
 

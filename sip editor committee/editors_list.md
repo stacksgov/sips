@@ -1,4 +1,4 @@
-# Consideration for SIP Editor Committee
+# Consideration for SIP Editors
 
 Members:
 

@@ -85,7 +85,7 @@ Invite tree:
 
 ## About this SIP Editor Committee
 
-The role of the SIP Editors is to identify SIPs in the Draft status that can be transitioned to Accepted status. A SIP editor must be able to vet a SIP to ensure that it is well-formed, that it follows the ratification workflow faithfully, and that it does not overlap with any already-Accepted SIPs or SIPs that have since become Recommended or Ratified.
+The role of a SIP Editor is to identify SIPs in the Draft status and help transition them to Accepted status. A SIP editor must be able to vet a SIP to ensure that it is well-formed, that it follows the ratification workflow faithfully, and that it does not overlap with any already-Accepted SIPs or SIPs that have since become Recommended or Ratified.
 
 The SIP Editors are responsible for maintaining the "inbound funnel" for SIPs from the greater Stacks community. SIP Editors ensure that all inbound SIPs are well-formed, relevant, and do not duplicate prior work (including rejected SIPs).
 

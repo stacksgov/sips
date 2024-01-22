@@ -55,4 +55,4 @@ _Note: above considerations subject to changes and iterations from ongoing lesso
 
 ---
 
-_If this Steering Committee interests you and you wish to join the effort, please reach out to @jennymith and @Hero-Gamer or Steering Committee members @jcnelson and @GinaAbrams_
+_If this Steering Committee interests you and you wish to join the effort, please reach out to @Hero-Gamer or Steering Committee members @jcnelson and @GinaAbrams_

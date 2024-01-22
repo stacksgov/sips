@@ -7,7 +7,6 @@ Members:
 - Aaron Blankstein <aaron@hiro.so>
 - Brice Dobry <brice@hiro.so>
 - Dan Trevino <dantrevino@gmail.com>
-- Daniel Fritsche <daniel@byzantion.xyz>
 - Jamil Dhanani <jamil@gamma.io>
 - Jesse Wiley <jesse@stacks.org>
 - Mike Cohen <mike@claritylab.dev>
@@ -25,8 +24,6 @@ Created-by: SIP-000
 **Brice Dobry (Chairperson)**: Brice is a senior engineer at Hiro, working on Clarinet and other developer tools, and contributing to the Stacks blockchain. Coming from a background in compilers, programming languages, and analysis tools, he is passionate about helping developers build productively, efficiently and safely.
 
 **Dan Trevino**: Dan is the founder of Boom Cypto and an advocate for open standards. Dan has contributed to the Stacks community as an advocate, developer, speaker, and mentor since 2016.
-
-**Daniel Fritsche**: Daniel is the co-founder of Byzantion, a cross-chain infrastructure and trading platform creating seamless cross-chain experiences for developers and users. Prior to Byzantion, he was the Vice President of Data Strategy at Stephens Inc.
 
 **Jamil Dhanani**: Jamil is the Founder and CEO of Gamma.io, the leading marketplace and creator platform for NFTs on Bitcoin, built on Stacks. Prior to founding Gamma, he worked as a Machine Learning Engineer and Researcher at Apple, and studied Computer Science at Stanford and the University of Toronto.
 

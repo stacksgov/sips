@@ -51,8 +51,7 @@ Invite tree:
 
 **AcrossFire**: AcrossFire has experience as a DevOps engineer, Linux enthusiast, and a passionate Bitcoiner. He has experience with systems administration and enjoys automating maintenance tasks using tools like Puppet, Ansible, Docker, Kubernetes and others. He likes to bring this experience to Bitcoin by running Bitcoin and Stacks nodes and doing what he can to optimize the experience.
 
-**Algorithm**: Currently serving at Secret Key Lab/ Xverse.
-Advocating for Stacks tech to fully inherit Bitcoin hash power where an individual can have full ownership of their identity.
+**Algorithm**: Currently serving at Secret Key Lab/ Xverse. Advocating for Stacks tech to fully inherit Bitcoin hash power where an individual can have full ownership of their identity.
 
 **Binaya Tripathi**: Binaya is a data scientist and Clarity Developer. Binaya is currently based in San Francisco and owns and operates a small hospitality business. He has been involved in the Bitcoin and Stacks and web 3.0 ecosystem for the last 2.5 years. He is actively trying to build bitcoin builders ecosystem in San Francisco and in Nepal in collaboration with local builders in Nepal. 
 

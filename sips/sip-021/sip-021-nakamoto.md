@@ -275,8 +275,8 @@ In this proposal, a block is valid if and only if the following are true:
   - Its header contains the correct parent block ID of the immediate parent of this block.
   - The transaction Merkle tree root is consistent with the transactions
   - The state root hash matches the MARF tip root hash once all transactions are applied
-  - **(NEW)** the block header has a valid ECDSA signature from the miner -
-  - **(NEW)** the block header has a valid WSTS Schnorr signature from the set of Stackers - Add validation method
+  - **(NEW)** The block header has a valid ECDSA signature from the miner.
+  - **(NEW)** The block header has a valid WSTS Schnorr signature from the set of Stackers.
 - **(NEW)** All Bitcoin transactions since the last valid sortition up to (but not including) this tenure's block-commit’s Bitcoin block have been applied to the Stacks chain state
 - In the case of a tenure start block:
   - **(NEW)** The first transaction is the `TenureChange` transaction.

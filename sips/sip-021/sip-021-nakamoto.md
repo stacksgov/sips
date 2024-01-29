@@ -16,7 +16,7 @@ Authors:
 * Ashton Stephens <ashton@trustmachines.co>
 * Joey Yandle <joey@trustmachines.co>
 
-Consideration: Governance, Technical
+Consideration: Governance, Technical, Economics
 
 Type: Consensus
 
@@ -75,8 +75,10 @@ Over the last three years the Stacks community has identified several issues wit
 ## Proposed Solution
 To address these shortcomings, this proposal calls for three fundamental changes to the way Stacks works.
 - **Fast blocks:** The time taken for a user-submitted transaction to be mined within a block (and thus confirmed) will now take on the order of seconds, instead of tens of minutes. This is achieved by separating block production from cryptographic sortitions -- a winning miner may produce many blocks between two subsequent sortitions.
-- **Bitcoin finality:** Once a transaction is confirmed, reversing it is at least as hard as reversing a Bitcoin transaction. The Stacks blockchain no longer forks on its own.
+- **Bitcoin finality\*:** Once a transaction is confirmed, reversing it is at least as hard as reversing a Bitcoin transaction. The Stacks blockchain no longer forks on its own.
 - **Bitcoin Miner MEV Resistance:** This proposal alters the sortition algorithm to ensure that Bitcoin miners do not have an advantage as Stacks miners. They must spend competitive amounts of Bitcoin currency to have a chance of earning STX.
+
+\* In the protocol described in this SIP, a transaction on the Stacks blockchain has Bitcoin finality (that is, it is anchored to a Bitcoin block) after two tenure changes build upon the tenure that produced a block containing that transaction. The wall-clock time between a transaction being included in the Stacks blockchain and achieving Bitcoin finality is strictly less than it takes on the Bitcoin blockchain because a Stacks transaction can be broadcast and included within the duration of a single tenure but a Bitcoin transaction can only be included within a single block and must be broadcast before that block is produced.
 
 ## Design
 To achieve these goals this proposal makes the following changes to the Stacks protocol:
@@ -273,8 +275,8 @@ In this proposal, a block is valid if and only if the following are true:
   - Its header contains the correct parent block ID of the immediate parent of this block.
   - The transaction Merkle tree root is consistent with the transactions
   - The state root hash matches the MARF tip root hash once all transactions are applied
-  - **(NEW)** the block header has a valid ECDSA signature from the miner
-  - **(NEW)** the block header has a valid WSTS Schnorr signature from the set of Stackers
+  - **(NEW)** the block header has a valid ECDSA signature from the miner -
+  - **(NEW)** the block header has a valid WSTS Schnorr signature from the set of Stackers - Add validation method
 - **(NEW)** All Bitcoin transactions since the last valid sortition up to (but not including) this tenure's block-commit’s Bitcoin block have been applied to the Stacks chain state
 - In the case of a tenure start block:
   - **(NEW)** The first transaction is the `TenureChange` transaction.
@@ -423,7 +425,7 @@ A new block limit will be set based on benchmarks of the reference implementatio
 
 Once epoch 3.0 goes live, Stackers will be required to actively participate in the system by signing and rejecting valid blocks from the currently tenured miner. This will be enforced by the withholding of PoX payouts during periods in which any non-participating Stackers are inactive. In this way Stackers cannot benefit from the system without participating.
 
-The exact liveness thresholds required of stackers before PoX payouts cease will be informed by practical observations of a test version system with a best-effort from participants. The expectation will be that after some period more than 4 Bitcoin blocks without activity from a Stacker PoX payouts will be disabled by removing the Stacker addresses from the pool of valid PoX targets. Their BTC will instead be burnt.  The exact number will be chosen such that it enforces signer activeness while not punishing a signer for restart. The current expectation is that this will be 5 Bitcoin blocks. Should a signer come back online, then after being online for 5 consecutive Bitcoin blocks, they will again become eligible to receive PoX payouts.
+The exact liveness thresholds required of stackers before PoX payouts cease will be informed by practical observations of a test version system with a best-effort from participants. The expectation will be that if a Stacker is not live for some n of the last m blocks the Stacker's PoX payouts will be disabled by removing the Stacker addresses from the pool of valid PoX targets. Their BTC will instead be burnt.  The exact number will be chosen such that it enforces signer activeness while not punishing a signer for restart. The current expectation is that this will be 5 Bitcoin blocks. Should a signer come back online, then after being online for 5 consecutive Bitcoin blocks, they will again become eligible to receive PoX payouts.
 
 ## Process of Activation
 

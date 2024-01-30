@@ -101,8 +101,8 @@ In other cases (e.g. WalletConnect), the namespace may already be given by meta-
 
 `result`
 
-- `txId`: `string` hex-encoded
-- `txRaw`: `string` hex-encoded
+- `txid`: `string` hex-encoded
+- `transaction`: `string` hex-encoded
 
 ### `transferFt`
 
@@ -127,8 +127,8 @@ In other cases (e.g. WalletConnect), the namespace may already be given by meta-
 
 `result`
 
-- `txId`: `string` hex-encoded
-- `txRaw`: `string` hex-encoded
+- `txid`: `string` hex-encoded
+- `transaction`: `string` hex-encoded
 
 ### `contractDeploy`
 
@@ -140,8 +140,8 @@ In other cases (e.g. WalletConnect), the namespace may already be given by meta-
 
 `result`
 
-- `txId`: `string` hex-encoded
-- `txRaw`: `string` hex-encoded
+- `txid`: `string` hex-encoded
+- `transaction`: `string` hex-encoded
 
 ### `signTransaction`
 
@@ -151,7 +151,7 @@ In other cases (e.g. WalletConnect), the namespace may already be given by meta-
 
 `result`
 
-- `txRaw`: `string` hex-encoded (signed)
+- `transaction`: `string` hex-encoded (signed)
 
 ### `signMessage`
 

@@ -33,11 +33,11 @@ The proposed changes are as follows:
 Integration of WebBTC Request Standard: The WebBTC request standard will be adopted to replace the current Connect system. This standard provides a flexible RPC-style interface for web applications to interact with wallets.
 The RPC payload is also standardized on its own for use in various contexts.
 
-Backward Compatibility for Wallets: Wallets are encouraged to implement the new webbtc request interface. To maintain backward compatibility, wallets may choose to retain the previous system alongside the new interface. This approach ensures uninterrupted service for applications that have not yet migrated to the new standard.
-Detailed Implementation Guidelines: Detailed guidelines and best practices for integrating the webbtc request standard will be provided. This includes technical specifications, sample code, and migration strategies for both web applications and wallet providers.
+Backward Compatibility for Wallets: Wallets are encouraged to implement the new WebBTC request interface. To maintain backward compatibility, wallets may choose to retain the previous system alongside the new interface. This approach ensures uninterrupted service for applications that have not yet migrated to the new standard.
+Detailed Implementation Guidelines: Detailed guidelines and best practices for integrating the WebBTC request standard will be provided. This includes technical specifications, sample code, and migration strategies for both web applications and wallet providers.
 Rationale
 
-The adoption of the webbtc request standard is driven by the need for a more robust and simplified connection protocol between web applications and wallets. This standard provides a modernized approach that aligns with current web development practices, offering better performance, security, and ease of use.
+The adoption of the WebBTC request standard is driven by the need for a more robust and simplified connection protocol between web applications and wallets. This standard provides a modernized approach that aligns with current web development practices, offering better performance, security, and ease of use.
 
 # Backwards Compatibility
 
@@ -147,7 +147,7 @@ In other cases (e.g. WalletConnect), the namespace may already be given by meta-
 
 `params`
 
-- `txRaw`: `string` hex-encoded
+- `transaction`: `string` hex-encoded
 
 `result`
 

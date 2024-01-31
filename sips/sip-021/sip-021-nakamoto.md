@@ -246,16 +246,12 @@ In the event that PoX does not activate, the chain halts. If there are no Stacke
 
 #### Changes to PoX
 To support tenure changes, this proposal calls for a new PoX contract, `.pox-4`. The `.pox-4` contract would be altered over the current PoX contract (`.pox-3`) to meet the following requirements:
-
-- Stackers register a WSTS signing key when they call `stack-stx` or a delegate provides the signing key with `delegate-stack-stx`.
-
-In addition, a `.stackers` boot contracts will be created which carries out the following tasks:
-- The `.stackers` contract will expose each reward cycle's full reward set, including the signing keys for each stacker, via a public function. Internally, the Stacks node will call a private function to load the next reward set into the `.stackers` data space after it identifies the PoX anchor block. This is required for some future Stacks features that have been discussed.
-- The `.stackers` contract will expose two private functions to update the signing set for the following reward cycle.
-  - `update-signer-set`: will update the reward set for the upcoming reward cycle. It will take in a list of at maximum size 4096 of signer pubkeys.
-  - `update-current-signer`: will update the the specified signer with their corresponding key-ids.
-- The `.stackers` contract will expose a function to vote on the aggregate public key used by the Stackers to sign new blocks in the current tenure.
-  - `vote-for-aggregated-public-key` takes the key of the signer calling the contract, the reward cycle number,  the round number, and the list of all tapleaves.
+- Stackers register a WSTS signing key when they call `stack-stx` or a delegate provides the signing key with `stack-aggregation-commit-indexed`.
+In addition, a `.signers` & `.signers-voting` boot contracts will be created which carry out the following tasks:
+- The `.signers` contract will expose each reward cycle's full reward set, including the signing keys for each stacker, via a public function. Internally, the Stacks node will call a private function to load the next reward set into the `.signers` data space after it identifies the PoX anchor block. This is required for some future Stacks features that have been discussed.
+  - `stackerdb-set-signer-slots`: will update the reward set for the following reward cycle. It will take in a list of at maximum size 4000 of signer principals & reward-slots allocated.
+- The `.signers-voting` contract will expose a function to vote on the aggregate public key used by the Stackers to sign new blocks in the current tenure.
+  - `vote-for-aggregate-public-key` takes the key of the signer calling the contract, the reward cycle number, and the round number. An aggregate public key candidate must reach the same consensus threshold met for signing blocks (70%) for the system to continue.
 
 ## Changes to Clarity
 

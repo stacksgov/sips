@@ -419,7 +419,7 @@ A new block limit will be set based on benchmarks of the reference implementatio
 
 ### Signer Liveness Enforcement
 
-Once epoch 3.0 goes live, Stackers will be required to actively participate in the system by signing and rejecting valid blocks from the currently tenured miner. This will be enforced by the withholding of PoX payouts during periods in which any non-participating Stackers are inactive. In this way Stackers cannot benefit from the system without participating.
+Once epoch 3.0 goes live, Stackers will be required to actively participate in the system by signing and rejecting valid blocks from the currently tenured miner. This will be enforced by the withholding of PoX payouts from inactive Stackers during the periods in which they are inactive. In this way Stackers cannot benefit from the system without participating.
 
 The exact liveness thresholds required of stackers before PoX payouts cease will be informed by practical observations of a test version system with a best-effort from participants. The expectation will be that if a Stacker is not live for some n of the last m blocks the Stacker's PoX payouts will be disabled by removing the Stacker addresses from the pool of valid PoX targets. Their BTC will instead be burnt.  The exact number will be chosen such that it enforces signer activeness while not punishing a signer for restart. The current expectation is that this will be 5 Bitcoin blocks. Should a signer come back online, then after being online for 5 consecutive Bitcoin blocks, they will again become eligible to receive PoX payouts.
 
@@ -531,15 +531,18 @@ While this does induce some consolidation pressure, we believe it is the least-b
 
 # References
 
-- [1] https://eprint.iacr.org/2020/852.pdf
-- [2] https://trust-machines.github.io/wsts/wsts.pdf
+- [1] Komlo C, Goldberg I (2020) FROST: Flexible Round-Optimized Schnorr Threshold Signatures. Available at https://eprint.iacr.org/2020/852.pdf and [locally][local-FROST-paper-copy] [Verified 2 February 2024]
+- [2] Yandle J (2023) Weighted Schnorr Threshold Signatures. Available at https://trust-machines.github.io/wsts/wsts.pdf and [locally][local-WSTS-paper-copy] [Verified 2 February 2024]
 
 [SIP-001-link]: https://github.com/stacksgov/sips/blob/main/sips/sip-001/sip-001-burn-election.md
 [SIP-005-link]: https://github.com/stacksgov/sips/blob/main/sips/sip-005/sip-005-blocks-and-transactions.md
 [SIP-007-link]: https://github.com/stacksgov/sips/blob/main/sips/sip-007/sip-007-stacking-consensus.md
 [SIP-015-link]: https://github.com/stacksgov/sips/blob/main/sips/sip-015/sip-015-network-upgrade.md
-[MEV-analysis-link]: https://forum.Stacks.org/uploads/short-url/bqIX4EQ5Wgf2PH4UtiZHZBqJvYE.pdf
+[MEV-analysis-link]: ./MEV-Report.pdf
 
-[figure-1-asset]: https://github.com/Stacks-network/Stacks-blockchain/assets/459947/fb669bc7-3d61-4154-a941-0e22beb73ad0
+[local-WSTS-paper-copy]: ./Weighted-Schnorr-Threshold-Signatures.pdf
+[local-FROST-paper-copy]: ./FROST-Flexible-Round-Optimized-Schnorr-Threshold-Signatures.pdf
+
+[figure-1-asset]: ./sortition-stacksblock-relationship.png
 [figure-2-asset]: ./miner-protocol.svg
-[figure-3-asset]: https://github.com/Stacks-network/Stacks-blockchain/assets/459947/98381aa0-f8ff-4842-b15b-881f4c4424ab
+[figure-3-asset]: ./tenure-change-overview.png

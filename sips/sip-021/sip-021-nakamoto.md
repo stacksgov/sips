@@ -538,8 +538,8 @@ While this does induce some consolidation pressure, we believe it is the least-b
 [SIP-005-link]: https://github.com/stacksgov/sips/blob/main/sips/sip-005/sip-005-blocks-and-transactions.md
 [SIP-007-link]: https://github.com/stacksgov/sips/blob/main/sips/sip-007/sip-007-stacking-consensus.md
 [SIP-015-link]: https://github.com/stacksgov/sips/blob/main/sips/sip-015/sip-015-network-upgrade.md
-[MEV-analysis-link]: https://forum.Stacks.org/uploads/short-url/bqIX4EQ5Wgf2PH4UtiZHZBqJvYE.pdf
+[MEV-analysis-link]: ./MEV%20Report.pdf
 
-[figure-1-asset]: https://github.com/Stacks-network/Stacks-blockchain/assets/459947/fb669bc7-3d61-4154-a941-0e22beb73ad0
+[figure-1-asset]: ./sortition-stacksblock-relationship.png
 [figure-2-asset]: ./miner-protocol.svg
-[figure-3-asset]: https://github.com/Stacks-network/Stacks-blockchain/assets/459947/98381aa0-f8ff-4842-b15b-881f4c4424ab
+[figure-3-asset]: ./tenure-change-overview.png

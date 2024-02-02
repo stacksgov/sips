@@ -531,17 +531,17 @@ While this does induce some consolidation pressure, we believe it is the least-b
 
 # References
 
-- [1] Chelsea K, Ian G (2020) FROST: Flexible Round-Optimized Schnorr Threshold Signatures. Available at https://eprint.iacr.org/2020/852.pdf and [locally][local-FROST-paper-copy] [Verified 2 February 2024]
-- [2] Joseph Y (2023) Weighted Schnorr Threshold Signatures. Available at https://trust-machines.github.io/wsts/wsts.pdf and [locally][local-WSTS-paper-copy] [Verified 2 February 2024]
+- [1] Komlo C, Goldberg I (2020) FROST: Flexible Round-Optimized Schnorr Threshold Signatures. Available at https://eprint.iacr.org/2020/852.pdf and [locally][local-FROST-paper-copy] [Verified 2 February 2024]
+- [2] Yandle J (2023) Weighted Schnorr Threshold Signatures. Available at https://trust-machines.github.io/wsts/wsts.pdf and [locally][local-WSTS-paper-copy] [Verified 2 February 2024]
 
 [SIP-001-link]: https://github.com/stacksgov/sips/blob/main/sips/sip-001/sip-001-burn-election.md
 [SIP-005-link]: https://github.com/stacksgov/sips/blob/main/sips/sip-005/sip-005-blocks-and-transactions.md
 [SIP-007-link]: https://github.com/stacksgov/sips/blob/main/sips/sip-007/sip-007-stacking-consensus.md
 [SIP-015-link]: https://github.com/stacksgov/sips/blob/main/sips/sip-015/sip-015-network-upgrade.md
-[MEV-analysis-link]: ./MEV%20Report.pdf
+[MEV-analysis-link]: ./MEV-Report.pdf
 
-[local-WSTS-paper-copy]: ./Weighted%20Schnorr%20Threshold%20Signatures.pdf
-[local-FROST-paper-copy]: ./FROST:%20Flexible%20Round-Optimized%20Schnorr%20Threshold%20Signatures.pdf
+[local-WSTS-paper-copy]: ./Weighted-Schnorr-Threshold-Signatures.pdf
+[local-FROST-paper-copy]: ./FROST-Flexible-Round-Optimized-Schnorr-Threshold-Signatures.pdf
 
 [figure-1-asset]: ./sortition-stacksblock-relationship.png
 [figure-2-asset]: ./miner-protocol.svg

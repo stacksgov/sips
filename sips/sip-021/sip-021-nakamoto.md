@@ -470,8 +470,13 @@ If the Stacks address holder votes for both "yes" and "no" by the end of the vot
 
 ## For Non-Stackers
 
-If the user is _not_ Stacking, then they can still vote with their liquid STX.
-***TODO: Details need to be added here***
+Users with liquid STX can vote on proposals using the [Ecosystem DAO](https://stx.eco).
+Liquid STX is the users balance, less any STX they have locked in PoX stacking protocol,
+at the block height at which the voting started (preventing the same STX from being transferred between accounts and used to effectively double vote).
+This is referred to generally as "snapshot" voting.
+
+For SIP 21 Nakamoto Upgrade to pass 66% of all liquid STX committed by voting
+must in favour of the proposal.
 
 ### For Miners
 There is only one criterion for miners to activate this SIP: they must mine the Stacks blockchain up to and past the end of the voting period. In all reward cycles between cycle 75 and the end of the voting period, PoX must activate.

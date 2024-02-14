@@ -14,6 +14,15 @@ Created: 10 October 2023
 
 License: BSD 2-Clause
 
+# OPEN QUESTIONS
+
+<!-- todo: remove section before merge -->
+
+- [ ] Should we add `stx_transferFt` and `stx_transferNft`?
+- [ ] Should `sender` in the params be renamed to `address`/`account`, or stay `sender for added clarity VS recipient/etc.?
+- [ ] Should Clarity values and maybe other types be hex-encoded, or is there a better idea that has similar benefits (no dependencies, but is easier to work with)?
+  - For Clarity values, we could use strings (e.g. `u123`, `"text"`, `0x4be9`, `{ key: u3 }`) and parse the Clarity expression in the wallet. The only downside (I can think of) -- apart from additional wallet dev cost -- is cases like strings which need quotes, but this might not be clear to the user.
+
 # Abstract
 
 This SIP proposes the integration of the WebBTC request standard into the Stacks blockchain's Connect system. The goal is to replace the current Connect interface, primarily used by web applications to connect with browser extensions and mobile apps, with a more streamlined and efficient protocol.
@@ -65,8 +74,9 @@ Parameters should be considered recommendations for the wallet.
 The user/wallet may choose to ignore/override them.
 Optional params are marked with a `?`.
 
-Methods can be namespaced under `stx_` if used in settings like WebBTC (see WBIP-002).
+Methods can be namespaced under `stx_` if used in settings like WebBTC (see WBIP-002) and other more Ethereum inspired domains.
 In other cases (e.g. WalletConnect), the namespace may already be given by meta-data (e.g. a `chainId` field) and can be omitted.
+On the predominant `StacksProvider` global object, the methods can be used without a namespace, but wallet may add namespaced aliases for convenience.
 
 ### Method Independent
 
@@ -82,7 +92,7 @@ In other cases (e.g. WalletConnect), the namespace may already be given by meta-
 - `postConditionMode?`: `'allow' | 'deny'`
 - `postConditions?`: `PostCondition[]`, defaults to `[]`
 - `sponsored?`: `boolean`, defaults to `false`
-- `sender?`: `string` address, Stacks c32-encoded
+- `address?`: `string` address, Stacks c32-encoded (sender or signer address), defaults to wallets current address
 - ~~`appDetails`~~ _removed_
 - ~~`onFinish`~~ _removed_
 - ~~`onCancel`~~ _removed_
@@ -91,7 +101,7 @@ In other cases (e.g. WalletConnect), the namespace may already be given by meta-
 
 - `PostCondition`: `string` hex-encoded
 
-### `transferStx`
+### `stx_transferStx`
 
 `params`
 
@@ -104,15 +114,15 @@ In other cases (e.g. WalletConnect), the namespace may already be given by meta-
 - `txid`: `string` hex-encoded
 - `transaction`: `string` hex-encoded
 
-### `transferFt`
+### `stx_transferFt`
 
 `todo: haven't existed yet, should we add them?`
 
-### `transferNft`
+### `stx_transferNft`
 
 `todo: haven't existed yet, should we add them?`
 
-### `contractCall`
+### `stx_contractCall`
 
 `params`
 
@@ -130,7 +140,7 @@ In other cases (e.g. WalletConnect), the namespace may already be given by meta-
 - `txid`: `string` hex-encoded
 - `transaction`: `string` hex-encoded
 
-### `contractDeploy`
+### `stx_contractDeploy`
 
 `params`
 
@@ -143,7 +153,7 @@ In other cases (e.g. WalletConnect), the namespace may already be given by meta-
 - `txid`: `string` hex-encoded
 - `transaction`: `string` hex-encoded
 
-### `signTransaction`
+### `stx_signTransaction`
 
 `params`
 
@@ -153,7 +163,7 @@ In other cases (e.g. WalletConnect), the namespace may already be given by meta-
 
 - `transaction`: `string` hex-encoded (signed)
 
-### `signMessage`
+### `stx_signMessage`
 
 `params`
 
@@ -164,7 +174,7 @@ In other cases (e.g. WalletConnect), the namespace may already be given by meta-
 - `signature`: `string` hex-encoded
 - `publicKey`: `string` hex-encoded
 
-### `signStructuredMessage`
+### `stx_signStructuredMessage`
 
 `params`
 
@@ -173,7 +183,7 @@ In other cases (e.g. WalletConnect), the namespace may already be given by meta-
 
 > `domain` can be optional if the wallet (e.g. browser extension) can infer it from the origin of the request.
 
-### `updateProfile`
+### `stx_updateProfile`
 
 `params`
 

@@ -80,7 +80,9 @@ On the predominant `StacksProvider` global object, the methods can be used witho
 
 ### Method Independent
 
-#### Transfer & Transaction Definitions
+#### Common Definitions
+
+The following definitions can be used in multiple methods (mainly for transfer and transaction methods).
 
 `params`
 
@@ -182,6 +184,24 @@ On the predominant `StacksProvider` global object, the methods can be used witho
 - `domain?`: `string` hex-encoded (defined by SIP-018)
 
 > `domain` can be optional if the wallet (e.g. browser extension) can infer it from the origin of the request.
+
+### `stx_getAddresses`
+
+`result`
+
+- `addresses`: `{}[]`
+  - `address`: `string` address, Stacks c32-encoded
+  - `publicKey`: `string` hex-encoded
+
+### `stx_getAccounts`
+
+`result`
+
+- `addresses`: `{}[]`
+  - `address`: `string` address, Stacks c32-encoded
+  - `publicKey`: `string` hex-encoded
+  - `gaiaHubUrl`: `string` URL
+  - `gaiaAppKey`: `string` hex-encoded
 
 ### `stx_updateProfile`
 

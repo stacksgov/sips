@@ -18,9 +18,10 @@ License: BSD 2-Clause
 
 <!-- todo: remove section before merge -->
 
+- [ ] Should post-condition `type` be called `condition` or something (future overlap with clarity value?) or something else. Suffix `-condition`?
 - [ ] Should we add `stx_transferFt` and `stx_transferNft`?
-- [ ] Should `sender` in the params be renamed to `address`/`account`, or stay `sender for added clarity VS recipient/etc.?
-- [ ] Should Clarity values and maybe other types be hex-encoded, or is there a better idea that has similar benefits (no dependencies, but is easier to work with)?
+- [x] Change sender to `address`~~/`account`, or stay `sender for added clarity VS recipient/etc.?~~
+- [x] Should Clarity values and maybe other types be hex-encoded, or is there a better idea that has similar benefits (no dependencies, but is easier to work with)?
   - For Clarity values, we could use strings (e.g. `u123`, `"text"`, `0x4be9`, `{ key: u3 }`) and parse the Clarity expression in the wallet. The only downside (I can think of) -- apart from additional wallet dev cost -- is cases like strings which need quotes, but this might not be clear to the user. A function/library for this would be provided by Stacks.js.
 
 # Abstract
@@ -83,23 +84,21 @@ Methods can be namespaced under `stx_` if used in settings like WebBTC (see WBIP
 In other cases (e.g. WalletConnect), the namespace may already be given by meta-data (e.g. a `chainId` field) and can be omitted.
 On the predominant `StacksProvider` global object, the methods can be used without a namespace, but wallets may add namespaced aliases for convenience.
 
-### Method Independent
-
-#### Common Definitions
+#### Common definitions
 
 The following definitions can be used in multiple methods (mainly for transfer and transaction methods).
 
 `params`
 
+- `address?`: `string` address, Stacks c32-encoded, defaults to wallets current address
 - `network?`: `'mainnet' | 'testnet' | 'regtest' | 'mocknet'`
 - `fee?`: `number | string` (anything parseable by the BigInt constructor)
 - `nonce?`: `number | string` (anything parseable by the BigInt constructor)
 - `attachment?`: `string` hex-encoded
-- `anchoreMode?`: `'onChainOnly' | 'offChainOnly' | 'any'`
-- `postConditionMode?`: `'allow' | 'deny'`
+- `anchorMode?`: `'on-chain' | 'off-chain' | 'any'`
 - `postConditions?`: `PostCondition[]`, defaults to `[]`
+- `postConditionMode?`: `'allow' | 'deny'`
 - `sponsored?`: `boolean`, defaults to `false`
-- `address?`: `string` address, Stacks c32-encoded (sender or signer address), defaults to wallets current address
 - ~~`appDetails`~~ _removed_
 - ~~`onFinish`~~ _removed_
 - ~~`onCancel`~~ _removed_
@@ -108,7 +107,9 @@ The following definitions can be used in multiple methods (mainly for transfer a
 
 - `PostCondition`: `string` hex-encoded
 
-### `stx_transferStx`
+---
+
+### Method `stx_transferStx`
 
 `params`
 
@@ -121,22 +122,21 @@ The following definitions can be used in multiple methods (mainly for transfer a
 - `txid`: `string` hex-encoded
 - `transaction`: `string` hex-encoded
 
-### `stx_transferFt`
+### Method `stx_transferFt`
 
 `todo: haven't existed yet, should we add them?`
 
-### `stx_transferNft`
+### Method `stx_transferNft`
 
 `todo: haven't existed yet, should we add them?`
 
-### `stx_contractCall`
+### Method `stx_callContract`
 
 `params`
 
-- `contractAddress`: `string` address, Stacks c32-encoded
-- `contractName`: `string`
-- `functionName`: `string`
-- `functionArgs`: `ClarityValue[]`, defaults to `[]`
+- `contract`: `string.string` address with contract name suffix, Stacks c32-encoded
+- `function`: `string`
+- `arguments`: `ClarityValue[]`, defaults to `[]`
 
 `where`
 
@@ -147,12 +147,12 @@ The following definitions can be used in multiple methods (mainly for transfer a
 - `txid`: `string` hex-encoded
 - `transaction`: `string` hex-encoded
 
-### `stx_contractDeploy`
+### Method `stx_deployContract`
 
 `params`
 
-- `contractName`: `string`
-- `codeBody`: `string` Clarity contract code
+- `name`: `string`
+- `clarityCode`: `string` Clarity contract code
 - `clarityVersion?`: `number`
 
 `result`
@@ -160,7 +160,7 @@ The following definitions can be used in multiple methods (mainly for transfer a
 - `txid`: `string` hex-encoded
 - `transaction`: `string` hex-encoded
 
-### `stx_signTransaction`
+### Method `stx_signTransaction`
 
 `params`
 
@@ -170,7 +170,7 @@ The following definitions can be used in multiple methods (mainly for transfer a
 
 - `transaction`: `string` hex-encoded (signed)
 
-### `stx_signMessage`
+### Method `stx_signMessage`
 
 `params`
 
@@ -181,16 +181,19 @@ The following definitions can be used in multiple methods (mainly for transfer a
 - `signature`: `string` hex-encoded
 - `publicKey`: `string` hex-encoded
 
-### `stx_signStructuredMessage`
+### Method `stx_signStructuredMessage`
 
 `params`
 
 - `message`: `string` Clarity value, hex-encoded
-- `domain?`: `string` hex-encoded (defined by SIP-018)
+- `domain`: `string` hex-encoded (defined by SIP-018)
 
-> `domain` can be optional if the wallet (e.g. browser extension) can infer it from the origin of the request.
+`result`
 
-### `stx_getAddresses`
+- `signature`: `string` hex-encoded
+- `publicKey`: `string` hex-encoded
+
+### Method `stx_getAddresses`
 
 `result`
 
@@ -198,7 +201,7 @@ The following definitions can be used in multiple methods (mainly for transfer a
   - `address`: `string` address, Stacks c32-encoded
   - `publicKey`: `string` hex-encoded
 
-### `stx_getAccounts`
+### Method `stx_getAccounts`
 
 `result`
 
@@ -208,7 +211,7 @@ The following definitions can be used in multiple methods (mainly for transfer a
   - `gaiaHubUrl`: `string` URL
   - `gaiaAppKey`: `string` hex-encoded
 
-### `stx_updateProfile`
+### Method `stx_updateProfile`
 
 `params`
 
@@ -218,7 +221,232 @@ The following definitions can be used in multiple methods (mainly for transfer a
 
 - `profile`: `object` updated Schema.org Person object
 
-## Provider Registration
+## JS Representations
+
+While discussing this SIP, it has become clear that the current Stacks.js representation is confusing to developers.
+Rather, a better solution would be human-readable — for example, rely on string literal enumeration, rather than magic values, which need additional lookups.
+Relying on soley a hex-encoded also poses difficulties when building Stacks enabled web applications.
+
+### Clarity values
+
+Proposed below is an updated interface representation for Clarity primitives for use in Stacks.js and JSON compatible environments.
+
+> For encoding larger than JS `Number` big integers, `string` is used.
+
+`0x00` `int`
+
+```ts
+{
+  type: "int",
+  value: string // `bigint` compatible
+}
+```
+
+`0x01` `uint`
+
+```ts
+{
+  type: "uint",
+  value: string // `bigint` compatible
+}
+```
+
+`0x02` `buffer`
+
+```ts
+{
+  type: "buffer",
+  value: string // hex-encoded string
+}
+```
+
+`0x03` `bool` `true`
+
+```ts
+{
+  type: "true",
+}
+```
+
+`0x04` `bool` `false`
+
+```ts
+{
+  type: "false",
+}
+```
+
+`0x05` `address` (aka "standard principal")
+
+```ts
+{
+  type: "address",
+  value: string // Stacks c32-encoded
+}
+```
+
+`0x06` `contract` (aka "contract principal")
+
+```ts
+{
+  type: "contract",
+  value: `${string}.${string}` // Stacks c32-encoded, with contract name suffix
+}
+```
+
+`0x07` `ok` (aka "response ok")
+
+```ts
+{
+  type: "ok",
+  value: object // Clarity value
+}
+```
+
+`0x08` `err` (aka "response err")
+
+```ts
+{
+  type: "err",
+  value: object // Clarity value
+}
+```
+
+`0x09` `none` (aka "optional none")
+
+```ts
+{
+  type: "none",
+}
+```
+
+`0x0a` `some` (aka "optional some")
+
+```ts
+{
+  type: "some",
+  value: object // Clarity value
+}
+```
+
+`0x0b` `list`
+
+```ts
+{
+  type: "list",
+  value: object[] // Array of Clarity values
+}
+```
+
+`0x0c` `tuple`
+
+```ts
+{
+  type: "tuple",
+  value: Record<string, object> // Record of Clarity values
+}
+```
+
+`0x0d` `ascii`
+
+```ts
+{
+  type: "ascii",
+  value: string // ASCII-compatible string
+}
+```
+
+`0x0e` `utf8`
+
+```ts
+{
+  type: "utf8",
+  value: string
+}
+```
+
+### Post conditions
+
+`0x00` STX
+
+```ts
+{
+  type: 'stx',
+  address: string | `${string}.${string}`, // Stacks c32-encoded, with optional contract name suffix
+  condition: 'eq' | 'gt' | 'gte' | 'lt' | 'lte',
+  amount: string // `bigint` compatible, amount in mirco-STX
+}
+```
+
+`0x01` Fungible token
+
+```ts
+{
+  type: 'ft',
+  address: string | `${string}.${string}`, // Stacks c32-encoded, with optional contract name suffix
+  condition: 'eq' | 'gt' | 'gte' | 'lt' | 'lte',
+  asset: `${string}.${string}::${string}` // Stacks c32-encoded address, with contract name suffix, with asset suffix
+  amount: string // `bigint` compatible, amount in lowest integer denomination of fungible token
+}
+```
+
+`0x02` Non-fungible token
+
+```ts
+{
+  type: 'nft',
+  address: string | `${string}.${string}`, // Stacks c32-encoded, with optional contract name suffix
+  condition: 'sent' | 'not-sent',
+  asset: `${string}.${string}::${string}` // address with contract name suffix with asset suffix, Stacks c32-encoded
+  assetId: object, // Clarity value
+}
+```
+
+### Test vectors
+
+Listed below are some examples of the potentially unclear representations:
+
+- `u12` = `{ type: 'uint', value: "12" }`
+- `0xbeaf` = `{ type: 'ascii', value: "hello there" }`
+- `"hello there"` = `{ type: 'ascii', value: "hello there" }`
+- `(list 4 8)` =
+  ```
+  {
+    type: 'list',
+    value: [
+      { type: 'int', value: "4"},
+      { type: 'int', value: "8"},
+    ]
+  }
+  ```
+- `(err u4)` =
+  ```
+  {
+    type: 'err',
+    value: { type: 'uint', value: "4"},
+  }
+  ```
+- "sends more than 10000 uSTX" =
+  ```
+  {
+    type: 'stx',
+    address: 'STB44HYPYAT2BB2QE513NSP81HTMYWBJP02HPGK6',
+    amount: '10000',
+    condition: 'gt'
+  }
+  ```
+- "does not send the `12` TKN non-fungible token" =
+  ```
+  {
+    type: 'ntf',
+    address: 'STB44HYPYAT2BB2QE513NSP81HTMYWBJP02HPGK6.vault'
+    asset: 'STB44HYPYAT2BB2QE513NSP81HTMYWBJP02HPGK6.tokencoin::tkn',
+    assetId: { type: 'uint', value: '12' }
+    condition: 'not-sent'
+  }
+  ```
+
+## Provider registration
 
 Wallets can register their aliased provider objects according to WBIP-004.
 

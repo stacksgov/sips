@@ -92,8 +92,8 @@ The following definitions can be used in multiple methods (mainly for transfer a
 
 - `address?`: `string` address, Stacks c32-encoded, defaults to wallets current address
 - `network?`: `'mainnet' | 'testnet' | 'regtest' | 'mocknet'`
-- `fee?`: `number | string` (anything parseable by the BigInt constructor)
-- `nonce?`: `number | string` (anything parseable by the BigInt constructor)
+- `fee?`: `number | string` BigInt constructor compatible value
+- `nonce?`: `number | string` BigInt constructor compatible value
 - `attachment?`: `string` hex-encoded
 - `anchorMode?`: `'on-chain' | 'off-chain' | 'any'`
 - `postConditions?`: `PostCondition[]`, defaults to `[]`
@@ -105,47 +105,71 @@ The following definitions can be used in multiple methods (mainly for transfer a
 
 `where`
 
-- `PostCondition`: `string` hex-encoded
+- `PostCondition`: `string | object` hex-encoded or JSON representation
 
 ---
 
 ### Method `stx_transferStx`
 
+> **Comment**: This method doesn't take post-conditions.
+
 `params`
 
 - `recipient`: `string` address, Stacks c32-encoded
-- `amount`: `number | string` (anything parseable by the BigInt constructor)
+- `amount`: `number | string` BigInt constructor compatible value
 - `memo?`: `string`, defaults to `''`
 
 `result`
 
 - `txid`: `string` hex-encoded
-- `transaction`: `string` hex-encoded
+- `transaction`: `string` hex-encoded raw transaction
 
 ### Method `stx_transferFt`
 
-`todo: haven't existed yet, should we add them?`
+`params`
+
+- `recipient`: `string` address, Stacks c32-encoded
+- `asset`: `string` address, Stacks c32-encoded, with contract name suffix
+- `amount`: `number | string` BigInt constructor compatible value
+
+`result`
+
+- `txid`: `string` hex-encoded
+- `transaction`: `string` hex-encoded raw transaction
 
 ### Method `stx_transferNft`
 
-`todo: haven't existed yet, should we add them?`
+`params`
+
+- `recipient`: `string` address, Stacks c32-encoded
+- `asset`: `string` address, Stacks c32-encoded, with contract name suffix
+- `assetId`: `ClarityValue`
+
+`where`
+
+- `ClarityValue`: `string | object` hex-encoded or JSON representation
+
+`result`
+
+- `txid`: `string` hex-encoded
+- `transaction`: `string` hex-encoded raw transaction
 
 ### Method `stx_callContract`
 
 `params`
 
 - `contract`: `string.string` address with contract name suffix, Stacks c32-encoded
-- `function`: `string`
-- `arguments`: `ClarityValue[]`, defaults to `[]`
+- `functionName`: `string`
+- `functionArgs`: `ClarityValue[]`, defaults to `[]`
 
 `where`
 
-- `ClarityValue`: `string` hex-encoded
+- `ClarityValue`: `string | object` hex-encoded or JSON representation
 
 `result`
 
 - `txid`: `string` hex-encoded
-- `transaction`: `string` hex-encoded
+- `transaction`: `string` hex-encoded raw transaction
 
 ### Method `stx_deployContract`
 
@@ -158,17 +182,17 @@ The following definitions can be used in multiple methods (mainly for transfer a
 `result`
 
 - `txid`: `string` hex-encoded
-- `transaction`: `string` hex-encoded
+- `transaction`: `string` hex-encoded raw transaction
 
 ### Method `stx_signTransaction`
 
 `params`
 
-- `transaction`: `string` hex-encoded
+- `transaction`: `string` hex-encoded raw transaction
 
 `result`
 
-- `transaction`: `string` hex-encoded (signed)
+- `transaction`: `string` hex-encoded raw transaction (signed)
 
 ### Method `stx_signMessage`
 
@@ -203,6 +227,9 @@ The following definitions can be used in multiple methods (mainly for transfer a
 
 ### Method `stx_getAccounts`
 
+> **Comment**: This method is similar to `stx_getAddresses`.
+> It was added to provide better backwards compatibility for applications using Gaia.
+
 `result`
 
 - `addresses`: `{}[]`
@@ -221,7 +248,7 @@ The following definitions can be used in multiple methods (mainly for transfer a
 
 - `profile`: `object` updated Schema.org Person object
 
-## JS Representations
+## JSON Representations
 
 While discussing this SIP, it has become clear that the current Stacks.js representation is confusing to developers.
 Rather, a better solution would be human-readable — for example, rely on string literal enumeration, rather than magic values, which need additional lookups.
@@ -231,13 +258,13 @@ Relying on soley a hex-encoded also poses difficulties when building Stacks enab
 
 Proposed below is an updated interface representation for Clarity primitives for use in Stacks.js and JSON compatible environments.
 
-> For encoding larger than JS `Number` big integers, `string` is used.
+> **Comment**: For encoding larger than JS `Number` big integers, `string` is used.
 
 `0x00` `int`
 
 ```ts
 {
-  type: "int",
+  type: 'int',
   value: string // `bigint` compatible
 }
 ```
@@ -246,7 +273,7 @@ Proposed below is an updated interface representation for Clarity primitives for
 
 ```ts
 {
-  type: "uint",
+  type: 'uint',
   value: string // `bigint` compatible
 }
 ```
@@ -255,7 +282,7 @@ Proposed below is an updated interface representation for Clarity primitives for
 
 ```ts
 {
-  type: "buffer",
+  type: 'buffer',
   value: string // hex-encoded string
 }
 ```
@@ -264,7 +291,7 @@ Proposed below is an updated interface representation for Clarity primitives for
 
 ```ts
 {
-  type: "true",
+  type: 'true',
 }
 ```
 
@@ -272,7 +299,7 @@ Proposed below is an updated interface representation for Clarity primitives for
 
 ```ts
 {
-  type: "false",
+  type: 'false',
 }
 ```
 
@@ -280,7 +307,7 @@ Proposed below is an updated interface representation for Clarity primitives for
 
 ```ts
 {
-  type: "address",
+  type: 'address',
   value: string // Stacks c32-encoded
 }
 ```
@@ -289,7 +316,7 @@ Proposed below is an updated interface representation for Clarity primitives for
 
 ```ts
 {
-  type: "contract",
+  type: 'contract',
   value: `${string}.${string}` // Stacks c32-encoded, with contract name suffix
 }
 ```
@@ -298,7 +325,7 @@ Proposed below is an updated interface representation for Clarity primitives for
 
 ```ts
 {
-  type: "ok",
+  type: 'ok',
   value: object // Clarity value
 }
 ```
@@ -307,7 +334,7 @@ Proposed below is an updated interface representation for Clarity primitives for
 
 ```ts
 {
-  type: "err",
+  type: 'err',
   value: object // Clarity value
 }
 ```
@@ -316,7 +343,7 @@ Proposed below is an updated interface representation for Clarity primitives for
 
 ```ts
 {
-  type: "none",
+  type: 'none',
 }
 ```
 
@@ -324,7 +351,7 @@ Proposed below is an updated interface representation for Clarity primitives for
 
 ```ts
 {
-  type: "some",
+  type: 'some',
   value: object // Clarity value
 }
 ```
@@ -333,7 +360,7 @@ Proposed below is an updated interface representation for Clarity primitives for
 
 ```ts
 {
-  type: "list",
+  type: 'list',
   value: object[] // Array of Clarity values
 }
 ```
@@ -342,7 +369,7 @@ Proposed below is an updated interface representation for Clarity primitives for
 
 ```ts
 {
-  type: "tuple",
+  type: 'tuple',
   value: Record<string, object> // Record of Clarity values
 }
 ```
@@ -351,7 +378,7 @@ Proposed below is an updated interface representation for Clarity primitives for
 
 ```ts
 {
-  type: "ascii",
+  type: 'ascii',
   value: string // ASCII-compatible string
 }
 ```
@@ -360,12 +387,12 @@ Proposed below is an updated interface representation for Clarity primitives for
 
 ```ts
 {
-  type: "utf8",
+  type: 'utf8',
   value: string
 }
 ```
 
-### Post conditions
+### Post-conditions
 
 `0x00` STX
 
@@ -406,43 +433,43 @@ Proposed below is an updated interface representation for Clarity primitives for
 
 Listed below are some examples of the potentially unclear representations:
 
-- `u12` = `{ type: 'uint', value: "12" }`
-- `0xbeaf` = `{ type: 'ascii', value: "hello there" }`
-- `"hello there"` = `{ type: 'ascii', value: "hello there" }`
+- `u12` = `{ type: "uint", value: "12" }`
+- `0xbeaf` = `{ type: "ascii", value: "hello there" }`
+- `"hello there"` = `{ type: "ascii", value: "hello there" }`
 - `(list 4 8)` =
   ```
   {
-    type: 'list',
+    type: "list",
     value: [
-      { type: 'int', value: "4"},
-      { type: 'int', value: "8"},
+      { type: "int", value: "4"},
+      { type: "int", value: "8"},
     ]
   }
   ```
 - `(err u4)` =
   ```
   {
-    type: 'err',
-    value: { type: 'uint', value: "4"},
+    type: "err",
+    value: { type: "uint", value: "4"},
   }
   ```
 - "sends more than 10000 uSTX" =
   ```
   {
-    type: 'stx',
-    address: 'STB44HYPYAT2BB2QE513NSP81HTMYWBJP02HPGK6',
-    amount: '10000',
-    condition: 'gt'
+    type: "stx",
+    address: "STB44HYPYAT2BB2QE513NSP81HTMYWBJP02HPGK6",
+    amount: "10000",
+    condition: "gt"
   }
   ```
 - "does not send the `12` TKN non-fungible token" =
   ```
   {
-    type: 'ntf',
-    address: 'STB44HYPYAT2BB2QE513NSP81HTMYWBJP02HPGK6.vault'
-    asset: 'STB44HYPYAT2BB2QE513NSP81HTMYWBJP02HPGK6.tokencoin::tkn',
-    assetId: { type: 'uint', value: '12' }
-    condition: 'not-sent'
+    type: "ntf",
+    address: "STB44HYPYAT2BB2QE513NSP81HTMYWBJP02HPGK6.vault"
+    asset: "STB44HYPYAT2BB2QE513NSP81HTMYWBJP02HPGK6.tokencoin::tkn",
+    assetId: { type: "uint", value: "12" }
+    condition: "not-sent"
   }
   ```
 

@@ -19,7 +19,8 @@ License: BSD 2-Clause
 <!-- todo: remove section before merge -->
 
 - [ ] Should post-condition `type` be called `condition` or something (future overlap with clarity value?) or something else. Suffix `-condition`?
-- [ ] Should we add `stx_transferFt` and `stx_transferNft`?
+- [ ] Should clarit value representations use `.value` everywhere, or different properties (e.g. `.list`, `.buffer`)?
+- [x] Should we add `stx_transferFt` and `stx_transferNft`?
 - [x] Change sender to `address`~~/`account`, or stay `sender for added clarity VS recipient/etc.?~~
 - [x] Should Clarity values and maybe other types be hex-encoded, or is there a better idea that has similar benefits (no dependencies, but is easier to work with)?
   - For Clarity values, we could use strings (e.g. `u123`, `"text"`, `0x4be9`, `{ key: u3 }`) and parse the Clarity expression in the wallet. The only downside (I can think of) -- apart from additional wallet dev cost -- is cases like strings which need quotes, but this might not be clear to the user. A function/library for this would be provided by Stacks.js.

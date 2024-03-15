@@ -59,7 +59,7 @@ Adopt the WebBTC request standard as the default interface between web-applicati
 The implementation of this proposal is not necessarily backward compatible.
 However, wallets implementing the new standard are advised to maintain the previous system to support legacy applications during a transition period.
 Existing applications using the current Auth system should continue to operate, but immediate changes are recommended once this SIP is ratified.
-The Connect library should be go live with the new standard, once most major wallets have adopted the new standard.
+The Connect library should go live with the new standard, once most major wallets have adopted the new standard.
 
 # Implementation
 

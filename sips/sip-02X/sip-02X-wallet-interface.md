@@ -67,7 +67,7 @@ The Connect library should be go live with the new standard, once most major wal
 
 The WebBTC request standard is inspired by JSON-RPC 2.0 for serialization.
 To adhere to a generic serializability, the following notes are given.
-Enums are serialized as humand-readable strings.
+Enums are serialized as human-readable strings.
 BigInts are serialized as numbers, strings, or anything that can be parsed by the JavaScript BigInt constructor.
 Bytes are serialized as hex-encoded strings (without a 0x prefix).
 Predefined formats from previous SIPs are used where applicable.

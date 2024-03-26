@@ -36,8 +36,7 @@ This SIP aims to address these issues by adopting the WBIPs standards, which off
 The simplified protocol will allow integration without heavy dependencies (like Auth) and provider a more extendable interface for wallets.
 
 Additionally, this SIP is motivated by the increased traffic of Ordinal inscriptions on Bitcoin and the Stacks ecosystem growing closers to Bitcoin.
-The community has recognized the need for a more unified approach to wallet connectivity.
-Recently, diverging viewpoints and disagreements on methodologies have hindered progress.
+The community has recognized the need for a more unified approach to wallet connectivity (e.g. Bitcoin and PSBTs for previously Stacks-only wallets).
 By adopting the new standard, we aim to align the community towards a common and modern protocol for wallet interaction in web applications.
 Importantly, the decision to use an existing standard (rather than designing a new one or reworking Auth) is intentional — to avoid further division or split ownership within the community.
 
@@ -78,7 +77,7 @@ Parameters should be considered recommendations for the wallet.
 The user/wallet may choose to ignore/override them.
 Optional params are marked with a `?`.
 
-Methods can be namespaced under `stx_` if used in more generic settings (see WBIP-002) and other more Ethereum inspired domains.
+Methods can be namespaced under `stx_` if used in more generic settings and other more Ethereum inspired domains.
 In other cases (e.g. WalletConnect), the namespace may already be given by meta-data (e.g. a `chainId` field) and can be omitted.
 On the predominant `StacksProvider` global object, the methods can be used without a namespace, but wallets may add namespaced aliases for convenience.
 

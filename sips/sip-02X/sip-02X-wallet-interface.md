@@ -18,8 +18,7 @@ License: BSD 2-Clause
 
 <!-- todo: remove section before merge -->
 
-- [ ] Should post-condition `type` be called `condition` or something (future overlap with clarity value?) or something else. Suffix `-condition`?
-- [ ] Should clarit value representations use `.value` everywhere, or different properties (e.g. `.list`, `.buffer`)?
+- [ ] Should a global single `window.` object be used, or should provider discovery be handled complely differently?
 
 # Abstract
 
@@ -394,7 +393,7 @@ Proposed below is an updated interface representation for Clarity primitives for
 
 ```ts
 {
-  type: 'stx',
+  type: 'stx-postcondition',
   address: string | `${string}.${string}`, // Stacks c32-encoded, with optional contract name suffix
   condition: 'eq' | 'gt' | 'gte' | 'lt' | 'lte',
   amount: string // `bigint` compatible, amount in mirco-STX
@@ -405,7 +404,7 @@ Proposed below is an updated interface representation for Clarity primitives for
 
 ```ts
 {
-  type: 'ft',
+  type: 'ft-postcondition',
   address: string | `${string}.${string}`, // Stacks c32-encoded, with optional contract name suffix
   condition: 'eq' | 'gt' | 'gte' | 'lt' | 'lte',
   asset: `${string}.${string}::${string}` // Stacks c32-encoded address, with contract name suffix, with asset suffix
@@ -417,7 +416,7 @@ Proposed below is an updated interface representation for Clarity primitives for
 
 ```ts
 {
-  type: 'nft',
+  type: 'nft-postcondition',
   address: string | `${string}.${string}`, // Stacks c32-encoded, with optional contract name suffix
   condition: 'sent' | 'not-sent',
   asset: `${string}.${string}::${string}` // address with contract name suffix with asset suffix, Stacks c32-encoded
@@ -452,7 +451,7 @@ Listed below are some examples of the potentially unclear representations:
 - "sends more than 10000 uSTX" =
   ```
   {
-    type: "stx",
+    type: "stx-postcondition",
     address: "STB44HYPYAT2BB2QE513NSP81HTMYWBJP02HPGK6",
     amount: "10000",
     condition: "gt"
@@ -461,7 +460,7 @@ Listed below are some examples of the potentially unclear representations:
 - "does not send the `12` TKN non-fungible token" =
   ```
   {
-    type: "ntf",
+    type: "ntf-postcondition",
     address: "STB44HYPYAT2BB2QE513NSP81HTMYWBJP02HPGK6.vault"
     asset: "STB44HYPYAT2BB2QE513NSP81HTMYWBJP02HPGK6.tokencoin::tkn",
     assetId: { type: "uint", value: "12" }

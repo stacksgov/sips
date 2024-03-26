@@ -22,7 +22,7 @@ License: BSD 2-Clause
 
 # Abstract
 
-This SIP proposes the integration of the standard into the Stacks blockchain's Connect and "auth" system.
+This SIP proposes the integration of the standard into the Stacks blockchain's "Connect" and "Auth" system.
 The goal is to replace the current Connect interface, primarily used by web applications to connect with browser extensions and mobile apps, with a more straightforward protocol.
 The proposal consists mainly of standardizing JSON compatible interfaces for use with wallet interfaces.
 
@@ -40,6 +40,9 @@ The community has recognized the need for a more unified approach to wallet conn
 Recently, diverging viewpoints and disagreements on methodologies have hindered progress.
 By adopting the new standard, we aim to align the community towards a common and modern protocol for wallet interaction in web applications.
 Importantly, the decision to use an existing standard (rather than designing a new one or reworking Auth) is intentional — to avoid further division or split ownership within the community.
+
+There was an attempt to re-use existing standards/protocols from other ecosystems via the WBIPs working group — but no consensus was found that was a perfect fit or had enough traction for the larger layer-2 ecosystem.
+So this SIP aims to capture the important features for the Stacks ecosystem, with a focus on extensibility.
 
 # Specification
 
@@ -242,6 +245,10 @@ The following definitions can be used in multiple methods (mainly for transfer a
 `result`
 
 - `profile`: `object` updated Schema.org Person object
+
+## Listeners
+
+In addition to the request interface
 
 ## JSON Representations
 

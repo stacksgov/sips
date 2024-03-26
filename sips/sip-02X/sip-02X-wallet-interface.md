@@ -4,7 +4,7 @@ SIP Number: `To be assigned`
 
 Title: Integration of a Modern Stacks Wallet Interface Standard
 
-Authors: [janniks](https://github.com/janniks), `todo`
+Authors: [janniks](https://github.com/janniks), [kyranjamie](https://github.com/kyranjamie), [aryzing](https://github.com/aryzing), [m-aboelenein](https://github.com/m-aboelenein)
 
 Type: Standard
 

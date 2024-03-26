@@ -19,6 +19,7 @@ License: BSD 2-Clause
 <!-- todo: remove section before merge -->
 
 - [ ] Should a global single `window.` object be used, or should provider discovery be handled complely differently?
+- [ ] Should listeners have params? (e.g. txid for tx mined event)
 
 # Abstract
 
@@ -229,7 +230,7 @@ The following definitions can be used in multiple methods (mainly for transfer a
 
 `result`
 
-- `addresses`: `{}[]`
+- `accounts`: `{}[]`
   - `address`: `string` address, Stacks c32-encoded
   - `publicKey`: `string` hex-encoded
   - `gaiaHubUrl`: `string` URL
@@ -247,7 +248,24 @@ The following definitions can be used in multiple methods (mainly for transfer a
 
 ## Listeners
 
-In addition to the request interface
+In addition to the request interface, event listeners may be provided via the `.listen` method.
+Wallets may provide a `.unlisten` method to remove listeners.
+
+- `provider.listen(event: string, listener: (...args: any[]) => void): void`
+- `provider.unlisten(event: string, listener: (...args: any[]) => void): void`
+
+### Event `accountsChanged`
+
+`listener: (accounts: {}[]) => void`
+
+> `accounts` as defined above in `stx_getAccounts`.
+> The first account is considered the default account (and may be the only "active" account in a wallet).
+
+## Error Codes
+
+Errors thrown by request methods should match existing JSON-RPC 2.0 error codes.
+This way, the user or an intermediary library can handle them in a standardized way.
+Otherwise, no additional error codes are defined in this SIP.
 
 ## JSON Representations
 

@@ -502,6 +502,14 @@ This SIP is considered ratified after at least two major wallets in the Stacks e
 
 # Links
 
+WBIPs
+
+> Documents worked out in the working group with Leather, Xverse, and others.
+
+- [WBIP-001: Wallet API JSON RPC](https://wbips.netlify.app/wbips/WBIP001)
+- [WBIP-002: Namespaces](https://wbips.netlify.app/wbips/WBIP002)
+- [WBIP-002: Batching](https://wbips.netlify.app/wbips/WBIP007)
+
 Discussions
 
 - [Wallet JSON RPC API, Request Accounts #2378](https://github.com/leather-wallet/extension/pull/2378)

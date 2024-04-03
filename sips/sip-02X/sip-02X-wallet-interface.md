@@ -19,6 +19,7 @@ License: BSD 2-Clause
 <!-- todo: remove section before merge -->
 
 - [ ] Should a global single `window.` object be used, or should provider discovery be handled complely differently?
+- [ ] Rename `stx_transferFt` to include SIP010 somewhere?
 - [ ] Should listeners have params? (e.g. txid for tx mined event)
 
 # Abstract
@@ -420,7 +421,7 @@ Proposed below is an updated interface representation for Clarity primitives for
   type: 'stx-postcondition',
   address: string | `${string}.${string}`, // Stacks c32-encoded, with optional contract name suffix
   condition: 'eq' | 'gt' | 'gte' | 'lt' | 'lte',
-  amount: string // `bigint` compatible, amount in mirco-STX
+  amount: string // `bigint` compatible, amount in micro-STX
 }
 ```
 

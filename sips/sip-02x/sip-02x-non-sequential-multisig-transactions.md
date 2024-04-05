@@ -330,14 +330,16 @@ For sequential hash modes `0x00`, `0x01`, `0x02`, and `0x03`:
 6. Repeat steps 3-5 for each signature, so that all of the public keys are
    recovered.
 7. Verify that the sequence of public keys hash to the address, using
-   the address's indicated public key hashing algorithm.
+   the address's indicated public key hashing algorithm, and the number of signatures
+   matches **exactly** the required number of signatures.
 
 For non-sequential hash modes `0x05` and `0x07`:
 
 5. Repeat step 4 for each signature, so that all of the public keys are
    recovered.
 6. Verify that the sequence of public keys hash to the address, using
-   the address's indicated public key hashing algorithm.
+   the address's indicated public key hashing algorithm, and the number of signatures
+   is **at least** the required number of signatures.
 
 When verifying a sponsored transaction, the sponsor's signatures are verified
 first.  Once verified, the sponsor spending condition is set to the "signing

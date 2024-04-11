@@ -529,7 +529,7 @@ The miner obtains these transactions by querying the StackerDB instance used by 
 
 ## Future Work: Guaranteed Transaction Replay
 
-In the event of a Bitcoin fork, Stackers would maintain the list of transactions which miners must reply to in their StackerDB as well. The miner would read this information from the Stackers' StackerDB in order to re-mine them into new Stacks blocks after the Bitcoin fork resolves.
+In the event of a Bitcoin fork, Stackers would maintain the list of transactions which miners must replay to in their StackerDB as well. The miner would read this information from the Stackers' StackerDB in order to re-mine them into new Stacks blocks after the Bitcoin fork resolves.
 
 ## Signer Delegation
 

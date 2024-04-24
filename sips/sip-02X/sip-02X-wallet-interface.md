@@ -83,9 +83,9 @@ Methods can be namespaced under `stx_` if used in more generic settings and othe
 In other cases (e.g. WalletConnect), the namespace may already be given by meta-data (e.g. a `chainId` field) and can be omitted.
 On the predominant `StacksProvider` global object, the methods can be used without a namespace, but wallets may add namespaced aliases for convenience.
 
-#### Common definitions
+#### Transaction method general params
 
-The following definitions can be used in multiple methods (mainly for transfer and transaction methods).
+The following definitions can be used in the transaction methods.
 
 `params`
 
@@ -94,7 +94,6 @@ The following definitions can be used in multiple methods (mainly for transfer a
 - `fee?`: `number | string` BigInt constructor compatible value
 - `nonce?`: `number | string` BigInt constructor compatible value
 - `attachment?`: `string` hex-encoded
-- `anchorMode?`: `'on-chain' | 'off-chain' | 'any'`
 - `postConditions?`: `PostCondition[]`, defaults to `[]`
 - `postConditionMode?`: `'allow' | 'deny'`
 - `sponsored?`: `boolean`, defaults to `false`
@@ -123,7 +122,7 @@ The following definitions can be used in multiple methods (mainly for transfer a
 - `txid`: `string` hex-encoded
 - `transaction`: `string` hex-encoded raw transaction
 
-### Method `stx_transferFt`
+### Method `stx_transferSip10Ft`
 
 `params`
 
@@ -136,7 +135,7 @@ The following definitions can be used in multiple methods (mainly for transfer a
 - `txid`: `string` hex-encoded
 - `transaction`: `string` hex-encoded raw transaction
 
-### Method `stx_transferNft`
+### Method `stx_transferSip10Nft`
 
 `params`
 
@@ -250,12 +249,14 @@ The following definitions can be used in multiple methods (mainly for transfer a
 ## Listeners
 
 In addition to the request interface, event listeners may be provided via the `.listen` method.
-Wallets may provide a `.unlisten` method to remove listeners.
 
-- `provider.listen(event: string, listener: (...args: any[]) => void): void`
-- `provider.unlisten(event: string, listener: (...args: any[]) => void): void`
+- `provider.listen(event: string, listener: (...args: any[]) => void): Function`
 
-### Event `accountsChanged`
+> `provider.listen` should return a "unlisten" function, which can be called to remove the listener.
+
+The event name should be closer to nouns than verbs and doesn't use the `on` prefix from DOM naming conventions.
+
+### Event `accountChange`
 
 `listener: (accounts: {}[]) => void`
 
@@ -505,7 +506,7 @@ This SIP is considered ratified after at least two major wallets in the Stacks e
 
 WBIPs
 
-> Documents worked out in the working group with Leather, Xverse, and others.
+> Documents partially worked on in the working group with Leather, Xverse, and others.
 
 - [WBIP-001: Wallet API JSON RPC](https://wbips.netlify.app/wbips/WBIP001)
 - [WBIP-002: Namespaces](https://wbips.netlify.app/wbips/WBIP002)

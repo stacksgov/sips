@@ -51,6 +51,7 @@ The introduction of Fast Blocks and of the new Clarity variables `tenure-height`
   * block-reward: as `(get-block-info? time bh)`.
   * miner-spend-total: as `(get-block-info? miner-spend-total bh)`.
   * miner-spend-winner: as `(get-block-info? miner-spend-winner bh)`.
+  * vrf-seed: as `(get-block-info? vrf-seed bh)` 
 
 # Introduction
 

@@ -27,7 +27,11 @@ Created: 2023-09-28
 
 License: BSD 2-Clause
 
-Sign-off: Rafael Cárdenas <rafael@hiro.so> (SIP Editor), Brice Dobry <brice@hiro.so> (Technical CAB)
+Sign-off:
+ - Rafael Cárdenas <rafael@hiro.so> (SIP Editor)
+ - Brice Dobry <brice@hiro.so> (Technical CAB)
+ - Jason Schrader <jason@joinfreehold.com> (Governance CAB)
+ - MattySTX <mattystx@gmail.com> (Economics CAB)
 
 # Abstract
 This document describes a consensus-breaking change to the Stacks blockchain that would enable faster and more reliable Stacks blocks.

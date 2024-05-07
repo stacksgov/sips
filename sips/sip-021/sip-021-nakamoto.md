@@ -36,6 +36,22 @@ In this proposal, Stacks block production would no longer be tied to miner elect
 
 This proposal, dubbed the "Nakamoto" release, represents a substantial architectural change to the current Stacks blockchain. If adopted, the Stacks major version would be bumped from 2 to 3. The first Nakamoto release would be 3.0.0.0.0.
 
+# Addendum
+_The following was added after this SIP was accepted, where some version number changes were necessary. The following section addresses these changes **without** changing the ratified text_
+
+The introduction of Fast Blocks and of the new Clarity variables `tenure-height` and `stacks-block-height` in this SIP requires that the existing Clarity function `get-block-info?` is changed. The function should be removed in Clarity 3, instead two new functions should be added that retrieves data for stacks blocks and for tenure blocks:
+* `get-stacks-block-info?`
+  * id-header-hash: as `(get-block-info? id-header-hash bh)`.
+  * header-hash: as `(get-block-info? header-hash bh)`.
+  * time: **new** in Clarity 3, this property returns a `uint` value of the stacks block header time field. 
+* `get-tenure-info?`
+  * burnchain-header-hash: as `(get-block-info? burnchain-header-hash bh)`.
+  * miner-address: as `(get-block-info? miner-address bh)`.
+  * time: as `(get-block-info? time bh)`, returns the value of the burn chain block header time field of the tenure block.
+  * block-reward: as `(get-block-info? time bh)`.
+  * miner-spend-total: as `(get-block-info? miner-spend-total bh)`.
+  * miner-spend-winner: as `(get-block-info? miner-spend-winner bh)`.
+
 # Introduction
 
 ## Glossary

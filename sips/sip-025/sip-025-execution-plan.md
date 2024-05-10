@@ -84,6 +84,57 @@ The implementation of traits is a complex and specific case in the Clarity typin
 
 This needs further exploration, but it is possible that the trait variant logic could be removed from the Clarity 3 codebase.
 
+## Example
+
+Assuming a Contract call leading to the following call graph execution:
+
+```clarity
+  ;; Transaction entrypoint, user is swapping u1000 token-a with u500 token-b
+  (contract-call? 'SP..01.swap swap-tokens u1000 'SP..1a.token-a u500 'SP..1b.token-b)
+
+      ;; SP..01.swap::swap-tokens is internally calling `SP..1a.token-a` contract 
+      ;; The swap contract debits u1000 token-a from tx-sender's balance
+      (contract-call? 'SP..1a.token-a transfer u1000 tx-sender 'SP..01.swap)
+          // SP..1a.token-a is a centralized token highly scrutinized by the SEC
+          // with business logic evolving over time and regulations.
+          // The method (get-check-ban-list-contract) returns 'SP..1a.check-ban-list-v1
+          // The method (get-storage-contract) returns 'SP..1a.token-storage-v1
+          // It internally calls both `SP..1a.check-ban-list-v1` and `SP..1a.token-storage-v1` contract
+          (contract-call? (get-check-ban-list-contract) check-address tx-sender)
+          (contract-call? (get-check-ban-list-contract) check-address 'SP..01.swap)
+          (contract-call? (get-storage-contract) transfer-tokens u1000 tx-sender 'SP..01.swap)
+
+      ;; After successfully performing the previous contract call, 
+      ;; SP..01.swap::swap-tokens is internally calling `SP..1b.token-b` contract.
+      ;; The swap contract credits tx-sender's balance with u500 token-b
+      (contract-call? 'SP..1b.token-b transfer u500 'SP..01.swap tx-sender)
+          // SP..1b.token-b is a meme, simple, yolo-style SIP10 token
+          // It internally performs a static dispatch
+          (contract-call? 'SP..1b.token-storage transfer-tokens u1000 tx-sender 'SP..01.swap)
+
+```
+
+
+
+During the execution, all the contract calls (static, dynamic and optimistic) are being collected, and attached to the transaction receipt:
+
+```clarity
+(list
+  'SP..01.swap::swap-tokens                         ;; Transaction entrypoint
+  'SP..1a.token-a::transfer                         ;; Dynamic dispatch
+  'SP..1a.check-ban-list-v1::check-address          ;; Optimistic dispatch
+  'SP..1a.check-ban-list-v1::check-address          ;; Optimistic dispatch
+  'SP..1a.SP..1a.token-storage-v1::transfer-tokens  ;; Optimistic dispatch
+  'SP..1b.token-b::transfer                         ;; Dynamic dispatch
+  'SP..1b.token-storage::transfer-tokens            ;; Static dispatch
+)
+```
+
+Each element (contract-id, method) of the set is hashed and placed in a merkle tree.
+The merkle root of this tree is referred as a `Execution Plan Commitment` in this document.
+
+When an optimistic dispatch is present in a contract-call execution trace, the transaction MUST include a commitment matching the merkle root computed during the execution for the transaction to be valid. 
+
 # Motivations
 
 Smart contracts, which are self-executing agreements written in code, can sometimes have bugs or vulnerabilities. These issues can lead to significant problems, especially when they affect critical operations or secure large sums of money. To help developers manage these challenges, a new feature involving proxy contracts has been introduced.

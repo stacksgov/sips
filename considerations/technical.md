@@ -10,7 +10,7 @@ Members:
 - Friedger <mail@friedger.de>
 - Jamil Dhanani <jamil@gamma.io>
 - Jesse Wiley <jesse@stacks.org>
-- Mike Cohen <mike@claritylab.dev>
+- Mike Cohen <mjoecohen@gmail.com>
 - 0xdima <dima@stackscreener.io>
 - Terje Norderhaug <terje@in-progress.com>
 - Thomas Osmonson a.k.a aulneau <thomas@fungible.systems>

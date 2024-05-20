@@ -8,12 +8,9 @@ Members:
 - Brice Dobry <brice@hiro.so>
 - Dan Trevino <dantrevino@gmail.com>
 - Friedger <mail@friedger.de>
-- Jamil Dhanani <jamil@gamma.io>
 - Jesse Wiley <jesse@stacks.org>
-- Mike Cohen <mike@claritylab.dev>
+- Mike Cohen <mjoecohen@gmail.com>
 - 0xdima <dima@stackscreener.io>
-- Terje Norderhaug <terje@in-progress.com>
-- Thomas Osmonson a.k.a aulneau <thomas@fungible.systems>
 - Vlad <vlad@asigna.io>
 
 Discussions-to: https://github.com/stacksgov/sips
@@ -30,18 +27,11 @@ Created-by: SIP-000
 
 **Friedger**: Friedger is an entredeveloper based in Europe. He contributed to the Stacks ecosystem in various forms.
 
-**Jamil Dhanani**: Jamil is the Founder and CEO of Gamma.io, the leading marketplace and creator platform for NFTs on Bitcoin, built on Stacks. Prior to founding Gamma, he worked as a Machine Learning Engineer and Researcher at Apple, and studied Computer Science at Stanford and the University of Toronto.
-
 **Jesse Wiley**: Jesse Wiley is a seasoned DevOps expert - he makes sure all systems are running smoothly and the right security considerations have been made.
 
-**Mike Cohen**: Advocate of Bitcoin, Stacks, Lightning Blockchain web3 technologies and the User Owned Internet.
-Working in The Clarity Innovation Lab - a research and development centre focused on the Clarity Smart Contract programming language - pushing the boundaries of decentralised apps on Bitcoin.
+**Mike Cohen**: Independent contributor to Stacks blockchain. Developer of stx.eco supporting Stacks governance and protocol upgrade voting.
 
 **0xdima**: Building SatScreener, a Bitcoin L1/L2 analytics platform with real time data for traders. Co-Founder of the Stx-20 protocol, an on-chain metaprotocol for inscriptions on stacks.
-
-**Terje Norderhaug**: Independent software developer. Clarity developer.
-
-**Thomas Osmonson a.k.a aulneau**: Thomas is co-founder and CEO of Fungible Systems, a web3 and crypto focused product studio. Fungible Systems works extensively in the Stacks ecosystem building public goods, open source tooling, and helping projects such as Gamma, Zest, Trust Machines, and others. Previously, Thomas was part of the early core team that helped build the Stacks network.
 
 **Vlad**: CTO and co-founder of multiple Stacks and Bitcoin based projects, including Asigna, STX20, and sOrdinals. Contributor to the multisig SIP and its implementation, as well as to the Stacks ecosystem opensource projects.
 
@@ -84,4 +74,4 @@ Starting from those bylaws, this CAB will continue to evaluate what works, what 
 
 ---
 
-_If this CAB interests you and you wish to join the effort, please reach out to @jennymith and @Hero-Gamer or Steering Committee members @jcnelson and @GinaAbrams_
+_If this CAB interests you and you wish to join the effort, please reach out to @will-corcoran and @Hero-Gamer or Steering Committee members @jcnelson and @GinaAbrams_

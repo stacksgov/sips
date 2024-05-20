@@ -66,6 +66,12 @@ The following items would be considered out-of-scope for this CAB:
 
 _Note: above considerations subject to changes and iterations from ongoing lessons learned_
 
+## Process
+
+The Technical CAB can ask the SIP author(s) to present their proposal. The recommendation of the CAB
+is made by simple majority vote by CAB members. A minimum of 50% of CAB members must participate in the
+vote for a recommendation to be made to the Steering Committee.
+
 ## Bylaws
 
 We choose to adopt the bylaws Steering Committee member @jcnelson set out in this doc: https://gist.github.com/jcnelson/3fcc635ede20ce98d1eae60941eb127a

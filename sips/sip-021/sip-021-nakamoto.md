@@ -37,7 +37,7 @@ In this proposal, Stacks block production would no longer be tied to miner elect
 This proposal, dubbed the "Nakamoto" release, represents a substantial architectural change to the current Stacks blockchain. If adopted, the Stacks major version would be bumped from 2 to 3. The first Nakamoto release would be 3.0.0.0.0.
 
 # Addendum
-_The following was added after this SIP was accepted, where some version number changes were necessary. The following section addresses these changes **without** changing the ratified text_
+_The following was added after this SIP was accepted, where some clarification about Clarity specifications were necessary. The following section addresses these changes **without** changing the ratified text_
 
 The introduction of Fast Blocks and of the new Clarity variables `tenure-height` and `stacks-block-height` in this SIP requires that the existing Clarity function `get-block-info?` is changed. The function should be removed in Clarity 3, instead two new functions should be added that retrieves data for stacks blocks and for tenure blocks:
 * `get-stacks-block-info?`

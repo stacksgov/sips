@@ -32,6 +32,7 @@ Sign-off:
  - Brice Dobry <brice@hiro.so> (Technical CAB)
  - Jason Schrader <jason@joinfreehold.com> (Governance CAB)
  - MattySTX <mattystx@gmail.com> (Economics CAB)
+ - Jude Nelson <jude@stacks.org> (Steering Committee)
 
 # Abstract
 This document describes a consensus-breaking change to the Stacks blockchain that would enable faster and more reliable Stacks blocks.

@@ -8,6 +8,7 @@ Authors:
 
 * Aaron Blankstein (aaron@hiro.so)
 * Brice Dobry (brice@hiro.so)
+* Crypt0jan (jan@alumlabs.io)
 * Jacinta Ferrant (jacinta@trustmachines.co)
 * Jude Nelson (jude@stacks.org)
 * Hank Stoever (hank@trustmachines.co)

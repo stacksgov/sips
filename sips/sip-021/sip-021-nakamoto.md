@@ -44,7 +44,7 @@ The introduction of Fast Blocks and of the new Clarity variables `tenure-height`
   * `id-header-hash`: equivalent to Clarity 2's `(get-block-info? id-header-hash block-height)`
   * `header-hash`: equivalent to Clarity 2's `(get-block-info? header-hash block-height)`
   * `time`: **new** in Clarity 3, this property returns a `uint` value matching the time field in the Stacks block header
-* `(get-tenure-info? property-name tenure-height)`, where `property-name` is one of:
+* `(get-tenure-info? property-name block-height)`, where `property-name` is one of:
   * `burnchain-header-hash`: equivalent to Clarity 2's `(get-block-info? burnchain-header-hash block-height)`
   * `miner-address`: equivalent to Clarity 2's `(get-block-info? miner-address block-height)`
   * `time`: equivalent to Clarity 2's `(get-block-info? time block-height)`, returns the value of the burn chain block header time field of the tenure block

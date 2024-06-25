@@ -68,9 +68,9 @@ _Note: above considerations subject to changes and iterations from ongoing lesso
 
 ## Process
 
-The Technical CAB can ask the SIP author(s) to present their proposal. The recommendation of the CAB
-is made by simple majority vote by CAB members. A minimum of 50% of CAB members must participate in the
-vote for a recommendation to be made to the Steering Committee.
+The Technical CAB can ask the SIP author(s) to present their proposal. The recommendation of the CAB is made by simple majority vote by CAB members. A minimum of 50% of CAB members must participate in the vote for a recommendation to be made to the Steering Committee.
+
+Results of votes and associated minutes (if any) are recorded [under considerations/minutes](https://github.com/stacksgov/sips/tree/main/considerations/minutes/technical-cab).
 
 ## Bylaws
 

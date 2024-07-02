@@ -163,7 +163,7 @@ novel contributions, and briefly describe how they address the problem(s). Any
 motivational arguments and example problems and solutions belong in this
 section.
 - _Specification_. This section shall provide the detailed technical
-  specification. It may include code snippits, diagrams, performance
+  specification. It may include code snippets, diagrams, performance
 evaluations, and other supplemental data to justify particular design decisions.
 However, a copy of all external supplemental data (such as links to research
 papers) must be included with the SIP, and must be made available under an
@@ -807,7 +807,7 @@ processes, the Zcash governance process [4], and the Debian GNU/Linux
 distribution governance process [5].  This SIP describes a governance process
 where top-level decision-making power is vested in a committee of elected
 representatives, which distinguishes it from Debian (which has a single elected
-project leader), Python (which has a benevolent dicator for life), and Bitcoin
+project leader), Python (which has a benevolent dictator for life), and Bitcoin
 and ZCash (which vest all decision ratification power solely in the blockchain
 miners).  The reason for a top-level steering committee is to ensure that
 decision-making power is not vested in a single individual, but also to ensure

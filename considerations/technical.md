@@ -6,7 +6,7 @@ Members:
 
 - Aaron Blankstein <aaron@hiro.so>
 - Brice Dobry <brice@hiro.so>
-- Dan Trevino <dantrevino@gmail.com>
+- j2p2 <i.digg.tech@gmail.com>
 - Friedger <mail@friedger.de>
 - Jesse Wiley <jesse@stacks.org>
 - Mike Cohen <mjoecohen@gmail.com>
@@ -23,7 +23,7 @@ Created-by: SIP-000
 
 **Brice Dobry (Chairperson)**: Brice is a senior engineer at Hiro, working on Clarinet and other developer tools, and contributing to the Stacks blockchain. Coming from a background in compilers, programming languages, and analysis tools, he is passionate about helping developers build productively, efficiently and safely.
 
-**Dan Trevino**: Dan is the founder of Boom Cypto and an advocate for open standards. Dan has contributed to the Stacks community as an advocate, developer, speaker, and mentor since 2016.
+**jsp2**: Computer Engineer and Clarity Developer. Won First and Second place in Clarity Course Cohort #2 Hackathon. Contributed to Stacks as a SIP editor; co-founded leos.guru, an educational platform, and chat.stacksgpt.xyz, a Q&A bot for Stacks & Bitcoin.
 
 **Friedger**: Friedger is an entredeveloper based in Europe. He contributed to the Stacks ecosystem in various forms.
 

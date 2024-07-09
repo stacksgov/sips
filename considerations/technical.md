@@ -72,6 +72,8 @@ The Technical CAB can ask the SIP author(s) to present their proposal. The recom
 
 Results of votes and associated minutes (if any) are recorded [under considerations/minutes](https://github.com/stacksgov/sips/tree/main/considerations/minutes/technical-cab).
 
+The minutes include any discussion topics that came up about the SIP. Also, whenever there are opposing votes, those members have the opportunity to write a dissenting opinion which will be included in the minutes.
+
 ## Bylaws
 
 We choose to adopt the bylaws Steering Committee member @jcnelson set out in this doc: https://gist.github.com/jcnelson/3fcc635ede20ce98d1eae60941eb127a

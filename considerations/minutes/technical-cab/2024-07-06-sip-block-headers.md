@@ -30,7 +30,7 @@
 
 ### Vote Outcome
 
-Quorum is reached with 9 of 9 eligible CAB members voting on the SIP.
+Quorum is reached with 6 eligible CAB members voting on the SIP.
 
 | Name         | Vote    |
 | ------------ | ------- |

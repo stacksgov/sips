@@ -370,7 +370,43 @@ Existing multisig accounts will be able to use the new transaction types to spen
 
 # Activation
 
-This SIP will activate with Stacks epoch 3.0
+Since this SIP requires a change to the stacks consensus rules a community vote is additionally required.
+
+## Process of Activation
+Users can vote to approve this SIP with either their locked/stacked STX or with unlocked/liquid STX, or both. The criteria for the stacker and non-stacker voting is as follows.
+
+## For Stackers:
+
+In order for this SIP to activate, the following criteria must be met by the set of Stacked STX:
+
+- At least double the amount of Stacked STX locked by the largest Stacker in the cycle preceding the vote must vote at all to activate this SIP.
+- Of the Stacked STX that vote, at least 70% of them must vote "yes."
+
+The voting addresses will be:
+
+- Bitcoin **YES** Address: 399iMhKN9fjpPJLYHzieZA1PfHsFxijyVY
+- Bitcoin **NO** Address: 31ssu69FmpxS6bAxjNrX1DfApD8RekK7kp
+- Stacks **YES** Address: SPA17ZSXKXS4D8FC51H1KWQDFS31NM29SKZRTCF8
+- Stacks **NO** Address: SP39DK8BWFM2SA0E3F6NA72104EYG9XB8NXZ91NBE
+
+which encode the hashes of the following phrases into Bitcoin / Stacks addresses:
+
+- **YES** to Non-sequential Multisig Transactions
+- **NO** to Non-sequential Multisig Transactions
+
+Stackers (pool and solo) vote by sending a dust stacks to the corresponding stacks address **from the account where their STX are locked**.
+
+Solo stackers only, can also vote by sending a Bitcoin dust transaction (6000 sats) to the corresponding bitcoin address.
+
+## For Non-Stackers:
+
+Users with liquid STX can vote on proposals using the Ecosystem DAO. Liquid STX is the users balance, less any STX they have locked in PoX stacking protocol, at the block height at which the voting started (preventing the same STX from being transferred between accounts and used to effectively double vote). This is referred to generally as "snapshot" voting.
+
+For this SIP to pass, 70% of all liquid STX committed by voting must be in favour of the proposal.
+
+The act of not voting is the act of siding with the outcome, whatever it may be. We believe that these thresholds are sufficient to demonstrate interest from Stackers -- Stacks users who have a long-term interest in the Stacks blockchain's successful operation -- in performing this upgrade.
+
+If the majority vote is **YES**, order-independent multisig transactions will be enabled upon reaching Stacks Epoch 3.0.
 
 # Reference Implementations
 

@@ -52,6 +52,7 @@ Overall, the sBTC protocol not only addresses the limitations of the Bitcoin scr
 To achieve these goals, this proposal implements the following features for sBTC:
 - sBTC is a SIP-10 token backed 1-1 by BTC.
 - The sBTC peg wallet is maintained by the set of sBTC signers. These signers are responsible for the security and maintenance of the wallet, ensuring that sBTC is redeemable for BTC.
+- To support deposits and withdrawals in sBTC, Signers must collectively make smart contract calls on Stacks. We require each signer to individually sign any contract call and ensure at least 70% of the signer signatures are present for each contract call to be valid.
 - Bitcoin can be converted into sBTC within 3 Bitcoin blocks. sBTC can be converted into Bitcoin within 6 Bitcoin blocks. This ensures sBTC on and off ramps are faster than other BTC assets on the market.
 - SIP-10 token contact remains consistent across sBTC releases. This provides reliability for users and developers, meaning no adjustment from builders will be needed as the system evolves through subsequent releases.
 
@@ -65,7 +66,7 @@ Thus, the rollout for sBTC will include two key phases:
 **Signer Rotation:** In this phase the full design of the sBTC system with an open and decentralized Signer set is reached, increasing decentralization after the system is further tested in the bootstrap phase. At this point, sBTC is integrated into the Proof of Transfer consensus and Signers receive rewards for fulfilling sBTC operations. This release does require a hard fork.
 
 #### Differences in the sBTC Bootstrap Phase:
-- sBTC Signers will be selected through an open community governance process. The eligibility criteria to become an sBTC signer is described below and will take into account Signer performance and availability. A subsequent release will implement an open and dynamically rotating signer set for each Proof of Transfer cycle, as described in the original sBTC design documents.
+- sBTC Signer eligibility criteria will be confirmed through community governance vote. The eligibility criteria to become an sBTC signer is described below and will take into account Signer performance and availability. sBTC Signers that meet the criteria are confirmed by the sBTC Working Group. A subsequent release will implement an open and dynamically rotating signer set for each Proof of Transfer cycle, as described in the original sBTC design documents.
 - sBTC Bootstrap Signers are separate from Stacks Signers. In a subsequent sBTC release, and accompanying Stacks network hard fork, Stacks signers will be required to become sBTC signers. The bootstrapping period uses a separate subset of Stacks signers to secure the sBTC protocol and Signer operations are not explicitly linked with slashing of rewards.
 - sBTC deposits will be triggered via an API call. During the bootstrap phase sBTC deposits must be initiated via an API call to alert the signers to the presence of a deposit. After the bootstrapping phase users will have the option to alert the Signers of a deposit via a Stacks contract call, but the API will remain as a fee-less option to communicate with the Signers.
 
@@ -108,6 +109,8 @@ The main steps of the sBTC withdrawal flow are as follows:
     - Returns the sBTC to the holder.
     - Records the signer votes.
 
+To support deposits and withdrawals in sBTC, Signers must collectively make smart contract calls on Stacks. We require each signer to individually sign any contract call and ensure at least 70% of the signer signatures are present for each contract call to be valid.
+
 ## Auxiliary Features
 Auxiliary features of the sBTC Bootstrap protocol are described below.
 
@@ -117,7 +120,7 @@ Auxiliary features of the sBTC Bootstrap protocol are described below.
 ### sBTC Bootstrap Signer Eligibility
 The Stacks 2.5 epoch activated the Stacks Signer network, whereby Stackers (users who lock STX in consensus in order to earn BTC rewards) are able to participate in Stacks consensus. Stackers vote to append blocks to the Stacks blockchain by producing a signature over the block. Each Stacker's share of the signature (its weight) is proportional to the fraction of locked STX it owns. This essential function ensures the security and liveness of the Stacks network.
 
-The sBTC Bootstrap Signers will be a separate subset of Stacks Signers. For the sBTC Bootstrap release, Signers will run a binary in addition to the core Stacks software. In a subsequent release and hard fork, sBTC will be enshrined in Stacks consensus and Signers will only need to maintain a single binary.
+The sBTC Bootstrap Signers will be a separate subset of Stacks Signers. For the sBTC Bootstrap release, Signers will run a binary in addition to the core Stacks software. There will be 15 signers participating in the sBTC bootstrap release. In a subsequent release and hard fork, sBTC will be enshrined in Stacks consensus and Signers will only need to maintain a single binary.
 
 The following eligibility criteria has been used to identify the sBTC Bootstrap Signers:
 - **Stacks 2.5 Participation:** Active participation running a signer on Stacks 2.5 testnet or mainnet for at least two previous cycles.
@@ -130,17 +133,34 @@ By implementing a whitelisted signer set for the sBTC Bootstrap release, this he
 ### Activation
 sBTC Bootstrap is designed to activate on Stacks Nakamoto as defined in SIP-021. Therefore, this SIP is only meaningful when SIP-021 activates. The sBTC Working Group plans to observe at least 2-4 weeks of network behavior on Stacks Nakamoto to ensure a stable release. After this period, sBTC Bootstrap can be activated on the Stacks network without requiring a separate hard fork.
 
-#### Process of Activation
-There are different rules for activating this SIP based on whether or not the user has stacked their STX, and how they have done so.
+**Process of Activation**
+Users can vote to approve this SIP with either their locked/stacked STX or with unlocked/liquid STX, or both. The criteria for the stacker and non-stacker voting is as follows.
 
 **For Stackers:**
 In order for this SIP to activate, the following criteria must be met by the set of Stacked STX:
-- At least double the amount of Stacked STX locked by the largest Stacker in the cycle preceding the vote must vote at all to activate this SIP.
-- Of the Stacked STX that vote, at least 70% of them must vote "yes."
 
-The act of not voting is the act of siding with the outcome, whatever it may be. We believe that these thresholds are sufficient to demonstrate interest from Stackers -- Stacks users who have a long-term interest in the Stacks blockchain's successful operation -- in performing this upgrade.
+- At least 80 million Stacked STX must vote at all to activate this SIP.
+- Of the Stacked STX that vote, at least 80% of them must vote "yes."
+
+The voting addresses will be;
+
+Bitcoin Yes Address: 3Jq9UT81fnT2t24XjNVY7wijpsSmNSivbK
+Bitcoin No Address: 3QGZ1fDa97yZCXpAnXQd6JHF4CBC6bk1r4
+Stacks Yes Address: SP36GHEPEZPGD53G2F29P5NEY884DXQR7TX90QE3T
+Stacks No Address: SP3YAKFMGWSSATYNCKXKJHE2Z5JJ6DH88E4T8XJPK
+
+which encode the hashes of the following phrases into bitcoin / stacks addresses:
+
+Yes to A Decentralized Two-Way Bitcoin Peg
+No to A Decentralized Two-Way Bitcoin Peg
+
+Stackers (pool and solo) vote by sending a dust stacks to the corresponding stacks address from the account where their stacks are locked.
+
+Solo stackers only, can also vote by sending a bitcoin dust transaction (6000 sats) to the corresponding bitcoin address.
 
 **For Non-Stackers:**
 Users with liquid STX can vote on proposals using the Ecosystem DAO. Liquid STX is the users balance, less any STX they have locked in PoX stacking protocol, at the block height at which the voting started (preventing the same STX from being transferred between accounts and used to effectively double vote). This is referred to generally as "snapshot" voting.
 
-For sBTC Bootstrap to pass, 70% of all liquid STX committed by voting must be in favor of the proposal.
+For this SIP to pass, 70% of all liquid STX committed by voting must be in favor of the proposal.
+
+The act of not voting is the act of siding with the outcome, whatever it may be. We believe that these thresholds are sufficient to demonstrate interest from Stackers -- Stacks users who have a long-term interest in the Stacks blockchain's successful operation -- in performing this upgrade.

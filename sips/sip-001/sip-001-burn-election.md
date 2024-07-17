@@ -188,7 +188,7 @@ blockchain, whereby a new leader is elected to produce the next Stacks block.
 
 With the exception of a designated _genesis block_, each block in the Stacks
 blockchain has exactly one "parent" block.  This parent relationship is a
-partial ordering of blocks, where concurrent blocks (and their descendents)
+partial ordering of blocks, where concurrent blocks (and their descendants)
 are _forks_.
 
 If the leader produces a block, it must have an already-accepted block as its
@@ -212,8 +212,7 @@ Each Stacks block is anchored to the burn chain by
 way of a cryptographic hash.  That is, the burn chain's canonical transaction
 history contains the hashes of all Stacks blocks ever produced -- even ones that
 were not incorporated into any fork of the Stacks blockchain.  Moreover, extra
-metadata about the block, such as parent/child linkages, are
-are written to the burn chain.  This gives the
+metadata about the block, such as parent/child linkages, are written to the burn chain.  This gives the
 Stacks blockchain three properties that existing blockchains do not possess:
 
 * **Global knowledge of time** -- Stacks blockchain peers each perceive the passage of time
@@ -639,7 +638,7 @@ by the consensus rules.  If a leader exceeds this cap, the block is invalid.
 
 ### Batch transaction latency
 
-The fact that leaders execute a leading commmitment to batched transactions means that
+The fact that leaders execute a leading commitment to batched transactions means that
 it takes at least one epoch for a user to know if their transaction was
 incorporated into the Stacks blockchain.  To get around this, leaders are
 encouraged to to supply a public API endpoint that allows a user to query
@@ -773,7 +772,7 @@ the exact reward distribution is as follows:
 
 * Coinbases: The coinbase (newly-minted tokens) for a block is rewarded to the leader who
   mined the block, as well as to all individuals who submitted proofs-of-burn in 
-support of it.  Each participant (leaders and supporting users) recieves a
+support of it.  Each participant (leaders and supporting users) receives a
 portion of the coinbase proportional to the fraction of total tokens destroyed.
 
 * Batched transactions:  The transaction fees for batched transactions are
@@ -812,7 +811,7 @@ once the honest majority comes within one block height difference of the hidden
 fork.  This orphans the majority fork, causing them to lose their Stacks tokens
 and re-build on top of the minority fork.
 
-### Seflish mining mitigation strategies
+### Selfish mining mitigation strategies
 
 Fortunately, all peers in the Stacks blockchain have global knowledge of state,
  time, and block-commit transactions.  Intuitively, this gives the Stacks blockchain some novel tools

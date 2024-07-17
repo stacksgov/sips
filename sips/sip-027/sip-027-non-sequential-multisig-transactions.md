@@ -1,6 +1,6 @@
 # Preamble
 
-SIP Number: 02x
+SIP Number: 027
 
 Title: Non-sequential Multisig Transactions
 

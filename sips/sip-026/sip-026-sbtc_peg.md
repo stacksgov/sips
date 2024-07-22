@@ -1,7 +1,7 @@
 # SIP-028: sBTC Bootstrap
 
 - **SIP Number:** 028
-- **Title:** A Decentralized, Programmable Asset Backed 1:1 with BTC 
+- **Title:** A Decentralized and Programmable Asset Backed 1:1 with BTC 
 - **Consideration:** Technical, Economics
 - **Type:** Standard
 - **Status:** Draft

@@ -83,7 +83,7 @@ Auxiliary features of the sBTC Bootstrap protocol are described below.
 ### Responsibilities
 The sBTC bootstrap signers are responsible for accepting or rejecting all sBTC operations submitted, and for a transaction to be fulfilled at least 70% of the signers need to approve the fulfilling of the transaction; this means that the liveness and reliability of the signers is crucial to the success of the protocol.
 
-While up to 30% of the signers can be down without a user impact to the functioning of the protocol, it becomes more critical for the rest of the signers to approve sBTC operations because operations necessarily still need to meet 70% of the original signing power. If more than 30% of signers become unavailable no sBTC operations will be approved because it will be impossible to get 70% approval when less than 70% are online. 
+While up to 30% of the signers can be down without any user impact to the functioning of the protocol, it becomes more critical for the rest of the signers to approve sBTC operations because operations necessarily still need to meet 70% of the original signing power. If more than 30% of signers become unavailable, no sBTC operations will be approved because it will be impossible to get the required 70% approval when less than 70% are online. 
 
 An operation that isn’t approved will become spendable by the user without bridging to the other blockchain after a period of time without Signer interaction.
 

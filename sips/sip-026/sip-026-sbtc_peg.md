@@ -3,7 +3,7 @@
 - **SIP Number:** 028
 - **Title:** A Decentralized and Programmable Asset Backed 1:1 with BTC 
 - **Consideration:** Technical, Economics
-- **Type:** Standard
+- **Type:** Informational
 - **Status:** Draft
 - **Authors:**
   - Andre Serrano

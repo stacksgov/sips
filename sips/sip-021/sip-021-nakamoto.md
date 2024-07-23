@@ -560,3 +560,19 @@ While this does induce some consolidation pressure, we believe it is the least-b
 [figure-1-asset]: ./sortition-stacksblock-relationship.png
 [figure-2-asset]: ./miner-protocol.svg
 [figure-3-asset]: ./tenure-change-overview.png
+
+# Activation Status
+At the end of cycle 79, the following vote was calculated. A total of 177,166,148 STX participated.
+
+For solo stacking, 100% voted 'Yes.' Total voting power is 159,087,747 STX balance with votes cast from 28 accounts.
+(Of the 159 million solo stacking voting power, StackingDAO’s internal voting contributed over 19 million STX in voting power.
+-Total number of STX balance used to vote Solo Stacking by StackingDAO: 19,370,000.
+-6,827 StackingDAO accounts took part in the vote: 6,681 accounts voted in favor, 97.86%, 146 StackingDAO accounts voted against, 2.14%.)
+
+For pool stacking, 100% voted 'Yes.' Total voting power is 16,524,829 STX balance with votes cast from 370 accounts.
+
+For non-stackers, 99.98% voted 'Yes.' Total voting power of Yes is 1,553,301 STX balance with votes cast from 2,303 accounts. Total voting power of No is 271 STX balance from 16 accounts.
+
+All voting criteria from STX holders have been met. A breakdown of the transactions can be found [here](https://stx.eco/dao/proposals/SP3JP0N1ZXGASRJ0F7QAHWFPGTVK9T2XNXDB908Z.bdp001-sip-021-nakamoto/results).
+
+A copy of the scripts used to tabulate the solo and pool stacking can be found [here](./nakamoto-votes.zip).

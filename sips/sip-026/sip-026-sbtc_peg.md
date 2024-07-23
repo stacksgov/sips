@@ -20,7 +20,7 @@ sBTC is a SIP-010 token on the Stacks blockchain, backed 1:1 against BTC, and op
 
 While Bitcoin on its own cannot be used with smart contracts, sBTC provides a bridge of value from the Bitcoin Blockchain to the Stacks Blockchain to enable users who only own BTC to utilize the capability of smart contracts without switching to a new currency. This SIP aims to describe the high level sBTC system and the criteria for signer selection. 
 
-The sBTC Bootstrap phase is part of an iterative release process to simplify implementation and accelerate the sBTC release timeline. The initial phase does not include the complete feature set described in the [original sBTC design documents](https://github.com/stacksgov/sips/blob/e6b3233e76c22cfd6ef02f21add66696b9e4c314/sips/sip-025/sip-025-sbtc.md). This SIP does not attempt to describe the low-level technical details of any subsequent releases, which will be provided in a future SIP addendum. 
+This first iteration of sBTC is purely at the application layer and does not affect network consensus or operation. This SIP does not attempt to describe the technical details of this or any subsequent sBTC releases; it only seeks to get community approval for the requirements of the sBTC bootstrap signers.
 
 ## Introduction
 

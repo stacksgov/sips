@@ -420,7 +420,7 @@ Proposed below is an updated interface representation for Clarity primitives for
 ```ts
 {
   type: 'stx-postcondition',
-  address: string | `${string}.${string}`, // Stacks c32-encoded, with optional contract name suffix
+  address: 'origin' | string | `${string}.${string}`, // Stacks c32-encoded, with optional contract name suffix
   condition: 'eq' | 'gt' | 'gte' | 'lt' | 'lte',
   amount: string // `bigint` compatible, amount in micro-STX
 }
@@ -431,7 +431,7 @@ Proposed below is an updated interface representation for Clarity primitives for
 ```ts
 {
   type: 'ft-postcondition',
-  address: string | `${string}.${string}`, // Stacks c32-encoded, with optional contract name suffix
+  address: 'origin' | string | `${string}.${string}`, // Stacks c32-encoded, with optional contract name suffix
   condition: 'eq' | 'gt' | 'gte' | 'lt' | 'lte',
   asset: `${string}.${string}::${string}` // Stacks c32-encoded address, with contract name suffix, with asset suffix
   amount: string // `bigint` compatible, amount in lowest integer denomination of fungible token
@@ -443,7 +443,7 @@ Proposed below is an updated interface representation for Clarity primitives for
 ```ts
 {
   type: 'nft-postcondition',
-  address: string | `${string}.${string}`, // Stacks c32-encoded, with optional contract name suffix
+  address: 'origin' | string | `${string}.${string}`, // Stacks c32-encoded, with optional contract name suffix
   condition: 'sent' | 'not-sent',
   asset: `${string}.${string}::${string}` // address with contract name suffix with asset suffix, Stacks c32-encoded
   assetId: object, // Clarity value

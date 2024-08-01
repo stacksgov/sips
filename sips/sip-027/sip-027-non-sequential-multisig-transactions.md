@@ -402,7 +402,7 @@ Solo stackers only, can also vote by sending a Bitcoin dust transaction (6000 sa
 
 Users with liquid STX can vote on proposals using the Ecosystem DAO. Liquid STX is the users balance, less any STX they have locked in PoX stacking protocol, at the block height at which the voting started (preventing the same STX from being transferred between accounts and used to effectively double vote). This is referred to generally as "snapshot" voting.
 
-For this SIP to pass, 70% of all liquid STX committed by voting must be in favour of the proposal.
+For this SIP to pass, 66% of all liquid STX committed by voting must be in favour of the proposal.
 
 The act of not voting is the act of siding with the outcome, whatever it may be. We believe that these thresholds are sufficient to demonstrate interest from Stackers -- Stacks users who have a long-term interest in the Stacks blockchain's successful operation -- in performing this upgrade.
 

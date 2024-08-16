@@ -36,23 +36,6 @@ In this proposal, Stacks block production would no longer be tied to miner elect
 
 This proposal, dubbed the "Nakamoto" release, represents a substantial architectural change to the current Stacks blockchain. If adopted, the Stacks major version would be bumped from 2 to 3. The first Nakamoto release would be 3.0.0.0.0.
 
-# Addendum
-_The following was added after this SIP was accepted, where some clarification about Clarity specifications were necessary. The following section addresses these changes **without** changing the ratified text_
-
-The introduction of Fast Blocks and of the new Clarity variables `tenure-height` and `stacks-block-height` in this SIP requires that the existing Clarity function `get-block-info?` is changed. This function should be removed in Clarity 3, replaced with two new functions to retrieve data for Stacks blocks and tenures:
-* `(get-stacks-block-info? property-name block-height)`, where `property-name` is one of:
-  * `id-header-hash`: equivalent to Clarity 2's `(get-block-info? id-header-hash block-height)`
-  * `header-hash`: equivalent to Clarity 2's `(get-block-info? header-hash block-height)`
-  * `time`: **new** in Clarity 3, this property returns a `uint` value matching the time field in the Stacks block header
-* `(get-tenure-info? property-name block-height)`, where `property-name` is one of:
-  * `burnchain-header-hash`: equivalent to Clarity 2's `(get-block-info? burnchain-header-hash block-height)`
-  * `miner-address`: equivalent to Clarity 2's `(get-block-info? miner-address block-height)`
-  * `time`: equivalent to Clarity 2's `(get-block-info? time block-height)`, returns the value of the burn chain block header time field of the tenure block
-  * `block-reward`: equivalent to Clarity 2's `(get-block-info? time block-height)`
-  * `miner-spend-total`: equivalent to Clarity 2's `(get-block-info? miner-spend-total block-height)`
-  * `miner-spend-winner`: equivalent to Clarity 2's `(get-block-info? miner-spend-winner block-height)`
-  * `vrf-seed`: equivalent to Clarity 2's `(get-block-info? vrf-seed block-height)`
-
 # Introduction
 
 ## Glossary
@@ -553,6 +536,23 @@ In the event of a Bitcoin fork, Stackers would maintain the list of transactions
 Users who Stack may not want to run a 24/7 signing daemon. If not, then they can simply report some other signer's public key when calling `stack-stx` or `delegate-stack-stx`. Then, this other entity would run the signing daemon on their behalf.
 
 While this does induce some consolidation pressure, we believe it is the least-bad option. Some users will inevitably want to outsource the signing responsibility to a third party. However, trying to prevent this programmatically would only encourage users to find work-arounds that are even more risky. For example, requiring users to sign with the same key that owns their STX would simply encourage them to trust a 3rd party to both hold and stack their STX on their behalf, which is worse than just outsourcing the signing responsibility.
+
+# Addendum
+_The following was added after this SIP was accepted, where some clarification about Clarity specifications were necessary. This section addresses these changes **without** changing the ratified text_
+
+The introduction of Fast Blocks and of the new Clarity variables `tenure-height` and `stacks-block-height` in this SIP requires that the existing Clarity function `get-block-info?` is changed. This function should be removed in Clarity 3, replaced with two new functions to retrieve data for Stacks blocks and tenures:
+* `(get-stacks-block-info? property-name block-height)`, where `property-name` is one of:
+  * `id-header-hash`: equivalent to Clarity 2's `(get-block-info? id-header-hash block-height)`
+  * `header-hash`: equivalent to Clarity 2's `(get-block-info? header-hash block-height)`
+  * `time`: **new** in Clarity 3, this property returns a `uint` value matching the time field in the Stacks block header
+* `(get-tenure-info? property-name block-height)`, where `property-name` is one of:
+  * `burnchain-header-hash`: equivalent to Clarity 2's `(get-block-info? burnchain-header-hash block-height)`
+  * `miner-address`: equivalent to Clarity 2's `(get-block-info? miner-address block-height)`
+  * `time`: equivalent to Clarity 2's `(get-block-info? time block-height)`, returns the value of the burn chain block header time field of the tenure block
+  * `block-reward`: equivalent to Clarity 2's `(get-block-info? time block-height)`
+  * `miner-spend-total`: equivalent to Clarity 2's `(get-block-info? miner-spend-total block-height)`
+  * `miner-spend-winner`: equivalent to Clarity 2's `(get-block-info? miner-spend-winner block-height)`
+  * `vrf-seed`: equivalent to Clarity 2's `(get-block-info? vrf-seed block-height)`
 
 # References
 

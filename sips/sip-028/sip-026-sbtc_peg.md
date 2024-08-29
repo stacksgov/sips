@@ -18,7 +18,7 @@
 
 ## Abstract
 
-This SIP takes the position that Stacks can play a key role in offering a rich programming environment for Bitcoin with low-latency transactions. This would be achieved with a new wrapped Bitcoin asset, called sBTC, which would be implemented on Stacks 3.0 and later as a SIP-010 token. Stacks today offers a smart contract runtime for Stacks-hosted assets, and the forthcoming Stacks 3.0 release provides lower transaction latency than Bitcoin for Stacks transactions. By providing a robust BTC-wrapping mechanism based on threshold signatures, users would be able to lock their real BTC on the Bitcoin chain, instantiate an equal amount of sBTC tokens on Stacks, use these sBTC tokens on Stacks, and eventually redeem them for real BTC at 1:1 parity, minus the cost of the relevant blockchain transaction fees.
+This SIP takes the position that Stacks can play a key role in offering a rich programming environment for Bitcoin with low-latency transactions. This would be achieved with a new wrapped Bitcoin asset, called sBTC, which would be implemented on Stacks 3.0 and later as a SIP-010 token. Stacks today offers a smart contract runtime for Stacks-hosted assets, and the forthcoming Stacks [3.0 release](https://github.com/stacksgov/sips/blob/feat/sip-021-nakamoto/sips/sip-021/sip-021-nakamoto.md) provides lower transaction latency than Bitcoin for Stacks transactions. By providing a robust BTC-wrapping mechanism based on [threshold signatures](https://eprint.iacr.org/2020/852.pdf), users would be able to lock their real BTC on the Bitcoin chain, instantiate an equal amount of sBTC tokens on Stacks, use these sBTC tokens on Stacks, and eventually redeem them for real BTC at 1:1 parity, minus the cost of the relevant blockchain transaction fees.
 
 This is the first of several SIPs that describe such a system. This SIP describes the threshold signature mechanism and solicits from the ecosystem both a list of signers and the criteria for vetting them. These sBTC signers would be responsible for collectively holding all locked BTC and redeeming sBTC for BTC upon request. Given the high-stakes nature of their work, the authors of this SIP believe that such a wrapped asset can only be made to work in practice if the Stacks ecosystem members can reach broad consensus on how these signers are chosen. Thus, the first sBTC SIP put forth for activation concerns the selection of sBTC signers.
 
@@ -30,7 +30,7 @@ This SIP outlines but does not describe in technical detail the workings of the 
 
 | Term                | Definition                                                                                                                                                            |
 |---------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **SIP-10 Token**    | A token on the Stacks blockchain that adheres to the fungible token standards outlined in SIP-10.                                                                       |
+| **SIP-10 Token**    | A token on the Stacks blockchain that adheres to the fungible token standards outlined in [SIP-10](https://github.com/stacksgov/sips/blob/main/sips/sip-010/sip-010-fungible-token-standard.md).                                                                       |
 | **sBTC**            | A SIP-10 token on the Stacks Blockchain that can be turned back into BTC on the Bitcoin Blockchain. 1 sBTC is equivalent to 1 BTC on the Bitcoin Blockchain.           |
 | **sBTC operation**  | An operation that initiates some action from the sBTC protocol.                                                                                                        |
 | **.sbtc contract**  | A smart contract (or a collection of contracts) defining the sBTC token and functions related to it.                                                                    |
@@ -53,11 +53,11 @@ sBTC aims to mitigate Bitcoin’s limitations by combining the capability of the
 
 ### Programmability
 
-Clarity is the smart contract language on Stacks, which allows developers to encode essential business logic on a blockchain. Using smart contracts, developers can build more expressive decentralized applications that interact with sBTC, such as DeFi protocols, stablecoins, payments, and many others.
+[Clarity](https://docs.stacks.co/clarity/overview) is the smart contract language on Stacks, which allows developers to encode essential business logic on a blockchain. Using smart contracts, developers can build more expressive decentralized applications that interact with sBTC, such as DeFi protocols, stablecoins, payments, and many others.
 
 ### Fast Blocks
 
-The Stacks Nakamoto Upgrade, proposed in SIP-021, enables fast blocks where user-submitted transactions will now take on the order of seconds, instead of tens of minutes. Thus, sBTC on Stacks Nakamoto will offer an improvement to Bitcoin’s current transaction times.
+The Stacks Nakamoto Upgrade, proposed in [SIP-021](https://github.com/stacksgov/sips/blob/feat/sip-021-nakamoto/sips/sip-021/sip-021-nakamoto.md#proposed-solution), enables fast blocks where user-submitted transactions will now take on the order of seconds, instead of tens of minutes. Thus, sBTC on Stacks Nakamoto will offer an improvement to Bitcoin’s current transaction times.
 
 The sBTC protocol not only addresses the limitations of the Bitcoin scripting system but also provides a secure and decentralized solution for utilizing Bitcoin in various applications.
 
@@ -67,7 +67,7 @@ While the first sBTC implementation is under development, the wrapped nature of 
 
 - sBTC is a SIP-10 token backed 1:1 by BTC.
 - The sBTC peg wallet is maintained by the set of sBTC signers. These signers are responsible for the security and maintenance of the wallet, ensuring that sBTC is redeemable for BTC.
-- Bitcoin can be converted into sBTC within 3 Bitcoin blocks; and sBTC can be converted into Bitcoin within 6 Bitcoin blocks. sBTC relies on the forking behavior guaranteed by SIP-021 in order to maintain the peg wallet correctly across forks.
+- Bitcoin can be converted into sBTC within 3 Bitcoin blocks; and sBTC can be converted into Bitcoin within 6 Bitcoin blocks. sBTC relies on the forking behavior guaranteed by [SIP-021](https://github.com/stacksgov/sips/blob/feat/sip-021-nakamoto/sips/sip-021/sip-021-nakamoto.md) in order to maintain the peg wallet correctly across forks.
 
 ## Specification
 
@@ -88,10 +88,10 @@ Overview of tasks the sBTC signers carry out:
     - They have to keep their signer hosts secure, so their keys don't get stolen.
     - They have to proactively re-key every so often, which means moving the BTC to a new UTXO.
 - Signers must consolidate BTC as it is deposited.
-    - The process for UTXO consolidation of the BTC peg wallet is described in this issue.
+    - The process for UTXO consolidation of the BTC peg wallet is described in this [issue](https://github.com/stacks-network/sbtc/issues/52).
 - Signers must deduct transaction fees from users in order to fund BTC withdrawal transactions.
     - They must ensure that the transaction fee is paid for (e.g., they deduct it from the user, and they set a minimum sBTC withdrawal amount).
-    - The process for handling transaction fee estimates is described in this issue.
+    - The process for handling transaction fee estimates is described in this [issue](https://github.com/stacks-network/sbtc/pull/186).
 - Signers must coordinate to set and advertise the fee parameters of the system.
     - They must decide a minimum sBTC peg-out.
     - They must decide an STX transaction fee for minting the sBTC. This fee is paid by the user and can be sponsored by a 3rd party, which is described in the “Auxiliary Features” section of this document.
@@ -118,25 +118,25 @@ The criteria described above will be used to identify sBTC Signers that are able
 
 ### Selection Process
 
-The sBTC Signer Set will be finalized from the list of eligible Signers, based on the above criteria, by the sBTC working group. This process is to ensure that the sBTC Working Group can adjust to any changes in the sBTC Signer Set quickly and without the overhead of an additional community vote. For example, if an sBTC Signer is no longer available to complete their responsibilities, it is imperative for the liveness of the system that the sBTC Working Group is able to implement a suitable replacement based on the above criteria.
+The sBTC Signer Set will be finalized from the list of eligible Signers, based on the above criteria, by the [sBTC working group](https://github.com/orgs/stacks-network/discussions/469). This process is to ensure that the sBTC Working Group can adjust to any changes in the sBTC Signer Set quickly and without the overhead of an additional community vote. For example, if an sBTC Signer is no longer available to complete their responsibilities, it is imperative for the liveness of the system that the sBTC Working Group is able to implement a suitable replacement based on the above criteria.
 
 ## Related Work
 
-### WBTC
+### [WBTC](https://wbtc.network/assets/wrapped-tokens-whitepaper.pdf)
 
 WBTC is a closed membership system. It is made up of 50+ merchants and custodians with keys to the WBTC multisig contract on Ethereum. WBTC deposits and withdrawals can only be performed by the authorized merchants, and end users purchase WBTC directly from the merchants. Although the merchants manage issuance and redemption, all BTC backing WBTC is held by a single custodian.
 
-### tBTC v2
+### [tBTC v2](https://whitepaper.io/document/691/tbtc-whitepaper)
 
 tBTC is an open membership system, where the BTC is managed by a rotating set of randomly selected nodes which manage a threshold wallet. The system requires that 51-of-100 randomly selected wallet signers must collaborate to produce a proper signature.
 
-### RBTC
+### [RBTC](https://rootstock.io/static/a79b27d4889409602174df4710102056/RS-whitepaper.pdf)
 
-Rootstock’s (RSK) 2-way peg protocol, called “the Powpeg,” is a closed membership system. Peg operations settle to Bitcoin via merge mining on the RSK side-chain. Instead of collateralizing the system with a new token, peg operators are incentivized by earning a portion of transaction fees. PowPeg operators keep specialized hardware called PowHSMs active and connected to special types of Rootstock full nodes. Since the Bitcoin blockchain and the Rootstock sidechain are not entangled in a single blockchain or in a parent-child relation, peg-in and peg-out transactions require a high number of block confirmations. Peg-ins require 100 Bitcoin blocks, and peg-outs require 4000 Rootstock blocks.
+rBTC, Rootstock’s (RSK) 2-way peg protocol, called “the Powpeg,” is a closed membership system. Peg operations settle to Bitcoin via merge mining on the RSK side-chain. Instead of collateralizing the system with a new token, peg operators are incentivized by earning a portion of transaction fees. PowPeg operators keep specialized hardware called PowHSMs active and connected to special types of Rootstock full nodes. Since the Bitcoin blockchain and the Rootstock sidechain are not entangled in a single blockchain or in a parent-child relation, peg-in and peg-out transactions require a high number of block confirmations. Peg-ins require 100 Bitcoin blocks, and peg-outs require 4000 Rootstock blocks.
 
 ## Activation
 
-sBTC is designed to activate on Stacks Nakamoto as defined in SIP-021. Therefore, this SIP is only meaningful when SIP-021 activates. The sBTC Working Group plans to observe at least 2-4 weeks of network behavior on Stacks Nakamoto to ensure a stable release. After this period, sBTC can be activated on the Stacks network without requiring a separate hard fork.
+sBTC is designed to activate on Stacks Nakamoto as defined in [SIP-021](https://github.com/stacksgov/sips/blob/feat/sip-021-nakamoto/sips/sip-021/sip-021-nakamoto.md). Therefore, this SIP is only meaningful when SIP-021 activates. The sBTC Working Group plans to observe at least 2-4 weeks of network behavior on Stacks Nakamoto to ensure a stable release. After this period, sBTC can be activated on the Stacks network without requiring a separate hard fork.
 
 ### Process of Activation
 
@@ -169,7 +169,7 @@ Solo stackers only can also vote by sending a bitcoin dust transaction (6000 sat
 
 Users with liquid STX can vote on proposals using the Ecosystem DAO. Liquid STX is the user’s balance, less any STX they have locked in the PoX stacking protocol, at the block height at which the voting started (preventing the same STX from being transferred between accounts and used to effectively double vote). This is referred to generally as "snapshot" voting.
 
-For this SIP to pass, 66% of all liquid STX committed by voting must be in favor of the proposal. This precedent was set by SIP-015.
+For this SIP to pass, 66% of all liquid STX committed by voting must be in favor of the proposal. This precedent was set by [SIP-015](https://github.com/stacksgov/sips/blob/feat/sip-015/sips/sip-015/sip-015-network-upgrade.md).
 
 The act of not voting is the act of siding with the outcome, whatever it may be. We believe that these thresholds are sufficient to demonstrate interest from Stackers -- Stacks users who have a long-term interest in the Stacks blockchain's successful operation -- in performing this upgrade.
 
@@ -210,7 +210,7 @@ Auxiliary features of the sBTC protocol are described below.
 
 #### Stacks Transaction Fee Sponsorship
 
-sBTC will include the option to have sBTC transactions on Stacks be sponsored in return for some sBTC. Using the approach suggested in this issue, sBTC users will be able to pay for their transaction fees in sBTC with support from an existing STX holder, provided the wallet supports it. The proposed solution introduces atomic transaction bundles on Stacks, which enable sBTC payments to sponsors for covering STX transaction fees. STX is maintained as the sole gas token, but the user only has to interact with sBTC.
+sBTC will include the option to have sBTC transactions on Stacks be sponsored in return for some sBTC. Using the approach suggested in this [issue](https://github.com/stacks-network/stacks-core/issues/4235), sBTC users will be able to pay for their transaction fees in sBTC with support from an existing STX holder, provided the wallet supports it. The proposed solution introduces atomic transaction bundles on Stacks, which enable sBTC payments to sponsors for covering STX transaction fees. STX is maintained as the sole gas token, but the user only has to interact with sBTC.
 
 #### Signer Key Rotation
 

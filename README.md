@@ -37,6 +37,7 @@ may submit a SIP.
 * [SIP-018](./sips/sip-018/sip-018-signed-structured-data.md): Signed Structured Data
 * [SIP-019](./sips/sip-019/sip-019-token-metadata-update-notifications.md): Notifications for Token Metadata Updates
 * [SIP-020](./sips/sip-020/sip-020-bitwise-ops.md): Bitwise Operations in Clarity
+* [SIP-021](./sips/sip-021/sip-021-nakamoto.md): Nakamoto: Fast and Reliable Blocks through PoX-assisted Block Propagation
 * [SIP-022](./sips/sip-022/sip-022-emergency-pox-fix.md): Emergency Fix to PoX Stacking Increases
 * [SIP-023](./sips/sip-023/sip-023-emergency-fix-traits.md): Emergency Fix to Trait Invocation Behavior
 * [SIP-024](./sips/sip-024/sip-024-least-supertype-fix.md): Emergency Fix to Data Validation and Serialization Behavior

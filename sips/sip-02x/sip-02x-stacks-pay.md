@@ -4,7 +4,7 @@ SIP Number: to be assigned
 
 Title: Stacks Pay: A Payment Request Standard for Stacks Blockchain Payments
 
-Author: [Dan Trevino @dantrevino] <dantrevino@gmail.com>
+Author: Dan Trevino <dantrevino@gmail.com>
 
 Consideration: Technical
 
@@ -12,9 +12,13 @@ Type: Standard
 
 Status: Draft
 
-Created: 2024-09-24
+Created: 24 September 2024
+
+Layer: Application
 
 License: CC0-1.0: Creative Commons CC0 1.0 Universal
+
+Discussion-To: https://github.com/stacksgov/sips
 
 Sign-off: 
 
@@ -25,9 +29,9 @@ This SIP proposes a payment request standard, **Stacks Pay**, for the Stacks blo
 ## License and Copyright
 This SIP is made available under the terms of the Creative Commons CC0 1.0 Universal license, available at https://creativecommons.org/publicdomain/zero/1.0/ This SIP’s copyright is held by the Stacks Open Internet Foundation.
 
-## Motivation
+## Introduction
 
-As the Stacks ecosystem grows, there's an increasing demand for a standardized method to request and process payments. Currently, there is no unified standard for creating and handling payment requests on the Stacks blockchain, which leads to fragmentation and inconsistent user experiences. Existing payment request standards in other ecosystems offer features like reusable payment requests and enhanced security, but no such standard exists for Stacks.
+As the Stacks ecosystem grows, there's an increasing demand for a standardized method to request and process payments. Currently, there is no unified standard for creating and handling payment requests on the Stacks blockchain, which will lead to fragmentation and inconsistent user experiences. Existing payment request standards in other ecosystems offer features like reusable payment requests and enhanced security, but no such standard exists for Stacks.
 
 **Stacks Pay** addresses this gap by introducing a payment request standard tailored specifically for the Stacks blockchain. The standard simplifies the process of sending and receiving payments, enhances interoperability among wallets and applications, and increases security by providing mechanisms to tie transactions back to payment requests.
 
@@ -167,9 +171,33 @@ While Stacks Pay is an application-level standard that does not require changes 
 - **Ecosystem Growth**: Standardizing payment requests can attract more merchants and users to the Stacks ecosystem, fostering economic growth.
 - **Business Opportunities**: Developers and businesses may find new opportunities to create services around Stacks Pay, contributing to the overall health and diversity of the ecosystem.
 
-## Links
+## Activation
 
-### Related Work
+This SIP is considered ratified after:
+
+1. SIP Approval and Community Review: The SIP undergoes formal review and approval by the designated Stacks governance bodies and is discussed publicly to gather feedback.
+1. Reference Implementation: At least one reference implementation of the Stacks Pay standard is developed and made publicly available.
+1. Wallet Support: At least one widely-used Stacks wallet implements support for the Stacks Pay URL scheme.
+1. Merchant Adoption: At least ten merchants or two service providers integrate Stacks Pay into their platforms.
+1. Documentation: Comprehensive documentation is provided, including integration guides and code examples.
+
+## Reference Implementations
+
+A reference implementation of the Stacks Pay standard is available to assist developers in integrating the specification into their applications. The implementations cover multiple programming languages to cater to different development environments.
+
+### Source Code
+
+The reference implementations can be found at the following repositories:
+
+- **TypeScript**: [stacks-pay-js](https://github.com/dantrevino/stacks-pay-js)
+- **Python**: [stacks-pay-py](https://github.com/dantrevino/stacks-pay-py)
+- **Rust**: [stacks-pay-rs](https://github.com/dantrevino/stacks-pay-rs)
+
+These repositories contain source code demonstrating how to generate and parse Stacks Pay URLs, handle Bech32m encoding, generate `spId`s, and include them in transaction memo fields, in accordance with the specification.
+
+
+
+## Related Work
 
 - **SIP-010: Fungible Tokens**: Defines a standard interface for fungible tokens on the Stacks blockchain.
 

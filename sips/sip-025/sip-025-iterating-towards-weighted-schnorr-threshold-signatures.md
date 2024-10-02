@@ -125,7 +125,7 @@ implement the rest of the Nakamoto system.
 ## Iteration 2
 
 Once iteration 1 is stable and SIP-021 activates, WSTS will be used to improve
-the efficiency of the system. Leader election with BTF Paxos will be implemented
+the efficiency of the system. Leader election with BFT Paxos will be implemented
 during this iteration.  This iteration will require some significant design
 work, and will be fully specified in a future SIP which describes the hard fork
 in total.

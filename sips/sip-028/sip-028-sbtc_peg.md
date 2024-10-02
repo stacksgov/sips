@@ -174,6 +174,7 @@ The act of not voting is the act of siding with the outcome, whatever it may be.
 
 ## Appendix
 [1] https://github.com/stacks-network/sbtc/issues/52
+
 [2] https://github.com/stacks-network/sbtc/pull/186
 
 ### Specification

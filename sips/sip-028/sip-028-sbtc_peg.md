@@ -6,19 +6,19 @@
 **Type:** Standard  
 **Status:** Draft  
 **Authors:**  
+- Mårten Blankfors ([marten@trustmachines.co](mailto:marten@trustmachines.co))  
+- Daniel Jordon ([daniel@trustmachines.co](mailto:daniel@trustmachines.co))
+- Friedger Müffke ([friedger@ryder.id](mailto:friedger@ryder.id))  
+- Jesus Najera ([jesus@stratalabs.xyz](mailto:jesus@stratalabs.xyz))  
+- Jude Nelson ([jude@stacks.org](mailto:jude@stacks.org))  
+- Tycho Onnasch ([tycho@zestprotocol.com](mailto:tycho@zestprotocol.com))  
 - Andre Serrano ([andre@bitcoinl2labs.com](mailto:andre@bitcoinl2labs.com))  
 - Ashton Stephens ([ashton@trustmachines.co](mailto:ashton@trustmachines.co))  
 - Joey Yandle ([joey@trustmachines.co](mailto:joey@trustmachines.co))  
-- Mårten Blankfors ([marten@trustmachines.co](mailto:marten@trustmachines.co))  
-- Jesus Najera ([jesus@stratalabs.xyz](mailto:jesus@stratalabs.xyz))  
-- Jude Nelson ([jude@stacks.org](mailto:jude@stacks.org))  
-- Friedger Müffke ([friedger@ryder.id](mailto:friedger@ryder.id))  
-- Tycho Onnasch ([tycho@zestprotocol.com](mailto:tycho@zestprotocol.com))  
-- Daniel Jordon ([daniel@trustmachines.co](mailto:daniel@trustmachines.co))
 
 ## Abstract
 
-This SIP takes the position that Stacks can play a key role in offering a rich programming environment for Bitcoin with low-latency transactions. This would be achieved with a new wrapped Bitcoin asset, called sBTC, which would be implemented on Stacks 3.0 and later as a SIP-010 token. Stacks today offers a smart contract runtime for Stacks-hosted assets, and the forthcoming Stacks [3.0 release](https://github.com/stacksgov/sips/blob/feat/sip-021-nakamoto/sips/sip-021/sip-021-nakamoto.md) provides lower transaction latency than Bitcoin for Stacks transactions. By providing a robust BTC-wrapping mechanism based on [threshold signatures](https://eprint.iacr.org/2020/852.pdf), users would be able to lock their real BTC on the Bitcoin chain, instantiate an equal amount of sBTC tokens on Stacks, use these sBTC tokens on Stacks, and eventually redeem them for real BTC at 1:1 parity, minus the cost of the relevant blockchain transaction fees.
+This SIP a new wrapped Bitcoin asset, called sBTC, which would be implemented on Stacks 3.0 and later as a SIP-010 token. Stacks today offers a smart contract runtime for Stacks-hosted assets, and the forthcoming Stacks [3.0 release](https://github.com/stacksgov/sips/blob/main/sips/sip-021/sip-021-nakamoto.md) provides lower transaction latency than Bitcoin for Stacks transactions. By providing a robust BTC-wrapping mechanism based on [threshold signatures](https://eprint.iacr.org/2020/852.pdf), users would be able to lock their real BTC on the Bitcoin chain, instantiate an equal amount of sBTC tokens on Stacks, use these sBTC tokens on Stacks, and eventually redeem them for real BTC at 1:1 parity, minus the cost of the relevant blockchain transaction fees.
 
 This is the first of several SIPs that describe such a system. This SIP describes the threshold signature mechanism and solicits from the ecosystem both a list of signers and the criteria for vetting them. These sBTC signers would be responsible for collectively holding all locked BTC and redeeming sBTC for BTC upon request. Given the high-stakes nature of their work, the authors of this SIP believe that such a wrapped asset can only be made to work in practice if the Stacks ecosystem members can reach broad consensus on how these signers are chosen. Thus, the first sBTC SIP put forth for activation concerns the selection of sBTC signers.
 
@@ -32,7 +32,7 @@ This SIP outlines but does not describe in technical detail the workings of the 
 |---------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | **SIP-10 Token**    | A token on the Stacks blockchain that adheres to the fungible token standards outlined in [SIP-10](https://github.com/stacksgov/sips/blob/main/sips/sip-010/sip-010-fungible-token-standard.md).                                                                       |
 | **sBTC**            | A SIP-10 token on the Stacks Blockchain that can be turned back into BTC on the Bitcoin Blockchain. 1 sBTC is equivalent to 1 BTC on the Bitcoin Blockchain.           |
-| **sBTC operation**  | An operation that initiates some action from the sBTC protocol.                                                                                                        |
+| **sBTC operation**  | An smart contract function call that initiates some action from the sBTC protocol.                                                                                                        |
 | **.sbtc contract**  | A smart contract (or a collection of contracts) defining the sBTC token and functions related to it.                                                                    |
 | **sBTC Peg Wallet** | The single UTXO holding the entire BTC balance that’s pegged into sBTC. This peg wallet is managed and maintained by the sBTC Signers.                                  |
 | **Stacks Signer**   | An entity that receives PoX payouts for stacking their STX tokens and actively participating in the Stacks protocol by signing mined blocks.                            |
@@ -49,7 +49,7 @@ Doing this in an open-membership peer-to-peer setting has been shown to be a dif
 
 ## Proposed Solution
 
-sBTC aims to mitigate Bitcoin’s limitations by combining the capability of the Stacks Blockchain with the reliability and security of Bitcoin. By enabling the secure movement of BTC in and out of the Stacks Blockchain via the sBTC protocol, users can interact with their BTC on Stacks using Clarity smart contracts and fast block times. The protocol is “secure” in that it is operated by a decentralized signer network, removing the risk of a single point of failure and trust in a single custodian. Users can deposit BTC into the protocol, seamlessly transact using sBTC on the Stacks blockchain, and have the freedom to redeem sBTC tokens for the underlying BTC at any time.
+sBTC aims to mitigate Bitcoin’s limitations by combining the capability of the Stacks Blockchain with the reliability and security of Bitcoin. By enabling the secure movement of BTC in and out of the Stacks Blockchain via the sBTC protocol, users can interact with their BTC on Stacks using Clarity smart contracts which will benefit from faster block times than Bitcoin. The protocol is “secure” in that it is operated by a decentralized signer network, removing the risk of a single point of failure and trust in a single custodian. Users can deposit BTC into the protocol, seamlessly transact using sBTC on the Stacks blockchain, and have the freedom to redeem sBTC tokens for the underlying BTC at any time.
 
 ### Programmability
 
@@ -57,9 +57,9 @@ sBTC aims to mitigate Bitcoin’s limitations by combining the capability of the
 
 ### Fast Blocks
 
-The Stacks Nakamoto Upgrade, proposed in [SIP-021](https://github.com/stacksgov/sips/blob/feat/sip-021-nakamoto/sips/sip-021/sip-021-nakamoto.md#proposed-solution), enables fast blocks where user-submitted transactions will now take on the order of seconds, instead of tens of minutes. Thus, sBTC on Stacks Nakamoto will offer an improvement to Bitcoin’s current transaction times.
+The Stacks Nakamoto Upgrade, proposed in [SIP-021](https://github.com/stacksgov/sips/blob/main/sips/sip-021/sip-021-nakamoto.md#proposed-solution), enables fast blocks where user-submitted transactions will now take on the order of seconds, instead of tens of minutes. Thus, sBTC on Stacks Nakamoto will offer an improvement to Bitcoin’s current transaction times.
 
-The sBTC protocol not only addresses the limitations of the Bitcoin scripting system but also provides a secure and decentralized solution for utilizing Bitcoin in various applications.
+The sBTC protocol not only addresses the limitations of Bitcoin's scripting system but also provides a secure and decentralized solution for utilizing Bitcoin in various applications.
 
 ## Design
 
@@ -67,11 +67,11 @@ While the first sBTC implementation is under development, the wrapped nature of 
 
 - sBTC is a SIP-10 token backed 1:1 by BTC.
 - The sBTC peg wallet is maintained by the set of sBTC signers. These signers are responsible for the security and maintenance of the wallet, ensuring that sBTC is redeemable for BTC.
-- Bitcoin can be converted into sBTC within 3 Bitcoin blocks; and sBTC can be converted into Bitcoin within 6 Bitcoin blocks. sBTC relies on the forking behavior guaranteed by [SIP-021](https://github.com/stacksgov/sips/blob/feat/sip-021-nakamoto/sips/sip-021/sip-021-nakamoto.md) in order to maintain the peg wallet correctly across forks.
+- Bitcoin can be converted into sBTC within 3 Bitcoin blocks, and sBTC can be converted into Bitcoin within 6 Bitcoin blocks. sBTC relies on the forking behavior guaranteed by [SIP-021](https://github.com/stacksgov/sips/blob/main/sips/sip-021/sip-021-nakamoto.md) in order to maintain the peg wallet correctly across forks.
 
 ## Specification
 
-Management of the sBTC peg wallet on the Bitcoin blockchain is decentralized, involving the sBTC Signer Set rather than a single custodian. At launch, the sBTC protocol will be maintained by 15 independent entities that make up the sBTC Signer Set. The eligibility criteria to become an sBTC Signer is determined through the community governance process of ratifying this SIP.
+Management of the sBTC peg wallet on the Bitcoin blockchain shall be managed by the proposed set of signers through a democratic process, involving the sBTC Signer Set rather than a single custodian. At launch, the sBTC protocol will be maintained by 15 independent entities that make up the sBTC Signer Set. The eligibility criteria to become an sBTC Signer is determined through the community governance process of ratifying this SIP.
 
 sBTC Signers are responsible for accepting or rejecting all sBTC deposit and withdrawal operations submitted to the network. For a transaction to be fulfilled, at least 70% of the signers need to approve the transaction. This means that the liveness and reliability of the signers is crucial to the success of the protocol. The system is live ("resilient") if at least 70% of the sBTC Signer voting power are online and honest. Then (and only then), deposits and withdrawals happen in a timely manner. The system is safe ("trustworthy") if at least 30% of the sBTC Signer voting power is honest. Then, no theft of funds can occur.
 
@@ -82,19 +82,18 @@ While up to 30% of the signers can be offline without a user impact on the funct
 ### sBTC Signer Responsibilities
 
 Overview of tasks the sBTC signers carry out:
-    - They react to requests to deposit BTC.
-    - They react to requests to withdraw BTC.
-    - They stay online often enough that deposits and withdrawals happen in a timely manner.
-    - They have to keep their signer hosts secure, so their keys don't get stolen.
-    - They have to proactively re-key every so often, which means moving the BTC to a new UTXO.
-- Signers must consolidate BTC as it is deposited.
-    - The process for UTXO consolidation of the BTC peg wallet is described in this [issue](https://github.com/stacks-network/sbtc/issues/52).
-- Signers must deduct transaction fees from users in order to fund BTC withdrawal transactions.
-    - They must ensure that the transaction fee is paid for (e.g., they deduct it from the user, and they set a minimum sBTC withdrawal amount).
-    - The process for handling transaction fee estimates is described in this [issue](https://github.com/stacks-network/sbtc/pull/186).
-- Signers must coordinate to set and advertise the fee parameters of the system.
-    - They must decide a minimum sBTC peg-out.
-    - They must decide an STX transaction fee for minting the sBTC. This fee is paid by the user and can be sponsored by a 3rd party, which is described in the “Auxiliary Features” section of this document.
+- Accept requests to deposit BTC.
+- Fulfill requests to withdraw BTC.
+- Complete deposit and withdrawal requests in a timely manner.
+- Maintain industry standard operational security around any hosts and private data (to include private keys).
+- Move BTC to a new UTXO when private keys are rotated.
+- Signers must perform UTXO consolidate as it is deposited [1].
+- Signers must deduct transaction fees from users in order to fund BTC withdrawal transactions:
+  - Ensure that the transaction fee is paid for (e.g., they deduct it from the user, and they set a minimum sBTC withdrawal amount).
+  - Transaction fee must be estimated proportionally for the requested operation [2].
+- Collectively, the signers must coordinate to calculate and advertise the fee parameters of the system:
+  - A minimum sBTC peg-out.
+  - STX transaction fee for minting the sBTC. This fee is paid by the user and can be sponsored by a 3rd party, which is described in the [Auxiliary Features](#auxiliary-features) section of this document.
 
 ### sBTC Signer Eligibility Criteria
 
@@ -174,6 +173,8 @@ For this SIP to pass, 66% of all liquid STX committed by voting must be in favor
 The act of not voting is the act of siding with the outcome, whatever it may be. We believe that these thresholds are sufficient to demonstrate interest from Stackers -- Stacks users who have a long-term interest in the Stacks blockchain's successful operation -- in performing this upgrade.
 
 ## Appendix
+[1] https://github.com/stacks-network/sbtc/issues/52
+[2] https://github.com/stacks-network/sbtc/pull/186
 
 ### Specification
 
@@ -185,7 +186,7 @@ The main steps of the sBTC Deposit flow will be as follows:
 2. The deposit transaction contains a UTXO (deposit UTXO) spendable by sBTC Signers, with an OP_DROP payload.
 3. The payload contains the recipient address of the sBTC among other relevant info for the deposit.
    - The relevant info could contain a fee suggestion or max_fee.
-4. **Proof of deposit:** The bitcoin holder submits a proof of deposit on Stacks by invoking the Signer binary API.
+4. **Proof of deposit:** The bitcoin holder submits a proof of deposit on Stacks by invoking the Deposit API.
 5. **Deposit accept:** 
 6. **Deposit redeem:** The sBTC Signers redeem the deposit by consuming the deposit UTXO, consolidating it into the sBTC UTXO.
 7. **Mint:** The sBTC Signers finalize the deposit acceptance making a Clarity contract call that mints the sBTC on the Stacks Layer.

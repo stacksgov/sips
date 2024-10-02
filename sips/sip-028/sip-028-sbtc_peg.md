@@ -18,7 +18,7 @@
 
 ## Abstract
 
-This SIP a new wrapped Bitcoin asset, called sBTC, which would be implemented on Stacks 3.0 and later as a SIP-010 token. Stacks today offers a smart contract runtime for Stacks-hosted assets, and the forthcoming Stacks [3.0 release](https://github.com/stacksgov/sips/blob/main/sips/sip-021/sip-021-nakamoto.md) provides lower transaction latency than Bitcoin for Stacks transactions. By providing a robust BTC-wrapping mechanism based on [threshold signatures](https://eprint.iacr.org/2020/852.pdf), users would be able to lock their real BTC on the Bitcoin chain, instantiate an equal amount of sBTC tokens on Stacks, use these sBTC tokens on Stacks, and eventually redeem them for real BTC at 1:1 parity, minus the cost of the relevant blockchain transaction fees.
+This SIP proposes a new wrapped Bitcoin asset, called sBTC, which would be implemented on Stacks 3.0 and later as a SIP-010 token. Stacks today offers a smart contract runtime for Stacks-hosted assets, and the forthcoming Stacks [3.0 release](https://github.com/stacksgov/sips/blob/main/sips/sip-021/sip-021-nakamoto.md) provides lower transaction latency than Bitcoin for Stacks transactions. By providing a robust BTC-wrapping mechanism based on [threshold signatures](https://eprint.iacr.org/2020/852.pdf), users would be able to lock their real BTC on the Bitcoin chain, instantiate an equal amount of sBTC tokens on Stacks, use these sBTC tokens on Stacks, and eventually redeem them for real BTC at 1:1 parity, minus the cost of the relevant blockchain transaction fees.
 
 This is the first of several SIPs that describe such a system. This SIP describes the threshold signature mechanism and solicits from the ecosystem both a list of signers and the criteria for vetting them. These sBTC signers would be responsible for collectively holding all locked BTC and redeeming sBTC for BTC upon request. Given the high-stakes nature of their work, the authors of this SIP believe that such a wrapped asset can only be made to work in practice if the Stacks ecosystem members can reach broad consensus on how these signers are chosen. Thus, the first sBTC SIP put forth for activation concerns the selection of sBTC signers.
 
@@ -101,17 +101,12 @@ Signers will run the sBTC binary in addition to the core Stacks signer software 
 
 The following eligibility criteria will be used to identify the sBTC Signers:
 
-- **Company Standing:**  
-  Does the company have an operating history to demonstrate their experience and reliability?
-- **Stacks Participation:**  
-  Has the Signer participated in running a signer node on Stacks 2.5 testnet or mainnet?
-- **Network Uptime:**  
-  Does the Signer agree to use reasonable efforts to maintain >99% uptime on the sBTC Signer?  
-  *Note: This metric will be self-affirmed by the company.*
-- **Communication & Availability:**  
-  Does the signer have a direct communication channel set up with sBTC core engineers to be able to respond to urgent updates within 24 hours? (e.g., Slack, Telegram, Signal)
-- **Ecosystem Alignment:**  
-  Has the signer made contributions to Bitcoin or the Stacks network over the past year that demonstrate their commitment to the growth and success of the network? Examples include, but are not limited to: publishing independent research, marketing, co-authoring a SIP, submitting a Stacks pull request, providing feedback on Stacks core development, or contributing to a Stacks working group.
+- Does the proposed sBTC signer have a demonstratable operating history which shows their experience and reliability in running blockchain services?
+- Has the proposed sBTC signer participated in running a Stacks signer instance on Stacks 2.5 testnet or mainnet, and can they provide metrics showing this (ex: amount of stacks stacked over past several cycles)?
+- Does the proposed sBTC signer agree to use reasonable efforts to maintain >99% uptime on the sBTC Signer?  
+  *Note: This metric may be self-affirmed if independent verification is not possible, or confirmed by on-chain voting/stacking activity.*
+- Does the proposed sBTC signer commit to a direct communication channel to be set up with the sBTC core engineers in order to respond to urgent updates within 24 hours?
+- Has the signer made contributions to Bitcoin or the Stacks network over the past year that demonstrate their commitment to the growth and success of the network? Examples include, but are not limited to: publishing independent research, marketing, co-authoring a SIP, submitting a Stacks pull request/issue, providing feedback on Stacks core development, or contributing to a Stacks working group.
 
 The criteria described above will be used to identify sBTC Signers that are able to meet some or all of the responsibilities described in the previous section.
 
@@ -145,8 +140,7 @@ Users can vote to approve this SIP with either their locked/stacked STX or with 
 
 In order for this SIP to activate, the following criteria must be met by the set of Stacked STX:
 
-- At least 80 million Stacked STX must vote at all to activate this SIP.
-- Of the Stacked STX that vote, at least 66% of them must vote "yes."
+- At least 80 million Stacked STX must vote, with least 66% (48 million) voting "yes".
 
 The voting addresses will be:
 
@@ -160,7 +154,7 @@ which encode the hashes of the following phrases into bitcoin / stacks addresses
 - **Yes to A Decentralized Two-Way Bitcoin Peg**
 - **No to A Decentralized Two-Way Bitcoin Peg**
 
-Stackers (pool and solo) vote by sending a stacks dust to the corresponding stacks address from the account where their stacks are locked.
+tackers (pool and solo) vote by sending a stacks dust to the corresponding stacks address from the account where their stacks are locked.
 
 Solo stackers only can also vote by sending a bitcoin dust transaction (6000 sats) to the corresponding bitcoin address.
 
@@ -168,7 +162,7 @@ Solo stackers only can also vote by sending a bitcoin dust transaction (6000 sat
 
 Users with liquid STX can vote on proposals using the Ecosystem DAO. Liquid STX is the user’s balance, less any STX they have locked in the PoX stacking protocol, at the block height at which the voting started (preventing the same STX from being transferred between accounts and used to effectively double vote). This is referred to generally as "snapshot" voting.
 
-For this SIP to pass, 66% of all liquid STX committed by voting must be in favor of the proposal. This precedent was set by [SIP-015](https://github.com/stacksgov/sips/blob/feat/sip-015/sips/sip-015/sip-015-network-upgrade.md).
+For this SIP to pass, 66% of all liquid STX committed by voting must be in favor of the proposal. This precedent was set by [SIP-015](https://github.com/stacksgov/sips/blob/main/sips/sip-015/sip-015-network-upgrade.md).
 
 The act of not voting is the act of siding with the outcome, whatever it may be. We believe that these thresholds are sufficient to demonstrate interest from Stackers -- Stacks users who have a long-term interest in the Stacks blockchain's successful operation -- in performing this upgrade.
 
@@ -205,15 +199,3 @@ The main steps of the sBTC withdrawal flow are as follows:
 3. **Withdrawal reject:** If instead the request is rejected, the sBTC signers will call the `withdraw-reject` function in the `.sbtc` smart contract. This function does the following:
    - Returns the sBTC to the holder.
    - Records the signer votes.
-
-### Auxiliary Features
-
-Auxiliary features of the sBTC protocol are described below.
-
-#### Stacks Transaction Fee Sponsorship
-
-sBTC will include the option to have sBTC transactions on Stacks be sponsored in return for some sBTC. Using the approach suggested in this [issue](https://github.com/stacks-network/stacks-core/issues/4235), sBTC users will be able to pay for their transaction fees in sBTC with support from an existing STX holder, provided the wallet supports it. The proposed solution introduces atomic transaction bundles on Stacks, which enable sBTC payments to sponsors for covering STX transaction fees. STX is maintained as the sole gas token, but the user only has to interact with sBTC.
-
-#### Signer Key Rotation
-
-Mechanisms are provided for the scenario where a signer wants to rotate their key. For this to happen, signers must coordinate offline and vote on-chain on the new signer set (aka set of keys). Once the new signer set is determined, the signers conduct a wallet handoff and re-execute the key generation event.

@@ -126,7 +126,7 @@ tBTC is an open membership system, where the BTC is managed by a rotating set of
 
 ### [RBTC](https://rootstock.io/static/a79b27d4889409602174df4710102056/RS-whitepaper.pdf)
 
-rBTC, Rootstock’s (RSK) 2-way peg protocol, called “the Powpeg,” is a closed membership system. Peg operations settle to Bitcoin via merge mining on the RSK side-chain. Instead of collateralizing the system with a new token, peg operators are incentivized by earning a portion of transaction fees. PowPeg operators keep specialized hardware called PowHSMs active and connected to special types of Rootstock full nodes. Since the Bitcoin blockchain and the Rootstock sidechain are not entangled in a single blockchain or in a parent-child relation, peg-in and peg-out transactions require a high number of block confirmations. Peg-ins require 100 Bitcoin blocks, and peg-outs require 4000 Rootstock blocks.
+rBTC, Rootstock’s (RSK) 2-way peg protocol, called “the Powpeg”, is a closed membership system. Peg operations settle to Bitcoin via merge mining on the RSK side-chain. Instead of collateralizing the system with a new token, peg operators are incentivized by earning a portion of transaction fees. PowPeg operators keep specialized hardware called PowHSMs active and connected to special types of Rootstock full nodes. Since the Bitcoin blockchain and the Rootstock sidechain are not entangled in a single blockchain or in a parent-child relation, peg-in and peg-out transactions require a high number of block confirmations. Peg-ins require 100 Bitcoin blocks, and peg-outs require 4000 Rootstock blocks.
 
 ## Activation
 

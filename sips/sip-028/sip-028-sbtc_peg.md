@@ -77,7 +77,7 @@ sBTC Signers are responsible for accepting or rejecting all sBTC deposit and wit
 
 Throughout this release, sBTC will have an unchangeable and distinct signer set that will not explicitly be part of Stacks consensus. Given that there will be 15 unique signers that shall comprise the system, and each unique signer is allocated exactly one vote, it would require at least 11 out of 15 signatures for an sBTC operation to be fulfilled.
 
-While up to 30% of the signers can be offline without a user impact on the functioning of the protocol, it becomes more critical for the rest of the signers to approve sBTC operations because operations necessarily still need to meet 70% of the original signing power. If more than 30% of signers become unavailable, no sBTC operations will be approved because it will be impossible to get 70% approval when less than 70% are online. An operation that isn’t approved will become spendable by the user after a predetermined timeout has elapsed, measured in Bitcoin blocks.
+While up to 30% of the signers can be offline without a user impact on the functioning of the protocol, it becomes more critical for the rest of the signers to approve sBTC operations because operations necessarily still need to meet 70% of the original signing power. If more than 30% of signers become unavailable, no sBTC operations will be approved because it will be impossible to get 70% approval when less than 70% are online. An operation that isn’t approved will become reclaimable by the user after a timeout has elapsed. The timeout is specified by the user when preparing the deposit request and is measured in Bitcoin blocks.
 
 ### sBTC Signer Responsibilities
 

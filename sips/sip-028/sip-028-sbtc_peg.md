@@ -144,17 +144,19 @@ In order for this SIP to activate, the following criteria must be met by the set
 
 The voting addresses will be:
 
-- **Bitcoin Yes Address:** `3Jq9UT81fnT2t24XjNVY7wijpsSmNSivbK`  
-- **Bitcoin No Address:** `3QGZ1fDa97yZCXpAnXQd6JHF4CBC6bk1r4`  
-- **Stacks Yes Address:** `SP36GHEPEZPGD53G2F29P5NEY884DXQR7TX90QE3T`  
-- **Stacks No Address:** `SP3YAKFMGWSSATYNCKXKJHE2Z5JJ6DH88E4T8XJPK`  
+| **Vote** | **Bitcoin Address**              | **Stacks Address**                    | Message      | ASCII-encoded message                      | Bitcoin script                                                                                  |
+| -------- | -------------------------------- | ------------------------------------- | ------------ | ------------------------------------------ | ----------------------------------------------------------------------------------------------- |
+| yes      | `11111111111mdWK2VXcrA1e7dnvidC` | `SP00000000001WPAWSDEDMQ0B9J72P0KAK2` | `yes-sip-28` | `000000000000000000007965732d7369702d3238` | `OP_DUP` `OP_HASH160` `000000000000000000007965732d7369702d3238` `OP_EQUALVERIFY` `OP_CHECKSIG` |
+| no       | `111111111111ACW5wa4RwyeKYEAzMD` | `SP000000000006WVSDEDMQ0B9J73E2TN78`  | `no-sip-28`  | `00000000000000000000006e6f2d7369702d3238` | `OP_DUP` `OP_HASH160` `00000000000000000000006e6f2d7369702d3238` `OP_EQUALVERIFY` `OP_CHECKSIG` |
 
-which encode the hashes of the following phrases into bitcoin / stacks addresses:
+The addresses have been generated as follows:
 
-- **Yes to A Decentralized Two-Way Bitcoin Peg**
-- **No to A Decentralized Two-Way Bitcoin Peg**
+- Encode `<message>` in ASCII, with 0-padding.
+- Use the resulting `<encoding>` in the Bitcoin script`OP_DUP` `OP_HASH160` `<encoding>` `OP_EQUALVERIFY` `OP_CHECKSIG`.
+- The Bitcoin address is the `base58check` of the hash of the Bitcoin script above.
+- The Stacks address is the `c32check-encoded` Bitcoin address.
 
-tackers (pool and solo) vote by sending a stacks dust to the corresponding stacks address from the account where their stacks are locked.
+Stackers (pool and solo) vote by sending Stacks dust to the corresponding Stacks address from the account where their Stacks are locked.
 
 Solo stackers only can also vote by sending a bitcoin dust transaction (6000 sats) to the corresponding bitcoin address.
 

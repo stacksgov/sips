@@ -40,6 +40,7 @@ may submit a SIP.
 * [SIP-022](./sips/sip-022/sip-022-emergency-pox-fix.md): Emergency Fix to PoX Stacking Increases
 * [SIP-023](./sips/sip-023/sip-023-emergency-fix-traits.md): Emergency Fix to Trait Invocation Behavior
 * [SIP-024](./sips/sip-024/sip-024-least-supertype-fix.md): Emergency Fix to Data Validation and Serialization Behavior
+* [SIP-027](./sips/sip-027/sip-027-non-sequential-multisig-transactions.md): Non-sequential Multisig Transactions
 
 ## How to Get Involved
 

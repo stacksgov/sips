@@ -31,6 +31,8 @@
 - Jason Schrader jason@joinfreehold.com (Governance CAB)
 - Jude Nelson jude@stacks.org (Steering Committee)
 
+**Discussions-To:**
+- [sBTC Working Group Discussions](https://github.com/stacks-network/sbtc/discussions) 
 
 ## Abstract
 

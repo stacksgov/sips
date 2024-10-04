@@ -6,15 +6,16 @@
 **Type:** Standard  
 **Status:** Draft  
 **Authors:**  
-- Mårten Blankfors ([marten@trustmachines.co](mailto:marten@trustmachines.co))  
+- Adriano Di Luzio ([adriano@bitcoinl2labs.com](mailto@adriano@bitcoinl2labs.com))
+- Andre Serrano ([andre@bitcoinl2labs.com](mailto:andre@bitcoinl2labs.com))  
+- Ashton Stephens ([ashton@trustmachines.co](mailto:ashton@trustmachines.co)) 
 - Daniel Jordon ([daniel@trustmachines.co](mailto:daniel@trustmachines.co))
 - Friedger Müffke ([friedger@ryder.id](mailto:friedger@ryder.id))  
 - Jesus Najera ([jesus@stratalabs.xyz](mailto:jesus@stratalabs.xyz))  
-- Jude Nelson ([jude@stacks.org](mailto:jude@stacks.org))  
-- Tycho Onnasch ([tycho@zestprotocol.com](mailto:tycho@zestprotocol.com))  
-- Andre Serrano ([andre@bitcoinl2labs.com](mailto:andre@bitcoinl2labs.com))  
-- Ashton Stephens ([ashton@trustmachines.co](mailto:ashton@trustmachines.co))  
 - Joey Yandle ([joey@trustmachines.co](mailto:joey@trustmachines.co))  
+- Jude Nelson ([jude@stacks.org](mailto:jude@stacks.org))  
+- Mårten Blankfors ([marten@trustmachines.co](mailto:marten@trustmachines.co))  
+- Tycho Onnasch ([tycho@zestprotocol.com](mailto:tycho@zestprotocol.com))  
 
 ## Abstract
 

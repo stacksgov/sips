@@ -87,7 +87,7 @@ Overview of tasks the sBTC signers carry out:
 - Complete deposit and withdrawal requests in a timely manner.
 - Maintain industry standard operational security around any hosts and private data (to include private keys).
 - Move BTC to a new UTXO when private keys are rotated.
-- Signers must perform UTXO consolidate as it is deposited [1].
+- Signers must perform UTXO consolidation as it is deposited [1].
 - Signers must deduct transaction fees from users in order to fund BTC withdrawal transactions:
   - Ensure that the transaction fee is paid for (e.g., they deduct it from the user, and they set a minimum sBTC withdrawal amount).
   - Transaction fee must be estimated proportionally for the requested operation [2].

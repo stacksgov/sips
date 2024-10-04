@@ -32,7 +32,7 @@ This SIP outlines but does not describe in technical detail the workings of the 
 |---------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | **SIP-10 Token**    | A token on the Stacks blockchain that adheres to the fungible token standards outlined in [SIP-10](https://github.com/stacksgov/sips/blob/main/sips/sip-010/sip-010-fungible-token-standard.md).                                                                       |
 | **sBTC**            | A SIP-10 token on the Stacks Blockchain that can be turned back into BTC on the Bitcoin Blockchain. 1 sBTC is equivalent to 1 BTC on the Bitcoin Blockchain.           |
-| **sBTC operation**  | An smart contract function call that initiates some action from the sBTC protocol.                                                                                                        |
+| **sBTC operation**  | A smart contract function call that initiates some action from the sBTC protocol.                                                                                                        |
 | **.sbtc contract**  | A smart contract (or a collection of contracts) defining the sBTC token and functions related to it.                                                                    |
 | **sBTC Peg Wallet** | The single UTXO holding the entire BTC balance that’s pegged into sBTC. This peg wallet is managed and maintained by the sBTC Signers.                                  |
 | **Stacks Signer**   | An entity that receives PoX payouts for stacking their STX tokens and actively participating in the Stacks protocol by signing mined blocks.                            |

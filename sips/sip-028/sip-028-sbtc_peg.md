@@ -106,7 +106,7 @@ The following eligibility criteria will be used to identify the sBTC Signers:
 - Does the proposed sBTC signer agree to use reasonable efforts to maintain >99% uptime on the sBTC Signer?  
   *Note: This metric may be self-affirmed if independent verification is not possible, or confirmed by on-chain voting/stacking activity.*
 - Does the proposed sBTC signer commit to a direct communication channel to be set up with the sBTC core engineers in order to respond to urgent updates within 24 hours?
-- Has the signer made contributions to Bitcoin or the Stacks network over the past year that demonstrate their commitment to the growth and success of the network? Examples include, but are not limited to: publishing independent research, marketing, co-authoring a SIP, submitting a Stacks pull request/issue, providing feedback on Stacks core development, or contributing to a Stacks working group.
+- Has the signer made contributions to Bitcoin or the Stacks network over the past year that demonstrate their commitment to the growth and success of the network? Examples include, but are not limited to: publishing independent research, marketing, co-authoring a SIP, submitting a Stacks pull request/issue, providing feedback on Stacks core development, or contributing to a Stacks Working Group.
 
 The criteria described above will be used to identify sBTC Signers that are able to meet some or all of the responsibilities described in the previous section.
 

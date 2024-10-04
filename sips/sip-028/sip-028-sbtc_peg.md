@@ -101,7 +101,7 @@ Signers will run the sBTC binary in addition to the core Stacks signer software 
 
 The following eligibility criteria will be used to identify the sBTC Signers:
 
-- Does the proposed sBTC signer have a demonstratable operating history which shows their experience and reliability in running blockchain services?
+- Does the proposed sBTC signer have a demonstrable operating history which shows their experience and reliability in running blockchain services?
 - Has the proposed sBTC signer participated in running a Stacks signer instance on Stacks 2.5 testnet or mainnet, and can they provide metrics showing this (ex: amount of stacks stacked over past several cycles)?
 - Does the proposed sBTC signer agree to use reasonable efforts to maintain >99% uptime on the sBTC Signer?  
   *Note: This metric may be self-affirmed if independent verification is not possible, or confirmed by on-chain voting/stacking activity.*

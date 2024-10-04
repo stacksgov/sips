@@ -10,7 +10,7 @@ Consideration: Technical
 
 Type: Consensus
 
-Status: Draft
+Status: Ratified
 
 Created: 2023-08-30
 

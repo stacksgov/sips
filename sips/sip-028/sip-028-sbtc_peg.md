@@ -2,7 +2,7 @@
 
 **SIP Number:** 028  
 **Title:** Signer Criteria for sBTC, A Decentralized and Programmable Asset Backed 1:1 with BTC  
-**Consideration:** Technical, Economics  
+**Consideration:** Technical, Economic  
 **Type:** Standard  
 **Status:** Draft  
 **Authors:**  

@@ -1,10 +1,9 @@
-# SIP-028: sBTC Signer Criteria
+# Preamble
 
 **SIP Number:** 028  
+
 **Title:** Signer Criteria for sBTC, A Decentralized and Programmable Asset Backed 1:1 with BTC  
-**Consideration:** Technical, Economic  
-**Type:** Standard  
-**Status:** Draft  
+
 **Authors:**  
 - Adriano Di Luzio ([adriano@bitcoinl2labs.com](mailto@adriano@bitcoinl2labs.com))
 - Andre Serrano ([andre@bitcoinl2labs.com](mailto:andre@bitcoinl2labs.com))  
@@ -16,6 +15,22 @@
 - Jude Nelson ([jude@stacks.org](mailto:jude@stacks.org))  
 - Mårten Blankfors ([marten@trustmachines.co](mailto:marten@trustmachines.co))  
 - Tycho Onnasch ([tycho@zestprotocol.com](mailto:tycho@zestprotocol.com))  
+
+**Consideration:** Governance 
+
+**Type:** Operation  
+
+**Status:** Draft  
+
+**Created:** 2024-06-21
+
+**License:** BSD 2-Clause
+
+**Sign-off:**
+- Andre Serrano andre@bitcoinl2labs.com (SIP Editor)
+- Jason Schrader jason@joinfreehold.com (Governance CAB)
+- Jude Nelson jude@stacks.org (Steering Committee)
+
 
 ## Abstract
 

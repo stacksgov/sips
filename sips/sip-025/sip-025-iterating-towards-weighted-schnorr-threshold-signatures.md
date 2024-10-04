@@ -18,13 +18,13 @@ Consideration: Technical
 
 Type: Consensus
 
-Status: Draft
+Status: Ratified
 
 Created: 14 May 2024
 
 License: BSD 2-Clause
 
-Sign-off:
+Sign-off: Brice Dobry (Technical CAB), Jude Nelson (SC)
 
 Discussions-To:
 
@@ -246,7 +246,6 @@ tuple shall be
 The structured data to sign will either be the ASCII string `yes` (for a
 yes-vote) or `no` (for a no-vote).
 
-
 Signer agreement will be demonstrated if and only if there exists a reward cycle
 N between the current one (cycle 84) and the second-to-last cycle of Stacks 2.5,
 such that:
@@ -256,6 +255,8 @@ such that:
 
 This scheme allows signers who feel strongly against this SIP to reject it in
 cycle N+1, even if they are not stacked in cycle N.
+
+The vote results are supplied in a supplementary `votes.csv` file.
 
 # Reference Implementation
 

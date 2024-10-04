@@ -86,103 +86,11 @@ Each transaction contains a transaction authorization structure, which is used
 by the Stacks peer to identify the originating account and sponsored account, to
 determine the fee that the spending account will pay, and to
 and determine whether or not it is allowed to carry out the encoded state-transition.
-It is encoded as follows:
+This SIP affects the spending condition encoding described in SIP-005.
 
-* A 1-byte **authorization type** field that indicates whether or not the
-  transaction has a standard or sponsored authorization.
-   * For standard authorizations, this value MUST be `0x04`.
-   * For sponsored authorizations, this value MUST be `0x05`.
-* One or two **spending conditions**, whose encoding is described below.  If the
-  transaction's authorization type byte indicates that it is a standard
-authorization, then there is one spending condition.  If it is a sponsored
-authorization, then there are two spending conditions that follow.
-
-_Spending conditions_ are encoded as follows:
-
-* A 1-byte **hash mode** field that indicates how the origin account authorization's public
-  keys and signatures should be used to calculate the account address.  Four
-modes are supported, in the service of emulating the four hash modes supported
-in Stacks v1 (which uses Bitcoin hashing routines):
-   * `0x00`: A single public key is used.  Hash it like a Bitcoin P2PKH output.
-   * `0x01`: One or more public keys are used.  Hash them as a Bitcoin multisig P2SH redeem script.
-   * `0x02`: A single public key is used.  Hash it like a Bitcoin P2WPKH-P2SH
-     output.
-   * `0x03`: One or more public keys are used.  Hash them as a Bitcoin
-     P2WSH-P2SH output.
-* A 20-byte **public key hash**, which is derived from the public key(s) according to the
-  hashing routine identified by the hash mode.  The hash mode and public key
-hash uniquely identify the origin account, with the hash mode being used to
-derive the appropriate account version number.
-* An 8-byte **nonce**.
-* An 8-byte **fee**.
-* Either a **single-signature spending condition** or a **multisig spending
-  condition**, described below.  If the hash mode byte is either `0x00` or
-`0x02`, then a single-signature spending condition follows.  Otherwise, a
-multisig spending condition follows.
-
-A _single-signature spending condition_ is encoded as follows:
-
-* A 1-byte **public key encoding** field to indicate whether or not the
-  public key should be compressed before hashing.  It will be:
-   * `0x00` for compressed
-   * `0x01` for uncompressed
-* A 65-byte **recoverable ECDSA signature**, which contains a signature
-and metadata for a secp256k1 signature.
-
-A _multisig spending condition_ is encoded as follows:
-
-* A length-prefixed array of **spending authorization fields**, described
-  below.
-* A 2-byte **signature count** indicating the number of signatures that
-  are required for the authorization to be valid.
-
-A _spending authorization field_ is encoded as follows:
-
-* A 1-byte **field ID**, which can be `0x00`, `0x01`, `0x02`, or
-  `0x03`.
-* The **spending field body**, which will be the following,
-  depending on the field ID:
-   * `0x00` or `0x01`:  The next 33 bytes are a compressed secp256k1 public key.
-     If the field ID is `0x00`, the key will be loaded as a compressed
-     secp256k1 public key.  If it is `0x01`, then the key will be loaded as
-     an uncompressed secp256k1 public key.
-   * `0x02` or `0x03`:  The next 65 bytes are a recoverable secp256k1 ECDSA
-     signature.  If the field ID is `0x02`, then the recovered public
-     key will be loaded as a compressed public key.  If it is `0x03`,
-     then the recovered public key will be loaded as an uncompressed
-     public key.
-
-A _compressed secp256k1 public key_ has the following encoding:
-
-* A 1-byte sign byte, which is either `0x02` for even values of the curve's `y`
-  coordinate, or `0x03` for odd values.
-* A 32-byte `x` curve coordinate.
-
-An _uncompressed secp256k1 public key_ has the following encoding:
-
-* A 1-byte constant `0x04`
-* A 32-byte `x` coordinate
-* A 32-byte `y` coordinate
-
-A _recoverable ECDSA secp256k1 signature_ has the following encoding:
-
-* A 1-byte **recovery ID**, which can have the value `0x00`, `0x01`, `0x02`, or
-  `0x03`.
-* A 32-byte `r` curve coordinate
-* A 32-byte `s` curve coordinate.  Of the two possible `s` values that may be
-  calculated from an ECDSA signature on secp256k1, the lower `s` value MUST be
-used.
-
-The number of required signatures and the list of public keys in a spending
-condition structure uniquely identifies a standard account.
-and can be used to generate its address per the following rules:
-
-| Hash mode | Spending Condition | Mainnet version | Hash algorithm |
-| --------- | ------------------ | --------------- | -------------- |
-| `0x00` | Single-signature | 22 | Bitcoin P2PKH |
-| `0x01` | Multi-signature | 20 | Bitcoin redeem script P2SH |
-| `0x02` | Single-signature | 20 | Bitcoin P2WPK-P2SH |
-| `0x03` | Multi-signature | 20 | Bitcoin P2WSH-P2SH |
+Per SIP-005, a spending condition is encoded as a 1-byte hash mode, a 20-byte
+public key hash, an 8-byte nonce (big-endian), an 8-bit fee (big-endian), and a
+condition-specific payload, depending on the hash mode.
 
 In addition to the hash modes specified in SIP-005, this SIP adds two new hash modes: `0x05` and `0x07`.
 These numbers were chosen in order to maintain the following relationships:
@@ -238,18 +146,12 @@ possible if the corresponding private key(s) signed this transaction.
 
 #### Transaction Signing and Verifying
 
-A transaction may have one or two spending conditions.  The act of signing
-a transaction is the act of generating the signatures for its authorization
-structure's spending conditions, and the act of verifying a transaction is the act of (1) verifying
-the signatures in each spending condition and (2) verifying that the public key(s)
-of each spending condition hash to its address.
-
-Signing a transaction is performed after all other fields in the transaction are
-filled in.  The high-level algorithm for filling in the signatures in a spending
+Per SIP-005, signing a transaction is performed after all other fields in the transaction are
+filled in.  Summarizing, the high-level algorithm for filling in the signatures in a spending
 condition structure is as follows:
 
 0. Set the spending condition address, and optionally, its signature count.
-1. Clear the other spending condition fields, using the appropriate algorithm below.
+1. Zero the other spending condition fields, using the appropriate algorithm below.
    If this is a sponsored transaction, and the signer is the origin, then set the sponsor spending condition
    to the "signing sentinel" value (see below).
 2. Serialize the transaction into a byte sequence, and hash it to form an
@@ -258,23 +160,13 @@ condition structure is as follows:
    `sighash` with the authorization type byte (0x04 or 0x05), the fee (as an 8-byte big-endian value),
    and the nonce (as an 8-byte big-endian value).
 
-For sequential hash modes `0x00`, `0x01`, `0x02`, and `0x03`:
-
-4. Calculate the ECDSA signature over the `presign-sighash` by treating this
-   hash as the message digest.  Note that the signature must be a `libsecp256k1`
-   recoverable signature.
-5. Calculate the `postsign-sighash` over the resulting signature and public key
-   by hashing the `presign-sighash` hash, the signing key's public key encoding byte, and the
-   signature from step 4 to form the next `sighash`.  Store the message
-   signature and public key encoding byte as a signature auth field.
-6. Repeat steps 3-5 for each private key that must sign, using the new `sighash`
-   from step 5.
+See SIP-005 for definitions of `sighash` and `presign-sighash`.
 
 For non-sequential hash modes `0x05` and `0x07`:
 
 4. Calculate the ECDSA signature over the `presign-sighash` by treating this
    hash as the message digest.  Note that the signature must be a `libsecp256k1`
-   recoverable signature. Store the message signature and public key encoding byte as a signature auth field.
+   recoverable signature in VRS format. Store the message signature and public key encoding byte as a signature auth field.
 5. Repeat step 4 until the signer threshold is reached.
 
 The algorithms for clearing an authorization structure are as follows:
@@ -284,27 +176,6 @@ The algorithms for clearing an authorization structure are as follows:
   nonce to 0, and set the vector of authorization fields to the empty vector
   (note that the address and the 2-byte signature count are _preserved_).
 
-While signing a transaction, the implementation keeps a running list of public
-keys, public key encoding bytes, and signatures to use to fill in the spending condition once signing
-is complete.  For single-signature spending conditions, the only data the
-signing algorithm needs to return is the public key encoding byte and message signature.  For multi-signature
-spending conditions, the implementation returns the sequence of public keys and
-(public key encoding byte, ECDSA recoverable signature) pairs that make up the condition's authorization fields.
-The implementation must take care to preserve the order of public keys and
-(encoding-byte, signature) pairs in the multisig spending condition, so that
-the verifying algorithm will hash them all in the right order when verifying the
-address.
-
-When signing a sponsored transaction, the origin spending condition signatures
-are calculated first, and the sponsor spending conditions are calculated second.
-When the origin key(s) sign, the set the sponsor spending condition to a
-specially-crafted "signing sentinel" structure.  This structure is a
-single-signature spending condition, with a hash mode equal to 0x00, an
-address and signature of all 0's, a fee and a nonce equal to 0, and a
-public key encoding byte equal to 0x00.  This way, the origin commits to the
-fact that the transaction is sponsored without having to know anything about the
-sponsor's spending conditions.
-
 When sponsoring a transaction, the sponsor uses the same algorithm as above to
 calculate its signatures.  This way, the sponsor commits to the signature(s) of
 the origin when calculating its signatures.
@@ -312,26 +183,16 @@ the origin when calculating its signatures.
 When verifying a transaction, the implementation verifies the sponsor spending
 condition (if present), and then the origin spending condition.  It effectively
 performs the signing algorithm again, but this time, it verifies signatures and
-recovers public keys.
+recovers public keys.  Per SIP-005:
 
 0. Extract the public key(s) and signature(s) from the spending condition.
-1. Clear the spending condition.
+1. Zero the spending condition.
 2. Serialize the transaction into a byte sequence, and hash it to form an
    initial `sighash`.
 3. Calculate the `presign-sighash` from the `sighash`, authorization type byte,
    fee, and nonce.
 4. Use the `presign-sighash` and the next (public key encoding byte,
    ECDSA recoverable signature) pair to recover the public key that generated it.
-
-For sequential hash modes `0x00`, `0x01`, `0x02`, and `0x03`:
-
-5. Calculate the `postsign-sighash` from `presign-sighash`, the signature, public key encoding
-   byte,
-6. Repeat steps 3-5 for each signature, so that all of the public keys are
-   recovered.
-7. Verify that the sequence of public keys hash to the address, using
-   the address's indicated public key hashing algorithm, and the number of signatures
-   matches **exactly** the required number of signatures.
 
 For non-sequential hash modes `0x05` and `0x07`:
 

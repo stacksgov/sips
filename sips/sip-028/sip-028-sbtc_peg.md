@@ -93,7 +93,7 @@ Overview of tasks the sBTC signers carry out:
   - Transaction fee must be estimated proportionally for the requested operation [2].
 - Collectively, the signers must coordinate to calculate and advertise the fee parameters of the system:
   - A minimum sBTC peg-out.
-  - STX transaction fee for minting the sBTC. This fee is paid by the user and can be sponsored by a 3rd party, which is described in the [Auxiliary Features](#auxiliary-features) section of this document.
+  - STX transaction fee for minting the sBTC. This fee is paid by the user and can be sponsored by a 3rd party.
 
 ### sBTC Signer Eligibility Criteria
 

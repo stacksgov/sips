@@ -129,8 +129,17 @@ The following eligibility criteria will be used to identify the sBTC Signers:
 The criteria described above will be used to identify sBTC Signers that are able to meet some or all of the responsibilities described in the previous section.
 
 ### Selection Process
+The initial sBTC Signer Set will be finalized from the list of eligible Signers, based on the above criteria. The results will be published as a dicussion in the [sBTC Working Group](https://github.com/stacks-network/sbtc/discussions/624). 
 
-The sBTC Signer Set will be finalized from the list of eligible Signers, based on the above criteria, by the [sBTC working group](https://github.com/orgs/stacks-network/discussions/469). This process is to ensure that the sBTC Working Group can adjust to any changes in the sBTC Signer Set quickly and without the overhead of an additional community vote. For example, if an sBTC Signer is no longer available to complete their responsibilities, it is imperative for the liveness of the system that the sBTC Working Group is able to implement a suitable replacement based on the above criteria.
+The selection process is as follows:
+1. **Nomination Phase**: Open a call for nominations within the community. 
+2. **Evaluation & Community Feedback**: The proposed signer set will be published to provide transparency.
+3. **SIP Vote**: The community will vote on the signer criteria and proposed signer set.
+4. **Final Selection**: The final list of signers will be selected based on community feedback and successful completion of SIP-028.
+
+### Updating The sBTC Signer Set
+In the event that the sBTC Signer Set needs to be updated (for example, if a signer is no longer available to complete their responsibilities) sBTC Signers can perform a threshold vote to agree on the updated set. This process will also be performed if a signer needs to rotate their cryptographic keys. 
+
 
 ## Related Work
 

@@ -55,7 +55,7 @@ This SIP outlines but does not describe in technical detail the workings of the 
 | **sBTC Peg Wallet** | The single UTXO holding the entire BTC balance that’s pegged into sBTC. This peg wallet is managed and maintained by the sBTC Signers.                                  |
 | **Stacks Signer**   | An entity that receives PoX payouts for stacking their STX tokens and actively participating in the Stacks protocol by signing mined blocks.                            |
 | **sBTC Signer**     | An entity that will sign sBTC operations and communicate with contracts on the chain to make that feasible. This entity has partial access to spending the sBTC UTXO.   |
-| **sBTC Signer Set** | The set of all sBTC signers. Each is registered with the .sbtc contract and the transfer. These entities as a group have full democratic access to the sBTC UTXO.      |
+| **sBTC Signer Set** | The set of all sBTC signers. Each is registered with the .sbtc contract and these entities as a group collectively maintain the sBTC's Bitcoin UTXO.      |
 | **sBTC Signer API** | An API exposed by the sBTC Signer that handles basic low-level commands.                                                                                                |
 | **Deposit API**     | A third-party API that communicates with the sBTC Signers via the sBTC Signer API.                                                                                      |
 

@@ -160,7 +160,7 @@ rBTC, Rootstock’s (RSK) 2-way peg protocol, called “the Powpeg”, is a clos
 This new system shares similarities with existing models but introduces some key distinctions:
 - **Decentralized Custody**: sBTC is secured by a decentralized network of signers rather than a central custodian.
 - **Permissionless Minting**: Any user is able to initiate mint and redeem requests.
-- **Faster Deposit & Withdrawal Times**: sBTC enables BTC withdrawals without the long delays associated with block confirmations in other systems. This is achieved through [Stacks 3.0]((https://github.com/stacksgov/sips/blob/feat/sip-021-nakamoto/sips/sip-021/sip-021-nakamoto.md), which inherits finality from Bitcoin. 
+- **Faster Deposit & Withdrawal Times**: sBTC enables BTC withdrawals without the long delays associated with block confirmations in other systems. This is achieved through [Stacks 3.0](https://github.com/stacksgov/sips/blob/feat/sip-021-nakamoto/sips/sip-021/sip-021-nakamoto.md), which inherits finality from Bitcoin. 
 
 ## Activation
 

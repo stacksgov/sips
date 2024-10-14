@@ -123,7 +123,7 @@ The following eligibility criteria will be used to identify the sBTC Signers:
 - Has the proposed sBTC signer participated in running a Stacks signer instance on Stacks 2.5 testnet or mainnet, and can they provide metrics showing this (ex: amount of stacks stacked over past several cycles)?
   * Note: The sBTC signer is a Stacks event observer, meaning that the experience of running a Stacks node signer directly translates to running an sBTC signer.
 - Does the proposed sBTC signer agree to use reasonable efforts to maintain >99% uptime on the sBTC Signer? 
-  * Note: This metric may be self-affirmed if independent verification is not possible, or confirmed by on-chain voting/stacking activity.*
+  * Note: This metric may be self-affirmed if independent verification is not possible, or confirmed by on-chain voting/stacking activity.
 - Does the proposed sBTC signer commit to a direct communication channel to be set up with the sBTC core engineers in order to respond to urgent updates within 24 hours?
 - Has the signer made contributions to Bitcoin or the Stacks network over the past year that demonstrate their commitment to the growth and success of the network? Examples include, but are not limited to: publishing independent research, marketing, co-authoring a SIP, submitting a Stacks pull request/issue, providing feedback on Stacks core development, or contributing to a Stacks Working Group.
 

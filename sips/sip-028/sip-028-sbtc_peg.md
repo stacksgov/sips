@@ -160,7 +160,6 @@ This new system shares similarities with existing models but introduces some key
 - **Decentralized Custody**: sBTC is secured by a decentralized network of signers rather than a central custodian.
 - **Permissionless Minting**: Any user is able to initiate mint and redeem requests.
 - **Faster Deposit & Withdrawal Times**: sBTC enables BTC withdrawals without the long delays associated with block confirmations in other systems. This is achieved through [Stacks 3.0]((https://github.com/stacksgov/sips/blob/feat/sip-021-nakamoto/sips/sip-021/sip-021-nakamoto.md), which inherits finality from Bitcoin. 
-- **Bitcoin-Aligned Solution**: Unlike models built on Ethereum or EVM-compatible platforms, sBTC fills the gap for users seeking a solution that iterates on these systems and directly aligns with Bitcoin's security principles.
 
 ## Activation
 

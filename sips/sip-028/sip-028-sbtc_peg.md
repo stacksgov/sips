@@ -96,20 +96,23 @@ sBTC Signers are responsible for accepting or rejecting all sBTC deposit and wit
 While up to 30% of the signers can be offline without a user impact on the functioning of the protocol, it becomes more critical for the rest of the signers to approve sBTC operations because operations necessarily still need to meet 70% of the original signing power. If more than 30% of signers become unavailable, no sBTC operations will be approved because it will be impossible to get 70% approval when less than 70% are online. An operation that isn’t approved will become reclaimable by the user after a timeout has elapsed. The timeout is specified by the user when preparing the deposit request and is measured in Bitcoin blocks.
 
 ### sBTC Signer Responsibilities
+The sBTC signers play a critical role in the security and operations of the sBTC system. Their responsibilities can be grouped into two categories: tasks mandated by the sBTC protocol and operational best practices to effectively manage the sBTC system.
 
-Overview of tasks the sBTC signers carry out:
-- Accept requests to deposit BTC.
-- Fulfill requests to withdraw BTC.
-- Complete deposit and withdrawal requests in a timely manner.
-- Maintain industry standard operational security around any hosts and private data (to include private keys).
-- Move BTC to a new UTXO when private keys are rotated.
-- Signers must perform UTXO consolidation as it is deposited [1].
-- Signers must deduct transaction fees from users in order to fund BTC withdrawal transactions:
-  - Ensure that the transaction fee is paid for (e.g., they deduct it from the user, and they set a minimum sBTC withdrawal amount).
-  - Transaction fee must be estimated proportionally for the requested operation [2].
-- Collectively, the signers must coordinate to calculate and advertise the fee parameters of the system:
-  - A minimum sBTC peg-out.
-  - STX transaction fee for minting the sBTC. This fee is paid by the user and can be sponsored by a 3rd party.
+**Protocol-Mandated Tasks:**
+- Signers must accept and process BTC deposit requests.
+- They must fulfill BTC withdrawal requests in a timely manner, ensuring accurate execution.
+- Signers are responsible for moving BTC to a new UTXO when private keys are rotated.
+- Signers must perform UTXO consolidation as BTC is deposited to optimize the number of unspent outputs [1].
+- Signers are required to deduct transaction fees from users to fund BTC withdrawal transactions. This includes:
+  - Ensuring that the transaction fee is deducted from the user.
+  - Setting a minimum sBTC withdrawal amount to cover the estimated transaction fees.
+  - Estimating the transaction fee proportionally based on the requested operation [2].
+ 
+**Operational Best Practices:**
+- Signers must maintain industry-standard operational security (opsec) around hosts and private data, including private keys.
+- They should collectively coordinate to calculate and advertise the fee parameters of the system, including:
+  - The minimum sBTC peg-out amount.
+  - The STX transaction fee for minting sBTC. This fee is paid by the user and can be sponsored by a 3rd party.
 
 ### sBTC Signer Eligibility Criteria
 

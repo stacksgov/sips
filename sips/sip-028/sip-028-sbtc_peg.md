@@ -147,20 +147,21 @@ In the event that the sBTC Signer Set needs to be updated (for example, if a sig
 
 ### [WBTC](https://wbtc.network/assets/wrapped-tokens-whitepaper.pdf)
 
-WBTC is a closed membership system. It is made up of 50+ merchants and custodians with keys to the WBTC multisig contract on Ethereum. WBTC deposits and withdrawals can only be performed by the authorized merchants, and end users purchase WBTC directly from the merchants. Although the merchants manage issuance and redemption, all BTC backing WBTC is held by a single custodian.
+**WBTC** is a closed membership system made up of 50+ merchants and custodians with keys to the WBTC multisig contract on Ethereum. WBTC deposits and withdrawals can only be performed by the authorized merchants, and end users purchase WBTC directly from the merchants. Until recently, BTC was held in a Bitcoin multi-sig wallet secured solely by BitGo. Now, two of the three multi-sig keys are held by BitGo, while one is held by BiT Global.
 
 ### [tBTC v2](https://whitepaper.io/document/691/tbtc-whitepaper)
 
-tBTC is an open membership system, where the BTC is managed by a rotating set of randomly selected nodes which manage a threshold wallet. The system requires that 51-of-100 randomly selected wallet signers must collaborate to produce a proper signature.
+**tBTC** is an ERC-20 wrapped asset launched in May 2020. BTC is currently held and secured by a permissioned set of 35 Beta Staker Nodes from the Threshold Network. Seven DeFi protocols including Aave and Synthetix manage the minting and burning process, with Guardians monitoring to veto suspicious behavior. tBTC is natively minted on Ethereum and Arbitrum.
 
 ### [RBTC](https://rootstock.io/static/a79b27d4889409602174df4710102056/RS-whitepaper.pdf)
 
-rBTC, Rootstock’s (RSK) 2-way peg protocol, called “the Powpeg”, is a closed membership system. Peg operations settle to Bitcoin via merge mining on the RSK side-chain. Instead of collateralizing the system with a new token, peg operators are incentivized by earning a portion of transaction fees. PowPeg operators keep specialized hardware called PowHSMs active and connected to special types of Rootstock full nodes. Since the Bitcoin blockchain and the Rootstock sidechain are not entangled in a single blockchain or in a parent-child relation, peg-in and peg-out transactions require a high number of block confirmations. Peg-ins require 100 Bitcoin blocks, and peg-outs require 4000 Rootstock blocks (roughly 200 Bitcoin Blocks).
+**rBTC** is a wrapped BTC asset natively minted on Rootstock, an EVM-compatible sidechain. BTC is secured by a 5-of-9 multi-sig Bitcoin wallet controlled by the Powpeg Federation. Peg operations settle to Bitcoin via merge mining. Instead of collateralizing the system with a new token, peg operators are incentivized by earning a portion of transaction fees. PowPeg operators keep specialized hardware called PowHSMs active and connected to special types of Rootstock full nodes. Since the Bitcoin blockchain and the Rootstock sidechain are not entangled in a single blockchain or in a parent-child relation, peg-in and peg-out transactions require a high number of block confirmations. Peg-ins require 100 Bitcoin blocks, and peg-outs require 4000 Rootstock blocks (roughly 200 Bitcoin Blocks).
 
 This new system shares similarities with existing models but introduces some key distinctions:
 - **Decentralized Custody**: sBTC is secured by a decentralized network of signers rather than a central custodian.
-- **Permissionless Minting**: Any user is able to initiate mint and redeem requests.
-- **Faster Deposit & Withdrawal Times**: sBTC enables BTC withdrawals without the long delays associated with block confirmations in other systems. This is achieved through [Stacks 3.0](https://github.com/stacksgov/sips/blob/feat/sip-021-nakamoto/sips/sip-021/sip-021-nakamoto.md), which inherits finality from Bitcoin. 
+- **Bitcoin Finality** sBTC inhereits Bitcoin finality from [Stacks 3.0](https://github.com/stacksgov/sips/blob/feat/sip-021-nakamoto/sips/sip-021/sip-021-nakamoto.md), which ensures that sBTC transactions receive the same level of security provided by the Bitcoin network.
+- **Faster Deposit & Withdrawal Times**: sBTC enables BTC withdrawals without the long delays associated with block confirmations in other systems. This is achieved through the finality rules described above in [Stacks 3.0](https://github.com/stacksgov/sips/blob/feat/sip-021-nakamoto/sips/sip-021/sip-021-nakamoto.md).
+
 
 ## Activation
 

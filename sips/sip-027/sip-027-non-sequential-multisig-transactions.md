@@ -269,6 +269,17 @@ The act of not voting is the act of siding with the outcome, whatever it may be.
 
 If the majority vote is **YES**, order-independent multisig transactions will be enabled upon reaching Stacks Epoch 3.0.
 
+# Activation Status
+At the end of cycle 90, the following vote was calculated. A total of 118,632,231 STX participated.
+
+- For solo stacking, 100% voted 'Yes.' Total voting power is 3,449,000 STX balance with votes cast from 1 account. 
+- For pool stacking, 100% voted 'Yes.' Total voting power is 114,914,556 STX balance with votes cast from 75 accounts. 
+- For non-stackers, 99.9933% voted 'Yes.' Total voting power of ‘Yes’ is 268,674 STX balance with votes cast from 157 accounts.  For non-stackers, 0.0067% voted ’No.’ Total voting power of ‘No’ is 17 STX balance from 3 account.
+    268,691.89
+
+All voting criteria from STX holders have been met. A breakdown of the transactions can be found [here](https://stx.eco/dao/proposals/SP3JP0N1ZXGASRJ0F7QAHWFPGTVK9T2XNXDB908Z.sip-027-multisig-transactions/results).
+A copy of the scripts used to tabulate the solo and pool stacking can be found [here](https://github.com/stacksgov/sips/blob/main/sips/sip-027/scripts).
+
 # Reference Implementations
 
 To be implemented in Rust. See https://github.com/stacks-network/stacks-blockchain/pull/3710.

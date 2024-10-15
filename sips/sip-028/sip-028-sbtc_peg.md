@@ -93,7 +93,8 @@ Management of the sBTC peg wallet on the Bitcoin blockchain shall be managed by 
 
 sBTC Signers are responsible for accepting or rejecting all sBTC deposit and withdrawal operations submitted to the network. For a transaction to be fulfilled, at least 70% of the signers need to approve the transaction. This means that the liveness and reliability of the signers is crucial to the success of the protocol. The system is live ("resilient") if at least 70% of the sBTC Signer voting power are online and honest. Then (and only then), deposits and withdrawals happen in a timely manner. The system is safe ("trustworthy") if at least 30% of the sBTC Signer voting power is honest. Then, no theft of funds can occur. Additionally, more details on sBTC deposit and withdrawals are included in the appendix of this SIP. 
 
-While up to 30% of the signers can be offline without a user impact on the functioning of the protocol, it becomes more critical for the rest of the signers to approve sBTC operations because operations necessarily still need to meet 70% of the original signing power. If more than 30% of signers become unavailable, no sBTC operations will be approved because it will be impossible to get 70% approval when less than 70% are online. An operation that isn’t approved will become reclaimable by the user after a timeout has elapsed. The timeout is specified by the user when preparing the deposit request and is measured in Bitcoin blocks.
+While up to 30% of the signers can be offline without a user impact on the functioning of the protocol, it becomes more critical for the rest of the signers to approve sBTC operations because operations necessarily still need to meet 70% of the original signing power. If more than 30% of signers become unavailable, no sBTC operations will be approved because it will be impossible to get 70% approval when less than 70% are online. To protect users from a liveness failure during deposit, a deposit UTXO shall be made satisfiable by one of two spending conditions: (1) the signer set spends the UTXO, or (2) the user spends the UTXO after a fixed number of Bitcoin blocks have passed. Then, if there is an indefinite liveness failure, users will be able to reclaim their in-flight BTC [3].
+
 
 ### sBTC Signer Responsibilities
 The sBTC signers play a critical role in the security and operations of the sBTC system. Their responsibilities can be grouped into two categories: tasks mandated by the sBTC protocol and operational best practices to effectively manage the sBTC system.
@@ -207,6 +208,8 @@ The act of not voting is the act of siding with the outcome, whatever it may be.
 [1] https://github.com/stacks-network/sbtc/issues/52
 
 [2] https://github.com/stacks-network/sbtc/pull/186
+
+[3] https://github.com/stacks-network/sbtc/issues/30
 
 ### Specification
 

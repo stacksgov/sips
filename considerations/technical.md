@@ -6,13 +6,12 @@ Members:
 
 - Aaron Blankstein <aaron@hiro.so>
 - Brice Dobry <brice@hiro.so>
-- Dan Trevino <dantrevino@gmail.com>
-- Daniel Fritsche <daniel@byzantion.xyz>
-- Jamil Dhanani <jamil@gamma.io>
+- j2p2 <i.digg.tech@gmail.com>
+- Friedger <mail@friedger.de>
 - Jesse Wiley <jesse@stacks.org>
-- Mike Cohen <mike@claritylab.dev>
-- Terje Norderhaug <terje@in-progress.com>
-- Thomas Osmonson a.k.a aulneau <thomas@fungible.systems>
+- Mike Cohen <mjoecohen@gmail.com>
+- 0xdima <dima@stackscreener.io>
+- Vlad <vlad@asigna.io>
 
 Discussions-to: https://github.com/stacksgov/sips
 
@@ -24,20 +23,17 @@ Created-by: SIP-000
 
 **Brice Dobry (Chairperson)**: Brice is a senior engineer at Hiro, working on Clarinet and other developer tools, and contributing to the Stacks blockchain. Coming from a background in compilers, programming languages, and analysis tools, he is passionate about helping developers build productively, efficiently and safely.
 
-**Dan Trevino**: Dan is the founder of Boom Cypto and an advocate for open standards. Dan has contributed to the Stacks community as an advocate, developer, speaker, and mentor since 2016.
+**jsp2**: Computer Engineer and Clarity Developer. Won First and Second place in Clarity Course Cohort #2 Hackathon. Contributed to Stacks as a SIP editor; co-founded leos.guru, an educational platform, and chat.stacksgpt.xyz, a Q&A bot for Stacks & Bitcoin.
 
-**Daniel Fritsche**: Daniel is the co-founder of Byzantion, a cross-chain infrastructure and trading platform creating seamless cross-chain experiences for developers and users. Prior to Byzantion, he was the Vice President of Data Strategy at Stephens Inc.
-
-**Jamil Dhanani**: Jamil is the Founder and CEO of Gamma.io, the leading marketplace and creator platform for NFTs on Bitcoin, built on Stacks. Prior to founding Gamma, he worked as a Machine Learning Engineer and Researcher at Apple, and studied Computer Science at Stanford and the University of Toronto.
+**Friedger**: Friedger is an entredeveloper based in Europe. He contributed to the Stacks ecosystem in various forms.
 
 **Jesse Wiley**: Jesse Wiley is a seasoned DevOps expert - he makes sure all systems are running smoothly and the right security considerations have been made.
 
-**Mike Cohen**: Advocate of Bitcoin, Stacks, Lightning Blockchain web3 technologies and the User Owned Internet.
-Working in The Clarity Innovation Lab - a research and development centre focused on the Clarity Smart Contract programming language - pushing the boundaries of decentralised apps on Bitcoin.
+**Mike Cohen**: Independent contributor to Stacks blockchain. Developer of stx.eco supporting Stacks governance and protocol upgrade voting.
 
-**Terje Norderhaug**: Independent software developer. Clarity developer.
+**0xdima**: Building SatScreener, a Bitcoin L1/L2 analytics platform with real time data for traders. Co-Founder of the Stx-20 protocol, an on-chain metaprotocol for inscriptions on stacks.
 
-**Thomas Osmonson a.k.a aulneau**: Thomas is co-founder and CEO of Fungible Systems, a web3 and crypto focused product studio. Fungible Systems works extensively in the Stacks ecosystem building public goods, open source tooling, and helping projects such as Gamma, Zest, Trust Machines, and others. Previously, Thomas was part of the early core team that helped build the Stacks network.
+**Vlad**: CTO and co-founder of multiple Stacks and Bitcoin based projects, including Asigna, STX20, and sOrdinals. Contributor to the multisig SIP and its implementation, as well as to the Stacks ecosystem opensource projects.
 
 ## About this CAB
 
@@ -70,6 +66,14 @@ The following items would be considered out-of-scope for this CAB:
 
 _Note: above considerations subject to changes and iterations from ongoing lessons learned_
 
+## Process
+
+The Technical CAB can ask the SIP author(s) to present their proposal. The recommendation of the CAB is made by simple majority vote by CAB members. A minimum of 50% of CAB members must participate in the vote for a recommendation to be made to the Steering Committee.
+
+Results of votes and associated minutes (if any) are recorded [under considerations/minutes](https://github.com/stacksgov/sips/tree/main/considerations/minutes/technical-cab).
+
+The minutes include any discussion topics that came up about the SIP. Also, whenever there are opposing votes, those members have the opportunity to write a dissenting opinion which will be included in the minutes.
+
 ## Bylaws
 
 We choose to adopt the bylaws Steering Committee member @jcnelson set out in this doc: https://gist.github.com/jcnelson/3fcc635ede20ce98d1eae60941eb127a
@@ -78,4 +82,4 @@ Starting from those bylaws, this CAB will continue to evaluate what works, what 
 
 ---
 
-_If this CAB interests you and you wish to join the effort, please reach out to @jennymith and @Hero-Gamer or Steering Committee members @jcnelson and @GinaAbrams_
+_If this CAB interests you and you wish to join the effort, please reach out to @will-corcoran and @Hero-Gamer or Steering Committee members @jcnelson and @GinaAbrams_

@@ -75,7 +75,7 @@ sBTC aims to mitigate Bitcoin’s limitations by combining the capability of the
 
 ### Fast Blocks
 
-The Stacks Nakamoto Upgrade, proposed in [SIP-021](https://github.com/stacksgov/sips/blob/main/sips/sip-021/sip-021-nakamoto.md#proposed-solution), enables fast blocks where user-submitted transactions will now take on the order of seconds, instead of tens of minutes. Thus, sBTC on Stacks Nakamoto will offer an improvement to Bitcoin’s current transaction times.
+The Stacks Nakamoto Upgrade, proposed in [SIP-021](https://github.com/stacksgov/sips/blob/main/sips/sip-021/sip-021-nakamoto.md#proposed-solution), enables fast blocks where user-submitted transactions will now take on the order of seconds, instead of tens of minutes. Thus, sBTC on Stacks will offer an improvement to Bitcoin’s current transaction times.
 
 The sBTC protocol not only addresses the limitations of Bitcoin's scripting system but also provides a secure and decentralized solution for utilizing Bitcoin in various applications.
 
@@ -136,7 +136,7 @@ The sBTC Signer Set will be finalized from the list of eligible Signers, based o
 The selection process is as follows:
 1. **Nomination Phase**: Open a call for nominations within the community.
 2. **Evaluation & Community Feedback**: The proposed signer set will be published to provide transparency.
-3. **SIP Vote**: The community will vote on the signer criteria and proposed signer set.
+3. **SIP Vote**: The community will vote on the sBTC signer criteria.
 4. **Final Selection**: The final list of signers will be selected based on community feedback and successful completion of SIP-028.
 
 ### Updating The sBTC Signer Set
@@ -158,9 +158,9 @@ In the event that the sBTC Signer Set needs to be updated (for example, if a sig
 **rBTC** is a wrapped BTC asset natively minted on Rootstock, an EVM-compatible sidechain. BTC is secured by a 5-of-9 multi-sig Bitcoin wallet controlled by the Powpeg Federation. Peg operations settle to Bitcoin via merge mining. Instead of collateralizing the system with a new token, peg operators are incentivized by earning a portion of transaction fees. PowPeg operators keep specialized hardware called PowHSMs active and connected to special types of Rootstock full nodes. Since the Bitcoin blockchain and the Rootstock sidechain are not entangled in a single blockchain or in a parent-child relation, peg-in and peg-out transactions require a high number of block confirmations. Peg-ins require 100 Bitcoin blocks, and peg-outs require 4000 Rootstock blocks (roughly 200 Bitcoin Blocks).
 
 This new system shares similarities with existing models but introduces some key distinctions:
-- **Decentralized Custody**: sBTC is secured by a decentralized network of signers rather than a central custodian.
-- **Bitcoin Finality** sBTC inhereits Bitcoin finality from [Stacks 3.0](https://github.com/stacksgov/sips/blob/feat/sip-021-nakamoto/sips/sip-021/sip-021-nakamoto.md), which ensures that sBTC transactions receive the same level of security provided by the Bitcoin network.
-- **Faster Deposit & Withdrawal Times**: sBTC enables BTC withdrawals without the long delays associated with block confirmations in other systems. This is achieved through the finality rules described above in [Stacks 3.0](https://github.com/stacksgov/sips/blob/feat/sip-021-nakamoto/sips/sip-021/sip-021-nakamoto.md).
+- **Decentralized Custody:** sBTC is secured by a decentralized network of signers rather than a central custodian.
+- **Bitcoin Finality:** sBTC inhereits Bitcoin finality from [Stacks 3.0](https://github.com/stacksgov/sips/blob/feat/sip-021-nakamoto/sips/sip-021/sip-021-nakamoto.md), which ensures that sBTC transactions receive the same level of security provided by the Bitcoin network.
+- **Faster Deposit & Withdrawal Times:** sBTC enables BTC withdrawals without the long delays associated with block confirmations in other systems. This is achieved through the finality rules described in [Stacks 3.0](https://github.com/stacksgov/sips/blob/feat/sip-021-nakamoto/sips/sip-021/sip-021-nakamoto.md).
 
 
 ## Activation
@@ -169,7 +169,7 @@ sBTC is designed to activate on Stacks 3.0 as defined in [SIP-021](https://githu
 
 ### Process of Activation
 
-Users can vote to approve this SIP with either their locked/stacked STX or with unlocked/liquid STX, or both. The criteria for the stacker and non-stacker voting is as follows.
+Users can vote to approve this SIP with either their locked/stacked STX or with unlocked/liquid STX, or both. The SIP voting page can be found at [sbtc.vote](https://sbtc.vote). The criteria for the stacker and non-stacker voting is as follows.
 
 #### For Stackers:
 

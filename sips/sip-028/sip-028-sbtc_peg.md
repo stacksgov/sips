@@ -132,14 +132,15 @@ The following eligibility criteria will be used to identify the sBTC Signers:
 The criteria described above will be used to identify sBTC Signers that are able to meet some or all of the responsibilities described in the previous section.
 
 ### Selection Process
-The sBTC Signer Set will be finalized from the list of eligible Signers, based on the above criteria. The [sBTC Working Group](https://github.com/orgs/stacks-network/discussions/508) will conduct the vetting process and the results will be published as a discussion in the [sBTC Github repository](https://github.com/stacks-network/sbtc/discussions/624). The signer set the community votes on will be the signer set for sBTC. No further additions or removals will be done once the SIP vote begins. If a signer withdraws, then the vote should be restarted.
+The sBTC Signer Set will be finalized from the list of eligible Signers, based on the above criteria. The [sBTC Working Group](https://github.com/orgs/stacks-network/discussions/508) will conduct the vetting process and the results will be published as a discussion in the [sBTC Github repository](https://github.com/stacks-network/sbtc/discussions/624). 
 
 The selection process is as follows:
 1. **Nomination Phase**: Open a call for nominations within the community.
 2. **Evaluation & Community Feedback**: The proposed signer set will be published to provide transparency.
 3. **SIP Vote**: The community will vote on the sBTC signer criteria.
-4. **Final Selection**: The final list of signers will be selected based on community feedback and successful completion of SIP-028.
+4. **Final Selection**:  If SIP-028 is ratified, then the proposed signer set voted upon in step 3 shall be the initial signing set for sBTC. If the signer set changes during the vote, such as by the withdrawal of one or more candidates, then the vote will be restarted in a subsequent reward cycle (to be determined if this comes to pass).
 
+   
 ### Updating The sBTC Signer Set
 In the event that the sBTC Signer Set needs to be updated (for example, if a signer is no longer available to complete their responsibilities) sBTC Signers can perform a threshold vote to agree on the updated set. This process will also be performed if a signer needs to rotate their cryptographic keys.
 

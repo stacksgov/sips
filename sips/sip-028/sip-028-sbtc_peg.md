@@ -159,8 +159,19 @@ In the event that the sBTC Signer Set needs to be updated (for example, if a sig
 
 **rBTC** is a wrapped BTC asset natively minted on Rootstock, an EVM-compatible sidechain. BTC is secured by a 5-of-9 multi-sig Bitcoin wallet controlled by the Powpeg Federation. Peg operations settle to Bitcoin via merge mining. Instead of collateralizing the system with a new token, peg operators are incentivized by earning a portion of transaction fees. PowPeg operators keep specialized hardware called PowHSMs active and connected to special types of Rootstock full nodes. Since the Bitcoin blockchain and the Rootstock sidechain are not entangled in a single blockchain or in a parent-child relation, peg-in and peg-out transactions require a high number of block confirmations. Peg-ins require 100 Bitcoin blocks, and peg-outs require 4000 Rootstock blocks (roughly 200 Bitcoin Blocks).
 
-This new system shares similarities with existing models but introduces some key distinctions:
-- **Decentralized Custody:** sBTC is secured by a decentralized network of signers rather than a central custodian.
+The following table summarizes the main design differences between these systems:
+
+| Feature                | WBTC            | tBTC             | rBTC             | sBTC (this SIP)    |
+|------------------------|-----------------|------------------|------------------|--------------------|
+| Spending threshold      | 2 of 3          | 51 of 100        | 5 of 9           | 11 of 15           |
+| Bitcoin finality        | No              | No               | Yes              | Yes                |
+| Expected Peg-in speed   | 1 hour          | 1-3 hours        | 16 hours         | 0.5 hours          |
+| Expected Peg-out speed  | 1 hour          | 3-5 hours        | 33.3 hours       | 1 hour             |
+| Custodian rotation      | No              | Yes              | No               | Yes                |
+| Fee structure           | % of BTC moved  | % of BTC moved   | Transaction fees | Transaction fees   |
+
+
+In conclusion, the sBTC system shares similarities with existing models but introduces some key distinctions:
 - **Bitcoin Finality:** sBTC inhereits Bitcoin finality from [Stacks 3.0](https://github.com/stacksgov/sips/blob/feat/sip-021-nakamoto/sips/sip-021/sip-021-nakamoto.md), which ensures that sBTC transactions receive the same level of security provided by the Bitcoin network.
 - **Faster Deposit & Withdrawal Times:** sBTC enables BTC withdrawals without the long delays associated with block confirmations in other systems. This is achieved through the finality rules described in [Stacks 3.0](https://github.com/stacksgov/sips/blob/feat/sip-021-nakamoto/sips/sip-021/sip-021-nakamoto.md).
 

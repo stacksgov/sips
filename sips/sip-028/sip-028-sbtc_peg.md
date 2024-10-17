@@ -27,7 +27,6 @@
 **License:** BSD 2-Clause
 
 **Sign-off:**
-- Andre Serrano andre@bitcoinl2labs.com (SIP Editor)
 - Jason Schrader jason@joinfreehold.com (Governance CAB)
 - Jude Nelson jude@stacks.org (Steering Committee)
 

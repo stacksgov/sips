@@ -171,7 +171,7 @@ The following table summarizes the main design differences between these systems
 
 
 In conclusion, the sBTC system shares similarities with existing models but introduces some key distinctions:
-- **Bitcoin Finality:** sBTC inhereits Bitcoin finality from [Stacks 3.0](https://github.com/stacksgov/sips/blob/feat/sip-021-nakamoto/sips/sip-021/sip-021-nakamoto.md), which ensures that sBTC transactions receive the same level of security provided by the Bitcoin network.
+- **Bitcoin Finality:** sBTC inherits Bitcoin finality from [Stacks 3.0](https://github.com/stacksgov/sips/blob/feat/sip-021-nakamoto/sips/sip-021/sip-021-nakamoto.md), which ensures that sBTC transactions receive the same level of security provided by the Bitcoin network.
 - **Faster Deposit & Withdrawal Times:** sBTC enables BTC withdrawals without the long delays associated with block confirmations in other systems. This is achieved through the finality rules described in [Stacks 3.0](https://github.com/stacksgov/sips/blob/feat/sip-021-nakamoto/sips/sip-021/sip-021-nakamoto.md).
 
 

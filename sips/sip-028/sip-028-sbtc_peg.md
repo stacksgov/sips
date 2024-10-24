@@ -35,7 +35,7 @@
 
 ## Abstract
 
-This SIP proposes a new wrapped Bitcoin asset, called sBTC, which would be implemented on Stacks 3.0 and later as a SIP-010 token. Stacks today offers a smart contract runtime for Stacks-hosted assets, and the forthcoming Stacks [3.0 release](https://github.com/stacksgov/sips/blob/main/sips/sip-021/sip-021-nakamoto.md) provides lower transaction latency than Bitcoin for Stacks transactions. By providing a robust BTC-wrapping mechanism based on [threshold signatures](https://eprint.iacr.org/2020/852.pdf), users would be able to lock their real BTC on the Bitcoin chain, instantiate an equal amount of sBTC tokens on Stacks, use these sBTC tokens on Stacks, and eventually redeem them for real BTC at 1:1 parity, minus the cost of the relevant blockchain transaction fees.
+This SIP proposes a new wrapped Bitcoin asset, called sBTC, which would be implemented on Stacks as a SIP-010 token. sBTC enables seamless and secure integration of Bitcoin into the Stacks ecosystem, unlocking decentralized applications and expanding Bitcoin's utility through smart contracts. Stacks today offers a smart contract runtime for Stacks-hosted assets, and the forthcoming Stacks [3.0 release](https://github.com/stacksgov/sips/blob/main/sips/sip-021/sip-021-nakamoto.md) provides lower transaction latency than Bitcoin for Stacks transactions. By providing a robust BTC-wrapping mechanism based on [threshold signatures](https://eprint.iacr.org/2020/852.pdf), users would be able to lock their real BTC on the Bitcoin chain, instantiate an equal amount of sBTC tokens on Stacks, use these sBTC tokens on Stacks, and eventually redeem them for real BTC at 1:1 parity, minus the cost of the relevant blockchain transaction fees.
 
 This is the first of several SIPs that describe such a system. This SIP describes the threshold signature mechanism and solicits from the ecosystem both a list of signers and the criteria for vetting them. These sBTC signers would be responsible for collectively holding all locked BTC and redeeming sBTC for BTC upon request. Given the high-stakes nature of their work, the authors of this SIP believe that such a wrapped asset can only be made to work in practice if the Stacks ecosystem members can reach broad consensus on how these signers are chosen. Thus, the first sBTC SIP put forth for activation concerns the selection of sBTC signers.
 
@@ -57,6 +57,7 @@ This SIP outlines but does not describe in technical detail the workings of the 
 | **sBTC Signer Set** | The set of all sBTC signers. Each is registered with the .sbtc contract and these entities as a group collectively maintain the sBTC's Bitcoin UTXO.      |
 | **sBTC Signer API** | An API exposed by the sBTC Signer that handles basic low-level commands.                                                                                                |
 | **Deposit API**     | A third-party API that communicates with the sBTC Signers via the sBTC Signer API.                                                                                      |
+| **Wrapped Bitcoin**     | A tokenized version of Bitcoin on another blockchain, designed to maintain a 1:1 peg with BTC. It acts as a derivative asset that allows Bitcoin to be utilized in various decentralized applications and ecosystems.      |
 
 ## Problem Statement
 
@@ -214,7 +215,7 @@ Users with liquid STX can vote on proposals directly at [sBTC.vote](https://sbtc
 
 For this SIP to pass, 66% of all liquid STX committed by voting must be in favor of the proposal. This precedent was set by [SIP-015](https://github.com/stacksgov/sips/blob/main/sips/sip-015/sip-015-network-upgrade.md).
 
-The act of not voting is the act of siding with the outcome, whatever it may be. We believe that these thresholds are sufficient to demonstrate interest from Stackers -- Stacks users who have a long-term interest in the Stacks blockchain's successful operation -- in performing this upgrade.
+We believe that these thresholds are sufficient to demonstrate interest from Stackers -- Stacks users who have a long-term interest in the Stacks blockchain's successful operation -- in performing this upgrade.
 
 ## Appendix
 [1] https://github.com/stacks-network/sbtc/issues/52

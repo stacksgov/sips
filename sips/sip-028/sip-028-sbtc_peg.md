@@ -232,8 +232,7 @@ The main steps of the sBTC Deposit flow will be as follows:
 
 1. **Deposit request:** A bitcoin holder creates a transaction on Bitcoin.
   - The deposit transaction contains a UTXO (deposit UTXO) spendable by sBTC Signers, with an OP_DROP payload.
-  - The payload contains the recipient address of the sBTC among other relevant info for the deposit.
-    - The relevant info could contain a fee suggestion or max_fee.
+  - The payload contains the recipient address of the sBTC and the maximum fee the depositor is willing to have go towards the consolidation of the deposits into a single UTXO.
 2. **Proof of deposit:** The bitcoin holder submits a proof of deposit on Stacks by invoking the Deposit API.
 3. **Deposit accept:** 
   - **Deposit redeem:** The sBTC Signers redeem the deposit by consuming the deposit UTXO, consolidating it into the sBTC UTXO.

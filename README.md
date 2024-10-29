@@ -42,6 +42,7 @@ may submit a SIP.
 * [SIP-023](./sips/sip-023/sip-023-emergency-fix-traits.md): Emergency Fix to Trait Invocation Behavior
 * [SIP-024](./sips/sip-024/sip-024-least-supertype-fix.md): Emergency Fix to Data Validation and Serialization Behavior
 * [SIP-025](./sips/sip-025/sips/sip-025/sip-025-iterating-towards-weighted-schnorr-threshold-signatures.md): Iterating Towards WSTS
+* [SIP-027](./sips/sip-027/sip-027-non-sequential-multisig-transactions.md): Non-sequential Multisig Transactions
 
 ## How to Get Involved
 

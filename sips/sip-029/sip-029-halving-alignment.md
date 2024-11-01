@@ -2,7 +2,7 @@
 
 **SIP Number:** 029
 
-**Title:** Bitcoin-Aligned Halving Schedule with Incentive Preservation
+**Title:** Bootstrapping sBTC Liquidity and Nakamoto Signer Incentives
 
 **Authors:**
 - Brittany Laughlin (brittany@stacks.org)
@@ -10,7 +10,7 @@
 - Jude Nelson (jude@stacks.org)
 - Will Corcoran (will@stacks.org)
 
-**Consideration:** Economics
+**Consideration:** Economics, Governance, Technical
 
 **Type:** Consensus (hard fork)
 
@@ -20,53 +20,54 @@
 
 **License:** BSD 2-Clause
 
-**Sign-off:**
-- Rafael Cárdenas rafael@hiro.so (SIP Editor)
-- MattySTX mattystx@gmail.com (Economics CAB)
-- Jude Nelson (jude@stacks.org) (Steering Committee)
+**Sign-off:** `tbd`
 
 **Discussions-To:**
-- [Stacks Forum](https://forum.stacks.org/t/aligning-with-bitcoin-halving-and-incentives-after-nakamoto/17668)
+- Stacks Forum Post: [Aligning with Bitcoin Halving and Incentives after Nakamoto](https://forum.stacks.org/t/aligning-with-bitcoin-halving-and-incentives-after-nakamoto/17668)
 
 # Abstract
 
-This SIP proposes modifying the Stacks token emission schedule to align with Bitcoin's halving schedule while preserving critical network incentives during the launch of sBTC and Nakamoto upgrades. The current Stacks halving schedule, while similar to Bitcoin's four-year cycle, has drifted due to implementation differences, resulting in a December 2024 halving that would reduce incentives during a critical network transition period. This proposal would extend the current emission rate until April 2026, aligning subsequent halvings with Bitcoin while maintaining a 100 STX tail emission and resulting in a reduced 2050 supply, slightly below the originally proposed 1.818B STX.
+This SIP proposes modifying the Stacks token emission schedule to preserve critical network incentives during two major protocol developments: the launch of sBTC and the continued operation of Nakamoto signers. The current emission schedule would reduce incentives in December 2024, precisely when the network needs to bootstrap sBTC liquidity and maintain high-quality Nakamoto signers. This proposal would extend the current emission rate until April 2026, followed by a modified reduction schedule that maintains these crucial incentives while resulting in a 2050 supply that is 2.11% below the originally proposed 1.818B STX cap.
 
 # Introduction
 
 ## Problem Statement
 
-The Stacks blockchain's halving schedule, while designed to mirror Bitcoin's four-year cycles, currently faces three key challenges:
+The Stacks ecosystem faces two critical challenges that require immediate attention:
 
-1. Timing misalignment with Bitcoin halvings due to using Stacks blocks instead of Bitcoin blocks for timing
-2. An impending halving in December 2024 that would reduce miner and stacker incentives during critical protocol upgrades
-3. Growing drift between Stacks and Bitcoin halving schedules that reduces predictability for network participants
+Bootstrapping sBTC Liquidity: The success of sBTC depends on establishing and maintaining substantial liquidity from launch. Early adopters and liquidity providers require predictable BTC yield through PoX rewards to justify participation. The current December 2024 halving would cut these rewards at the exact moment when they are most needed to attract liquidity.
+
+Maintaining Nakamoto Signer Participation: The security and performance of the Stacks blockchain relies on high-quality Nakamoto signers who validate, sequence, and sign blocks. These signers require predictable PoX rewards to justify their ongoing operational costs and infrastructure investments. Reducing their compensation during the critical sBTC launch period risks degrading network security and performance.
+
 
 ## Proposed Solution
 
-This SIP proposes to:
-1. Extend the current 1000 STX per block emission until April 2026
-2. Align subsequent halvings with Bitcoin's schedule
-3. Reduce the tail emission from 125 STX to 100 STX to maintain supply targets
-4. Preserve incentives during sBTC and Nakamoto launches while achieving better Bitcoin alignment
+This SIP proposes a modification to the STX emission schedule specifically designed to solve these problems:
+
+Maintain Current Emission Rate: By extending the 1000 STX per block emission until April 2026, we ensure adequate PoX rewards are available during the crucial sBTC bootstrapping period. This enables ecosystem partners to reliably contribute to sBTC liquidity incentives through their PoX income.
+
+Gradual Reduction Schedule: Following the extension, implement a modified reduction schedule that balances the need for ongoing incentives with long-term supply management. The schedule includes an adjustment to the tail emission that results in a final 2050 supply 0.19% lower than currently projected.
+
+Through these changes, the proposal ensures that both sBTC and Nakamoto signers have the economic support needed for success, while maintaining responsible tokenomics. As a beneficial side effect, the new schedule also better aligns with Bitcoin's halving cycle, providing additional predictability for network participants.
 
 # Specification
 
-## Current vs Proposed Schedule
+## Proposed STX Coinbase Reduction Schedule
+
+Here's the revised table with the Bitcoin Block Height column added:
+
+| Coinbase Reward Reduction Phase | Bitcoin Block Height | Approximate Date (time b/w halvings) | STX Reward (reduction) | STX Supply (after) |
+|--------------------------------|---------------------|-------------------------------------|----------------------|-------------------|
+| Current                        | -                   | -                                   | 1000                 | -                 |
+| 1st*                     | 945,000             | ~April 2026 (+1.33 yrs)            | 500 (-50%)           | 1,607,907,038     |
+| 2nd                     | 1,050,000           | ~April 2028 (2 yrs)                | 250 (-50%)           | 1,652,242,188     |
+| 3rd                      | 1,260,000           | ~April 2032 (4 yrs)                | 125 (-50%)           | 1,696,547,013     |
+| 4th                      | 1,470,000           | ~April 2036 (4 yrs)                | 100 (-20%)           | 1,718,699,425     |
+| -                          | -                   | ~Jan 2050 (13.833 yrs)             | 100 (0%)             | 1,779,628,415     |
 
 
-### Proposed STX Coinbase Reduction Schedule
+## Existing STX Coinbase Halving Schedule (for reference only)
 
-| Coinbase Reward Reduction Phase | Approximate Date (time b/w halvings) | STX Reward (reduction) | STX Supply (after) |
-|--------------------------------|-------------------------------------|----------------------|-------------------|
-| Current                           | -                                   | 1000                 | -                  |
-| 1st*                            | ~April 2026 (+1.33 yrs)            | 500 (-50%)           | 1,607,907,038      |
-| 2nd                             | ~April 2028 (2 yrs)                | 250 (-50%)           | 1,652,242,188      |
-| 3rd                             | ~April 2032 (4 yrs)                | 125 (-50%)           | 1,696,547,013      |
-| 4th                             | ~April 2036 (4 yrs)                | 100 (-20%)           | 1,718,699,425      |
-| -                               | ~Jan 2050 (13.833 yrs)            | 100 (0%)             | 1,779,628,415      |
-
-### Existing (aka “Baseline”) STX Coinbase Halving Schedule (for reference only)
 | Coinbase Reward Reduction Phase | Approximate Date (time b/w halvings) | STX Reward (reduction) | STX Supply (after) |
 |--------------------------------|-------------------------------------|----------------------|-------------------|
 | Current                         | -                                   | 1000                 | -                  |
@@ -75,50 +76,12 @@ This SIP proposes to:
 | 3rd                             | ~Dec 2032 (4 yrs)                  | 125 (-50%)           | 1,689,389,675      |
 | -                               | ~Jan 2050 (17.08 yrs)             | 125 (0%)             | 1,783,063,600      |
 
-## Technical Implementation
-
-The implementation requires modifying the following consensus rules:
-
-1. Extend the current reward phase (1000 STX/block) until Bitcoin block 945,000 (~April 2026)
-2. Implement new reduction schedule:
-   - 500 STX/block from blocks 945,000 to 1,050,000
-   - 250 STX/block from blocks 1,050,000 to 1,260,000
-   - 125 STX/block from blocks 1,260,000 to 1,470,000
-   - 100 STX/block perpetual tail emission thereafter
 
 ## Supply Impact
 
 The projected STX supply in January 2050 will be 1,779,628,415 STX, which is:
-- Less than current projection of 1,783,063,600 STX
-- Well below the accepted 2050 supply cap of 1.818B STX
-
-# Related Work
-
-The concept of adjusting Stacks' emission schedule has been previously explored by the community. In November 2023, a comprehensive discussion was initiated on the Stacks Forum which included several detailed analyses and alternative proposals.
-
-Two key reports emerged from this discussion.
-
-First, in July 2023, the Stacks Foundation commissioned 7th Avenue Group to conduct an analysis of Mining Emissions and examine potential risks associated with the STX halving. This initial report highlighted concerns about halving timing and its impact on network security.
-
-Following this, in November 2023, 7th Avenue Group published a follow-up report titled "Halving Proposals" which established three fundamental criteria for revising the STX emissions schedule:
-
-1. Maintain network security through adequate miner rewards
-2. Preserve the 2050 supply cap of 1.818B STX
-3. Align with Bitcoin's halving schedule
-
-The report acknowledged these criteria created a "trilemma" where optimizing for all three simultaneously proved challenging. In response, four distinct proposals (Schedules A, B, C, and D) were presented, each optimizing for two of the three criteria while compromising on the third.
-
-These earlier proposals, while thorough in their analysis, did not anticipate the timing requirements that would emerge with the successful launch of Nakamoto and the imminent deployment of sBTC. A detailed emissions model was made available to the community, allowing for transparent evaluation of various scheduling options.
-
-The current proposal builds upon this previous work while specifically addressing the new timing considerations introduced by recent protocol upgrades. It achieves all three original criteria while also preserving critical network incentives during the sBTC launch period.
-
-The full discussion related to [Stacks Halving Schedule: Reports and Recommendations](https://forum.stacks.org/t/stacks-halving-schedule-reports-and-recommendations/15774
-) is available on the Stacks Forum along with the following, related resources and reports:
-
-
-[1] "Mining Emissions and Risks of the STX Halving", 7th Avenue Group, July 2023
-[2] "Halving Proposals", 7th Avenue Group, November 2023
-[3] "STX Halving Model", 7th Avenue Group, November 2023
+- 0.19% less than current projection of 1,783,063,600 STX
+- 2.11% less than the accepted 2050 supply cap of 1.818B STX
 
 # Backwards Compatibility
 
@@ -130,16 +93,45 @@ This change requires a hard fork of the Stacks blockchain. All nodes must upgrad
 
 Voting will occur during reward cycle 97 (November 11-26, 2024).
 
-## Activation Requirements
+## Activation
 
-For Stackers:
-1. Minimum participation threshold of double the largest stacker's balance
-2. 80% "yes" votes from participating Stacked STX required
+The SIP-029 STX emission schedule is designed to activate on Stacks 3.0 as defined in [SIP-021](https://github.com/stacksgov/sips/blob/feat/sip-021-nakamoto/sips/sip-021/sip-021-nakamoto.md). Therefore, this SIP is only meaningful when SIP-021 activates.
 
-For Non-Stackers:
-- 80% majority of participating liquid STX required to vote in favor
+### Process of Activation
 
-[Voting addresses and technical details to be added]
+Users can vote to approve this SIP with either their locked/stacked STX or with unlocked/liquid STX, or both. The SIP voting page can be found at [stx.eco](https://stx.eco). The criteria for the stacker and non-stacker voting is as follows.
+
+#### For Stackers:
+
+In order for this SIP to activate, the following criteria must be met by the set of Stacked STX:
+
+- At least 80 million Stacked STX must vote, with least 80% voting "yes".
+
+The voting addresses will be:
+
+| Vote | Bitcoin Address | Stacks Address | Msg | ASCII-encoded msg | Bitcoin script |
+| - | - | - | - | - | - |
+| yes      | `tbd` | `tbd` | `yes-sip-29` | `tbd` | `OP_DUP` `OP_HASH160` `tbd` `OP_EQUALVERIFY` `OP_CHECKSIG` |
+| no       | `tbd` | `tbd`  | `no-sip-29`  | `tbd` | `OP_DUP` `OP_HASH160` `tbd` `OP_EQUALVERIFY` `OP_CHECKSIG` |
+
+The addresses have been generated as follows:
+
+- Encode `<message>` in ASCII, with 0-padding.
+- Use the resulting `<encoding>` in the Bitcoin script`OP_DUP` `OP_HASH160` `<encoding>` `OP_EQUALVERIFY` `OP_CHECKSIG`.
+- The Bitcoin address is the `base58check` of the hash of the Bitcoin script above.
+- The Stacks address is the `c32check-encoded` Bitcoin address.
+
+Stackers (pool and solo) vote by sending Stacks dust to the corresponding Stacks address from the account where their Stacks are locked.
+
+Solo stackers only can also vote by sending a bitcoin dust transaction (6000 sats) to the corresponding bitcoin address.
+
+#### For Non-Stackers:
+
+Users with liquid STX can vote on proposals directly at [stx.eco](https://stx.eco) using the Ecosystem DAO. Liquid STX is the user’s balance, less any STX they have locked in the PoX stacking protocol, at the block height at which the voting started (preventing the same STX from being transferred between accounts and used to effectively double vote). This is referred to generally as "snapshot" voting.
+
+For this SIP to pass, 70% of all liquid STX committed by voting must be in favor of the proposal.
+
+We believe that these thresholds are sufficient to demonstrate interest from Stackers -- Stacks users who have a long-term interest in the Stacks blockchain's successful operation -- in performing this upgrade.
 
 # Reference Implementation
 

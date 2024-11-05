@@ -4,7 +4,7 @@ SIP Number: `To be assigned`
 
 Title: Integration of a Modern Stacks Wallet Interface Standard
 
-Authors: [janniks](https://github.com/janniks), [kyranjamie](https://github.com/kyranjamie), [aryzing](https://github.com/aryzing), [m-aboelenein](https://github.com/m-aboelenein)
+Authors: [aryzing](https://github.com/aryzing), [janniks](https://github.com/janniks), [kyranjamie](https://github.com/kyranjamie),  [m-aboelenein](https://github.com/m-aboelenein)
 
 Type: Standard
 
@@ -24,9 +24,9 @@ License: BSD 2-Clause
 
 # Abstract
 
-This SIP proposes the integration of the standard into the Stacks blockchain's "Connect" and "Auth" system.
-The goal is to replace the current Connect interface, primarily used by web applications to connect with browser extensions and mobile apps, with a more straightforward protocol.
-The proposal consists mainly of standardizing JSON compatible interfaces for use with wallet interfaces.
+This SIP proposes common RPC methods to use for the Stacks blockchain's "Connect" and "Auth" systems.
+The goal is to replace the current Connect interface, primarily used by web applications to connect with browser extensions and mobile apps with a more straightforward protocol.
+This proposal's goal is to standardize JSON compatible interfaces for use with wallet interfaces.
 
 # Motivation
 

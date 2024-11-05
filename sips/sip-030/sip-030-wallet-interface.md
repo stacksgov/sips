@@ -1,6 +1,6 @@
 # Preamble
 
-SIP Number: `To be assigned`
+SIP Number: `030`
 
 Title: Integration of a Modern Stacks Wallet Interface Standard
 
@@ -49,38 +49,37 @@ So this SIP aims to capture the important features for the Stacks ecosystem, wit
 
 The proposed changes are listed as follows:
 
-Specify JSON-RPC 2.0 compatible methods and payloads for wallet interaction.
+Specify [JSON-RPC 2.0](https://www.jsonrpc.org/specification) compatible methods and payloads for wallet interaction.
 These can be used via a browser object (i.e., via the `window.btc.request` method) or similar interfaces like WalletConnect.
 
 # Backwards Compatibility
 
 The implementation of this proposal is not necessarily backward compatible.
-However, wallets implementing the new standard are advised to maintain the previous system to support legacy applications during a transition period.
+Wallets implementing the new standard may maintain the previous system to support legacy applications during a transition period or indefinitely.
 Existing applications using the current Auth system should continue to operate, but immediate changes are recommended once this SIP is ratified.
-The Connect library should go live with the new standard, once most major wallets have adopted the new standard.
 
 # Implementation
 
 ## Notes on Serialization
 
-These methods are based on JSON-RPC 2.0 for serialization.
-To adhere to a generic serializability, the following notes are given.
-Enums are serialized as human-readable strings.
-BigInts are serialized as numbers, strings, or anything that can be parsed by the JavaScript BigInt constructor.
-Bytes are serialized as hex-encoded strings (without a 0x prefix).
-Predefined formats from previous SIPs are used where applicable.
-Addresses are serialized as Stacks c32-encoded strings.
-Clarity values, post-conditions, and transactions are serialized to bytes (defined by SIP-005) and used as hex-encoded strings.
+To adhere to a generic serializability, the following notes are given:
+
+- Enums are serialized as human-readable strings.
+- BigInts are serialized as numbers, strings, or anything that can be parsed by the JavaScript BigInt constructor.
+- Bytes are serialized as hex-encoded strings (without a 0x prefix).
+- Predefined formats from previous SIPs are used where applicable.
+- Addresses are serialized as Stacks c32-encoded strings.
+- Clarity values, post-conditions, and transactions are serialized to bytes (defined by SIP-005) and used as hex-encoded strings.
 
 ## Methods
 
 This section defines the available methods, their parameters, and result structure.
-Parameters should be considered recommendations for the wallet.
-The user/wallet may choose to ignore/override them.
-Optional params are marked with a `?`.
+Parameters should be considered only as recommendations for the wallet, and the user/wallet may choose to ignore or override them.
+
+> Note: Optional params are marked with a `?`.
 
 Methods can be namespaced under `stx_` if used in more generic settings and other more Ethereum inspired domains.
-In other cases (e.g. WalletConnect), the namespace may already be given by meta-data (e.g. a `chainId` field) and can be omitted.
+In other cases (e.g. `WalletConnect`), the namespace may already be given by metadata (e.g. a `chainId` field) and can be omitted.
 On the predominant `StacksProvider` global object, the methods can be used without a namespace, but wallets may add namespaced aliases for convenience.
 
 #### Transaction method general params

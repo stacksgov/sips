@@ -30,14 +30,14 @@ This proposal's goal is to standardize JSON compatible interfaces for use with w
 
 # Motivation
 
-The current Connect system, which has evolved since the Blockstack era, is primarily utilized by web applications for interfacing with wallets.
-However, many aspects of the existing "Connect" and "Auth" libraries are no longer required, leading to unnecessary complexity and brittleness in wallet connectivity.
+The current Connect system, which has existed for several years, is primarily utilized by web applications for interfacing with wallets.
+However, many aspects of the existing "Connect" and "Auth" libraries are no longer required, leading to unnecessary complexity (e.g., wrapping RPC payloads in jsontokens) and brittleness (e.g., undefined serialization for non-JSON compatible data structures) in wallet connectivity.
 
-Recent attempts to standardize the interface have sparked valuable discussions but have not culminated in a ratified standard, largely due to the stable state of the existing system.
+Recent attempts to standardize the interface (https://github.com/stacksgov/sips/pull/59, https://github.com/stacksgov/sips/issues/117) have sparked valuable discussions but have not culminated in a ratified standard, largely due to the stable state of the existing system.
 This SIP aims to address these issues by adopting the WBIPs standards, which offer a more suitable RPC-style interface for modern web applications.
 The simplified protocol will allow integration without heavy dependencies (like Auth) and provider a more extendable interface for wallets.
 
-Additionally, this SIP is motivated by the increased traffic of Ordinal inscriptions on Bitcoin and the Stacks ecosystem growing closers to Bitcoin.
+Additionally, this SIP is motivated by the increased traffic of Ordinal inscriptions on Bitcoin and the Stacks ecosystem growing closer to Bitcoin.
 The community has recognized the need for a more unified approach to wallet connectivity (e.g. Bitcoin and PSBTs for previously Stacks-only wallets).
 By adopting the new standard, we aim to align the community towards a common and modern protocol for wallet interaction in web applications.
 Importantly, the decision to use an existing standard (rather than designing a new one or reworking Auth) is intentional — to avoid further division or split ownership within the community.

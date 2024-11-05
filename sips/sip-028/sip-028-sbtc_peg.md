@@ -143,7 +143,7 @@ The selection process is as follows:
 
    
 ### Updating The sBTC Signer Set
-In the event that the sBTC Signer Set needs to be updated (for example, if a signer is no longer available to complete their responsibilities) sBTC Signers can perform a threshold vote to agree on the updated set. This process will also be performed if a signer needs to rotate their cryptographic keys.
+In the event that the sBTC Signer Set needs to be updated (for example, if a signer is no longer available to complete their responsibilities) sBTC Signers can perform a threshold vote to agree on the updated set, which would require the same 70% approval threshold as sBTC operations. This process will also be performed if a signer needs to rotate their cryptographic keys.
 
 
 ## Related Work

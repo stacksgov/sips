@@ -147,6 +147,6 @@ We believe that these thresholds are sufficient to demonstrate interest from Sta
 [To be added: Link to implementation PR]
 
 # References
-[1] Link to seventh ave sources. Annotate where it’s used above. Etc. https://forum.stacks.org/t/stacks-halving-schedule-reports-and-recommendations/15774
-[2] Link to the forum post
-https://forum.stacks.org/t/aligning-with-bitcoin-halving-and-incentives-after-nakamoto/17668
+
+[1] Soslow J (2023) Review of Mining Emissions and Risks of the Halving. Available at https://stx.is/emissions-report-1 [Verified 5 November 2024]
+[2] Laughlin, B (2024) Aligning with Bitcoin Halving and Incentives after Nakamoto. [Online forum post] forum.stacks.org https://forum.stacks.org/t/aligning-with-bitcoin-halving-and-incentives-after-nakamoto/17668 [Verified 5 November 2024]

@@ -114,7 +114,7 @@ Users can vote to approve this SIP with either their locked/stacked STX or with 
 
 In order for this SIP to activate, the following criteria must be met by the set of Stacked STX:
 
-- At least 80 million Stacked STX must vote, with at least 80% (64 million) voting "yes".
+- At least 80 million Stacked STX must vote, with at least 80% of all stacked STX committed by voting must be in favor of the proposal (vote "yes").
 
 The voting addresses will be:
 

@@ -104,7 +104,7 @@ Voting will conclude at bitcoin block height 872,750, which occurs ~ Sunday, Dec
 
 ## Activation
 
-The SIP-029 STX emission schedule is designed to activate on Stacks 3.0 as defined in [SIP-021](https://github.com/stacksgov/sips/blob/feat/sip-021-nakamoto/sips/sip-021/sip-021-nakamoto.md). Therefore, this SIP is only meaningful when SIP-021 activates.
+The SIP-029 STX emission schedule is designed to activate on Stacks 3.0 as defined in [SIP-021](https://github.com/stacksgov/sips/blob/main/sips/sip-021/sip-021-nakamoto.md). 
 
 ### Process of Activation
 

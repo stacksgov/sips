@@ -2,7 +2,7 @@
 
 **SIP Number:** 029
 
-**Title:** Bootstrapping sBTC Liquidity and Nakamoto Signer Incentives
+**Title:** Bootstrapping sBTC Liquidity and Incentive Preservation
 
 **Authors:**
 - Alex Miller (alex@hiro.so)
@@ -61,6 +61,8 @@ Therefore, this SIP proposes altering the token emission schedule to preserve th
 
 # Specification
 
+Applying these upgrades to the Stacks blockchain requires a consensus-breaking network upgrade, in this case, a hard fork. Like other such changes, this will require a new Stacks epoch. In this SIP, we will refer to this new epoch as Stacks 3.1.
+
 The _current_ STX emission schedule is presented as follows.  Note that the **first STX halving is in December 2024**.  The tail emission after the final halving in 2050 would be 125 STX per block, and the total supply at that time is projected to be 1,783,063,600 STX.
 
 | Coinbase Reward Reduction Phase | Approximate Date (time b/w halvings) | STX Reward (reduction) | STX Supply (after) |
@@ -104,7 +106,7 @@ Voting will conclude at bitcoin block height 872,750, which occurs ~ Sunday, Dec
 
 ## Activation
 
-The SIP-029 STX emission schedule is designed to activate on Stacks 3.0 as defined in [SIP-021](https://github.com/stacksgov/sips/blob/main/sips/sip-021/sip-021-nakamoto.md). 
+The SIP-029 STX emission schedule is designed to activate on Stacks 3.0 as defined in [SIP-021](https://github.com/stacksgov/sips/blob/main/sips/sip-021/sip-021-nakamoto.md).
 
 ### Process of Activation
 
@@ -141,6 +143,10 @@ Users with liquid STX can vote on proposals directly at [stx.eco](https://stx.ec
 For this SIP to pass, 80% of all liquid STX committed by voting must be in favor of the proposal.
 
 We believe that these thresholds are sufficient to demonstrate interest from Stackers -- Stacks users who have a long-term interest in the Stacks blockchain's successful operation -- in performing this upgrade.
+
+#### For Miners
+
+There is only one criterion for miners to activate this SIP: they must mine the Stacks blockchain up to and past the end of the voting period (bitcoin block height 872,750). In all reward cycles between cycle 97 & 98 and the end of the voting period, PoX must activate.
 
 # Reference Implementation
 

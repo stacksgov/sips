@@ -32,7 +32,7 @@
 
 # Abstract
 
-The first Stacks halving is expected to take place at Stacks block height 210,384, which is set to occur during Reward Cycle 100 in December 2024, cutting the STX block reward from 1,000 STX to 500 STX. This SIP proposes a modification to the emissions schedule given that the network is going through two major launches (Nakamoto and sBTC) which rely on predictable economic incentives. The proposed schedule modification and associated STX emission rate would create time for Nakamoto and sBTC to launch and settle in, but, being mindful of supply, would still result in an overall reduced target 2050 STX supply (0.19% lower) and a reduced tail emission rate (20% lower).
+The first Stacks halving is expected to take place 210,384 Bitcoin blocks after the Stacks 2.0 starting height, 666,050, which is Bitcoin height 876,434, which is set to occur during Reward Cycle 100 in December 2024, cutting the STX block reward from 1,000 STX to 500 STX. This SIP proposes a modification to the emissions schedule given that the network is going through two major launches (Nakamoto and sBTC) which rely on predictable economic incentives. The proposed schedule modification and associated STX emission rate would create time for Nakamoto and sBTC to launch and settle in, but, being mindful of supply, would still result in an overall reduced target 2050 STX supply (0.19% lower) and a reduced tail emission rate (20% lower).
 
 # License and Copyright
 
@@ -42,7 +42,7 @@ is held by the Stacks Open Internet Foundation.
 
 # Introduction
 
-STX halvings were originally designed to happen every 4 years, similar to Bitcoin. The first Stacks halving is expected to take place at Stacks block height 210,384, which is set to occur during Reward Cycle 100 in December 2024, cutting the STX block reward from 1,000 STX to 500 STX, thereby significantly altering the economic incentives of mining on the Stacks blockchain. At the same time, the Stacks network is going through two major upgrades/changes, both of which are highly dependent on economic incentives.
+STX halvings were originally designed to happen every 4 years, similar to Bitcoin. The first Stacks halving is expected to take place at Bitcoin block 876,434, which is set to occur during Reward Cycle 100 in December 2024, cutting the STX block reward from 1,000 STX to 500 STX, thereby significantly altering the economic incentives of mining on the Stacks blockchain. At the same time, the Stacks network is going through two major upgrades/changes, both of which are highly dependent on economic incentives.
 
 First, the role of Stackers is changing. The role of Stackers in the Nakamoto blockchain (SIP-021) differs from their role in the original Stacks blockchain in that they must now collectively sign Stacks blocks. This is required to prevent Stacks forks from arising, and to secure the chain tip before it can be fully anchored to the Bitcoin chain. This also means that Stackers must run and maintain signing nodes with high availability in order to ensure that blocks always reach the requisite signature threshold. The PoX payouts (SIP-007) granted to Stackers by miners provide a positive monetary incentive for Stackers to carry out this task.
 
@@ -74,10 +74,10 @@ The _current_ STX emission schedule is presented as follows.  Note that the **fi
 | -                               | ~Jan 2050 (17.08 yrs)             | 125 (0%)             | 1,783,063,600      |
 
 
-The _proposed_ STX emission schedule is presented as follows.  In particular, this SIP proposes preserving the 1000 STX coinbase until April 2026.  After this, there would be a reduction to 500 STX after two years, and another reduction to 125 STX after two more years.  The tail emission after the final halving in 2050 would be 100 STX, and the total supply at that time is projected to be 1,783,063,600 STX (about 0.19% lower).
+The _proposed_ STX emission schedule is presented as follows.  In particular, this SIP proposes preserving the 1000 STX coinbase until April 2026.  After this, there would be a reduction to 500 STX after two years, and another reduction to 125 STX after two more years.  The tail emission after the final reduction in 2036 would be 100 STX, and the total supply at that time is projected to be 1,783,063,600 STX (about 0.19% lower).
 
 
-| Coinbase Reward Reduction Phase | Bitcoin Block Height | Approximate Date (time b/w halvings) | STX Reward (reduction) | STX Supply (after) |
+| Coinbase Reward Reduction Phase | Bitcoin Block Height | Approximate Date (time b/w reductions) | STX Reward (reduction) | STX Supply (after) |
 |--------------------------------|---------------------|-------------------------------------|----------------------|-------------------|
 | Current                        | -                   | -                                   | 1000                 | -                 |
 | 1st*                     | 945,000             | ~April 2026 (+1.33 yrs)            | 500 (50%)           | 1,607,907,038     |

@@ -2,7 +2,7 @@
 
 **SIP Number:** 029
 
-**Title:** Bootstrapping sBTC Liquidity and Incentive Preservation
+**Title:** Preserving Economic Incentives During Stacks Network Upgrades
 
 **Authors:**
 - Alex Miller (alex@hiro.so)

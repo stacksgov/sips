@@ -32,7 +32,7 @@
 
 # Abstract
 
-The first Stacks halving is expected to take place 210,384 Bitcoin blocks after the Stacks 2.0 starting height, 666,050, which is Bitcoin height 876,434, which is set to occur during Reward Cycle 100 in December 2024, cutting the STX block reward from 1,000 STX to 500 STX. This SIP proposes a modification to the emissions schedule given that the network is going through two major launches (Nakamoto and sBTC) which rely on predictable economic incentives. The proposed schedule modification and associated STX emission rate would create time for Nakamoto and sBTC to launch and settle in, but, being mindful of supply, would still result in an overall reduced target 2050 STX supply (0.19% lower) and a reduced tail emission rate (20% lower).
+The first Stacks halving is expected to take place 210,384 Bitcoin blocks after the Stacks 2.0 starting height, 666,050, which is Bitcoin height 876,434, which is set to occur during Reward Cycle 100 in December 2024, cutting the STX block reward from 1,000 STX to 500 STX. This SIP proposes a modification to the emissions schedule given that the network is going through two major launches (Nakamoto and sBTC) which rely on predictable economic incentives. The proposed schedule modification and associated STX emission rate would create time for Nakamoto and sBTC to launch and settle in, but, being mindful of supply, would still result in an overall reduced target 2050 STX supply (0.27% lower) and a reduced tail emission rate (50% lower).
 
 # License and Copyright
 
@@ -50,12 +50,14 @@ Second, the release of the Nakamoto blockchain unblocks sBTC (SIP-028), a wrappe
 
 Because of how important both of these upgrades are to the future of the Stacks blockchain and the dependency of all blockchains on economic incentives for security, changing the incentives while the system is going through a transition could have negative impacts. In particular, given that miners bid BTC in order to win the STX coinbase reward (and that BTC is what provides PoX payouts for Signers), it is highly likely that a 50% reduction in the STX coinbase reward would lead to a corresponding 50% reduction in PoX payouts, thereby dramatically decreasing incentives for signers while Nakamoto and sBTC are gaining adoption. Additionally, as discussed in the 7th Avenue Group report [1], by reducing the gross value of the block rewards and corresponding PoX payouts, it is likely that some miners and signers may choose to cease their work on the Stacks blockchain, reducing competition and economics further.
 
+Additionally, the increased block production rate under Nakamoto (from 122 to 144 blocks per day) means that without modification, the 2050 supply would exceed the accepted supply cap of 1,818,000,000 STX.
+
 While ultimately halvings do need to happen, for those reasons, it would be highly preferable to not change the economic incentives until both Nakamoto and sBTC have been live for some time, as well as to have reductions in the STX block reward happen at the same time as reductions in the BTC block reward given their links.
 
 Therefore, this SIP proposes altering the token emission schedule to preserve the existing incentive structure while ensuring no increase in the 2050 target supply, and incorporating these principles:
 
-* All STX holders would see a reduced 2050 target STX supply by 0.19%, thereby making STX more scarce
-* All STX holders would see a reduced tail inflation after the final halving
+* All STX holders would see a reduced 2050 target STX supply by 0.77%, thereby making STX more scarce
+* All STX holders would see a reduced tail inflation (from 125 STX to 62.5 STX) after the final halving
 * Stacks miners and signers’ economic incentives would remain consistent with the existing incentives for the next 16 months
 * The new Stacks halving schedule would align with Bitcoin halvings starting in 2028 to strengthen the connection the Stacks L2 has to Bitcoin and also synchronize the economic adjustments of both assets, reducing changes in incentives for miners and signers at each halving, as further outlined in the Forum post [2]
 
@@ -63,31 +65,32 @@ Therefore, this SIP proposes altering the token emission schedule to preserve th
 
 Applying these upgrades to the Stacks blockchain requires a consensus-breaking network upgrade, in this case, a hard fork. Like other such changes, this will require a new Stacks epoch. In this SIP, we will refer to this new epoch as Stacks 3.1.
 
-The _current_ STX emission schedule is presented as follows.  Note that the **first STX halving is in December 2024**.  The tail emission after the final halving in 2050 would be 125 STX per block, and the total supply at that time is projected to be 1,783,063,600 STX.
+The _current_ STX emission schedule is presented as follows.  Note that the **first STX halving is in December 2024**.  The tail emission after the final halving in 2050 would be 125 STX per block, and due to the increased block production rate under Nakamoto (144 blocks per day vs the previous 122), the total supply at that time is projected to be 1,829,119,597 STX, which exceeds the accepted supply cap of 1,818,000,000 STX (0.61% higher).
 
-| Coinbase Reward Reduction Phase | Approximate Date (time b/w halvings) | STX Reward (reduction) | STX Supply (after) |
-|--------------------------------|-------------------------------------|----------------------|-------------------|
-| Current                         | -                                   | 1000                 | -                  |
-| 1st                             | ~Dec 2024 (4 yrs)                  | 500 (50%)           | 1,512,993,315      |
-| 2nd                             | ~Dec 2028 (4 yrs)                  | 250 (50%)           | 1,645,084,888      |
-| 3rd                             | ~Dec 2032 (4 yrs)                  | 125 (50%)           | 1,689,389,675      |
-| -                               | ~Jan 2050 (17.08 yrs)             | 125 (0%)             | 1,783,063,600      |
-
-
-The _proposed_ STX emission schedule is presented as follows.  In particular, this SIP proposes preserving the 1000 STX coinbase until April 2026.  After this, there would be a reduction to 500 STX after two years, and another reduction to 125 STX after two more years.  The tail emission after the final reduction in 2036 would be 100 STX, and the total supply at that time is projected to be 1,783,063,600 STX (about 0.19% lower).
+| Coinbase Reward Phase | Bitcoin Height | Approx Date | STX Supply at Block | STX Reward | Annual Inflation |
+|--------------------|----------------|----------------------|-------------------|------------|-----------------|
+| Current            | 870,100        | -                    | 1,552,452,847    | 1000       | -               |
+| 1st                | 876,434        | Dec 2024             | 1,558,786,847    | 500 (50%)  | 3.37%          |
+| 2nd                | 1,086,818      | Dec 2028             | 1,663,978,847    | 250 (50%)  | 1.58%          |
+| 3rd                | 1,297,202      | Dec 2032             | 1,716,574,847    | 125 (50%)  | 0.77%          |
+| -                  | 2,197,560      | Jan 2050 (17.08y)    | 1,829,119,597    | 125 (0%)   | 0.36%          |
 
 
-| Coinbase Reward Reduction Phase | Bitcoin Block Height | Approximate Date (time b/w reductions) | STX Reward (reduction) | STX Supply (after) |
-|--------------------------------|---------------------|-------------------------------------|----------------------|-------------------|
-| Current                        | -                   | -                                   | 1000                 | -                 |
-| 1st*                     | 945,000             | ~April 2026 (+1.33 yrs)            | 500 (50%)           | 1,607,907,038     |
-| 2nd                     | 1,050,000           | ~April 2028 (2 yrs)                | 250 (50%)           | 1,652,242,188     |
-| 3rd                      | 1,260,000           | ~April 2032 (4 yrs)                | 125 (50%)           | 1,696,547,013     |
-| 4th                      | 1,470,000           | ~April 2036 (4 yrs)                | 100 (20%)           | 1,718,699,425     |
-| -                          | -                   | ~Jan 2050 (13.833 yrs)             | 100 (0%)             | 1,779,628,415     |
+The _proposed_ STX emission schedule is presented as follows.  In particular, this SIP proposes preserving the 1000 STX coinbase until April 2026.  After this, there would be a halving to 500 STX after two years, and another halving to 125 STX after two more years.  The tail emission after the final halving in 2036 would be 62.5 STX, and the total supply at that time is projected to be 1,758,602,847 STX (about 0.27% lower).
+
+| Coinbase Reward Phase | Bitcoin Height | Approx Date           | STX Supply at Block | STX Reward | Annual Inflation |
+|--------------------|----------------|---------------------|-------------------|------------|-----------------|
+| Current            | 870,100        | -                   | 1,552,452,847    | 1000       | -               |
+| 1st                | 945,000        | Apr 2024 (+1.33y)   | 1,627,352,847    | 500 (50%)  | 3.23%          |
+| 2nd                | 1,050,000      | Apr 2028 (4y)       | 1,679,852,847    | 250 (50%)  | 1.57%          |
+| 3rd                | 1,260,000      | Apr 2032 (4y)       | 1,732,352,847    | 125 (50%)  | 0.76%          |
+| 4th                | 1,470,000      | Apr 2036 (4y)       | 1,758,602,847    | 62.5 (50%)   | 0.37%          |
+| -                  | 2,197,560      | Jan 2050 (13.83y)   | 1,813,169,847    | 62.5 (0%)   | 0.18%          |
 
 
 With these changes, miner incentives and PoX yield remain unchanged for another 16 months, which we believe is sufficient time for the nascent Nakamoto signer set to develop into a set of stable, professional block signers, and for the sBTC project to attract sufficient initial liquidity.
+
+The model for both the current and proposed emissions schedules can be found in the SIP-029 Stacks Emission Model[3].
 
 # Related Work
 
@@ -154,6 +157,8 @@ There is only one criterion for miners to activate this SIP: they must mine the 
 
 # References
 
-[1] Soslow J (2023) Review of Mining Emissions and Risks of the Halving. Available at https://stx.is/emissions-report-1 [Verified 5 November 2024]
+[1] Soslow, J (2023) Review of Mining Emissions and Risks of the Halving. Available at https://stx.is/emissions-report-1 [Verified 5 November 2024]
 
 [2] Laughlin, B (2024) Aligning with Bitcoin Halving and Incentives after Nakamoto. [Online forum post] forum.stacks.org https://forum.stacks.org/t/aligning-with-bitcoin-halving-and-incentives-after-nakamoto/17668 [Verified 5 November 2024]
+
+[3] Müffke, F & Corcoran, W (2024) SIP-029 Stacks Emission Model. [Online spreadsheet] docs.google.com https://docs.google.com/spreadsheets/d/1ZRQgQV99kWvcSjkmZWKgldflcB2ytaN6sjo2RiHcjnk/edit?gid=0#gid=0 [Verified 13 November 2024]

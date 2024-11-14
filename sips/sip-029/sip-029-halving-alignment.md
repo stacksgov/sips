@@ -115,11 +115,12 @@ The SIP-029 STX emission schedule is designed to activate on Stacks 3.0 as defin
 
 Users can vote to approve this SIP with either their locked/stacked STX or with unlocked/liquid STX, or both. The SIP voting page can be found at [stx.eco](https://stx.eco). The criteria for the stacker and non-stacker voting is as follows.
 
-#### For Stackers:
+#### To Vote:
 
-In order for this SIP to activate, the following criteria must be met by the set of Stacked STX:
+In order for this SIP to activate, the following criteria must be met:
 
-- At least 80 million Stacked STX must vote, with at least 80% of all stacked STX committed by voting must be in favor of the proposal (vote "yes").
+- At least 80 million stacked STX must vote, with at least 80% of all stacked STX committed by voting must be in favor of the proposal (vote "yes").
+- At least 80% of all liquid STX committed by voting must be in favor of the proposal (vote "yes").
 
 The voting addresses will be:
 
@@ -135,17 +136,9 @@ The addresses have been generated as follows:
 - The Bitcoin address is the `base58check` of the hash of the Bitcoin script above.
 - The Stacks address is the `c32check-encoded` message.
 
-Stackers (pool and solo) vote by sending Stacks dust to the corresponding Stacks address from the account where their Stacks are locked.
+All STX holders vote by sending Stacks dust to the corresponding Stacks address from the account where their Stacks are held (stacked or liquid). To simplify things, user's can create their votes by visiting the [stx.eco](https://stx.eco/) platform. Voting power is determined by a snapshot of the amount of STX (stacked and un-stacked) at the block height at which the voting started (preventing the same STX from being transferred between accounts and used to effectively double vote).
 
 Solo stackers only can also vote by sending a bitcoin dust transaction (6000 sats) to the corresponding bitcoin address.
-
-#### For Non-Stackers:
-
-Users with liquid STX can vote on proposals directly at [stx.eco](https://stx.eco) using the Ecosystem DAO. Liquid STX is the user’s balance, less any STX they have locked in the PoX stacking protocol, at the block height at which the voting started (preventing the same STX from being transferred between accounts and used to effectively double vote). This is referred to generally as "snapshot" voting.
-
-For this SIP to pass, 80% of all liquid STX committed by voting must be in favor of the proposal.
-
-We believe that these thresholds are sufficient to demonstrate interest from Stackers -- Stacks users who have a long-term interest in the Stacks blockchain's successful operation -- in performing this upgrade.
 
 #### For Miners
 

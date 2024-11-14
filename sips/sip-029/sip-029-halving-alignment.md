@@ -63,7 +63,7 @@ Therefore, this SIP proposes altering the token emission schedule to preserve th
 
 Applying these upgrades to the Stacks blockchain requires a consensus-breaking network upgrade, in this case, a hard fork. Like other such changes, this will require a new Stacks epoch. In this SIP, we will refer to this new epoch as Stacks 3.1.
 
-The _current_ STX emission schedule is presented as follows.  Note that the **first STX halving is in December 2024**.  The tail emission after the final halving in 2050 would be 125 STX per block.
+The _current_ STX emission schedule is presented as follows.  Note that the **first STX halving is in December 2024**.  The tail emission after the final halving in 2032 would be 125 STX per block.
 
 | Coinbase Reward Phase | Bitcoin Height | Approx Date | STX Supply at Block | STX Reward | Annual Inflation |
 |--------------------|----------------|----------------------|-------------------|------------|-----------------|

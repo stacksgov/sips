@@ -48,7 +48,7 @@ First, the role of Stackers is changing. The role of Stackers in the Nakamoto bl
 
 Second, the release of the Nakamoto blockchain unblocks sBTC (SIP-028), a wrapped Bitcoin asset on the Stacks blockchain which benefits from Nakamoto’s newfound resistance to forks. Because inducing a chain reorganization (a reorg) in Nakamoto is at least as hard as doing so in the Bitcoin blockchain, applications can rely on Nakamoto to ensure that each sBTC token is backed 1:1 by a BTC token – there is no feasible way to double-spend sBTC through a Stacks blockchain reorg.
 
-Because of how important both of these upgrades are to the future of the Stacks blockchain and the dependency of all blockchains on economic incentives for security, changing the incentives while the system is going through a transition could have negative impacts. In particular, given that miners bid BTC in order to win the STX coinbase reward (and that BTC is what provides PoX payouts for Signers), it is highly likely that a 50% reduction in the STX coinbase reward would lead to a corresponding 50% reduction in PoX payouts, thereby dramatically decreasing incentives for signers while Nakamoto and sBTC are gaining adoption. Additionally, as discussed in the 7th Avenue Group report [1], by reducing the gross value of the block rewards and corresponding PoX payouts, it is likely that some miners and signers may choose to cease their work on the Stacks blockchain, reducing competition and economics further.
+Because of how important both of these upgrades are to the future of the Stacks blockchain and the dependency of all blockchains on economic incentives for security, changing the incentives while the system is going through a transition could have negative impacts. In particular, given that miners bid BTC in order to win the STX coinbase reward (and that BTC is what provides PoX payouts for Signers), it is highly likely that a 50% reduction in the STX coinbase reward would lead to a corresponding 50% reduction in PoX payouts, thereby dramatically decreasing incentives for signers while Nakamoto and sBTC are gaining adoption. Additionally, as discussed in the 7th Avenue Group report [1][2], by reducing the gross value of the block rewards and corresponding PoX payouts, it is likely that some miners and signers may choose to cease their work on the Stacks blockchain, reducing competition and economics further.
 
 Additionally, the increased block production rate under Nakamoto (from 122 to 144 blocks per day) means that without modification, the 2050 supply would exceed the accepted supply cap of 1,818,000,000 STX.
 
@@ -59,7 +59,7 @@ Therefore, this SIP proposes altering the token emission schedule to preserve th
 * All STX holders would see a reduced 2050 target STX supply by 0.77%, thereby making STX more scarce
 * All STX holders would see a reduced tail inflation (from 125 STX to 62.5 STX) after the final halving
 * Stacks miners and signers’ economic incentives would remain consistent with the existing incentives for the next 16 months
-* The new Stacks halving schedule would align with Bitcoin halvings starting in 2028 to strengthen the connection the Stacks L2 has to Bitcoin and also synchronize the economic adjustments of both assets, reducing changes in incentives for miners and signers at each halving, as further outlined in the Forum post [2]
+* The new Stacks halving schedule would align with Bitcoin halvings starting in 2028 to strengthen the connection the Stacks L2 has to Bitcoin and also synchronize the economic adjustments of both assets, reducing changes in incentives for miners and signers at each halving, as further outlined in the Forum post [3]
 
 # Specification
 
@@ -90,7 +90,7 @@ The _proposed_ STX emission schedule is presented as follows.  In particular, th
 
 With these changes, miner incentives and PoX yield remain unchanged for another 16 months, which we believe is sufficient time for the nascent Nakamoto signer set to develop into a set of stable, professional block signers, and for the sBTC project to attract sufficient initial liquidity.
 
-The model for both the current and proposed emissions schedules can be found in the SIP-029 Stacks Emission Model[3].
+The model for both the current and proposed emissions schedules can be found in the SIP-029 Stacks Emission Model[4].
 
 # Related Work
 
@@ -152,6 +152,8 @@ There is only one criterion for miners to activate this SIP: they must mine the 
 
 [1] Soslow, J (2023) Review of Mining Emissions and Risks of the Halving. Available at https://stx.is/emissions-report-1 [Verified 5 November 2024]
 
-[2] Laughlin, B (2024) Aligning with Bitcoin Halving and Incentives after Nakamoto. [Online forum post] forum.stacks.org https://forum.stacks.org/t/aligning-with-bitcoin-halving-and-incentives-after-nakamoto/17668 [Verified 5 November 2024]
+[2] Soslow, J (2023) Halving Proposals. Available at https://stx.is/emissions-report-1 [Verified 5 November 2024]
 
-[3] Müffke, F & Corcoran, W (2024) SIP-029 Stacks Emission Model. [Online spreadsheet] docs.google.com https://docs.google.com/spreadsheets/d/1ZRQgQV99kWvcSjkmZWKgldflcB2ytaN6sjo2RiHcjnk/edit?gid=0#gid=0 [Verified 13 November 2024]
+[3] Laughlin, B (2024) Aligning with Bitcoin Halving and Incentives after Nakamoto. [Online forum post] forum.stacks.org https://forum.stacks.org/t/aligning-with-bitcoin-halving-and-incentives-after-nakamoto/17668 [Verified 5 November 2024]
+
+[4] Müffke, F & Corcoran, W (2024) SIP-029 Stacks Emission Model. [Online spreadsheet] docs.google.com https://docs.google.com/spreadsheets/d/1ZRQgQV99kWvcSjkmZWKgldflcB2ytaN6sjo2RiHcjnk/edit?gid=0#gid=0 [Verified 13 November 2024]

@@ -25,6 +25,10 @@
 **License:** BSD 2-Clause
 
 **Sign-off:**
+- j2p2 i.digg.tech@gmail.com (SIP Editor)
+- Mike Cohen mjoecohen@gmail.com (Technical CAB)
+- Jason Schrader jason@joinfreehold.com (Governance CAB)
+- MattySTX mattystx@gmail.com (Economics CAB)
 
 **Discussions-To:**
 - Stacks Forum Post: [Aligning with Bitcoin Halving and Incentives after Nakamoto](https://forum.stacks.org/t/aligning-with-bitcoin-halving-and-incentives-after-nakamoto/17668)
@@ -32,7 +36,7 @@
 
 # Abstract
 
-The first Stacks halving is expected to take place 210,384 Bitcoin blocks after the Stacks 2.0 starting height, 666,050, which is Bitcoin height 876,434, which is set to occur during Reward Cycle 100 in December 2024, cutting the STX block reward from 1,000 STX to 500 STX. This SIP proposes a modification to the emissions schedule given that the network is going through two major launches (Nakamoto and sBTC) which rely on predictable economic incentives. The proposed schedule modification and associated STX emission rate would create time for Nakamoto and sBTC to launch and settle in, but, being mindful of supply, would still result in an overall reduced target 2050 STX supply (0.27% lower) and a reduced tail emission rate (50% lower).
+The first Stacks halving is expected to take place 210,384 Bitcoin blocks after the Stacks 2.0 starting height, 666,050, which is Bitcoin height 876,434, which is set to occur during Reward Cycle 100 in December 2024, cutting the STX block reward from 1,000 STX to 500 STX. This SIP proposes a modification to the emissions schedule given that the network is going through two major launches (Nakamoto and sBTC) which rely on predictable economic incentives. The proposed schedule modification and associated STX emission rate would create time for Nakamoto and sBTC to launch and settle in, but, being mindful of supply, would still result in an overall reduced target 2050 STX supply (0.77% lower) and a reduced tail emission rate (50% lower).
 
 # License and Copyright
 
@@ -107,7 +111,7 @@ Voting will conclude at bitcoin block height 872,750, which occurs ~ Sunday, Dec
 
 ## Activation
 
-The SIP-029 STX emission schedule is designed to activate on Stacks 3.0 as defined in [SIP-021](https://github.com/stacksgov/sips/blob/main/sips/sip-021/sip-021-nakamoto.md).
+The SIP-029 STX emission schedule is designed to activate on Stacks 3.0 as defined in [SIP-021](https://github.com/stacksgov/sips/blob/main/sips/sip-021/sip-021-nakamoto.md).  The SIP-029 emission schedule will be active starting at bitcoin block height 875,000, which is in the middle of stacking cycle 99.
 
 ### Process of Activation
 

@@ -148,7 +148,7 @@ There is only one criterion for miners to activate this SIP: they must mine the 
 
 # Reference Implementation
 
-[To be added: Link to implementation PR]
+The reference implementation can be found at https://github.com/stacks-network/stacks-core/pull/5461.
 
 # References
 

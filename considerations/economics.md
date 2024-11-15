@@ -4,7 +4,8 @@ Chairperson: MattySTX
 
 Members:
 
-- Chiente Hsu <chiente@alexgo.io>
+- Hadan Esperidiao <Hadan@alexlab.co>
+- Leeor Shimron <leeorshimron@gmail.com>
 - MattySTX <mattystx@gmail.com>
 - Pieter Aerts <pieter@arkadiko.finance>
 - Xan Ditkoff <xan@daemontechnologies.co>
@@ -15,7 +16,9 @@ Created-by: SIP-000
 
 ## Biographies
 
-**Dr. Chiente Hsu**: Dr. Chiente Hsu is CEO and co-founder of ALEX, the flagship DeFi on Bitcoin via Stacks. Dr. Hsu joins ALEX from Morgan Stanley and Credit Suisse, where she was a Managing Director and Global Head of Quant Research. She is also the author of ‘Rule Based Investing”, published by FT Press. Dr. Hsu spent her early career in academia. She was a tenure-track professor at the University of Vienna, Austria, and a visiting professor at Duke University, where she taught and conducted research in Financial Econometrics.
+**Hadan Esperidiao**: Hadan Esperidiao is the BD Lead for the ALEX Lab Foundation. ALEX is the Bitcoin finance layer, seamlessly merging L1 assets with L2s capabilities and omni-chain bridging. Hadan has been with ALEX Lab for the three years; prior experience include fixed income trading at Goldman Sachs and Physics at Harvard.
+
+**Leeor Shimron**: Leeor Shimron is Head of Growth at Stacking DAO, a leading Stacks DeFi platform, and a Senior Contributor at Forbes covering crypto and blockchain. Since 2017, Leeor has held roles across business development, strategy, and partnerships at dRPC, Kraken, Fundstrat, and as Founder/CEO of NovaBlock Capital, a digital asset venture firm.
 
 **MattySTX (Chairperson)**: Matty has more than a decade of experience designing, simulating, and optimizing economic models for hedge funds and VC funded machine learning startups. He has been in crypto since 2015, and Stacks since 2017. In the Stacks ecosystem, his simulation analysis of Stacks’ economic model has helped evaluate PoX consensus mechanism improvements, he authored the first ever community contributed governance proposal for Arkadiko’s tokenomics, he publishes the quarterly ‘STX Mining Report’, and he mentors teams at the Stacks incubator.
 

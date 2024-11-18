@@ -44,20 +44,21 @@ This SIP outlines but does not describe in technical detail the workings of the 
 ## Introduction
 
 ### Glossary
-
 | Term                | Definition                                                                                                                                                            |
 |---------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **.sbtc contract**  | A smart contract (or a collection of contracts) defining the sBTC token and functions related to it.                                                                    |
+| **Deposit API**     | A third-party API that communicates with the sBTC Signers via the sBTC Signer API.                                                                                      |
 | **SIP-10 Token**    | A token on the Stacks blockchain that adheres to the fungible token standards outlined in [SIP-10](https://github.com/stacksgov/sips/blob/main/sips/sip-010/sip-010-fungible-token-standard.md).                                                                       |
+| **Stacks Signer**   | An entity that receives PoX payouts for stacking their STX tokens and actively participating in the Stacks protocol by signing mined blocks.                            |
 | **sBTC**            | A SIP-10 token on the Stacks Blockchain that can be turned back into BTC on the Bitcoin Blockchain. 1 sBTC is equivalent to 1 BTC on the Bitcoin Blockchain.           |
 | **sBTC operation**  | A smart contract function call that initiates some action from the sBTC protocol.                                                                                                        |
-| **.sbtc contract**  | A smart contract (or a collection of contracts) defining the sBTC token and functions related to it.                                                                    |
 | **sBTC Peg Wallet** | The single UTXO holding the entire BTC balance that’s pegged into sBTC. This peg wallet is managed and maintained by the sBTC Signers.                                  |
-| **Stacks Signer**   | An entity that receives PoX payouts for stacking their STX tokens and actively participating in the Stacks protocol by signing mined blocks.                            |
 | **sBTC Signer**     | An entity that will sign sBTC operations and communicate with contracts on the chain to make that feasible. This entity has partial access to spending the sBTC UTXO.   |
-| **sBTC Signer Set** | The set of all sBTC signers. Each is registered with the .sbtc contract and these entities as a group collectively maintain the sBTC's Bitcoin UTXO.      |
 | **sBTC Signer API** | An API exposed by the sBTC Signer that handles basic low-level commands.                                                                                                |
-| **Deposit API**     | A third-party API that communicates with the sBTC Signers via the sBTC Signer API.                                                                                      |
-| **Wrapped Bitcoin**     | A tokenized version of Bitcoin on another blockchain, designed to maintain a 1:1 peg with BTC. It acts as a derivative asset that allows Bitcoin to be utilized in various decentralized applications and ecosystems.      |
+| **sBTC Signer Set** | The set of all sBTC signers. Each is registered with the .sbtc contract and these entities as a group collectively maintain the sBTC's Bitcoin UTXO.      |
+| **Two-way peg**     | A two-way peg allows assets to move between two blockchains in a trustless manner. This proposal focuses on implementing such a peg between Bitcoin and Stacks, enabling users to lock BTC on Bitcoin and mint an equivalent amount of sBTC on Stacks. |
+| **Wrapped Bitcoin** | A tokenized version of Bitcoin on another blockchain, designed to maintain a 1:1 peg with BTC. It acts as a derivative asset that allows Bitcoin to be utilized in various decentralized applications and ecosystems. |
+
 
 ## Problem Statement
 

@@ -62,7 +62,7 @@ Existing applications using the current Auth system should continue to operate, 
 
 ## Notes on Serialization
 
-To adhere to a generic serializability, the following notes are given:
+To ensure serializability, consider these notes:
 
 - Enums are serialized as human-readable strings.
 - BigInts are serialized as numbers, strings, or anything that can be parsed by the JavaScript BigInt constructor.

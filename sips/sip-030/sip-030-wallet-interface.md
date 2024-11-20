@@ -50,7 +50,7 @@ So this SIP aims to capture the important features for the Stacks ecosystem, wit
 The proposed changes are listed as follows:
 
 Specify [JSON-RPC 2.0](https://www.jsonrpc.org/specification) compatible methods and payloads for wallet interaction.
-These can be used via a browser object (i.e., via the `window.btc.request` method) or similar interfaces like WalletConnect.
+These can be used via a browser object (i.e., via the `window.WalletProvider.request` method) or similar interfaces like WalletConnect.
 
 # Backwards Compatibility
 

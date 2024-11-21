@@ -41,7 +41,7 @@ The community has recognized the need for a more unified approach to wallet conn
 By adopting the new standard, we aim to align the community towards a common and modern protocol for wallet interaction in web applications.
 Importantly, the decision to use an existing standard (rather than designing a new one or reworking Auth) is intentional — to avoid further division or split ownership within the community.
 
-There was an attempt to re-use existing standards/protocols from other ecosystems via the WBIPs working group — but no consensus was found that was a perfect fit or had enough traction for the larger layer-2 ecosystem.
+There was an attempt to re-use existing standards/protocols from other ecosystems via the WBIPs working group[^11][^26] — but no consensus was found that was a perfect fit or had enough traction for the larger layer-2 ecosystem.
 So this SIP aims to capture the important features for the Stacks ecosystem, with a focus on extensibility.
 
 ## Specification
@@ -263,8 +263,9 @@ Otherwise, no additional error codes are defined in this SIP.
 
 ### JSON Representations
 
-While discussing this SIP, it has become clear that the current Stacks.js representation is confusing to developers.
-Rather, a better solution would be human-readable — for example, rely on string literal enumeration, rather than magic values, which need additional lookups.
+For historical reasons, a Stacks.js internal representation, based on the Stacks core code, has been used in serialized payloads to wallets.
+These representations are not human-readable and thus make debugging difficult.
+A better solution would be to rely on string literal enumeration, rather than magic values, which need additional lookups.
 Relying on soley a hex-encoded also poses difficulties when building Stacks enabled web applications.
 
 #### Clarity values

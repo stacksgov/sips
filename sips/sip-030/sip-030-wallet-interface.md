@@ -486,7 +486,7 @@ Listed below are some examples of the potentially unclear representations:
 ### Provider registration
 
 Wallets can register their aliased provider objects however they see fit.
-For example, using the WBIP-004[^3] standard or [Wallet Standard](https://github.com/wallet-standard/wallet-standard)[^14].
+For example, using the WBIP-004[^3] standard or Wallet Standard[^14].
 
 ## Activation
 

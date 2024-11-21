@@ -83,7 +83,8 @@ The following definitions can be used in the transaction methods.
 Parameter properties
 
 - `address?`: `string` address, Stacks c32-encoded, defaults to wallets current address
-- `network?`: `'mainnet' | 'testnet' | 'regtest' | 'devnet' | 'mocknet'`
+- `network?`: `'mainnet' | 'testnet' | 'regtest' | 'devnet' | 'mocknet' | NetworkId`
+  - where `NetworkId extends string` and can be a network identifier, which already exists in the wallet (e.g. a URL or network name)
 - `fee?`: `number | string` BigInt constructor compatible value
 - `nonce?`: `number | string` BigInt constructor compatible value
 - `postConditions?`: `PostCondition[]`, defaults to `[]`

@@ -504,16 +504,16 @@ This SIP is meant to be compatible with various use cases and is meant as a form
 
 ## Appendix
 
-WBIPs
+<!-- WBIPs -->
 
-> Documents partially worked on in the working group with Leather, Xverse, and others.
+> WBIPs documents partially worked on in the working group with Leather, Xverse, and others.
 
 [^1]: [WBIP-001: Wallet API JSON RPC](https://wbips.netlify.app/wbips/WBIP001)
 [^2]: [WBIP-002: Namespaces](https://wbips.netlify.app/wbips/WBIP002)
 [^3]: [WBIP-004: Registration](https://wbips.netlify.app/wbips/WBIP004)
 [^4]: [WBIP-007: Batching](https://wbips.netlify.app/wbips/WBIP007)
 
-Discussions
+<!-- Discussions -->
 
 [^21]: [Wallet JSON RPC API, Request Accounts #2378](https://github.com/leather-wallet/extension/pull/2378)
 [^22]: [Sign-in with stacks #70](https://github.com/stacksgov/sips/pull/70)
@@ -522,7 +522,7 @@ Discussions
 [^25]: [SIP for Authentication Protocol #50](https://github.com/stacksgov/sips/pull/50)
 [^26]: [Wallet client API](https://github.com/stacksgov/sips/issues/117)
 
-References
+<!-- References -->
 
 [^10]: [WebBTC Request Standard](https://balls.dev/webbtc/extendability/extending/)
 [^11]: [WBIPs](https://wbips.netlify.app)

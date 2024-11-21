@@ -24,7 +24,7 @@ This proposal's goal is to standardize JSON compatible interfaces for use with w
 
 ## Introduction
 
-The current Connect system, which has existed for several years, is primarily utilized by web applications for interfacing with wallets.
+The current Connect system[^15], which has existed for several years, is primarily utilized by web applications for interfacing with wallets.
 However, many aspects of the existing "Connect" and "Auth" libraries are no longer required, leading to unnecessary complexity (e.g., wrapping RPC payloads in jsontokens) and lack of clear definitions (e.g., undefined serialization for non-JSON compatible data structures) in wallet connectivity.
 
 Recent attempts[^21][^22][^23][^24][^25][^26] to standardize the interface have sparked valuable discussions but have not culminated in a ratified standard, largely due to the stable state of the existing system.
@@ -492,12 +492,12 @@ For example, using the WBIP-004[^3] standard or [Wallet Standard](https://github
 
 This SIP is considered _Ratified_ after Xverse and Leather (currently the largest wallets in the Stacks ecosystem) have implemented and launched the new standard.
 
-Once wallets have implemented the new standard, tooling (e.g. Stacks Connect) can be updated to support the new standard as well.
+Once wallets have implemented the new standard, tooling (e.g. Stacks Connect[^15]) can be updated to support the new standard as well.
 This SIP is not consensus breaking, thus the timeline for activation is not tied to Stacks releases.
 
 ## Related Work
 
-This SIP is designed as a replacement for the existing Connect system, due to the issues mentioned above.
+This SIP is designed as a replacement for the existing Connect system[^15], due to the issues mentioned above.
 
 The standard builds on top of the following work: the webbtc `.request` standard[^10], Wallet Standard[^14], and WBIPs[^11].
 This SIP is meant to be compatible with various use cases and is meant as a formal specification to unify and drive forward the wallet RPC ecosystem.
@@ -529,3 +529,4 @@ This SIP is meant to be compatible with various use cases and is meant as a form
 [^12]: [Xverse WalletConnect JSON API](https://docs.xverse.app/wallet-connect/reference/api_reference)
 [^13]: [Schema.org Person](https://schema.org/Person)
 [^14]: [Wallet Standard](https://github.com/wallet-standard/wallet-standard)
+[^15]: [Stacks Connect](https://github.com/hirosystems/connect)

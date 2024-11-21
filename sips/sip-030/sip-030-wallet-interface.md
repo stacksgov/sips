@@ -22,7 +22,7 @@ This SIP proposes common RPC methods to use for the Stacks blockchain's "Connect
 The goal is to replace the current Connect interface, primarily used by web applications to connect with browser extensions and mobile apps with a more straightforward protocol.
 This proposal's goal is to standardize JSON compatible interfaces for use with wallet interfaces.
 
-## Motivation
+## Introduction
 
 The current Connect system, which has existed for several years, is primarily utilized by web applications for interfacing with wallets.
 However, many aspects of the existing "Connect" and "Auth" libraries are no longer required, leading to unnecessary complexity (e.g., wrapping RPC payloads in jsontokens) and lack of clear definitions (e.g., undefined serialization for non-JSON compatible data structures) in wallet connectivity.
@@ -76,14 +76,14 @@ Methods can be namespaced under `stx_` if used in more generic settings and othe
 In other cases (e.g. `WalletConnect`), the namespace may already be given by metadata (e.g. a `chainId` field) and can be omitted.
 On the predominant `StacksProvider` global object, the methods can be used without a namespace, but wallets may add namespaced aliases for convenience.
 
-##### Transaction method general params
+##### General parameters (for transaction methods)
 
 The following definitions can be used in the transaction methods.
 
 Parameter properties
 
 - `address?`: `string` address, Stacks c32-encoded, defaults to wallets current address
-- `network?`: `'mainnet' | 'testnet' | 'regtest' | 'mocknet'`
+- `network?`: `'mainnet' | 'testnet' | 'regtest' | 'devnet' | 'mocknet'`
 - `fee?`: `number | string` BigInt constructor compatible value
 - `nonce?`: `number | string` BigInt constructor compatible value
 - `postConditions?`: `PostCondition[]`, defaults to `[]`
@@ -489,7 +489,8 @@ For example, using the WBIP-004[^3] standard or [Wallet Standard](https://github
 
 ## Activation
 
-This SIP is considered ratified after Xverse and Leather (currently the largest wallets in the Stacks ecosystem) have implemented and launched the new standard.
+This SIP is considered _Ratified_ after Xverse and Leather (currently the largest wallets in the Stacks ecosystem) have implemented and launched the new standard.
+
 Once wallets have implemented the new standard, tooling (e.g. Stacks Connect) can be updated to support the new standard as well.
 This SIP is not consensus breaking, thus the timeline for activation is not tied to Stacks releases.
 

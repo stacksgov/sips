@@ -6,6 +6,8 @@ Title: Integration of a Modern Stacks Wallet Interface Standard
 
 Authors: [aryzing](https://github.com/aryzing), [janniks](https://github.com/janniks), [kyranjamie](https://github.com/kyranjamie), [m-aboelenein](https://github.com/m-aboelenein)
 
+Consideration: Technical
+
 Type: Standard
 
 Status: Draft
@@ -13,13 +15,6 @@ Status: Draft
 Created: 10 October 2023
 
 License: BSD 2-Clause
-
-## OPEN QUESTIONS
-
-<!-- todo: remove section before merge -->
-
-- [ ] Should a global single `window.` object be used, or should provider discovery be handled complely differently?
-- [ ] Should listeners have params? (e.g. txid for tx mined event)
 
 ## Abstract
 
@@ -34,7 +29,7 @@ However, many aspects of the existing "Connect" and "Auth" libraries are no long
 
 Recent attempts[^21][^22][^23][^24][^25][^26] to standardize the interface have sparked valuable discussions but have not culminated in a ratified standard, largely due to the stable state of the existing system.
 This SIP aims to address these issues by adopting the WBIPs standards[^11], which offer a more suitable RPC-style interface for modern web applications.
-The simplified protocol will allow integration without heavy dependencies (like Auth) and provider a more extendable interface for wallets.
+The simplified protocol will allow integration without heavy dependencies (like Auth) and provide a more extendable interface for wallets.
 
 Additionally, this SIP is motivated by the increased traffic of Ordinal inscriptions on Bitcoin and the Stacks ecosystem growing closer to Bitcoin.
 The community has recognized the need for a more unified approach to wallet connectivity (e.g. Bitcoin and PSBTs for previously Stacks-only wallets).
@@ -57,7 +52,7 @@ The implementation of this proposal is not necessarily backward compatible.
 Wallets implementing the new standard may maintain the previous system to support legacy applications during a transition period or indefinitely.
 Existing applications using the current Auth system should continue to operate, but immediate changes are recommended once this SIP is ratified.
 
-## Implementation
+## Reference Implementations
 
 ### Notes on Serialization
 
@@ -266,7 +261,7 @@ Otherwise, no additional error codes are defined in this SIP.
 For historical reasons, a Stacks.js internal representation, based on the Stacks core code, has been used in serialized payloads to wallets.
 These representations are not human-readable and thus make debugging difficult.
 A better solution would be to rely on string literal enumeration, rather than magic values, which need additional lookups.
-Relying on soley a hex-encoded also poses difficulties when building Stacks enabled web applications.
+Relying on solely on hex-encoding also poses difficulties when building Stacks enabled web applications.
 
 #### Clarity values
 
@@ -492,10 +487,18 @@ Listed below are some examples of the potentially unclear representations:
 Wallets can register their aliased provider objects however they see fit.
 For example, using the WBIP-004[^3] standard or [Wallet Standard](https://github.com/wallet-standard/wallet-standard)[^14].
 
-## Ratification
+## Activation
 
 This SIP is considered ratified after Xverse and Leather (currently the largest wallets in the Stacks ecosystem) have implemented and launched the new standard.
 Once wallets have implemented the new standard, tooling (e.g. Stacks Connect) can be updated to support the new standard as well.
+This SIP is not consensus breaking, thus the timeline for activation is not tied to Stacks releases.
+
+## Related Work
+
+This SIP is designed as a replacement for the existing Connect system, due to the issues mentioned above.
+
+The standard builds on top of the following work: the webbtc `.request` standard[^10], Wallet Standard[^14], and WBIPs[^11].
+This SIP is meant to be compatible with various use cases and is meant as a formal specification to unify and drive forward the wallet RPC ecosystem.
 
 ## Appendix
 

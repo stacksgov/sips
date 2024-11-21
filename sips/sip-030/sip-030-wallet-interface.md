@@ -1,10 +1,10 @@
-# Preamble
+## Preamble
 
 SIP Number: `030`
 
 Title: Integration of a Modern Stacks Wallet Interface Standard
 
-Authors: [aryzing](https://github.com/aryzing), [janniks](https://github.com/janniks), [kyranjamie](https://github.com/kyranjamie),  [m-aboelenein](https://github.com/m-aboelenein)
+Authors: [aryzing](https://github.com/aryzing), [janniks](https://github.com/janniks), [kyranjamie](https://github.com/kyranjamie), [m-aboelenein](https://github.com/m-aboelenein)
 
 Type: Standard
 
@@ -14,24 +14,23 @@ Created: 10 October 2023
 
 License: BSD 2-Clause
 
-# OPEN QUESTIONS
+## OPEN QUESTIONS
 
 <!-- todo: remove section before merge -->
 
 - [ ] Should a global single `window.` object be used, or should provider discovery be handled complely differently?
-- [ ] Rename `stx_transferFt` to include SIP010 somewhere?
 - [ ] Should listeners have params? (e.g. txid for tx mined event)
 
-# Abstract
+## Abstract
 
 This SIP proposes common RPC methods to use for the Stacks blockchain's "Connect" and "Auth" systems.
 The goal is to replace the current Connect interface, primarily used by web applications to connect with browser extensions and mobile apps with a more straightforward protocol.
 This proposal's goal is to standardize JSON compatible interfaces for use with wallet interfaces.
 
-# Motivation
+## Motivation
 
 The current Connect system, which has existed for several years, is primarily utilized by web applications for interfacing with wallets.
-However, many aspects of the existing "Connect" and "Auth" libraries are no longer required, leading to unnecessary complexity (e.g., wrapping RPC payloads in jsontokens) and brittleness (e.g., undefined serialization for non-JSON compatible data structures) in wallet connectivity.
+However, many aspects of the existing "Connect" and "Auth" libraries are no longer required, leading to unnecessary complexity (e.g., wrapping RPC payloads in jsontokens) and lack of clear definitions (e.g., undefined serialization for non-JSON compatible data structures) in wallet connectivity.
 
 Recent attempts to standardize the interface (https://github.com/stacksgov/sips/pull/59, https://github.com/stacksgov/sips/issues/117) have sparked valuable discussions but have not culminated in a ratified standard, largely due to the stable state of the existing system.
 This SIP aims to address these issues by adopting the WBIPs standards, which offer a more suitable RPC-style interface for modern web applications.
@@ -45,22 +44,22 @@ Importantly, the decision to use an existing standard (rather than designing a n
 There was an attempt to re-use existing standards/protocols from other ecosystems via the WBIPs working group — but no consensus was found that was a perfect fit or had enough traction for the larger layer-2 ecosystem.
 So this SIP aims to capture the important features for the Stacks ecosystem, with a focus on extensibility.
 
-# Specification
+## Specification
 
 The proposed changes are listed as follows:
 
 Specify [JSON-RPC 2.0](https://www.jsonrpc.org/specification) compatible methods and payloads for wallet interaction.
 These can be used via a browser object (i.e., via the `window.WalletProvider.request` method) or similar interfaces like WalletConnect.
 
-# Backwards Compatibility
+## Backwards Compatibility
 
 The implementation of this proposal is not necessarily backward compatible.
 Wallets implementing the new standard may maintain the previous system to support legacy applications during a transition period or indefinitely.
 Existing applications using the current Auth system should continue to operate, but immediate changes are recommended once this SIP is ratified.
 
-# Implementation
+## Implementation
 
-## Notes on Serialization
+### Notes on Serialization
 
 To ensure serializability, consider these notes:
 
@@ -71,7 +70,7 @@ To ensure serializability, consider these notes:
 - Addresses are serialized as Stacks c32-encoded strings.
 - Clarity values, post-conditions, and transactions are serialized to bytes (defined by SIP-005) and used as hex-encoded strings.
 
-## Methods
+### Methods
 
 This section defines the available methods, their parameters, and result structure.
 Parameters should be considered only as recommendations for the wallet, and the user/wallet may choose to ignore or override them.
@@ -82,61 +81,58 @@ Methods can be namespaced under `stx_` if used in more generic settings and othe
 In other cases (e.g. `WalletConnect`), the namespace may already be given by metadata (e.g. a `chainId` field) and can be omitted.
 On the predominant `StacksProvider` global object, the methods can be used without a namespace, but wallets may add namespaced aliases for convenience.
 
-#### Transaction method general params
+##### Transaction method general params
 
 The following definitions can be used in the transaction methods.
 
-`params`
+Parameter properties
 
 - `address?`: `string` address, Stacks c32-encoded, defaults to wallets current address
 - `network?`: `'mainnet' | 'testnet' | 'regtest' | 'mocknet'`
 - `fee?`: `number | string` BigInt constructor compatible value
 - `nonce?`: `number | string` BigInt constructor compatible value
-- `attachment?`: `string` hex-encoded
 - `postConditions?`: `PostCondition[]`, defaults to `[]`
+  - where `PostCondition` is `string | object` hex-encoded or JSON representation
 - `postConditionMode?`: `'allow' | 'deny'`
 - `sponsored?`: `boolean`, defaults to `false`
+- ~~`attachment?`~~ _removed_
 - ~~`appDetails`~~ _removed_
 - ~~`onFinish`~~ _removed_
 - ~~`onCancel`~~ _removed_
 
-`where`
-
-- `PostCondition`: `string | object` hex-encoded or JSON representation
-
 ---
 
-### Method `stx_transferStx`
+#### Method `stx_transferStx`
 
 > **Comment**: This method doesn't take post-conditions.
 
-`params`
+Parameter properties
 
 - `recipient`: `string` address, Stacks c32-encoded
 - `amount`: `number | string` BigInt constructor compatible value
 - `memo?`: `string`, defaults to `''`
 
-`result`
+Result properties
 
 - `txid`: `string` hex-encoded
 - `transaction`: `string` hex-encoded raw transaction
 
-### Method `stx_transferSip10Ft`
+#### Method `stx_transferSip10Ft`
 
-`params`
+Parameter properties
 
 - `recipient`: `string` address, Stacks c32-encoded
 - `asset`: `string` address, Stacks c32-encoded, with contract name suffix
 - `amount`: `number | string` BigInt constructor compatible value
 
-`result`
+Result properties
 
 - `txid`: `string` hex-encoded
 - `transaction`: `string` hex-encoded raw transaction
 
-### Method `stx_transferSip10Nft`
+#### Method `stx_transferSip10Nft`
 
-`params`
+Parameter properties
 
 - `recipient`: `string` address, Stacks c32-encoded
 - `asset`: `string` address, Stacks c32-encoded, with contract name suffix
@@ -146,88 +142,85 @@ The following definitions can be used in the transaction methods.
 
 - `ClarityValue`: `string | object` hex-encoded or JSON representation
 
-`result`
+Result properties
 
 - `txid`: `string` hex-encoded
 - `transaction`: `string` hex-encoded raw transaction
 
-### Method `stx_callContract`
+#### Method `stx_callContract`
 
-`params`
+Parameter properties
 
 - `contract`: `string.string` address with contract name suffix, Stacks c32-encoded
 - `functionName`: `string`
 - `functionArgs`: `ClarityValue[]`, defaults to `[]`
+  - where `ClarityValue` is `string | object` hex-encoded or JSON representation
 
-`where`
-
-- `ClarityValue`: `string | object` hex-encoded or JSON representation
-
-`result`
+Result properties
 
 - `txid`: `string` hex-encoded
 - `transaction`: `string` hex-encoded raw transaction
 
-### Method `stx_deployContract`
+#### Method `stx_deployContract`
 
-`params`
+Parameter properties
 
 - `name`: `string`
 - `clarityCode`: `string` Clarity contract code
 - `clarityVersion?`: `number`
 
-`result`
+Result properties
 
 - `txid`: `string` hex-encoded
 - `transaction`: `string` hex-encoded raw transaction
 
-### Method `stx_signTransaction`
+#### Method `stx_signTransaction`
 
-`params`
+Parameter properties
 
 - `transaction`: `string` hex-encoded raw transaction
 
-`result`
+Result properties
 
 - `transaction`: `string` hex-encoded raw transaction (signed)
 
-### Method `stx_signMessage`
+#### Method `stx_signMessage`
 
-`params`
+Parameter properties
 
 - `message`: `string`
 
-`result`
+Result properties
 
 - `signature`: `string` hex-encoded
 - `publicKey`: `string` hex-encoded
 
-### Method `stx_signStructuredMessage`
+#### Method `stx_signStructuredMessage`
 
-`params`
+Parameter properties
 
 - `message`: `string` Clarity value, hex-encoded
 - `domain`: `string` hex-encoded (defined by SIP-018)
 
-`result`
+Result properties
 
 - `signature`: `string` hex-encoded
 - `publicKey`: `string` hex-encoded
 
-### Method `stx_getAddresses`
+#### Method `stx_getAddresses`
 
-`result`
+Result properties
 
 - `addresses`: `{}[]`
   - `address`: `string` address, Stacks c32-encoded
   - `publicKey`: `string` hex-encoded
 
-### Method `stx_getAccounts`
+#### Method `stx_getAccounts`
 
 > **Comment**: This method is similar to `stx_getAddresses`.
 > It was added to provide better backwards compatibility for applications using Gaia.
 
-`result`
+Result properties
 
 - `accounts`: `{}[]`
   - `address`: `string` address, Stacks c32-encoded
@@ -235,17 +228,17 @@ The following definitions can be used in the transaction methods.
   - `gaiaHubUrl`: `string` URL
   - `gaiaAppKey`: `string` hex-encoded
 
-### Method `stx_updateProfile`
+#### Method `stx_updateProfile`
 
-`params`
+Parameter properties
 
-- `profile`: `object` Schema.org Person object
+- `profile`: `object` Schema.org Person object[^13]
 
-`result`
+Result properties
 
-- `profile`: `object` updated Schema.org Person object
+- `profile`: `object` updated Schema.org Person object[^12]
 
-## Listeners
+### Listeners
 
 In addition to the request interface, event listeners may be provided via the `.listen` method.
 
@@ -255,26 +248,26 @@ In addition to the request interface, event listeners may be provided via the `.
 
 The event name should be closer to nouns than verbs and doesn't use the `on` prefix from DOM naming conventions.
 
-### Event `accountChange`
+#### Event `accountChange`
 
 `listener: (accounts: {}[]) => void`
 
 > `accounts` as defined above in `stx_getAccounts`.
 > The first account is considered the default account (and may be the only "active" account in a wallet).
 
-## Error Codes
+### Error Codes
 
 Errors thrown by request methods should match existing JSON-RPC 2.0 error codes.
 This way, the user or an intermediary library can handle them in a standardized way.
 Otherwise, no additional error codes are defined in this SIP.
 
-## JSON Representations
+### JSON Representations
 
 While discussing this SIP, it has become clear that the current Stacks.js representation is confusing to developers.
 Rather, a better solution would be human-readable — for example, rely on string literal enumeration, rather than magic values, which need additional lookups.
 Relying on soley a hex-encoded also poses difficulties when building Stacks enabled web applications.
 
-### Clarity values
+#### Clarity values
 
 Proposed below is an updated interface representation for Clarity primitives for use in Stacks.js and JSON compatible environments.
 
@@ -412,7 +405,7 @@ Proposed below is an updated interface representation for Clarity primitives for
 }
 ```
 
-### Post-conditions
+#### Post-conditions
 
 `0x00` STX
 
@@ -449,7 +442,7 @@ Proposed below is an updated interface representation for Clarity primitives for
 }
 ```
 
-### Test vectors
+#### Test vectors
 
 Listed below are some examples of the potentially unclear representations:
 
@@ -493,35 +486,36 @@ Listed below are some examples of the potentially unclear representations:
   }
   ```
 
-## Provider registration
+### Provider registration
 
 Wallets can register their aliased provider objects according to WBIP-004.
 
-# Ratification
+## Ratification
 
 This SIP is considered ratified after at least two major wallets in the Stacks ecosystem have implemented and launched the new standard.
 
-# Links
+## Appendix
 
 WBIPs
 
 > Documents partially worked on in the working group with Leather, Xverse, and others.
 
-- [WBIP-001: Wallet API JSON RPC](https://wbips.netlify.app/wbips/WBIP001)
-- [WBIP-002: Namespaces](https://wbips.netlify.app/wbips/WBIP002)
-- [WBIP-002: Batching](https://wbips.netlify.app/wbips/WBIP007)
+[^1]: [WBIP-001: Wallet API JSON RPC](https://wbips.netlify.app/wbips/WBIP001)
+[^2]: [WBIP-002: Namespaces](https://wbips.netlify.app/wbips/WBIP002)
+[^3]: [WBIP-004: Registration](https://wbips.netlify.app/wbips/WBIP004)
+[^4]: [WBIP-007: Batching](https://wbips.netlify.app/wbips/WBIP007)
 
 Discussions
 
-- [Wallet JSON RPC API, Request Accounts #2378](https://github.com/leather-wallet/extension/pull/2378)
-- [Sign-in with stacks #70](https://github.com/stacksgov/sips/pull/70)
-- [Add API to request addresses #2371](https://github.com/leather-wallet/extension/issues/2371)
-- [SIP for Wallet Protocol #59](https://github.com/stacksgov/sips/pull/59)
-- [SIP for Authentication Protocol #50](https://github.com/stacksgov/sips/pull/50)
+[^5]: [Wallet JSON RPC API, Request Accounts #2378](https://github.com/leather-wallet/extension/pull/2378)
+[^6]: [Sign-in with stacks #70](https://github.com/stacksgov/sips/pull/70)
+[^7]: [Add API to request addresses #2371](https://github.com/leather-wallet/extension/issues/2371)
+[^8]: [SIP for Wallet Protocol #59](https://github.com/stacksgov/sips/pull/59)
+[^9]: [SIP for Authentication Protocol #50](https://github.com/stacksgov/sips/pull/50)
 
 References
 
-- [WebBTC Request Standard](https://balls.dev/webbtc/extendability/extending/)
-- [WBIPs](https://wbips.netlify.app/wbips)
-- [Xverse WalletConnect JSON API](https://docs.xverse.app/wallet-connect/reference/api_reference)
-- [Schema.org Person](https://schema.org/Person)
+[^10]: [WebBTC Request Standard](https://balls.dev/webbtc/extendability/extending/)
+[^11]: [WBIPs](https://wbips.netlify.app/wbips)
+[^12]: [Xverse WalletConnect JSON API](https://docs.xverse.app/wallet-connect/reference/api_reference)
+[^13]: [Schema.org Person](https://schema.org/Person)

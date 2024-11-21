@@ -32,8 +32,8 @@ This proposal's goal is to standardize JSON compatible interfaces for use with w
 The current Connect system, which has existed for several years, is primarily utilized by web applications for interfacing with wallets.
 However, many aspects of the existing "Connect" and "Auth" libraries are no longer required, leading to unnecessary complexity (e.g., wrapping RPC payloads in jsontokens) and lack of clear definitions (e.g., undefined serialization for non-JSON compatible data structures) in wallet connectivity.
 
-Recent attempts to standardize the interface (https://github.com/stacksgov/sips/pull/59, https://github.com/stacksgov/sips/issues/117) have sparked valuable discussions but have not culminated in a ratified standard, largely due to the stable state of the existing system.
-This SIP aims to address these issues by adopting the WBIPs standards, which offer a more suitable RPC-style interface for modern web applications.
+Recent attempts[^21][^22][^23][^24][^25][^26] to standardize the interface have sparked valuable discussions but have not culminated in a ratified standard, largely due to the stable state of the existing system.
+This SIP aims to address these issues by adopting the WBIPs standards[^11], which offer a more suitable RPC-style interface for modern web applications.
 The simplified protocol will allow integration without heavy dependencies (like Auth) and provider a more extendable interface for wallets.
 
 Additionally, this SIP is motivated by the increased traffic of Ordinal inscriptions on Bitcoin and the Stacks ecosystem growing closer to Bitcoin.
@@ -236,7 +236,7 @@ Parameter properties
 
 Result properties
 
-- `profile`: `object` updated Schema.org Person object[^12]
+- `profile`: `object` updated Schema.org Person object[^13]
 
 ### Listeners
 
@@ -488,11 +488,12 @@ Listed below are some examples of the potentially unclear representations:
 
 ### Provider registration
 
-Wallets can register their aliased provider objects according to WBIP-004.
+Wallets can register their aliased provider objects according to WBIP-004[^3] or.
 
 ## Ratification
 
-This SIP is considered ratified after at least two major wallets in the Stacks ecosystem have implemented and launched the new standard.
+This SIP is considered ratified after Xverse and Leather (currently the largest wallets in the Stacks ecosystem) have implemented and launched the new standard.
+Once wallets have implemented the new standard, tooling (e.g. Stacks Connect) can be updated to support the new standard as well.
 
 ## Appendix
 
@@ -507,15 +508,17 @@ WBIPs
 
 Discussions
 
-[^5]: [Wallet JSON RPC API, Request Accounts #2378](https://github.com/leather-wallet/extension/pull/2378)
-[^6]: [Sign-in with stacks #70](https://github.com/stacksgov/sips/pull/70)
-[^7]: [Add API to request addresses #2371](https://github.com/leather-wallet/extension/issues/2371)
-[^8]: [SIP for Wallet Protocol #59](https://github.com/stacksgov/sips/pull/59)
-[^9]: [SIP for Authentication Protocol #50](https://github.com/stacksgov/sips/pull/50)
+[^21]: [Wallet JSON RPC API, Request Accounts #2378](https://github.com/leather-wallet/extension/pull/2378)
+[^22]: [Sign-in with stacks #70](https://github.com/stacksgov/sips/pull/70)
+[^23]: [Add API to request addresses #2371](https://github.com/leather-wallet/extension/issues/2371)
+[^24]: [SIP for Wallet Protocol #59](https://github.com/stacksgov/sips/pull/59)
+[^25]: [SIP for Authentication Protocol #50](https://github.com/stacksgov/sips/pull/50)
+[^26]: [Wallet client API](https://github.com/stacksgov/sips/issues/117)
 
 References
 
 [^10]: [WebBTC Request Standard](https://balls.dev/webbtc/extendability/extending/)
-[^11]: [WBIPs](https://wbips.netlify.app/wbips)
+[^11]: [WBIPs](https://wbips.netlify.app)
 [^12]: [Xverse WalletConnect JSON API](https://docs.xverse.app/wallet-connect/reference/api_reference)
 [^13]: [Schema.org Person](https://schema.org/Person)
+[^14]: [Wallet Standard](https://github.com/wallet-standard/wallet-standard)

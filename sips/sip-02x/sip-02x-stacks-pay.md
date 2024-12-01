@@ -57,7 +57,8 @@ Stacks Pay defines several standard operations that specify the type of payment 
 - operation: 'support'
 
 - recipient: A valid Stacks address.
-- if the `token` parameter is not 'STX', functionName defaults to 'transfer' by the wallet.
+
+- If the token parameter is not 'STX', the functionName defaults to 'transfer' by the wallet.
 
 **Optional Parameters:**
 
@@ -127,7 +128,7 @@ contractName, functionName: Wallets MUST ignore these parameters if present.
 
 - expiresAt: MAY be included. If included wallets MUST NOT process links after the expiry date/time.
 
-- invoiceNumber
+- invoiceNumber: MAY be included by the link creator to track individual requests.
 
 - memo: MAY be included. MUST NOT include personal information.
 
@@ -149,16 +150,16 @@ Applications **MAY** define custom operations for specific use cases. Custom ope
 
 ### Parameter Table (summary)
 
-| Opertation | token | recipient | amount | description | memo | expiresAt | contractName | functionName | dueDate |
-| ---------- | ----- | --------- | ------ | ----------- | ---- | --------- | ------------ | ------------ | ------- |
-| support    | O     | R         | I      | O           | O    | I         | I            | I            | I       |
-| invoice    | R     | R         | R      | O           | O    | O         | I            | I            | O       |
-| mint       | I     | O         | R      | O           | O    | O         | R            | R            | I       |
-| custom     | O\*   | O\*       | O\*    | O\*         | O\*  | O\*       | O\*          | O\*          | O\*     |
+| Operation | token | recipient | amount | description | memo | expiresAt | contractName | functionName | dueDate |
+| --------- | ----- | --------- | ------ | ----------- | ---- | --------- | ------------ | ------------ | ------- |
+| support   | O     | R         | I      | O           | O    | I         | I            | I            | I       |
+| invoice   | R     | R         | R      | O           | O    | O         | I            | I            | O       |
+| mint      | I     | O         | R      | O           | O    | O         | R            | R            | I       |
+| custom    | O\*   | O\*       | O\*    | O\*         | O\*  | O\*       | O\*          | O\*          | O\*     |
 
 ```
 R - required
-O - optional
+O - optionalas determined
 I - ignored
 O* - custom links are defined on a per application basis
 ```
@@ -181,27 +182,15 @@ The Stacks Pay URL scheme **MUST** use the custom protocol `web+stx:`, followed 
 
 Format of the url string prior to encoding:
 
-```
-
-<operation>?recipient=<recipient>&token=<token>&amount=<amount>[&additional_params]
-
-```
+`<operation>?recipient=<recipient>&token=<token>&amount=<amount>[&additional_params]`
 
 For example, here is the unencoded url using 'STX' token:
 
-```
-
-invoice?recipient=SP3FBR...&token=STX&amount=1000&description=Payment%20for%20Services
-
-```
+`invoice?recipient=SP3FBR...&token=STX&amount=1000&description=Payment%20for%20Services`
 
 And here is an example using the SIP-010 Nothing Token:
 
-```
-
-invoice?operation=invoice&recipient=SP3FBR...&token=SP32AEEF6WW5Y0NMJ1S8SBSZDAY8R5J32NBZFPKKZ.nope&amount=1000&description=Payment+for+services
-
-```
+`invoice?operation=invoice&recipient=SP3FBR...&token=SP32AEEF6WW5Y0NMJ1S8SBSZDAY8R5J32NBZFPKKZ.nope&amount=1000&description=Payment+for+services`
 
 - **`operation`**: Specifies the type of action or transaction. It **MUST** be included and be a string value.
 
@@ -209,19 +198,11 @@ invoice?operation=invoice&recipient=SP3FBR...&token=SP32AEEF6WW5Y0NMJ1S8SBSZDAY8
 
 Example encoded Stack Pay url:
 
-```
-
-stx1wajky2mnw3u8qcte8ghj76twwehkjcm98ahhqetjv96xjmmw845kuan0d93k2fnjv43kjurfv4h8g02n2qe9y4z9xarryv2wxer4zdjzgfd9yd62gar4y46p2sc9gd23xddrjkjgggu5k5jnye6x76m9dc74x4zcyesk6mm4de6r6vfsxqczver9wd3hy6tsw35k7m3a2pshjmt9de6zken0wg4hxetjwe5kxetnyejhsurfwfjhxst585erqv3595cnytfnx92ryve9xdqn2wf9xdqn2w26juk65n
-
-```
+`stx1wajky2mnw3u8qcte8ghj76twwehkjcm98ahhqetjv96xjmmw845kuan0d93k2fnjv43kjurfv4h8g02n2qe9y4z9xarryv2wxer4zdjzgfd9yd62gar4y46p2sc9gd23xddrjkjgggu5k5jnye6x76m9dc74x4zcyesk6mm4de6r6vfsxqczver9wd3hy6tsw35k7m3a2pshjmt9de6zken0wg4hxetjwe5kxetnyejhsurfwfjhxst585erqv3595cnytfnx92ryve9xdqn2wf9xdqn2w26juk65n`
 
 And here is an example final encoded URL suitable for sharing as a link or QR Code.
 
-```
-
-web+stx:stx1wajky2mnw3u8qcte8ghj76twwehkjcm98ahhqetjv96xjmmw845kuan0d9...
-
-```
+`web+stx:stx1wajky2mnw3u8qcte8ghj76twwehkjcm98ahhqetjv96xjmmw845kuan0d9...`
 
 ### Encoding and Decoding
 

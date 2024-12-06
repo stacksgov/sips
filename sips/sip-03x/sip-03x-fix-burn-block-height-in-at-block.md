@@ -2,7 +2,7 @@
 
 SIP Number: 03x
 
-Title: Fix `bburn-block-height` in `at-block`
+Title: Fix `burn-block-height` in `at-block`
 
 Authors: Jeff Bencin <jbencin@hiro.so>
 
@@ -33,7 +33,7 @@ The correct behavior would be to return the burn block height **at the height of
 This behavior only occurs in Stacks Epoch 3.0 and above, and is due to a change in how the burn block is calculated for Nakamoto blocks.
 `burn-block-height` returns the expected result inside of `at-block` in Stacks Epoch 2.x and below.
 
-The proposed fix is to correct the behavior for `burn-block-height` for Stacks Epoch 3.1 and above, and leave the incorrect behavior in Stacks Epoch 3.0, to avoid breaking consensus.
+The proposed fix is to correct the behavior for `burn-block-height` in Stacks Epoch 3.1 and above, and leave the incorrect behavior in Stacks Epoch 3.0, to avoid breaking consensus.
 
 ## Examples
 
@@ -78,7 +78,13 @@ Where we would expect it to return:
 
 # Specification
 
-TODO
+When called in the context of `at-block <stacks-block-id>`, `burn-block-height` will return the following result based on the current Stacks Epoch:
+
+| Epoch   | `burn-block-height` returns                                      |
+| ------: | ---------------------------------------------------------------- |
+| < 3.0   | Height of burn block associated with parent of `stacks-block-id` |
+|   3.0   | Height of burn block associated with latest Stacks block         |
+| > 3.0   | Height of burn block associated with `stacks-block-id`           |
 
 # Related Work
 
@@ -95,7 +101,7 @@ N/A
 
 # Backwards Compatibility
 
-The behavior for contracts deployed prior to Stacks Epoch 3.1 will not change
+To avoid breaking consensus, the behavior of `burn-block-height` in blocks prior to Stacks Epoch 3.1 will not change
 
 # Activation
 

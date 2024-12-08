@@ -18,7 +18,7 @@
 
 **Type:** Consensus (hard fork)
 
-**Status:** Draft
+**Status:** Ratified
 
 **Created:** 2024-11-06
 

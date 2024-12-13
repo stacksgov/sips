@@ -39,12 +39,12 @@ Liquidity pools are a fundamental component of decentralized finance, enabling a
 3. Swapping one token for the other
 4. Querying pool state and quotes
 
-The standard introduces an opcode buffer system that enables advanced pool operations while maintaining backward compatibility. This allows for future extensions such as concentrated liquidity, flash loans, and advanced routing without requiring interface changes. By standardizing the interface for liquidity pools, we enable:
+The standard introduces an opcode buffer system that enables advanced pool operations while maintaining backward compatibility. This allows for future extensions such as oracles, concentrated liquidity, limit orders, and advanced routing without requiring interface changes. By standardizing the interface for liquidity pools, we enable:
 
 - Consistent interaction patterns across different implementations
 - Development of swap aggregators and routing engines
 - Common tooling and integration patterns
-- Future extensibility through memo commands
+- Future extensibility through optional opcodes
 
 # Specification
 

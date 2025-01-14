@@ -195,8 +195,10 @@ Result properties
 
 Parameter properties
 
-- `message`: `string` Clarity value, hex-encoded
-- `domain`: `string` hex-encoded (defined by SIP-018)
+- `message`: `ClarityValue`
+  - where `ClarityValue` is `string | object` hex-encoded or JSON representation
+- `domain`: `ClarityTupleValue`
+  - where `ClarityTupleValue` (defined by SIP-018) is a Clarity "tuple" as `string | object` hex-encoded or JSON representation
 
 Result properties
 
@@ -204,6 +206,8 @@ Result properties
 - `publicKey`: `string` hex-encoded
 
 #### Method `stx_getAddresses`
+
+> **Note**: This method can be used similarly to legacy "connect" methods, where the first account selection also acts as an approval of the site/domain.
 
 Result properties
 
@@ -215,6 +219,8 @@ Result properties
 
 > **Comment**: This method is similar to `stx_getAddresses`.
 > It was added to provide better backwards compatibility for applications using Gaia.
+
+> **Note**: This method can be used similarly to legacy "connect" methods, where the first account selection also acts as an approval of the site/domain.
 
 Result properties
 

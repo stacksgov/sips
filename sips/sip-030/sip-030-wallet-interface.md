@@ -43,12 +43,17 @@ So this SIP aims to capture the important features for the Stacks ecosystem, wit
 
 The proposed changes are listed as follows:
 
-Specify [JSON-RPC 2.0](https://www.jsonrpc.org/specification) compatible methods and payloads for wallet interaction.
-These can be used via a browser object (i.e., via the `window.WalletProvider.request` method) or similar interfaces like WalletConnect.
+- Use [JSON-RPC 2.0](https://www.jsonrpc.org/specification) as the underlying protocol for wallet interaction.
+- Specify compatible RPC methods and payloads for wallet interaction.
+- Define a recommended provider object and its discovery mechanism.
+
+> **Note**: The methods can be used via the mentioned browser object (i.e., via the `window.WalletProvider.request` method), but also through similar interfaces like WalletConnect.
 
 ## Backwards Compatibility
 
 The implementation of this proposal is not necessarily backward compatible.
+Notably, app-specific private keys for domains have been removed from the connect protocol, but can still be accessed via the `gaiaAppKey` field in `stx_getAccounts`.
+
 Wallets implementing the new standard may maintain the previous system to support legacy applications during a transition period or indefinitely.
 Existing applications using the current Auth system should continue to operate, but immediate changes are recommended once this SIP is ratified.
 

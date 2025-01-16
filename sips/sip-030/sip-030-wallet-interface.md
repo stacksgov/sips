@@ -126,7 +126,7 @@ Result properties
 - `txid`: `string` hex-encoded
 - `transaction`: `string` hex-encoded raw transaction
 
-#### Method `stx_transferSip10Nft`
+#### Method `stx_transferSip9Nft`
 
 Parameter properties
 

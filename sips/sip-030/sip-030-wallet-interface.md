@@ -520,7 +520,7 @@ For example, using the WBIP-004[^3] standard or Wallet Standard[^14].
 
 ## Activation
 
-This SIP is considered _Ratified_ after Xverse and Leather (currently the largest wallets in the Stacks ecosystem) have implemented and launched the new standard.
+This SIP is considered _Ratified_ after at least two wallet providers with significant user adoption (> 10,000 monthly active users) have implemented and launched the new standard.
 
 Once wallets have implemented the new standard, tooling (e.g. Stacks Connect[^15]) can be updated to support the new standard as well.
 This SIP is not consensus breaking, thus the timeline for activation is not tied to Stacks releases.

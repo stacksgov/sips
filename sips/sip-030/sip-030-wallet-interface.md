@@ -294,9 +294,11 @@ Relying on solely on hex-encoding also poses difficulties when building Stacks e
 
 #### Clarity values
 
-Proposed below is an updated interface representation for Clarity primitives for use in Stacks.js and JSON compatible environments.
+Clarity values should be represented in the following format for use in Stacks.js and JSON compatible environments:
 
-> **Comment**: For encoding larger than JS `Number` big integers, `string` is used.
+> **Comment**: For encoding larger than JS `Number` big integers, `string` is used with `bigint` any compatible values.
+
+> `ClarityValue` is `string | object` hex-encoded or JSON representation of any of the below Clarity values.
 
 `0x00` `int`
 
@@ -364,7 +366,7 @@ Proposed below is an updated interface representation for Clarity primitives for
 ```ts
 {
   type: 'ok',
-  value: object // Clarity value
+  value: ClarityValue // Clarity value
 }
 ```
 
@@ -373,7 +375,7 @@ Proposed below is an updated interface representation for Clarity primitives for
 ```ts
 {
   type: 'err',
-  value: object // Clarity value
+  value: ClarityValue // Clarity value
 }
 ```
 
@@ -390,7 +392,7 @@ Proposed below is an updated interface representation for Clarity primitives for
 ```ts
 {
   type: 'some',
-  value: object // Clarity value
+  value: ClarityValue // Clarity value
 }
 ```
 
@@ -399,7 +401,7 @@ Proposed below is an updated interface representation for Clarity primitives for
 ```ts
 {
   type: 'list',
-  value: object[] // Array of Clarity values
+  value: ClarityValue[] // Array of Clarity values
 }
 ```
 
@@ -408,7 +410,7 @@ Proposed below is an updated interface representation for Clarity primitives for
 ```ts
 {
   type: 'tuple',
-  value: Record<string, object> // Record of Clarity values
+  value: Record<string, ClarityValue> // Record of Clarity values
 }
 ```
 
@@ -463,7 +465,7 @@ Proposed below is an updated interface representation for Clarity primitives for
   address: 'origin' | string | `${string}.${string}`, // Stacks c32-encoded, with optional contract name suffix
   condition: 'sent' | 'not-sent',
   asset: `${string}.${string}::${string}` // address with contract name suffix with asset suffix, Stacks c32-encoded
-  assetId: object, // Clarity value
+  assetId: ClarityValue, // Clarity value
 }
 ```
 
@@ -479,8 +481,8 @@ Listed below are some examples of the potentially unclear representations:
   {
     type: "list",
     value: [
-      { type: "int", value: "4"},
-      { type: "int", value: "8"},
+      { type: "int", value: "4" },
+      { type: "int", value: "8" },
     ]
   }
   ```
@@ -488,7 +490,7 @@ Listed below are some examples of the potentially unclear representations:
   ```
   {
     type: "err",
-    value: { type: "uint", value: "4"},
+    value: { type: "uint", value: "4" },
   }
   ```
 - "sends more than 10000 uSTX" =

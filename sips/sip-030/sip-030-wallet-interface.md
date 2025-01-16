@@ -235,6 +235,16 @@ Result properties
   - `gaiaHubUrl`: `string` URL
   - `gaiaAppKey`: `string` hex-encoded
 
+#### Method `stx_getNetworks`
+
+Result properties
+
+- `active`: `string` network identifier
+- `networks`: `{}[]`
+  - `id`: `string`
+  - `chainId`: `number`
+  - `transactionVersion`: `number`
+
 #### Method `stx_updateProfile`
 
 Parameter properties
@@ -255,12 +265,19 @@ In addition to the request interface, event listeners may be provided via the `.
 
 The event name should be closer to nouns than verbs and doesn't use the `on` prefix from DOM naming conventions.
 
-#### Event `accountChange`
+#### Event `stx_accountChange`
 
-`listener: (accounts: {}[]) => void`
+- `listener: (accounts: {}[]) => void`
 
 > `accounts` as defined above in `stx_getAccounts`.
 > The first account is considered the default account (and may be the only "active" account in a wallet).
+
+#### Event `stx_networkChange`
+
+- `listener: (data: GetNetworksResult) => void`
+  - where `GetNetworksResult` matches the `stx_getNetworks` result type
+
+> This event may be emitted when the active network changes and on first load of the wallet/site.
 
 ### Error Codes
 

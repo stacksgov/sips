@@ -31,7 +31,7 @@ Recent attempts[^21][^22][^23][^24][^25][^26] to standardize the interface have 
 This SIP aims to address these issues by adopting the WBIPs standards[^11], which offer a more suitable RPC-style interface for modern web applications.
 The simplified protocol will allow integration without heavy dependencies (like Auth) and provide a more extendable interface for wallets.
 
-Additionally, this SIP is motivated by the increased traffic of Ordinal inscriptions on Bitcoin and the Stacks ecosystem growing closer to Bitcoin.
+Additionally, this SIP is motivated by the increased traffic of Ordinal inscriptions on Bitcoin and upcoming integrations like sBTC that require standardized Stacks and Bitcoin transaction signing capabilities in wallets.
 The community has recognized the need for a more unified approach to wallet connectivity (e.g. Bitcoin and PSBTs for previously Stacks-only wallets).
 By adopting the new standard, we aim to align the community towards a common and modern protocol for wallet interaction in web applications.
 Importantly, the decision to use an existing standard (rather than designing a new one or reworking Auth) is intentional — to avoid further division or split ownership within the community.

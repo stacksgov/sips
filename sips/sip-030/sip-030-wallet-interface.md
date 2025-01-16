@@ -532,6 +532,15 @@ This SIP is designed as a replacement for the existing Connect system[^15], due 
 The standard builds on top of the following work: the webbtc `.request` standard[^10], Wallet Standard[^14], and WBIPs[^11].
 This SIP is meant to be compatible with various use cases and is meant as a formal specification to unify and drive forward the wallet RPC ecosystem.
 
+### Auth
+
+One of the core libraries referenced in this proposal is often called "Auth", which is packaged within the existing Stacks "Connect" libraries[^15], as well as separately as `@stacks/auth` on npm.
+This Auth system is a legacy Blockstack library, which was never specified in a SIP.
+It relies on wrapping RPC payloads in jsontokens.
+
+While Auth served as an essential building block for the legacy Blockstack system, its assumptions are no longer strictly necessary.
+By using a simpler JSON-RPC 2.0–based approach for wallet connectivity, this SIP removes the need for Auth.
+
 ## Appendix
 
 <!-- WBIPs -->

@@ -68,7 +68,7 @@ To ensure serializability, consider these notes:
 - Bytes are serialized as hex-encoded strings (without a 0x prefix).
 - Predefined formats from previous SIPs are used where applicable.
 - Addresses are serialized as Stacks c32-encoded strings.
-- Clarity values, post-conditions, and transactions are serialized to bytes (defined by SIP-005) and used as hex-encoded strings.
+- Clarity values, post-conditions, and transactions may be serialized to bytes (defined by SIP-005) and used as hex-encoded strings.
 
 ### Methods
 
@@ -84,6 +84,9 @@ On the predominant `StacksProvider` global object, the methods can be used witho
 ##### General parameters (for transaction methods)
 
 The following definitions can be used in the transaction methods.
+
+> **Note**: The types `PostCondition` and `ClarityValue` are used in the below definitions.
+> They are defined later in this document under [JSON Representations](#json-representations).
 
 Parameter properties
 

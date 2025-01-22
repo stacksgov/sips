@@ -183,6 +183,7 @@ Result properties
 Parameter properties
 
 - `transaction`: `string` hex-encoded raw transaction
+- `broadcast?`: `boolean` whether transaction is to be broadcast, defaults to false
 
 Result properties
 

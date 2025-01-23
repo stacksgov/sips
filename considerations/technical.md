@@ -37,7 +37,7 @@ Created-by: SIP-000
 
 **0xdima**: Building SatScreener, a Bitcoin L1/L2 analytics platform with real time data for traders. Co-Founder of the Stx-20 protocol, an on-chain metaprotocol for inscriptions on stacks.
 
-**Setzeus**: Setzeus is the founder of StrataLabs, a Bitcoin studio that consults L1 & L2s (such as Stacks) / launched a Bitcoin development environment (BitScript). Through his work at TrustMachines he's been hacking away on sBTC & is eager to continue contributing to the Stacks community in anyway.
+**Setzeus**: Setzeus is the founder of StrataLabs, a Bitcoin studio that consults L1 & L2s (such as Stacks) / launched a Bitcoin development environment (BitScript). Through his work at TrustMachines he's been hacking away on sBTC & is eager to continue contributing to the Stacks community in any way.
 
 **Vlad**: CTO and co-founder of multiple Stacks and Bitcoin based projects, including Asigna, STX20, and sOrdinals. Contributor to the multisig SIP and its implementation, as well as to the Stacks ecosystem opensource projects.
 

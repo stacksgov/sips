@@ -5,12 +5,14 @@ Chairperson: Brice Dobry
 Members:
 
 - Aaron Blankstein <aaron@hiro.so>
+- Ashton Stephens <ashton@trustmachines.co>
 - Brice Dobry <brice@hiro.so>
 - j2p2 <i.digg.tech@gmail.com>
 - Friedger <mail@friedger.de>
 - Jesse Wiley <jesse@stacks.org>
 - Mike Cohen <mjoecohen@gmail.com>
 - 0xdima <dima@stackscreener.io>
+- Setzeus <jnajera1917@gmail.com>
 - Vlad <vlad@asigna.io>
 
 Discussions-to: https://github.com/stacksgov/sips
@@ -21,9 +23,11 @@ Created-by: SIP-000
 
 **Aaron Blankstein**: Aaron is a staff engineer at Hiro, contributing to the Stacks blockchain, Clarity, and Hiro’s subnets implementation. He has been working on the Stacks blockchain for 5+ years, working on Proof-of-Transfer consensus, Clarity, and other projects.
 
+**Ashton Stephens**: Ashton is an Engineering Manager with a background in computer architecture, robotics, and innovation leadership. Contributed to Stacks as core designer of the sBTC protocol and Stacks' Bitcoin MEV reduction strategy.
+
 **Brice Dobry (Chairperson)**: Brice is a senior engineer at Hiro, working on Clarinet and other developer tools, and contributing to the Stacks blockchain. Coming from a background in compilers, programming languages, and analysis tools, he is passionate about helping developers build productively, efficiently and safely.
 
-**jsp2**: Computer Engineer and Clarity Developer. Won First and Second place in Clarity Course Cohort #2 Hackathon. Contributed to Stacks as a SIP editor; co-founded leos.guru, an educational platform, and chat.stacksgpt.xyz, a Q&A bot for Stacks & Bitcoin.
+**j2p2**: Computer Engineer and Clarity Developer. Won First and Second place in Clarity Course Cohort #2 Hackathon. Contributed to Stacks as a SIP editor; co-founded leos.guru, an educational platform, and chat.stacksgpt.xyz, a Q&A bot for Stacks & Bitcoin.
 
 **Friedger**: Friedger is an entredeveloper based in Europe. He contributed to the Stacks ecosystem in various forms.
 
@@ -32,6 +36,8 @@ Created-by: SIP-000
 **Mike Cohen**: Independent contributor to Stacks blockchain. Developer of stx.eco supporting Stacks governance and protocol upgrade voting.
 
 **0xdima**: Building SatScreener, a Bitcoin L1/L2 analytics platform with real time data for traders. Co-Founder of the Stx-20 protocol, an on-chain metaprotocol for inscriptions on stacks.
+
+**Setzeus**: Setzeus is the founder of StrataLabs, a Bitcoin studio that consults L1 & L2s (such as Stacks) / launched a Bitcoin development environment (BitScript). Through his work at TrustMachines he's been hacking away on sBTC & is eager to continue contributing to the Stacks community in any way.
 
 **Vlad**: CTO and co-founder of multiple Stacks and Bitcoin based projects, including Asigna, STX20, and sOrdinals. Contributor to the multisig SIP and its implementation, as well as to the Stacks ecosystem opensource projects.
 

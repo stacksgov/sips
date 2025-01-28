@@ -99,6 +99,7 @@ Parameter properties
   - where `PostCondition` is `string | object` hex-encoded or JSON representation
 - `postConditionMode?`: `'allow' | 'deny'`
 - `sponsored?`: `boolean`, defaults to `false`
+- `broadcast?`: boolean whether transaction is to be broadcast, defaults to `true`
 - ~~`attachment?`~~ _removed_
 - ~~`appDetails`~~ _removed_
 - ~~`onFinish`~~ _removed_

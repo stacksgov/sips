@@ -20,7 +20,7 @@
 
 **Type:** Operation  
 
-**Status:** Draft  
+**Status:** Ratified 
 
 **Created:** 2024-06-21
 

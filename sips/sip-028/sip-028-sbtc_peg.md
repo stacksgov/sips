@@ -218,6 +218,18 @@ For this SIP to pass, 70% of all liquid STX committed by voting must be in favor
 
 We believe that these thresholds are sufficient to demonstrate interest from Stackers -- Stacks users who have a long-term interest in the Stacks blockchain's successful operation -- in performing this upgrade.
 
+### Activation Status
+
+At the end of Bitcoin block height 869,749, the following vote was recorded: **A total of 135,940,943 STX participated, with 135,801,729 STX (99.90%) voting 'Yes' and 139,214 STX (0.10%) voting 'No'.**
+
+A breakdown of the vote is as follows:
+- For STX locked in stacking, a total of 126,084,232 STX participated. Of this, 125,945,571 STX (99.89%) from 77 accounts voted 'Yes', while 138,661 STX (0.11%) from 1 account voted 'No'.
+- For unlocked STX, a total of 9,718,049 STX participated. Of this, 9,717,496 STX (99.99%) from 1,175 accounts voted 'Yes', while 553 STX (0.01%) from 40 accounts voted 'No'.
+
+All voting criteria from STX holders have been met. A breakdown of the transactions can be found [here](https://stx.eco/dao/proposals/SP3JP0N1ZXGASRJ0F7QAHWFPGTVK9T2XNXDB908Z.sip028-signer-criteria-for-sbtc/results2).
+
+The API where results come from can be found [here](https://github.com/radicleart/stxeco-api-vote).
+
 ## Appendix
 [1] https://github.com/stacks-network/sbtc/issues/52
 

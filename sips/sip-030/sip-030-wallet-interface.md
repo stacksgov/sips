@@ -49,16 +49,6 @@ The proposed changes are listed as follows:
 
 > **Note**: The methods can be used via the mentioned browser object (i.e., via the `window.WalletProvider.request` method), but also through similar interfaces like WalletConnect.
 
-## Backwards Compatibility
-
-The implementation of this proposal is not necessarily backward compatible.
-Notably, app-specific private keys for domains have been removed from the connect protocol, but can still be accessed via the `gaiaAppKey` field in `stx_getAccounts`.
-
-Wallets implementing the new standard may maintain the previous system to support legacy applications during a transition period or indefinitely.
-Existing applications using the current Auth system should continue to operate, but immediate changes are recommended once this SIP is ratified.
-
-## Reference Implementations
-
 ### Notes on Serialization
 
 To ensure serializability, consider these notes:
@@ -79,7 +69,6 @@ Parameters should be considered only as recommendations for the wallet, and the 
 
 Methods can be namespaced under `stx_` if used in more generic settings and other more Ethereum inspired domains.
 In other cases (e.g. `WalletConnect`), the namespace may already be given by metadata (e.g. a `chainId` field) and can be omitted.
-On the predominant `StacksProvider` global object, the methods can be used without a namespace, but wallets may add namespaced aliases for convenience.
 
 ##### General parameters (for transaction methods)
 
@@ -184,7 +173,7 @@ Result properties
 Parameter properties
 
 - `transaction`: `string` hex-encoded raw transaction
-- `broadcast?`: `boolean` whether transaction is to be broadcast, defaults to false
+- `broadcast?`: `boolean` whether transaction is to be broadcast, defaults to `false`
 
 Result properties
 
@@ -224,6 +213,7 @@ Result properties
 - `addresses`: `{}[]`
   - `address`: `string` address, Stacks c32-encoded
   - `publicKey`: `string` hex-encoded
+  - `network?`: `string` network identifier
 
 #### Method `stx_getAccounts`
 
@@ -288,7 +278,29 @@ The event name should be closer to nouns than verbs and doesn't use the `on` pre
 
 Errors thrown by request methods should match existing JSON-RPC 2.0 error codes.
 This way, the user or an intermediary library can handle them in a standardized way.
-Otherwise, no additional error codes are defined in this SIP.
+
+#### Standard JSON-RPC Error Codes
+
+- **-32700**: Parse Error - Invalid JSON received by server while parsing
+- **-32600**: Invalid Request - Invalid Request object
+- **-32601**: Method Not Found - Method not found/available
+- **-32602**: Invalid Params - Invalid method parameters
+- **-32603**: Internal Error - Internal JSON-RPC error
+
+#### Implementation-Defined Wallet Error Codes
+
+Implementation-defined wallet errors range from `-32099` to `-32000`.
+
+- **-32000**: User Rejection - User rejected the request
+- **-32001**: Method Address Mismatch - Address mismatch for the requested method
+- **-32002**: Method Access Denied - Access denied for the requested method
+
+#### Custom Error Codes
+
+Custom error codes outside the JSON-RPC error code range using the `-31099` to `-31000` range.
+
+- **-31000**: Unknown Error - Unknown external error (does not originate from the wallet)
+- **-31001**: User Canceled - User canceled the request (may not originate from the wallet)
 
 ### JSON Representations
 
@@ -520,8 +532,26 @@ Listed below are some examples of the potentially unclear representations:
 
 ### Provider registration
 
-Wallets can register their aliased provider objects however they see fit.
-For example, using the WBIP-004[^3] standard or Wallet Standard[^14].
+Applications may hardcode known wallets, i.e. store their provider name.
+Libraries may use discovery mechanisms like the WBIP-004[^3] standard or Wallet Standard[^14].
+
+Using a shared global object between multiple wallets is discouraged.
+The historical `window.StacksProvider` object has led to issues in the past, where overwriting the same object has led to undefined wallet registration behavior.
+
+## Reference Implementations
+
+The following git tags provide examples of how the new standard can be implemented in TypeScript, as well as validation libraries:
+
+- [Leather Wallet — JSON RPC](https://github.com/leather-io/mono/blob/bf81686cd1ab6ee6c8f830f345c2093485de176c/packages/rpc/src/index.ts#L130-L150)
+- [Leather Wallet — Method Schema](https://github.com/leather-io/mono/blob/aefd3e56e2d865fbf041ccebea0add21ca321941/packages/rpc/src/methods/stacks/stx-call-contract.ts#L20-L21)
+
+## Backwards Compatibility
+
+The implementation of this proposal is not necessarily backward compatible.
+Notably, app-specific private keys for domains have been removed from the connect protocol, but can still be accessed via the `gaiaAppKey` field in `stx_getAccounts`.
+
+Wallets implementing the new standard may maintain the previous system to support legacy applications during a transition period or indefinitely.
+Existing applications using the current Auth system should continue to operate, but immediate changes are recommended once this SIP is ratified.
 
 ## Activation
 

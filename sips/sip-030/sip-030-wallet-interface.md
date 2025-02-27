@@ -22,6 +22,11 @@ This SIP proposes common RPC methods to use for the Stacks blockchain's "Connect
 The goal is to replace the current Connect interface, primarily used by web applications to connect with browser extensions and mobile apps with a more straightforward protocol.
 This proposal's goal is to standardize JSON compatible interfaces for use with wallet interfaces.
 
+# License and Copyright
+
+This SIP is made available under the terms of the BSD-2-Clause license, available at https://opensource.org/licenses/BSD-2-Clause.
+This SIP’s copyright is held by the Stacks Open Internet Foundation.
+
 ## Introduction
 
 The current Connect system[^15], which has existed for several years, is primarily utilized by web applications for interfacing with wallets.

@@ -2,7 +2,7 @@
 
 SIP Number: `030`
 
-Title: Integration of a Modern Stacks Wallet Interface Standard
+Title: Definition of a Modern Stacks Wallet Interface Standard
 
 Authors: [aryzing](https://github.com/aryzing), [janniks](https://github.com/janniks), [kyranjamie](https://github.com/kyranjamie), [m-aboelenein](https://github.com/m-aboelenein)
 

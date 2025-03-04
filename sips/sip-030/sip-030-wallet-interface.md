@@ -137,7 +137,7 @@ Parameter properties
 - `asset`: `string` address, Stacks c32-encoded, with contract name suffix
 - `assetId`: `ClarityValue`
 
-`where`
+where
 
 - `ClarityValue`: `string | object` hex-encoded or JSON representation
 

@@ -121,7 +121,7 @@ Result properties
 Parameter properties
 
 - `recipient`: `string` address, Stacks c32-encoded
-- `asset`: `string` address, Stacks c32-encoded, with contract name suffix
+- `asset`: `string` address, Stacks c32-encoded, with contract name suffix and asset suffix
 - `amount`: `number | string` BigInt constructor compatible value
 
 Result properties
@@ -134,7 +134,7 @@ Result properties
 Parameter properties
 
 - `recipient`: `string` address, Stacks c32-encoded
-- `asset`: `string` address, Stacks c32-encoded, with contract name suffix
+- `asset`: `string` address, Stacks c32-encoded, with contract name suffix and asset suffix
 - `assetId`: `ClarityValue`
 
 where

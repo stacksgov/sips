@@ -10,7 +10,7 @@ Consideration: Technical
 
 Type: Standard
 
-Status: Draft
+Status: Recommended
 
 Created: 10 October 2023
 

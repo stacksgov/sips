@@ -32,12 +32,12 @@ and signers is strengthened and stacking overall is simplified.
 
 The specification defines that
 
-- the beginning of the prepare phase is moved by 90 blocks towards the end of hte cycle.
-- the length of the prepare phase is reduced to 10 blocks.
-- that locked Stacks token ready for unlocking are unlocked at 90 blocks before the beginning of the prepare phase.
-- that delegated stacking tokens are locked immediately.
-- that stacking rewards are received by the Bitcoin address specified by the signer.
-- that solo stackers and delegating stackers have to follow the same flow.
+- the beginning of the prepare phase is moved by 90 Bitcoin blocks towards the end of the cycle.
+- the length of the prepare phase is reduced to 10 Bitcoin blocks.
+- locked Stacks token ready for unlocking are unlocked at 90 blocks before the beginning of the prepare phase.
+- delegated stacking tokens are locked immediately.
+- stacking rewards are received by the Bitcoin address specified by the signer.
+- solo stackers and delegating stackers have to follow the same flow.
 
 # Introduction
 
@@ -52,15 +52,15 @@ The specification defines that
 
 ## Problem Statement
 
-The current stacking process is has two different paths, one for solo stackers, one for delegated stackers,
-resulting in a more complex users experience and complex code. Furthermore, users cannot change their
-stacking settings (decrease amount, change PoX address, etc.) without an unlocked cycle where users cannot earn
+The current stacking process has two different paths, one for solo stackers, one for delegated stackers,
+resulting in a more complex user experience and more complex code. Furthermore, users cannot change their
+stacking settings (decrease amount, change PoX reward address, etc.) without an unlocked cycle where users cannot earn
 stacking rewards.
 
 The process is defined by a prepare phase of 100 bitcoin blocks that is used to find an anchor block
 for the next stacking cycle. Stackers must lock
 their Stacks tokens before the
-preapre phase, i.e. before the 2000th blocks of the current stacking cycle. Furthermore, Stacks
+preapre phase, i.e. before the 2000th block of the current stacking cycle. Furthermore, Stacks
 tokens are locked for a locking period that always end at the beginning of a cycle, i.e. after the
 prepare phase. Therefore, the current implementation of Stacking includes a period where Stacks
 tokens are unlocked and cannot earn stacking rewards (Cooldown Cycle).
@@ -72,11 +72,11 @@ The cooldown cycle for unstacking from a pool presents a problem for network dec
 As a stacker, when I delegate to a signer and that signer does not perform and gets low yield,
 I get penalized for switching. In today's model with cooldown cycles, users get double penalized
 if a validator does not perform. Even if there are penalties for signers not performing / being down,
-the switching costs are too high for users to switch (2 weeks worth of yield is a lot).
+the switching costs are too high for users to switch (2 weeks worth of yield).
 
 ## Proposed Solution
 
-A new PoX contract is proposed without
+This SIP proposes a new Proof of Transfer (PoX) contract without
 the flow for solo stacking and moves responsibilities from pool operators to signers. It also
 defines the end of the locking period to be before the start of the stacking cycle.
 
@@ -123,7 +123,7 @@ The prepare cycle length defined in PoX contract has be changed to
 
 ## Relationship Between Stackers and Signers
 
-The signature provided by a signers to a stackers shall use one of the following topics
+The signature provided by signers to stackers shall use one of the following topics
 
 - delegate
 - delegate-increase
@@ -141,7 +141,7 @@ The previous PoX process is described in [SIP 007](https://github.com/stacksgov/
 
 # Activation
 
-This SIP requires are hard fork and shall be activated on Stacks 3.2 as defined by the SIP for epoch 3.2.
+This SIP requires a hard fork and shall be activated on Stacks 3.2 as defined by the SIP for epoch 3.2.
 
 ## Appendix
 

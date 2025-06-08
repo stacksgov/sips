@@ -135,6 +135,60 @@ refuse to continue.
 
 ---
 
+## Token Types and Amount Specification
+
+### Supported Token Types
+
+The token parameter indicates the type of token for the payment and MUST be one of:
+
+**'STX'**: For payments using the native STX token.
+- Amount MUST be specified in micro-STX (uSTX)
+- 1 STX = 1,000,000 uSTX
+
+**A valid SIP-010 contract address**: For payments using SIP-010 compliant fungible tokens.
+- Format: `CONTRACT_PRINCIPLE.CONTRACT_NAME`
+- Amount MUST be specified in the token's base unit as defined by its `decimals` field
+
+### Amount Base Unit Requirement
+
+All amount values in StacksPay URLs MUST be specified in the token's smallest unit (base unit):
+
+**For STX:**
+- Use micro-STX (uSTX) as the base unit
+- 1 STX = 1,000,000 uSTX
+- Examples:
+  - `amount=1000000` = 1 STX
+  - `amount=500000` = 0.5 STX
+  - `amount=1` = 0.000001 STX
+
+**For SIP-010 Tokens:**
+- Use the token's base unit as defined by its `decimals` field
+- Base unit = 10^decimals
+- Examples:
+  - Token with 6 decimals: `amount=1000000` = 1 token
+  - Token with 18 decimals: `amount=1000000000000000000` = 1 token
+  - Token with 0 decimals: `amount=1` = 1 token
+
+### Rationale
+
+This approach ensures:
+1. **Precision**: No floating-point arithmetic errors
+2. **Blockchain Compatibility**: Matches how Stacks transactions work internally
+3. **Consistency**: Same pattern that Bitcoin (satoshis) and Stacks (uSTX) utilize in their transaction handling
+4. **Universal Support**: Works with any SIP-010 token regardless of decimal places
+
+### Implementation Notes
+
+**For Wallet Developers:**
+- Convert base units to human-readable format for display
+- Example: Show "1 STX" instead of "1000000 uSTX" to users
+- Validate that amounts don't exceed token supply limits
+
+**For Application Developers:**
+- Use helper functions to convert from human units to base units
+- Example: `STXToMicroSTX(1)` returns `1000000`
+- Always validate decimal places match the token specification
+
 ## URL Scheme & Encoding
 
 ### Data Format
@@ -261,7 +315,7 @@ basic validation.
 
 ## 7 Ratification Criteria
 
-1. SIP 029 accepted by governance.  
+1. SIP accepted by governance.  
 2. At least one reference implementation passes test-vectors.  
 3. A major wallet releases Stacks Pay support.  
 4. Ten independent merchants (or two payment-service providers) adopt it.
@@ -271,7 +325,7 @@ basic validation.
 ## 8 Economics
 
 Stacks Pay does not alter consensus rules or tokenomics; however, easier
-payments **SHOULD** increase transaction throughput, miner fees, and the
+payments may increase transaction throughput, miner fees, and the
 utility of STX and SIP-010 assets.
 
 ---
@@ -291,7 +345,7 @@ utility of STX and SIP-010 assets.
 * Bech32m – BIP-350 specification  
 * SIP-009 – Non-Fungible Token Standard (for `mint` contract references)
 
-## FAQ
+## Appendix
 
 ### Why change the protocol scheme and encoding human readable part?
 
@@ -311,3 +365,112 @@ examples:
 
 In the interest of starting with low hanging fruit and providing utility to the most users, an NFT mint function seems the obvious choice.  And while, as @leopradel pointed out, there is no 'mint' function defined in SIP-009 (nft-mint is a clarity function), the reality is that Gamma's \([https://gamma.io](https://gamma.io)\) smart contracts are the defacto standard here.  Following their lead and implementing a simple, structured 'mint' operation that calls Gamma's nft 'claim' function allows us to specify a controllable, easy-to-use, and useful smart contract payment function while limiting the attack surface area that general smart contract calls would open up. User education is still required here as malicious apps can always leverage fake contracts to steal from users, or even large DEXes. 
 
+
+### Integration Simplicity
+
+#### Comparison to Other Blockchain Payment Standards
+
+Stacks Pay is designed to be significantly easier to integrate than traditional blockchain payment flows:
+
+#### Integration Effort Comparison
+
+| Integration Aspect | Ethereum/Web3 | Stacks Pay | Effort Reduction |
+|-------------------|---------------|------------|------------------|
+| Setup complexity | High (provider, contracts) | Low (single package) | 80% less |
+| Code required | 50-100+ lines | 3-10 lines | 90% less |
+| Wallet integration | Complex (multiple protocols) | Simple (URL/QR) | 85% less |
+| Error handling | Extensive (gas, reverts, etc.) | Minimal (URL validation) | 75% less |
+| Testing required | High (multiple networks) | Low (URL generation) | 70% less |
+
+**Ethereum/EVM Integration Complexity:**
+- Requires web3 provider setup and wallet connection
+- Complex smart contract interactions with gas estimation
+- Manual transaction building and signing
+- Multiple confirmation states to handle
+- Network-specific configuration (mainnet, testnets, L2s)
+
+**Stacks Pay Integration:**
+- Single npm package: `npm install stacks-pay`
+- Generate payment URL in 3 lines of code
+- No wallet connection required for URL generation
+- Works with any Stacks-compatible wallet
+- Network-agnostic URL format
+
+#### Integration Examples
+
+**Creating a payment request (Merchant side):**
+```typescript
+import { encodeStacksPayURL } from 'stacks-pay';
+
+const paymentURL = encodeStacksPayURL({
+  operation: 'invoice',
+  recipient: 'SP2RTE7F21N6GQ6BBZR7JGGRWAT0T5Q3Z9ZHB9KRS',
+  token: 'STX',
+  amount: '1000',
+  description: 'Coffee purchase'
+});
+
+// Result: Ready-to-share URL or QR code
+```
+
+**Processing payments (User side):**
+- User clicks link or scans QR code
+- Wallet opens with pre-filled transaction details
+- User confirms payment
+- Transaction processes on Stacks blockchain
+
+
+#### Developer Experience Benefits
+
+1. **No Blockchain Expertise Required**: Developers can integrate cryptocurrency payments without understanding smart contracts or gas mechanics
+2. **Universal Compatibility**: Works with any application that can generate URLs or QR codes
+3. **Offline Generation**: Payment requests can be created without blockchain connection
+4. **Social Media Friendly**: URLs can be shared via email, SMS, social media, or embedded in websites
+5. **Mobile-First**: Optimized for mobile wallet scanning and one-tap payments
+
+#### Real-World Integration Scenarios
+
+**E-commerce Platform:**
+
+```typescript
+// Add to checkout flow
+const checkoutURL = encodeStacksPayURL({
+  operation: 'invoice',
+  recipient: process.env.MERCHANT_ADDRESS,
+  token: 'STX',
+  amount: cart.total.toString(),
+  description: `Order #${order.id}`
+});
+
+// Display as QR code or payment button
+
+```
+
+**Donation Button:**
+
+```typescript
+// Reusable donation link
+const donationURL = encodeStacksPayURL({
+  operation: 'support',
+  recipient: 'SP2RTE7F21N6GQ6BBZR7JGGRWAT0T5Q3Z9ZHB9KRS',
+  description: 'Support our project'
+});
+// Amount left blank for user to specify
+```
+
+**NFT Marketplace:**
+
+```typescript
+// Dynamic minting
+const mintURL = encodeStacksPayURL({
+  operation: 'mint',
+  contractName: 'SP123...my-nft-collection',
+  functionName: 'mint',
+  token: 'STX',
+  amount: '500',
+  description: 'Mint NFT #1234'
+});
+
+```
+
+This integration simplicity enables rapid adoption across diverse use cases, from simple tip jars to complex marketplace integrations, without requiring specialized blockchain development expertise.

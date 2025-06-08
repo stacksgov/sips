@@ -1,343 +1,313 @@
-## Preamble
+# Preamble
 
-SIP Number: to be assigned
+SIP Number: 029  
+Title: Stacks Pay – A Payment-Request Standard for the Stacks Blockchain  
+Author: [Dan Trevino @dantrevino](mailto:dantrevino@gmail.com)  
+Type: Standard  
+Status: Draft  
+Created: 24 September 2024  
+License: CC0-1.0  
+Layer: Application  
+Discussion-To: <https://github.com/stacksgov/sips>
 
-Title: Stacks Pay: A Payment Request Standard for Stacks Blockchain Payments
-
-Author: Dan Trevino <dantrevino@gmail.com>
-
-Consideration: Technical
-
-Type: Standard
-
-Status: Draft
-
-Created: 24 September 2024
-
-Layer: Application
-
-License: CC0-1.0: Creative Commons CC0 1.0 Universal
-
-Discussion-To: https://github.com/stacksgov/sips
-
-Sign-off:
+---
 
 ## Abstract
 
-**Stacks Pay** is a proposed payment request standard for the Stacks blockchain. The standard aims to create easy, secure bundles of transaction information that can be seamlessly shared off-chain, simplifying payment interactions between payers and recipients by providing a standardized method for encoding, decoding, and processing payment requests. By standardizing the structure and parameters of payment requests, Stacks Pay ensures interoperability between wallets and applications within the Stacks ecosystem.
+**Stacks Pay** defines a URL-based payment-request format for the Stacks blockchain.  
+By standardising how payment information is encoded, decoded, and displayed, it
+guarantees that any wallet or application implementing this specification can
+interoperate with any other.
 
-This proposal does not require any changes to the current operation of the Stacks blockchain. Instead, consider these as convenience methods for wrapping existing Stacks transaction information, making them easily shareable.
+Stacks Pay is *purely* an application-layer standard: it introduces **no** changes
+to consensus, token emission, or on-chain data structures.  
+Think of it as a shareable wrapper around an ordinary Stacks
+transaction.
 
-### License and Copyright
+> **RFC 2119 terminology**  
+> The key words **MUST**, **MUST NOT**, **REQUIRED**, **SHALL**, **SHALL NOT**,
+> **SHOULD**, **SHOULD NOT**, **RECOMMENDED**, **MAY**, and **OPTIONAL** in this
+> document are to be interpreted as described in [RFC 2119].
 
-This SIP’s copyright is held by the Stacks Open Internet Foundation. This SIP is made available under the terms of the Creative Commons CC0 1.0 Universal license, available at [https://creativecommons.org/publicdomain/zero/1.0/](https://creativecommons.org/publicdomain/zero/1.0/)
+---
 
-### Terminology
+## 1 Introduction
 
-The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document should be interpreted according to RFC 2119.
+Payment URIs already exist in Bitcoin (BIP-21), Lightning (BOLT-11/12) and
+Ethereum (EIP-681).  Stacks lacks a comparable, wallet-agnostic standard.  Without one, merchants,
+DApps, and wallets invent ad-hoc query strings that break as soon as a new field
+appears.
 
-## Introduction
+Stacks Pay solves this by:
 
-The Stacks ecosystem requires a standardized protocol for payment request generation and processing to support its growing adoption. While established blockchain ecosystems have implemented payment request standards that enable features such as request reusability, metadata handling, and cryptographic verification, Stacks currently lacks such a protocol. This absence of a unified standard compels developers to implement custom solutions, risking ecosystem fragmentation through incompatible implementations and inconsistent payment flows.
+* using a **single URI scheme** (`web+stx://`) with Bech32m payloads;
+* defining a **small set of operations** (`support`, `invoice`, `mint`);
+* listing, for every operation, the **exact parameters that wallets honour**;
+* requiring wallets to **ignore everything else**, giving future versions room
+  to evolve without breaking existing software.
 
-**Stacks Pay** addresses this gap by introducing a payment request standard tailored specifically for the Stacks blockchain. The standard simplifies the process of sending and receiving payments, enhances interoperability among wallets and applications, and increases security by providing mechanisms to tie transactions back to payment requests.
+---
 
-Stacks Pay does _not_ define smart contracts that may be used to facilitate specific functions, like subscriptions or NFT mints. Stacks Pay is strictly focused on defining the transaction payment information structure and encoding.
+## 2 Common Parameter Types
 
-## Operations
+| Name | Type / Format | Description |
+|------|---------------|-------------|
+| `recipient` | Stacks c32-address | Address that ultimately receives the payment. |
+| `token` | **STX** \| SIP-010 contract address (`SP….<contract>`) | Asset used to pay.  When omitted wallets **MUST** default to **STX**. |
+| `amount` | integer (string) | Amount in µSTX or in the smallest SIP-010 units. |
+| `description` | UTF-8 string | Human-readable context shown to the payer. |
+| `expiresAt` | ISO-8601 datetime (UTC) | After this moment wallets **MUST NOT** let the user broadcast. |
+| `invoiceNumber` | free-form string | Merchant-supplied reference. |
+| `dueDate` | ISO-8601 date | Informational; wallets **MAY** surface it. |
+| `contractAddress` | `SP….<contract>` | SIP-009/-010 contract principal + name. |
+| `functionName` | identifier | Clarity function to invoke in `contractAddress`. |
 
-Stacks Pay defines several standard operations that specify the type of payment action to be performed. Each operation type has specific required and optional parameters.
+**Unknown parameters** – Any query key not listed as *Required* or *Optional*
+for the selected `operation` **SHOULD** be ignored.  Implementations **MAY**
+log or warn, but **MUST NOT** fail.
 
-### `support`
+---
 
-**Function**: An open-ended, reusable request. Allows the payer to specify the amount and optionally the token, suitable for donations, tips, or gifts.
+## 3 Operations
 
-**Required Parameters:**
+> All examples use the canonical scheme  
+> `web+stxpay://<operation>?<query-string>` before Bech32m encoding.
 
-- operation: 'support'
+### 3.1 `support`
 
-- recipient: A valid Stacks address.
+Description of support operation here
 
-- If the token parameter is not 'STX', the functionName defaults to 'transfer' by the wallet.
+| Category | Parameters |
+|----------|------------|
+| **Required** | `operation='support'`, `recipient` |
+| **Optional** | `token`, `description`, `expiresAt`,`memo` |
 
-**Optional Parameters:**
+*Wallet behaviour*
 
-- token: Either 'STX' or a valid SIP-010 contract address. If not provided, defaults to 'STX'.
+* Wallet **MUST** prompt the payer for the `amount`.
+* Wallet **MAY** let the payer override the suggested `token`.
 
-- description: MAY be included to provide additional context for the payment request.
+---
 
-- expiresAt: MAY be included; wallets MUST NOT process payment requests past the expiry time.
+### 3.2 `invoice`
 
-- memo: MAY be included; MUST NOT include personal information.
+Description of invoice operation here
 
-**Parameters to Ignore:**
+| Category | Parameters |
+|----------|------------|
+| **Required** | `operation='invoice'`, `recipient`, `token`, `amount` |
+| **Optional** | `description`, `expiresAt`, `invoiceNumber`, `dueDate`, `memo` |
 
-- amount, contractName, dueDate, functionName, invoiceNumber. Wallets MUST ignore these parameters if present.
+*Wallet behaviour*
 
-### `invoice`
+* Wallet **MUST** pre-fill `amount` and **MUST NOT** allow changes unless the
+  payer explicitly edits it.
+* If `expiresAt` is present and in the past the wallet **MUST** refuse to
+  broadcast.
 
-**Function:** Represents a payment request, such as an invoice for P2P payments or product purchases.
+---
 
-**Required Parameters:**
+### 3.3 `mint`
 
-- operation: 'invoice'
+Description of mint operation here.
 
-- recipient: A valid Stacks address.
+| Category | Parameters |
+|----------|------------|
+| **Required** | `operation='mint'`, `contractAddress`, `functionName='claim'`, `amount`, `token` |
+| **Optional** | `description`, `expiresAt` `memo` |
 
-- token: MUST be either 'STX' or a valid SIP-010 contract address.
+*Wallet behaviour*
 
-- amount: The amount to be paid.
+* The active wallet address is used as the receiver.
+* `amount` **MAY** represent a mint-price; if zero or absent the wallet builds a
+  zero-STX transaction.
+*  The wallet **MUST** call `contractAddress.functionName` with any additional
+   Clarity arguments encoded in the payload (future extension).
 
-**Optional Parameters:**
+---
 
-- description: MAY be included to provide context for the payment request.
+### 3.4 Custom Operations
 
-- expiresAt: MAY be included; if included, wallets MUST NOT process payment requests past the expiry time.
+Applications **MAY** register vendor-specific operations using the prefix
+`custom:` (e.g. `custom:subscription`).  
+Wallets that do not recognise the tag **SHOULD** show a warning and **MAY**
+refuse to continue.
 
-- invoiceNumber: MAY be included as an identifier.
+---
 
-- dueDate: MAY be included.
+## URL Scheme & Encoding
 
-- memo: MAY be included. MUST NOT include personal information.
+### Data Format
+StacksPay uses a structured query string format that is then Bech32m encoded to ensure data integrity and compatibility across platforms.
 
-**Parameters to Ignore:**
+### Encoding Process
 
-contractName, functionName: Wallets MUST ignore these parameters if present.
+1. **Query String Assembly**: Parameters are assembled as URL query parameters according to operation-specific requirements: `<operation>?<parameter1>=<value1>&<parameter2>=<value2>...`
 
-### `mint`
+Example: `invoice?recipient=SP2RTE7F21N6GQ6BBZR7JGGRWAT0T5Q3Z9ZHB9KRS&token=STX&amount=1000`
 
-**Function:** Represents a non-fungible token minting request.
+2. **Bech32m Encoding**: The complete query string is encoded using Bech32m with:
+- Human-readable part (HRP): `stxpay`
+- Encoding limit: 512
+- Result: `stxpay1wajky2mnw3u8qcte8ghj76twwehkjcm98ahhq...`
 
-**Required Parameters:**
+3. **Protocol Prefix**: Add the protocol scheme to create the final shareable URL: `web+stx:stxpay1wajky2mnw3u8qcte8ghj76twwehkjcm98ahhq...`
 
-- operation: 'mint'
+### Decoding Process
 
-- contractName: A valid SIP-009 contract address.
+1. **Protocol Validation**: Verify the URL starts with `web+stx:`
+2. **Extract Encoded Data**: Remove the `web+stx:` prefix
+3. **Bech32m Decoding**: Decode using expected HRP `stxpay`
+4. **Parameter Parsing**: Parse the resulting query string to extract operation and parameters
 
-- functionName: A public contract function, typically `mint` or `claim`
+### Encoding Requirements
 
-- token: MUST be either 'STX' or a valid SIP-010 contract name.
+Implementations MUST:
+- Use Bech32m encoding with human-readable part (HRP) set to `stxpay`
+- Validate checksums during decoding
+- Support both uppercase and lowercase encoded strings
+- Reject URLs with invalid Bech32m encoding
+- Reject URLs with incorrect HRP
+- Validate all required parameters for the specified operation
 
-- amount: The amount to be paid.
+Implementations SHOULD:
+- Use uppercase for QR code generation for better scanning reliability
+- Use lowercase for text-based sharing
+- Provide meaningful error messages for common mistakes
 
-**Optional Parameters:**
+Implementations MAY:
+- Support visual formatting (spaces/line breaks) in long encoded strings for readability
+- Provide error correction suggestions for malformed URLs
 
-- recipient: MAY be included; if present, MUST be a valid Stacks address. The NFT will be minted for the specified address.
+### Error Handling
 
-- description: MAY be included to provide context for the payment request
+Decoders MUST handle the following error cases:
+- Invalid protocol prefix
+- Malformed Bech32m encoding
+- Incorrect HRP
+- Missing required parameters
+- Invalid parameter values
 
-- expiresAt: MAY be included. If included wallets MUST NOT process links after the expiry date/time.
+### Examples
 
-- invoiceNumber: MAY be included by the link creator to track individual requests.
+**Invoice Operation:**
 
-- memo: MAY be included. MUST NOT include personal information.
+```
+Original: invoice?recipient=SP2RTE7F21N6GQ6BBZR7JGGRWAT0T5Q3Z9ZHB9KRS&token=STX&amount=1000
+Encoded: stxpay1qpzry9x8gf2tvdw0s3jn54khce6mua7lmqqqxw4tcy8w6tpdf5qq5g5tnyv9xx6myvf5hgurjd4hhq...
+Final URL: web+stx:stxpay1qpzry9x8gf2tvdw0s3jn54khce6mua7lmqqqxw4tcy8w6tpdf5qq5g5tnyv9xx6myvf5hgurjd4hhq...
+```
 
-**Parameters to Ignore:**
+**Support Operation:**
 
-- contractName, functionName, dueDate: Wallets MUST ignore these parameters if present.
+```
+Original: support?recipient=SP2RTE7F21N6GQ6BBZR7JGGRWAT0T5Q3Z9ZHB9KRS&description=Tip%20for%20great%20content
+Encoded: stxpay1qpzgk5q8getf3ts3jn54khce6mua7lmqqqxw4tcy8w6tpdf5qq6x2cvn4dahx2mrvd9xycr6ve5...
+Final URL: web+stx:stxpay1qpzgk5q8getf3ts3jn54khce6mua7lmqqqxw4tcy8w6tpdf5qq6x2cvn4dahx2mrvd9xycr6ve5...
+```
+
 
 ### Custom Operations
 
-Applications **MAY** define custom operations for specific use cases. Custom operation types **MUST** be prefixed to prevent naming conflicts (e.g., `'custom-example'`).
+Applications **MAY** define custom operations for specific use cases.
 
-- **Handling Unrecognized Operations**: If a wallet encounters an unrecognized operation type, it **SHOULD**:
+Custom operation types **MUST** be prefixed to prevent naming conflicts (e.g., `'custom-example'`).
+
+**Handling Unrecognized Operations**: If a wallet encounters an unrecognized operation type, it **SHOULD**:
 
 - **Warn the User**: Inform the user that the operation type is unrecognized.
 
 - **Provide Safe Defaults**: Default to a standard payment flow if possible.
 
 - **Fail Gracefully**: Prevent unexpected behavior or security risks.
+---
 
-### Parameter Table (summary)
+## 5 Security Considerations
 
-| Operation | token | recipient | amount | description | memo | expiresAt | contractName | functionName | dueDate |
-| --------- | ----- | --------- | ------ | ----------- | ---- | --------- | ------------ | ------------ | ------- |
-| support   | O     | R         | I      | O           | O    | I         | I            | I            | I       |
-| invoice   | R     | R         | R      | O           | O    | O         | I            | I            | O       |
-| mint      | I     | O         | R      | O           | O    | O         | R            | R            | I       |
-| custom    | O\*   | O\*       | O\*    | O\*         | O\*  | O\*       | O\*          | O\*          | O\*     |
+* **Post-conditions** – Wallets **SHOULD** add appropriate post-conditions
+limiting the transferred asset/amount.
+* **Parameter validation** – All fields **MUST** be type-checked and length-checked.
+* **Memo privacy** – Memos are on-chain; wallets **MUST NOT** write sensitive data.
 
-```
-R - required
-O - optionalas determined
-I - ignored
-O* - custom links are defined on a per application basis
-```
+---
 
-### Token Types
+## 6 Implementation Guidance
 
-The `token` parameter indicates the type of token for the payment and **MUST** be one of:
+### 6.1 Wallets **MUST**
 
-- 'STX': For payments using the native STX token.
+* Handle `web+stxpay:` links (and QR codes) end-to-end.
+* Enforce `expiresAt` if present.
+* Default missing `token` to **STX**.
+* Ignore unknown parameters.
 
-- A valid SIP-010 contract address: For payments using SIP-010 compliant fungible tokens.
+### 6.2 Merchants **SHOULD**
 
-Note: SIP-010 contract addresses should be in the format `CONTRACT_PRINCIPLE`.`CONTRACT_NAME`, without the associated contract identifier.
+* Generate URIs server-side or via libraries listed below.
+* Display them as QR codes or clickable links.
+* Regenerate a fresh `expiresAt` for time-sensitive invoices.
 
-### URL Scheme
+### 6.3 Reference Implementations
 
-The Stacks Pay URL scheme **MUST** use the custom protocol `web+stx:`, followed by bech32m encoding of an `operation` and query parameters encoding the payment details with `stx` as the human readable part (hrp) of the encoding. The order of the parameters does not matter.
+| Language | Repository |
+|----------|------------|
+| TypeScript | <https://github.com/dantrevino/stacks-pay-js> |
+| Python | <https://github.com/dantrevino/stacks-pay-py> |
+| Rust | <https://github.com/dantrevino/stacks-pay-rs> |
 
-**Format:**
+Each library demonstrates URI construction, Bech32m encoding/decoding, and
+basic validation.
 
-Format of the url string prior to encoding:
+---
 
-`<operation>?recipient=<recipient>&token=<token>&amount=<amount>[&additional_params]`
+## 7 Ratification Criteria
 
-For example, here is the unencoded url using 'STX' token:
+1. SIP 029 accepted by governance.  
+2. At least one reference implementation passes test-vectors.  
+3. A major wallet releases Stacks Pay support.  
+4. Ten independent merchants (or two payment-service providers) adopt it.
 
-`invoice?recipient=SP3FBR...&token=STX&amount=1000&description=Payment%20for%20Services`
+---
 
-And here is an example using the SIP-010 Nothing Token:
+## 8 Economics
 
-`invoice?operation=invoice&recipient=SP3FBR...&token=SP32AEEF6WW5Y0NMJ1S8SBSZDAY8R5J32NBZFPKKZ.nope&amount=1000&description=Payment+for+services`
+Stacks Pay does not alter consensus rules or tokenomics; however, easier
+payments **SHOULD** increase transaction throughput, miner fees, and the
+utility of STX and SIP-010 assets.
 
-- **`operation`**: Specifies the type of action or transaction. It **MUST** be included and be a string value.
+---
 
-- **Query Parameters**: The payment parameters are appended as URL-encoded query parameters. See specific operation types for which are included for which operations.
+## 9 Related Work
 
-Example encoded Stack Pay url:
+* SIP-010 Fungible Tokens  
+* BIP-21 (URI scheme)  
+* BOLT-11 / BOLT-12 (Lightning invoices)  
+* EIP-681 (Ethereum payment URIs)
 
-`stx1wajky2mnw3u8qcte8ghj76twwehkjcm98ahhqetjv96xjmmw845kuan0d93k2fnjv43kjurfv4h8g02n2qe9y4z9xarryv2wxer4zdjzgfd9yd62gar4y46p2sc9gd23xddrjkjgggu5k5jnye6x76m9dc74x4zcyesk6mm4de6r6vfsxqczver9wd3hy6tsw35k7m3a2pshjmt9de6zken0wg4hxetjwe5kxetnyejhsurfwfjhxst585erqv3595cnytfnx92ryve9xdqn2wf9xdqn2w26juk65n`
+---
 
-And here is an example final encoded URL suitable for sharing as a link or QR Code.
+### References
 
-`web+stx:stx1wajky2mnw3u8qcte8ghj76twwehkjcm98ahhqetjv96xjmmw845kuan0d9...`
+* RFC 2119 – Key words for use in RFCs to Indicate Requirement Levels  
+* Bech32m – BIP-350 specification  
+* SIP-009 – Non-Fungible Token Standard (for `mint` contract references)
 
-### Encoding and Decoding
+## FAQ
 
-Stacks Pay URLs **MUST** be encoded using **Bech32m encoding** with the human-readable part (HRP) set to `'stx'` and a `limit` of 512. This ensures compatibility and data integrity, making it suitable for QR codes and platforms with URL limitations.
+### Why change the protocol scheme and encoding human readable part?
 
-### Variable Amounts and Donations
+The original SIP specified used `web+stxpay` as the protocol scheme and `stx` as the human readable part of the encoding.  While this seemed reasonable to me, we have the opportunity to make the user experience potentially better if future Stacks protocols are defined to be used along with the web2 world.
 
-- If the `amount` parameter is not specified (e.g., for donations), wallets **MUST** prompt the user to enter the desired amount before proceeding.
+`web+stx` as the protocol scheme sets the stage for future Stacks protocols that serve different needs, but could each be easily identified as 'Stacks' protocols by the use of a common scheme. When writing out the un-encoded uri, `stxpay` indicates that this is a StacksPay uri.  And together, they make the protocol uri, and hopefully future protocols more easily identifiable.
 
-- Applications **SHOULD** validate the entered amount to prevent errors or fraudulent transactions.
+examples:
 
-### Security Considerations
+`web+stx:stxpay.....` <- Oh look! A StacksPay uri 
 
-- **Use of Post Conditions**: Applications **SHOULD** use Post Conditions in all asset transfers to ensure that only the intended assets and amounts are transferred.
+`web+stx:stxfoo....` <- Oh look! A StacksFoo uri 
 
-- **Data Validation**: Wallets and applications **MUST** validate all parameters to prevent injection attacks or malformed data.
+`web+stx:stxbar....` <- Oh look! A StacksBar uri 
 
-- **Token Handling**: Applications **MUST** handle different token types appropriately, ensuring the correct token is used in the transaction.
+### Why a 'mint' operation?
 
-- **Memo Field Privacy**: Sensitive information **MUST NOT** be included in the memo field, as it is visible to the public.
+In the interest of starting with low hanging fruit and providing utility to the most users, an NFT mint function seems the obvious choice.  And while, as @leopradel pointed out, there is no 'mint' function defined in SIP-009 (nft-mint is a clarity function), the reality is that Gamma's (https://gamma.io)[https://gamma.io] smart contracts are the defacto standard here.  Following their lead and implementing a simple, structured 'mint' operation that calls Gamma's nft 'claim' function allows us to specify a controllable, easy-to-use, and useful smart contract payment function while limiting the attack surface area that general smart contract calls would open up. User education is still required here as malicious apps can always leverage fake contracts to steal from users, or even large DEXes. 
 
-### Backwards Compatibility
-
-Stacks Pay is a new specification and does not require changes to the core operation of the Stacks blockchain or protocol-level upgrades. Transactions submitted via Stacks Pay remain fully compatible with the Stacks blockchain. However, wallets and applications that do not implement Stacks Pay will not recognize or process Stacks Pay URLs or payment requests.
-
-## Implementation
-
-### Wallet Integration
-
-Wallets that support Stacks Pay **MUST** implement the following:
-
-- **URL Handling**: Recognize and parse `web+stx:` Bech32m-encoded URLs.
-
-- **Parameter Extraction**: Extract payment parameters according to the specification.
-
-- **Operation Handling**: Support standard operation types and handle custom operations appropriately.
-
-- **User Interface**: Present a user interface that displays payment details and allows the user to confirm or cancel the payment.
-
-- **Token Support**: Handle payments in STX and SIP-010 fungible tokens, interacting with smart contracts as required.
-
-- **Use of Post Conditions**: Include appropriate Post Conditions in transactions involving asset transfers.
-
-- **Error Handling**: Provide informative error messages if the URL is invalid or if required parameters are missing.
-
-### Merchant Integration
-
-Merchants and service providers can integrate Stacks Pay into their platforms by:
-
-- **Generating Payment Requests**: Creating Stacks Pay URLs with all required parameters.
-
-- **Sharing Payment Requests**: Displaying the Stacks Pay URL as a QR code or hyperlink.
-
-- **Processing Payments**: Monitoring incoming transactions and verifying payments.
-
-### Application Integration
-
-Applications facilitating payments can incorporate Stacks Pay by:
-
-- **Providing Payment Links**: Generating Stacks Pay URLs for sharable transactions.
-
-- **Guiding Payment Flows**: Implementing payment flows that guide users through the payment process using Stacks Pay URLs.
-
-- **Handling SIP-010 Tokens**: Interacting with token smart contracts when handling SIP-010 tokens.
-
-## Reference Implementation
-
-A reference implementation of the Stacks Pay standard is available to assist developers in integrating the specification into their applications. The implementations cover multiple programming languages to cater to different development environments.
-
-### Source Code
-
-The reference implementations can be found at the following repositories:
-
-- **TypeScript**: [stacks-pay-js](https://github.com/dantrevino/stacks-pay-js)
-
-- **Python**: [stacks-pay-py](https://github.com/dantrevino/stacks-pay-py)
-
-- **Rust**: [stacks-pay-rs](https://github.com/dantrevino/stacks-pay-rs)
-
-These repositories contain source code demonstrating how to generate and parse Stacks Pay URLs, handle Bech32m encoding, in accordance with the specification.
-
-## Ratification
-
-This SIP is considered ratified after:
-
-1.  **SIP Approval and Community Review**: The SIP undergoes formal review and approval by the designated Stacks governance bodies and is discussed publicly to gather feedback.
-
-2.  **Reference Implementation**: At least one reference implementation of the Stacks Pay standard is developed and made publicly available.
-
-3.  **Wallet Support**: At least one widely-used Stacks wallet implements support for the Stacks Pay URL scheme.
-
-4.  **Merchant Adoption**: At least ten merchants or two service providers integrate Stacks Pay into their sales processes.
-
-5.  **Documentation**: Comprehensive documentation is provided, including integration guides and code examples.
-
-## Economics
-
-While Stacks Pay is an application-level standard that does not require changes to the core operation of the Stacks blockchain or affect token emission, its adoption can have indirect economic impacts on the Stacks ecosystem. These potential economic considerations include:
-
-- **Increased Transaction Volume**: Simplifying payment requests may lead to more transactions, increasing total transaction fees collected by miners and enhancing network security.
-
-- **Enhanced Token Utility**: Improved payment mechanisms can increase the utility and demand for STX and SIP-010 tokens, which may affect their market value.
-
-- **Ecosystem Growth**: Standardizing payment requests can attract more merchants and users to the Stacks ecosystem, fostering economic growth.
-
-- **Business Opportunities**: Developers and businesses may find new opportunities to create services that utilize Stacks Pay, contributing to the overall health and diversity of the ecosystem.
-
-## Links
-
-### Related Work
-
-- **SIP-009: Non-fungible Tokens**: Defines the standard for non-fungible tokens on the Stacks blockchain.
-
-- **SIP-010: Fungible Tokens**: Defines the standard for fungible tokens on the Stacks blockchain.
-
-- **Bitcoin Payment Protocol (BIP 21)**: A URI scheme for Bitcoin payments, inspiring the use of a custom URI scheme in Stacks Pay.
-
-- **Lightning Network Invoices (BOLT-11 and BOLT-12)**: Specify invoice formats for the Lightning Network, supporting features like reusable payment requests and enhanced security. Stacks Pay draws inspiration from these protocols in supporting variable amounts and reusable payment requests.
-
-- **BOLT-11**: Defines a standard for Lightning Network invoices, enabling off-chain transactions with detailed payment information.
-
-- **BOLT-12**: Introduces offers and invoices that enhance privacy and functionality over BOLT-11, allowing for more flexible payment requests.
-
-- **Ethereum EIP-681**: A standard for representing Ethereum payment requests as URIs, which influences the design of the Stacks Pay URL scheme.
-
-### Additional Resources
-
-- [RFC 2119 - Key words for use in RFCs to Indicate Requirement Levels](https://www.ietf.org/rfc/rfc2119.txt)
-
-- [SIP-009 Specification](https://github.com/stacksgov/sips/blob/main/sips/sip-009/sip-009-nft-standard.md)
-
-- [SIP-010 Specification](https://github.com/stacksgov/sips/blob/main/sips/sip-010/sip-010-fungible-token-standard.md)
-
-- [Bech32m Specification](https://github.com/bitcoin/bips/blob/master/bip-0350.mediawiki)
-
-- [BOLT-11 Specification](https://github.com/lightning/bolts/blob/master/11-payment-encoding.md)
-
-- [BOLT-12 Specification](https://github.com/lightning/bolts/blob/master/12-offer-encoding.md)

@@ -1,0 +1,631 @@
+## **SIP 31 \- Update 6/4/2025**
+
+## **Preamble**
+
+SIP Number: SIP-031
+
+Title: SIP-031: Five-Year Stacks Growth Emissions
+
+Author(s): Mitchell Cuevas (Stacks Foundation), Alex Miller (Hiro), Tycho Onnasch (Zest), Jakob Schillinger (Hermetica), Andre Serrano (Bitcoin L2 Labs), Dylan Floyd (Bitflow)
+
+Consideration: Economic, Governance
+
+Type:
+
+Status: DRAFT
+
+Created: \[Date\]
+
+License:
+
+Sign-off:
+
+* (SIP Editor)  
+* (x CAB)  
+* (y CAB)  
+* (z CAB)
+
+Discussions (forum/links)
+
+Included Files:
+
+Nomiks\_Analysis\_5Y\_Plan\_Final.pdf https://forum.stacks.org/uploads/short-url/pgKEv8ljXuWpCC1GnkyIi3pD8SV.pdf
+
+---
+
+## **Abstract**
+
+* Stacks’ goal as an ecosystem is to empower the creation of the Bitcoin economy \- we envision that all projects that want to build on Bitcoin, from DeFi to gaming, memecoins to NFTs, and marketplaces to identity, should be built on top of Stacks.  
+* Stacks is transitioning from a tech-first to a traction-first phase, fueled by a new endowment and streamlined operations.  
+* The proposal raises fresh capital to put Stacks on par with other top projects, addressing historic underfunding and unlocking the ability to compete at scale.  
+* A new operational entity will scale execution, while a community-governed endowment ensures transparent, accountable, and sustainable growth.  
+* This is Stacks’ decisive step to accelerate adoption, empower builders of all sizes, and drive long-term value for all stakeholders.  
+* Upcoming protocol upgrades will further reinforce sustainability by enabling a portion of future protocol revenue to support the Stacks Endowment, ensuring ongoing value accrual for the ecosystem.
+
+This SIP proposes a “best of both worlds” approach to the next phase of growth for Stacks \- maintaining our decentralized governance while creating a new streamlined operational structure and Endowment to fuel driving Stacks to being a Top 10 ecosystem as the home of the Bitcoin economy.
+
+Specifically, it will create a dedicated Stacks Endowment to manage a consolidated STX treasury focused on ecosystem growth. The treasury will be created through ongoing token emissions over the next five years and seed STX transfers from key contributors. The new proposed structure will allow for more efficient execution among contributors by organizing efforts around a new operational entity that will provide both the capital and structure needed to make strategic investments in user and builder focused incentives, additional development capacity, security, marketing, liquidity, and business development initiatives needed to fuel the Stacks ecosystem during this next phase of growth.
+
+This SIP is both a direct response to feedback from builders expressing their evolving needs as Stacks scales and a recognition of the opportunity to realign structures with the current regulatory and competitive landscape. The SIP is further informed by practical experience gained over 6 years since the establishment of the ecosystem, solving for the day-to-day frictions and blockers that emerged as overhead over time given the lack of clear structure for a decentralized ecosystem. Finally, the SIP leverages legal experts, third party research, and a series of artifacts and reports to illustrate these changes will benefit the ecosystem stakeholders.
+
+In sum, this SIP proposes a framework for continued success as the leading Bitcoin L2, using the “hook” of Bitcoin DeFi to pull in users and liquidity while sustainably increasing the resources and efficiency with which to enable all contributors, builders, and holders as the Stacks ecosystem continues to activate the Bitcoin economy to onboard the next billion users to bitcoin across all use cases.
+
+---
+
+## **Introduction**
+
+### **Introduction**
+
+The Stacks ecosystem is entering a new phase of growth, made possible by critical network upgrades in 2024, including [Nakamoto](https://github.com/stacksgov/sips/blob/main/sips/sip-021/sip-021-nakamoto.md) and [sBTC](https://github.com/stacksgov/sips/blob/main/sips/sip-028/sip-028-sbtc_peg.md). With sBTC, the network enables Bitcoin to be used in everyday economic activity beyond just holding, with further integrations, partnerships, and growth efforts supporting multiple emerging Bitcoin use cases. To meet this opportunity, this SIP proposes the creation of a new growth-focused treasury and a streamlined structure for increased operational efficiency in the ecosystem.
+
+### **Problem Statement**
+
+Over the last several years, the Stacks ecosystem has encountered multiple structural and financial constraints that have, at times, limited its ability to scale efficiently:
+
+* **Underfunded relative to competitors:** Stacks raised \~$80M over six years ago — less than most top 50 projects, despite increased demands from sBTC launch, bitcoin DeFi applications, and new protocol upgrades like Stacks Nakamoto launch.  
+* **Operational fragmentation:** Ecosystem contributors like the Stacks Foundation, Hiro, and others have operated independently, often duplicating efforts and constrained by compliance overhead inherited from the SEC-qualified sale.  
+* **Restricted access to growth levers:** Compliance concerns with unclear guides have prevented key actors from engaging in essential ecosystem activities, particularly those focused on growth activities, including marketing, various types of incentives, and more, slowing down growth of the Stacks ecosystem.  
+* **Limited resources for builders:** Given the small size of resources available to the Stacks Foundation and other entities, developers launching Stacks-based applications lack predictable access to incentives, grants, and liquidity support — creating friction in growth and onboarding.
+
+### **Proposed Solution**
+
+To address these limitations, this SIP proposes the creation of an ecosystem endowment and a new operating entity to streamline coordination and enable well-capitalized growth:
+
+* **Create a STX ecosystem endowment:** This consolidated treasury will be funded through a combination of transfers from existing entities and new emissions over the next 5 years that temporarily bring Stacks’ total annual emissions from 3.52% to an average of 5.75% per year. A new Endowment Foundation — set up specifically to manage this treasury — will deploy capital across grants, incentives, security, liquidity, and marketing programs to accelerate adoption.  
+* **Consolidate certain operational areas under a new operational entity:** A streamlined entity focused on contributing to protocol development, go-to-market support, and ecosystem growth, absorbing responsibilities from multiple legacy organizations into a single operational hub to be a major contributor to these areas in the broader ecosystem.  
+* **Enable greater capital efficiency at scale:** The new treasury will enable meaningful STX liquidity programs, user incentives, and core development funding at a scale previously unavailable to Stacks while increasing accountability to community members.  
+* **Commitment to transparent governance:** The community's governance over the open source ecosystem is unchanged, retaining control over all aspects of Stacks technical and ecosystem development via SIPs. The Endowment entity, free of restrictions placed on the current foundation and others, will also be able to provide a more granular level of financial reporting. The community is the key stakeholder and guide for the Endowment.
+
+Together, these changes will give the Stacks ecosystem the capital, execution speed, and organizational clarity required to compete with top ecosystems — ensuring that Stacks can continue to lead and aggressively grow market share as the leading Bitcoin L2; unlocking long-term value for builders, users, and holders.
+
+### **Stacks Roadmap Summary**
+
+This treasury will fuel development along the [Stacks roadmap](http://stacksroadmap.com), which has been refreshed via a series of [community workshops](https://forum.stacks.org/t/stacks-roadmap-draft-final-call-community-feedback/17984) ([1](https://forum.stacks.org/t/stacks-roadmap-draft-final-call-community-feedback/17984)), the latest version of which has been published in support of this SIP. The treasury will be created to deliver on these and other priorities as defined by builders and key stakeholders and provide the necessary resources for Stacks’ progression in the following critical areas, among others:
+
+**1\. Stacks Core Development:**
+
+Upgrades to increase transaction speed, reliability, scalability, and security — including improved block production, miner replay logic, Clarity-to-Wasm compilation, ongoing enhancements to PoX and stacking UX, security bounties, audits, and monitoring.
+
+**2\. sBTC Protocol & Stacks Value Accrual:**
+
+Treasury funding will also support the development of new mechanisms that drive STX demand such as dual stacking, bitcoin payments use cases, and BTC yield strategies — as well as continued development of critical sBTC features like self-custodial minting and upgrades for further trust-minimization. By funding these areas, the Endowment aims to create a self-reinforcing flywheel where protocol revenue grows treasury reserves → reserves fund development and adoption → adoption increases protocol usage and STX demand → drives continued revenue growth. This model provides a sustainable path for long-term operations and Stacks ecosystem growth.
+
+**3\. Ecosystem Growth:**
+
+Strategic efforts to scale TVL, liquidity, and user adoption through community based marketing and growth strategies, grant programs, DeFi incentives, sBTC TVL milestones, stablecoin integrations, and centralized exchange listings for SIP-10 tokens.
+
+This roadmap reflects the core areas where capital from the Stacks endowment will be deployed if SIP-031 is approved — focusing on core protocol upgrades, institutional support, developer traction, and Stacks value accrual.
+
+### **Key artifacts related to this SIP**
+
+In preparing this SIP, the authors have gathered essential information to help Stacks holders provide informed feedback and make confident voting decisions. Inside, you’ll find summaries and links to:
+
+* A complete economic impact study, performed by a neutral 3rd party token economics research firm. (LINK)  
+* The latest iteration of the Stacks Roadmap, containing the sum total of feedback and input from the community over the past 3-months for core development on Stacks supporting a range of use cases ([stacksroadmap.com](https://stacksroadmap.com/))  
+* Key future plans around potential value accrual proposals that will support and enhance the changes proposed by this SIP, and a path for long-term treasury sustainability. ([Stacks Forum](https://forum.stacks.org/t/stacks-economic-model-unlocking-bitcoin-capital-long-term-growth/18035))  
+* A Stacks DeFi growth plan, with a focus on short-term outcomes that can be driven by the new treasury. ([Stacks](https://forum.stacks.org/t/2025-roadmap-defi-road-to-1bn-defi-tvl/18032) [Forum](https://forum.stacks.org/t/stacks-economic-model-unlocking-bitcoin-capital-long-term-growth/18035))  
+* The next generation of sBTC, including technical design research ([Bitcoin L2 Labs](https://bitcoinl2labs.com/sbtc-design-principles))
+
+These artifacts communicate where Stacks is headed and what it can achieve. They also provide clear context as to why this proposal is well-timed and will usher in an exciting new era of traction for Stacks.
+
+### **Expected Benefits Of Approval**
+
+**The solutions outlined in this proposal are designed to directly address the most pressing needs identified by those at the core of the Stacks ecosystem by:**
+
+* Introducing operational efficiency in key functional areas through a new operational entity that serves as a major contributor for protocol development, community engagement & growth, global marketing, and capital markets.  
+* Unlocking capital essential for ecosystem and application growth.  
+* Establishing dedicated resources and clear ownership in critical areas where the Stacks ecosystem has previously been unable, or only partially able, to participate (details on these areas follow below).  
+* Enabling long-term ecosystem funding through smart treasury management and any future protocol revenue, aligning capitalization with the project’s caliber and the needs of its builders.
+
+Importantly, these changes are structured to preserve community oversight and governance, ensuring all processes and decisions remain transparent.
+
+Throughout this SIP, the authors have provided a detailed exploration of how this proposal stands to benefit all Stacks stakeholders. Later sections will break down these advantages by stakeholder type, while this introduction provides a high-level summary of the key benefits.
+
+**Benefits of this SIP by stakeholder type**
+
+| Stakeholder | Benefits |
+| ----- | ----- |
+| Builders & Developers | *Access to capital and liquidity at all stages of their journey to fuel growth and a faster moving technical foundation as Stacks core and sBTC development velocity is increased.* |
+| Holders/Investors | *Improved market dynamics and token value potential through clearer communication and increased transparency about strategic treasury deployment and dedicated financial stewardship.* |
+| Users | *Faster access to high-quality apps and DeFi opportunities powered by ecosystem-wide growth incentives and broader Stacks brand awareness.* |
+| Contributing Entities | *Freedom to operate and scale without legacy constraints or fragmented operational overhead.* |
+| Ecosystem Partners | *Streamlined integrations, additional capital, and clear ownership unlock faster go-to-market and deeper collaboration with the Stacks ecosystem.* |
+| Casual Holders | *A stronger, more visible, and more valuable ecosystem with clearer communication, governance, and confidence in the long-term plan and resources required to execute it* |
+
+Treasury deployment will be focused on accelerating sBTC adoption and driving Bitcoin capital onto the Stacks network in ways that directly reinforce the STX flywheel. For example:
+
+1. Enabling dual-stacking can attract large BTC inflows while increasing demand for STX to unlock higher rewards.  
+2. Increasing usage of apps where users pay gas in sBTC drives up protocol transactions — each of which ultimately requires STX at the protocol layer.  
+3. Similarly, enabling DeFi vaults with native liquidity pools ensures deeper markets for Stacks DeFi, which increases sBTC utility, boosts protocol revenue, and creates sustainable STX buy pressure while bringing new users and capital into the Stacks ecosystem to engage with the entire universe of Bitcoin apps built here.
+
+In each case, targeted capital deployment turns ecosystem growth into protocol-level demand for STX.
+
+### **Key SIP Design Principles**
+
+In putting this SIP together, there were a few clear guiding principles:
+
+1. **Continued commitment to meaningful decentralization.** This proposal is designed to uphold and enhance decentralization, while enabling more efficient day-to-day operations.  
+2. **Adapting to growth.** Stacks has evolved well beyond its early (Blockstack days) origins, and the mission has expanded significantly thanks to the ecosystem’s success. This SIP aims to align with the current landscape and increased opportunities, recognizing that capital needs have grown alongside this broader scope.  
+3. **Empowering builders.** The SIP should ensure that all Stacks builders, small & large, have access to strategic capital, resources, and execution they need for their given stage and focus. This support is a priority-unlocking faster go-to-market and scaling for high-potential projects within the ecosystem.  
+4. **Strengthening accountability.** Mechanisms for community oversight of new entities are either maintained or improved, reflecting direct feedback from the community.  
+5. **Balancing short- and long-term needs.** The SIP should address immediate priorities and sustainable, long-term capital required to grow the project for many decades.
+
+### **Maintaining Strong Decentralization**
+
+The commitment to decentralization remains. Let’s quickly reflect on the questions originally asked when forming the current ecosystem: [https://blog.blockstack.org/the-stacks-ecosystem-next-steps-on-the-path-to-decentralization](https://blog.blockstack.org/the-stacks-ecosystem-next-steps-on-the-path-to-decentralization).
+
+* **Technology**: To what extent is the technology itself centralized? Are there parts of the technology that are owned or controlled by particular individuals or entities?  
+* **Governance:** To what extent can an individual or single entity dictate changes to the technology and decide its future?  
+* **Ecosystem:** To what extent do single individuals or entities hold such influence that there is little room for contribution from others?
+
+The authors of this SIP are committed to maintaining decentralization in alignment with these established values. This proposal identifies opportunities to streamline key ecosystem operations while preserving essential checks and balances, ensuring the continued benefits of decentralization.
+
+Some of the measures in place to ensure the ecosystem remains decentralized include:
+
+* The technical operation of the blockchain is still fully decentralized based on the participation of miners and signers.  
+* No one party has unique ownership or control to make changes to the blockchain and the code remains open-source and owned by the community.  
+* The blockchain will still be governed by the same process administered by the Stacks Foundation and dependent on what miners and signers choose to do.  
+* To further ensure the open governance process, the Stacks Endowment will not vote its tokens during SIP votes.  
+* This SIP does not confer any unique protocol governance or technical decision-making capabilities to the new operational entity; its existence is merely as a contributor to the ecosystem with an explicit focus to de-duplicate back-end effort required to support development.
+
+---
+
+## **Specification \[In 2 Parts\]**
+
+## **Part 1: The Stacks Endowment**
+
+This SIP calls for the creation of a new consolidated ecosystem Endowment which will be funded through a combination of STX transfers from existing entities and people, a one-time mint of 100m STX to provide initial working capital (that is, STX deployed by the Endowment but not released onto the open market), and build a longer term treasury through new emissions over the next 5 years that temporarily bring Stacks’ annual emissions from 3.52% to an average of 5.75% per year. This target was chosen by first estimating the total resources necessary to achieve the stated objectives in this SIP over the first 5 years of the Endowment (both STX and USD denominated amounts) based on comparisons to other Top 50 crypto ecosystems. Next, an economic report from a third party research firm (details and a link to the report are below) was commissioned to identify the likely value of the STX based on several different scenarios. Finally, the approximate number of STX needed, based on the likely value of the tokens to be converted, to meet the resourcing needs estimated.
+
+The Endowment plan also includes a model that mitigates the short-term impact on STX holders (including by not having the early minted tokens be released onto the market) and, via a deep economic study, accounts for the primary risks typically associated with increased inflation. The mechanics of treasury creation are covered in more detail below.
+
+No further treasury mints are planned beyond this endowment and there is consideration for introducing a token burn mechanism to burn STX from the supply should the performance of the Endowment exceed the financial model. Finally, there are potential options to further sustain the treasury that are not in scope of this SIP via protocol revenue paths that can be considered separately.
+
+### **Why a new treasury?**
+
+This capital allows Stacks to move more quickly on its mission to activate the Bitcoin economy. As crypto matures and the landscape of Bitcoin layers that Stacks founded grows, velocity is critical. The additional capital will align the ecosystem with both competitive and partner ecosystems in the space, ensuring Stacks is not left behind due to a treasury created in an entirely different landscape, which has already been leveraged extensively in growing the ecosystem over the past 6 years. It will enable the type of growth-focused activities builders need as they leverage the new speeds and security of Nakamoto and the sBTC asset launched in late 2024\. While the technology will continue to progress, the ecosystem’s top priority in 2025 is driving traction, requiring an investment in growth activities and economic flywheels, which the new structure and capital will allow for.
+
+\<aside\> 🥕
+
+*Other ecosystems that updated their treasury operations and allocated material growth funding have successfully unlocked new products, achieved roadmap milestones, improved liquidity, and enabled real-time, transparent funding for builders-outcomes that are now considered essential for ecosystem leadership.*
+
+***RENDER***
+
+Render replaced $RENDER payments with a burn-and-mint equilibrium (BME) model to boost efficiency and sustainability in their decentralized GPU rendering marketplace. This update involved a planned increase of the total supply by about 20%, to be released in small batches (never exceeding 10% per year). The BME model has been live since December 2023, and within one year, it nearly tripled on-chain network usage compared to 2023\.
+
+**Sui**
+
+Since the announcement of its ecosystem fund worth over $50M to support its DeFi ecosystem in Q4 2023, **Sui** has seen explosive growth, with TVL increasing by \~50x, DEX volumes by \~20x, and daily active users \~15x as of Q1 2025\. The comparison shows clear growth across all key metrics, which could suggest that the initial funding helped drive ecosystem growth.
+
+**Avalanche**
+
+Since the announcement of its $180M DeFi incentive program in Q3 2021, **Avalanche** has grown steadily, with TVL increasing by \~8x, DEX volumes by \~2x, and daily active users by \~6x as of Q1 2025\. The comparison shows clear growth across all key metrics, which could suggest that the initial funding helped drive ecosystem growth.
+
+**NEAR**
+
+Since the announcement of its $800M funding initiative in Q4 2021, **NEAR** has seen significant growth, with TVL increasing by \~4x, fees by \~3x, and daily active users by \~160x as of Q1 2025\. The comparison shows clear growth across all key metrics, which could suggest that the initial funding helped drive ecosystem growth.
+
+\</aside\>
+
+### **Treasury Impact**
+
+* **Increased development activity:** Consistent funding for core protocol developers to drive development and innovation.  
+* **Ecosystem growth:** Grants and incentives will attract developers, projects, and users to the Stacks ecosystem.  
+* **Enhanced marketing and adoption:** Dedicated resources towards marketing will increase awareness and adoption of Stacks.  
+* **Improved market dynamics:** Active treasury management and more robust capital markets activities can contribute to a healthier STX market.
+
+### **Treasury Allocations & Usage**
+
+**Building for the Long Run: Roadmap and Stacks Value Accrual**
+
+To more deeply understand the technical and growth efforts this SIP intends to support, we invite voters and stakeholders to read the following key resources:
+
+* [Stacks Roadmap Update](https://stacksroadmap.com)  
+* [Stacks Economic Model: Unlocking BTC Capital & Long Term Growth](https://forum.stacks.org/t/stacks-economic-model-unlocking-bitcoin-capital-long-term-growth/18035)  
+* [sBTC Design Principles](https://bitcoinl2labs.com/sbtc-design-principles)  
+* [Stacks DeFi Growth Roadmap](https://forum.stacks.org/t/2025-roadmap-defi-road-to-1bn-defi-tvl/18032)
+
+If approved, this SIP calls for the treasury funds to be allocated in accordance with the roadmap and other resources linked directly above. Taking a look at the top-line budget, it will be deployed across several key areas with the following approximate breakdown:
+
+### **Stacks Endowment Initial Budget Allocation**
+
+* **Operations and Staff: 10%** This category includes the costs to run a lean organization of employees, contractors, and other roles, as the execution responsibility folds into a new primary execution entity, as described in the next section. Operations and Staff also includes costs for custody, compliance and legal fees, recurring platform subscriptions, financial reporting, and general operating expenses. Back office consolidation is generally considered beneficial because efficiencies are realized.  
+* **Engineering and Security: 12%** The commitment to the core blockchain, sBTC, and the security model for Stacks needs ongoing funding. These funds will enable increased engineering velocity and create additional bandwidth for development work streams to happen in parallel. These funds will also be used to double down on efforts like whitehat security engagements, onboarding of leading experts like [Asymmetric Research](https://stacks.org/asymmetric-joins-stacks-ecosystem), ongoing bounty programs, audits, and much more. Importantly, these funds can also be deployed to support builders as they seek to build and remain secure \- expenses that were previously tricky for others to pay for under the current model. As the ecosystem grows, so too should its investment in engineering and security.  
+* **Growth and Marketing: 20%** A major category requiring further investment at the ecosystem level, these funds will enable a concerted and cohesive effort to grow the Stacks brand and onboard users and developers. Contributors in this new org can freely work on ecosystem marketing efforts. This category will include a doubling down of an effective events strategy that saw Stacks exit 2024 with the \#7 fastest growing developer ecosystem, and carve out funds for new activities it has not been able to do before, such as brand marketing, collaborations with KOLs, possible learn and earn campaigns with partners, hackathons, to name a few. While these funds are primarily intended to grow the Stacks brand and overall project awareness in support of all apps, many times that will be executed on by supporting builders as they market and grow their applications.   
+* **Bootstrapping network growth flywheel (including grants, bounties, user incentives, business development for key integrations & partnerships, and M\&A): 31%** Distinct from marketing, bootstrapping budget covers a key category of funds that will be applied to user growth efforts both at the Stacks and application levels. As Stacks builders look to grow their applications, bootstrapping the necessary protocol/ecosystem level infrastructure is initially very expensive. This budget ensures the fundamental pieces that builders rely on ecosystems in our industry are provided, and Stacks can be even more competitive for builder talent. Industry expectations are that many of these incentives are provided by ‘the ecosystem’, meaning that investors all expect this when considering investing in Stacks startups. The primary focus of these funds is to support builders as they reach the point where they require growth incentives, and this should not only make it faster for apps to reach critical mass, but also to secure investors on the way. Importantly, this category also includes funds to support aggressive and expedited business development momentum for the Stacks chain, potential M\&As, and other activities under the ‘Business Development’ umbrella, further enabling builders with the interoperability and support their apps need to grow. Examples of spend may include integration costs for bridges, stablecoins, sBTC listings, more fiat on/off ramps, oracle and node providers, incentives for Signers, and more.  
+* **Working Capital: 27%** Working capital describes capital that is intended to be actively deployed, but not permanently spent. This includes capital liquidity provisioning, a Stacks Memecoin Fund, direct deployments into Stacks DeFi, and allocations to deals that require a certain capital allocation to incentivize integration into the Stacks ecosystem.
+
+### **Benefits To Builders**
+
+---
+
+**With the majority of the Endowment dedicated to empowering builders of all sizes and fueling growth, the Stacks ecosystem is entering its next wave of innovation.**
+
+To provide more specific examples, Stackers can expect to see activities like the following supported by this new endowment (in no particular order):
+
+* **Grants and bounties** for protocol/app development: *These initiatives will directly fund developers building new protocols, applications, and tools that expand the capabilities of the Stacks ecosystem. These grants will cover the entire spectrum of the builder journey, in terms of size, stage, resource needs, and focuses.*  
+* **Community Grants:** *In addition to critical bounties (for needs identified by roadmap priorities), community engagement and marketing initiatives, and new builder recruitment/growth programs, the Endowment will create a “Community Grants” program to fund projects that may fall outside the highest current/ immediate ecosystem priorities, but still widely benefit the community. These projects are conceived and created by members of the Stacks Community to benefit the growth, creation of resources, or general betterment of the Stacks Community (such as media programs, art projects, free/open source tooling, or similar). The Community Grants program will be administered by the operational entity, who will be responsible for creating a public site where community members can submit applications and vote on proposed grants, with final allocations made by direct vote of the Treasury Committee (or a sub-committee they may set up).*  
+* **DeFi liquidity programs** and support for new projects (including direct deployments into Stacks DeFi): *The Endowment will deploy capital to boost liquidity on Stacks DeFi platforms and provide crucial early-stage support for innovative DeFi projects.*  
+* **Brand campaigns and KOL engagement:** *Strategic marketing initiatives will raise awareness of Stacks and sBTC and drive user adoption by highlighting key value propositions and use cases.*  
+* **Exchange listings (SIP-010 standard), capital markets activities, and ecosystem TGE liquidity:** *The Endowment will support STX and sBTC liquidity on exchanges and help facilitate successful token generation events (TGEs) for new projects launching within the Stacks ecosystem by pursing SIP-010 standard integrations on major exchanges, thereby removing friction for teams, and facilitating the necessary introductions.*  
+* **Marketing, education, and user acquisition:** *Educational programs and user acquisition campaigns will help new users understand and engage with the Stacks ecosystem, driving growth and adoption.*  
+* **Business development, partnerships, and M\&A:** *The Endowment will actively pursue strategic partnerships and business development opportunities to expand the reach and influence of the Stacks ecosystem. Examples may include stablecoins, bridges, onramps, and other critical partnerships.*  
+* **Other initiatives as identified by the community and Treasury Committee:** *A portion of the Endowment will remain flexible to address emerging needs and support innovative ideas that are identified by the community.*
+
+### **Endowment Creation & Specifications**
+
+The endowment will be created primarily via new emissions from the Stacks network over the next five years. This emissions design was created to ensure that the new Endowment had sufficient resources to fund the necessary activities and build a healthy endowment base, all while maintaining a lower overall inflation rate than the majority of Top 50 crypto ecosystems (which currently have a median of \~10%, further details are below).
+
+To fund the initial working capital, such as that needed for deployment in liquidity operations, applications, BD allocations, and similar,
+
+1. 25M STX (or equivalent other currencies) transfers from the Stacks Foundation, Hiro, Muneeb Ali, Stacks Asia Foundation, Bitcoin L2 Labs, and others. These are existing tokens and do not result in new emissions.  
+2. 100M STX will be created via an one-time token mint, immediately upon implementation of the SIP \- while immediately unlocked and usable, these tokens will be used for working capital and will not be released to the open market.
+
+The rest of the Endowment will be created via new emissions over a 60 month period.
+
+Of these new emissions,
+
+1. The first 100M STX will be minted as locked and will unlock over the first 24 months with 1/24th unlocking each month \- these tokens will also not come to the open market but rather will be sold while locked via OTC/private placements with 12-36 month lockups in order to raise the initial USD operational capital for the Endowment.  
+2. The majority (300M STX) of these new emissions will be emitted over the course of 60 months at each PoX tenure anchor block. These new tokens will be minted and deposited directly to the Treasury address (similar to, but distinct from, coinbase rewards). The specific schedule is:  
+   1. Months 1-11: 475 STX per anchor block  
+   2. Months 12-23: 1,140 STX per anchor block  
+   3. Months 24-35: 1,705 STX per anchor block  
+   4. Months 36-47: 1,305 STX per anchor block  
+   5. Months 48-60: 1,155 STX per anchor block
+
+The Endowment will maintain and publish a primary mint address that all funds will flow to before being deployed. There are potential options to further sustain the treasury that are not in scope of this SIP via protocol revenue paths that can be considered separately, but there are not further treasury mints beyond this endowment. See [Stacks Economic Model](https://forum.stacks.org/t/stacks-economic-model-unlocking-bitcoin-capital-long-term-growth/18035) for more details.
+
+### **Economic Analysis & Impact**
+
+As part of the preparation and design of this SIP, the Stacks Foundation contracted an outside tokenomics firm to conduct research on the viability of raising and deploying a treasury of this size. Nomiks ([nomiks.io](https://www.nomiks.io/)) was chosen based on their track record and quality of referrals from trusted advisors.
+
+**Economic Analysis & Strategy**
+
+The creation strategy was chosen to balance having enough tokens up front to deploy necessary working capital into the ecosystem, while providing certainty to ecosystem members about the rate at which new tokens will be created and available. Additionally, the unlocking structure was chosen to build trust with market participants by implementing clear caps on how much may come to market at any given time.
+
+Nomiks was asked to research and provide a recommendation for how the Endowment treasury could be raised via STX and converted to a mix of STX, USD, and BTC in a sustainable manner. In addition to the limitation on the release of tokens, the Endowment will develop a strategy for bringing its tokens to market based upon this analysis and recommendations that will be publicly disclosed and committed to, so ecosystem members have full visibility into the plans. Importantly, to provide a conservative model, Nomiks was asked to analyze data based on existing and historic STX performance, not taking any forward looking roadmap initiatives such as Stacks potential value accrual work streams into account.
+
+This strategy is expected to include the following points:
+
+* Limiting the number of new tokens coming to market to specific limits in line with current market liquidity.  
+* Providing a clear public plan and report on the use of funds and tokens brought to market  
+* Making use of private sales and lockups for initial capital raise for the Endowment  
+* Conservatively deploying capital in early days to ensure funds remain available
+
+**Inflation Impact**
+
+Nomiks’ proposed emissions and conversion programs were designed with the goal of keeping Stacks’ annual inflation (including the existing coinbase reward for miners) below that of most other Top 50 projects, which have a median inflation rate of **10.18%**, as seen on [this sheet](https://docs.google.com/spreadsheets/d/1pwZtoU4E6RXXxCw9gW225TJnD4W_Xu3B2WGhqe21O9o/edit?usp=sharing).
+
+Given that current PoX inflation rates are 3.52%, the goal is to have Stacks remain below **7%** average annual inflation from all sources (both mining and new emissions combined) over the next 5 years, which is well bellow the **10%** of other ecosystems from above.
+
+Not including the initial mint, the total inflation rate for each of the 5 years of emissions and unlocks is as follows:
+
+| **Year** | **Total STX Emissions (incl Treasury & PoX)** | | \--- | \--- | | Year 1 | 7% | | Year 2 | 7% | | Year 3 | 7% | | Year 4 | 4.25% | | Year 5 | 3.50% | | **Average Yearly Emissions** | **5.75%** |
+
+Once the minting is complete, annual inflation for STX will be \<2%.
+
+\<aside\> 📈
+
+The full report from Nomiks can be seen **here**
+
+\</aside\>
+
+**Future Token Burns**
+
+The rate of emissions in this SIP were chosen based on the third party economic analysis and to ensure that the Endowment raised sufficient funds  even in a scenario where the token price does not considerably rise. Therefore, it is possible that if STX materially overperforms the model in the economic report in the short to mid-term (for instance if it rose to $10+ /token), then the Endowment will likely be sufficiently equipped without needing all of the planned emissions and a token burn can be set up to burn the later part of the emissions. This will also depend on the performance of some of the value accrual mechanisms (like sBTC gas fees) that would provide more funds that could be used for burns.
+
+As such, if the size of the Endowment’s total liquid assets grows to exceed $1b USD, it will devise a burn program and present that program to the community for a vote, along with other options for the community to select from, including continuing to grow the Endowment or allocation of the future tokens to other purposes.
+
+### **Treasury Strategy & Operations**
+
+The new treasury will act similarly to an endowment for the ecosystem, balancing immediate needs with long-term growth. In its early years, some principal may be used to advance its mission until network growth and future revenue streams can sustain ongoing operations.
+
+To support this vision, the Stacks Endowment will follow a diversified funding strategy centered on long-term sustainability and ecosystem development.
+
+* The treasury will primarily be funded with STX initially, then diversified into a portfolio primarily composed of STX, BTC, and USD.  
+* An experienced Chief Investment Officer (CIO) will be hired to manage the Endowment, with independence from any other Stacks entities.  
+* While the CIO will shape the detailed approach, the strategy is expected to blend Stacks DeFi deployments, capital market activities, and high-quality, low-risk interest-bearing investments.  
+* The Stacks Endowment will publish annual public reports detailing the treasury’s status, deployment strategies, impact, and transparent audit trails, with transactions conducted on-chain whenever possible.
+
+**Enhanced Financial Flexibility**
+
+The creation of a Stacks Endowment brings greater financial flexibility to the ecosystem, moving beyond the constraints of previous token sales. This structure enables more effective financial planning and strategic resource allocation.
+
+In contrast to many current contributors, the new funding entity is designed to respond freely to the ecosystem’s evolving needs, supporting a broader range of initiatives as they arise.
+
+**Predictable STX Management for Market Stability**
+
+This new treasury structure brings greater stability and predictability to the market environment for STX holders.
+
+The Stacks Endowment will publish a forward-looking STX deployment schedule, clearly communicating the timing and amounts of STX allocations. By proactively sharing this information, the Endowment reduces uncertainty and builds confidence \- an approach proven effective by other leading projects. Such transparency is especially valuable for those seeking long-term stability and growth within the Stacks ecosystem.
+
+### **Stacks Endowment: Organization, Structure, and Governance**
+
+The Stacks Endowment will be organized and governed according to best practices established by leading public non-profits and endowments. Day-to-day operations will be managed by a small, professional team, while major decisions and allocations will be ratified by a Treasury Committee that remains directly accountable to the Stacks community.
+
+Upon approval, the principles and structural details outlined in this SIP will be formally adopted into the legal bylaws governing the Stacks Endowment. The community will retain the ability to propose amendments to the Endowment’s personnel, structure, or governance at any time through future SIPs.
+
+The Treasury itself will be held by a Cayman Non-Profit Foundation. This structure was selected for its robust, well-established legal framework for crypto projects under Cayman law, offering long-term predictability and confidence in the Endowment’s operations.
+
+**Endowment Operations & Staff**
+
+Similar to other non-profits, the day-to-day management of the Endowment and its staff will be overseen by a Chief Investment Officer (CIO) who reports to the Treasury Committee and is selected following a public recruitment process.
+
+**Treasury Committee**
+
+The Treasury Committee will be empowered by the Endowment to supervise the Endowment’s assets and major actions. This includes appointing the Chief Investment Officer, reviewing the endowment’s investment policy and asset allocation, overseeing investment performance, establishing budgets, and approving significant partnerships and agreements.
+
+**Treasury Committee Membership**
+
+The voting membership of the Treasury Committee will consist of nine members \- 8 appointed from the Stacks community per the process below, plus the Endowment’s Chief Investment Officer. All community appointed members serve 4 year terms, with four members appointed each 24 months to ensure continuity. Members may be re-appointed to successive terms.
+
+**Keyholders**
+
+The Treasury Committee will also manage the keys for the Endowment’s primary addresses and execute the transfers for them via keyholders. All transfers from these addresses require approval by the Treasury Committee, in accordance with its bylaws. Once transfers have been approved by the Treasury Committee, they require execution by a majority of the keyholders, who are contractually bound to execute only those transfers formally authorized by the Treasury Committee. These bylaws will be established based on the provisions in this SIP.
+
+Keyholders are chosen by a 2/3rds vote of the Treasury Committee and serve indefinite terms until they resign or are removed by a 2/3rds majority vote of the Treasury Committee. Keyholders may be, but are not required to be, full voting Treasury Committee members.
+
+**Treasury Committee Appointments**
+
+After the initial appointments, at each appointment period, the Stacks Endowment shall publish desired criteria for Treasury Committee members and, after consultation with and nominations from the Stacks community, prepare a final list of proposed Treasury Committee members for the open seats. This proposed set of members must then be approved by a SIP vote, with at least 2/3rds of votes in support.
+
+If a member steps down, or is removed, the remaining members of the Treasury Committee shall appoint a replacement to fill their seat for the remainder of their term by a 2/3rds vote. Additionally, any member may be removed for failing to fulfill their duties or violating their responsibilities to the Committee by a 2/3rds vote of the Committee.
+
+**Initial Appointments**
+
+To appoint members to the five open seats on the Treasury Committee, a temporary Appointments Committee will be formed to make these appointments. The Appointments Committee will fill the open seats within 60 days of the SIP being approved.
+
+The members of the Appointments Committee will be:
+
+* Member 1  
+* Member 2  
+* Member 3  
+* Member 4  
+* Member 5  
+* Member 6  
+* Member 7
+
+To enable the initial setup of the Endowment, three existing leaders from the Stacks ecosystem who are making substantial contributions to the Endowment (either via their entities or personally) and have extensive experience in managing large crypto treasuries will be appointed as keyholders as well as members of the Treasury Committee, with their seats up for re-appointment at the first appointments period in 2 years. These include
+
+* Alex Miller, CEO of Hiro  
+* Mitchell Cuevas, Interim Director of the Stacks Foundation  
+* Muneeb Ali, Co-Founder of Stacks
+
+**Reporting & Accountability**
+
+A key element of the mandate for the Endowment and its Staff is to clearly communicate to the community about the activities and their impacts that are being undertaken to manage the endowment, deploy it, and fulfill the goals set forth in this SIP and subsequent conversations with the community.
+
+As such, the Endowment team will communicate on a regular basis, including at a minimum: 
+
+* A detailed annual report, similar in depth and content as US based non-profits issue, reporting on all monies raised and spent over the past year, the activities engaged in, the impact of those activities, and expected priorities for the future year.
+
+* A shorter quarterly report, similar to the Stacks Foundation’s current reporting, on progress against the years goal and priorities
+
+* All STX for the Endowment will initially flow through publicly published addresses on chain so that the Endowment’s STX are traceable by looking at the public blockchain
+
+* The Endowment and Operational Entity staff should hold public engagement sessions (whether through X spaces, livestreams, forum posts, or others) at least on a monthly basis to ensure they’re always up to date with community thoughts and priorities.
+
+## **Part 2: The Operational Structure**
+
+Along with the creation of the necessary capital for growth, there is an opportunity to unlock additional efficiency and flexibility for key contributors as they work to support ecosystem growth. This section of the SIP will dive into the proposed structure by which the ecosystem can consolidate some key functions while maintaining decentralization and community-driven governance. This operational structure goes hand-in-hand with the new treasury, providing a framework that ensures the new capital is always operating in line with the will of the community, while remaining flexible in the ways that it can serve ecosystem needs.
+
+Of course, it also remains committed to the deepest levels of compliance while seeking to provide the maximum protection and clarity possible to all stakeholders and contributors by following current legal best practices. This proposed structure has been developed in line with the best practices from the last 5+ years of legal and financial experience in the crypto industry.
+
+### **Current issues for key contributors**
+
+There are a number of key factors that make it difficult for key contributors to operate in support of the Stacks Ecosystem. These factors are primarily a result of Stacks’ compliance journey in the US. They can be traced back to the initial path to decentralization that the project committed to as it became the first project to ever hold an SEC-qualified sale.
+
+These commitments imposed limitations on organizations like the Stacks Foundation, Hiro, and others, adding complexity, friction, and sometimes preventing them from directly supporting important aspects of ecosystem growth.
+
+This SIP, by establishing the new entity plus the required capital, solves that, providing capital and the vehicle essential to deploying it flexibly for years to come.
+
+### **Ecosystem Structure: Roles and Responsibilities**
+
+---
+
+To ensure clarity and optimize operations, this SIP calls for three primary organizations with distinct responsibilities. These organizations will comprise a mix of established contributors from the primary organizations seeding capital and new hires.
+
+### **Proposed Ecosystem Structure**
+
+**1\. Allocation / Money: The Stacks Endowment**
+
+* **Focus:** Management of the Stacks Endowment, strategic fund allocation, and financial stewardship.  
+* **Responsibilities:**  
+  * Manage a diversified portfolio of assets (STX, BTC, USD) held within the Stacks Endowment.  
+  * Manage grants programs and provide technical support for ecosystem projects.  
+  * Review and approve funding proposals from the Ops Entity, ecosystem community projects, and other initiatives.  
+  * Oversee risk management, compliance, and audit processes for the Treasury.
+
+**2\. Day-to-Day Execution: A New Operational Entity**
+
+* **Focus:** Technology development, ecosystem operations and growth, and core initiatives.  
+* **Responsibilities*:***  
+  * Contribute to core protocol development, upgrades, and maintenance  
+  * Lead marketing and promotion of the Stacks project by hiring a Chief Marketing Officer (CMO) to oversee marketing, events, and growth.  
+  * Fund and support community based initiatives, particularly around marketing and new developer growth  
+  * Oversee and provide support to general marketing initiatives, business development, and partnerships.  
+  * Ecosystem Builder/Developer Relations & Growth  
+* **Funding Source:** Receives annual funding allocation from the Stacks Endowment.
+
+**3\. Governance: Stacks Foundation, Guided by Stacks Community**
+
+* **Focus:** Community oversight, transparency, and alignment with ecosystem values.  
+* **Responsibilities:**  
+  * Neutrally support the community in any required processes to elect Treasury Committee members or propose changes to the Stacks Endowment bylaws.  
+  * Review the Endowment’s reporting on the performance and impact of Treasury-funded initiatives to provide an independent perspective.
+
+### **Rationale for the new structure**
+
+**The proposed structure offers several key advantages:**
+
+* **Consolidated Resource Management:** Consolidating the treasury within the Stacks Endowment ensures efficient allocation of funds to the most critical needs of the ecosystem.  
+* **Strategic Funding:** Allocating funds across operations, engagement, growth, incentives, and working capital enables a balanced approach to ecosystem development.  
+* **Long-Term Sustainability:** Managing the treasury with a diversified portfolio provides financial stability and ensures the availability of resources for ongoing initiatives.  
+* **Clear Responsibilities:** Defining the roles and responsibilities of the Stacks Endowment and its relationship with other organizations, such as the new operational entity, clarifies accountability and promotes efficient collaboration.
+
+This clear division of responsibilities allows each group to focus on its core competencies, leading to a more efficient, effective, and sustainable ecosystem for Stacks. The Endowment staff will prepare an annual public report detailing how the Endowment's resources were allocated for the prior year and the impact of those allocations.
+
+### **Impact on key contributing organizations**
+
+For known organizations, it is useful to reflect on expected changes that would go with this proposal:
+
+**Remains independent:**
+
+* **Stacks Foundation** \- As noted above, the Stacks Foundation will narrow its focus on facilitating Governance of the ecosystem (in particular via the SIP process) and ensuring the community’s voice is heard.  
+* **Hiro Systems** \- Hiro will continue as an independent entity focusing on developer tooling.  
+* **Trust Machines \-** Trust Machines will continue to incubate and develop applications for Stacks & Bitcoin.  
+* **Bitcoin Frontier Fund (formerly Stacks Accelerator)** \- No impact or changes.
+
+**Likely to become part of, or share back-office resources:**
+
+* **Bitcoin L2 Labs** \- Given the current focus of Bitcoin L2 Labs on core development, it will likely become part of the new operational entity, with Adriano continuing to lead engineering efforts.  
+* **Stacks Asia Foundation** \- Stacks Asia Foundation will continue its Asia-specific focus, likely integrating back-office operations after exploring the logistics more deeply.
+
+### **Governance**
+
+---
+
+*Decentralized decision making and governance combined with the benefits of organized efficiency and economies of scale.*
+
+The governance process and systems for Stacks will remain largely unchanged, with independent stakeholders representing the community, while the new organizations will streamline operations and ensure timely and accurate execution. SIPs will still govern key changes and decisions as the ecosystem moves forward, and the Stacks Foundation will maintain responsibility for hosting the SIP process, providing the mechanisms by which community leaders can create, refine, and move proposals forward.
+
+**Accountability**
+
+* For the new operational entity, accountability is derived from the Stacks Endowment. Should they not perform, their budget allocation is not renewed, and they can be deployed more effectively or to another organization. Additionally, while they will have an explicit mandate of executing on core ecosystem needs on behalf of the Endowment and Stacks community, this is not an exclusive or special power. Stacks remains an open-source project, governed by the same governance process, that anyone can contribute to and this organization will have no special rights in the governance process.  
+* For the Stacks Endowment, their accountability to the community is derived directly from the SIP process, which is implemented and supported independently by the existing Stacks Foundation. In order to ensure independence, the Stacks Endowment will not vote its tokens for or against any SIP.  
+* For the Stacks Foundation (US), their accountability is also derived from the SIP process (i.e., the direct will of Stacks holders via vote). The Stacks Foundation, free of the execution load, can remain neutral on matters of execution, existing only to support the community in driving consensus on priorities and big picture decisions via the SIP process.
+
+At the end of the day, the community’s interest is the superior guide and a SIP can be drawn up to propose adjustments should any party not deliver according to the will of the community.
+
+**Additional**
+
+* Open proposal process for Treasury allocations  
+* The Treasury Committee, composed of Foundation representatives and elected community members, reviews and approves funding.  
+* Regular audits and public accountability, including published communications and ecosystem growth reports.
+
+**Stacks Foundation Governance Allocation**
+
+To ensure that the Stacks Foundation always has sufficient resources to provide its governance role in the ecosystem, the Endowment shall provide up to $500K USD per year (indexed to inflation) in funding for governance activities at the discretion of the Stacks Foundation. This dedicated funding will sustain the core Stacks Improvement Proposal (SIP) processes that ensure community oversight and transparency. It includes resourcing SIP Deputies, Working Groups and/or the CAB, supporting SIP education and SIP editor development, funding SIP engagement bounties and enabling neutral SIP coordination by the Stacks Foundation. The allocation will also support the development and ongoing refinement of bylaws to guide Endowment governance — ensuring strategic decisions reflect the collective will of the community and foster long-term trust and alignment across the Stacks ecosystem. Providing the mechanisms by which community leaders can create, refine, and move proposals forward.
+
+# **Potential Risks**
+
+This SIP proposes a bold course forward in growing the Stacks ecosystem, which does not come without potential risks and considerations.
+
+**1\. Fundraising Execution Risk**  
+The Endowment’s ambitious five-year fundraising target of $405M, primarily through structured token sales, is subject to significant market timing risk. Prolonged bear markets could constrain fundraising opportunities, while the 7% annual inflation cap limits flexibility in adjusting to adverse conditions. Achieving funding goals will require carefully aligning operational cash flow needs with favorable market conditions—an inherently uncertain task. To manage this, the Endowment intends to maintain a dynamic approach to fundraising, adjusting cadence and scale based on prevailing market signals and community consensus (see Nomiks report for more detail).
+
+**2\. Operational Execution Risk**  
+Raising funds alone does not guarantee success. The core objective is to drive meaningful product and ecosystem growth, which carries execution risk. Even with sufficient capital and governance safeguards, outcomes depend on effective leadership and strategic decisions.
+
+**3\. Token Supply and Market Impact**  
+While there have been extensive consultations with capital markets experts and the adoption of best practices to manage treasury operations responsibly, long-term token issuance introduces uncertainty regarding market impact. Macro conditions and market sentiment will influence the price of STX in ways that are difficult to predict. Should STX remain below $1 for an extended period, the Endowment may need to scale back spending or extend its fundraising timeline to preserve capital and uphold fiscal discipline. Relatedly, the fund's sustainability is tied to STX price performance, with treasury depletion timelines varying based on token value. At sustained low prices ($0.50-$1.00), the treasury could be exhausted within 1-2 years due to the $80M annual fixed USD expenses requiring more token sales to meet obligations. This creates operational inflexibility during market downturns when cost reductions may not scale proportionally with declining treasury value.
+
+**Ecosystem Reputational Risk:** There is much debate in the crypto industry over the appropriateness of changing the rates of emissions, particularly among the Bitcoin community. While Stacks is intended as a gas token for operating the network, there is the possibility that the ecosystem will receive criticism or attack for creating a treasury via emissions after the mainnet launch.
+
+**Appearance of Centralization:** Creating a single Endowment may also be interpreted as being overly centralized. To mitigate this, the structure proposed in this SIP is designed to maintain decentralized governance around the key aspects of control and require clear, accountable reporting to the community.
+
+**Stacks Unique Position:** While many other ecosystems have changed emissions schedules or created treasuries to fund growth, there is no exact 1:1 corollary we can look to of an ecosystem with Stacks’ unique history and position in the market to predict how this will ultimately be viewed. This is an inherent risk of making a bold attempt at something.
+
+# **Conclusion**
+
+To close, the following section highlights the anticipated benefits of this proposal and identifies key areas that will require further development and focus if this SIP moves forward.
+
+### **Summary of benefits**
+
+**🛠 Builders**
+
+* Dedicated funding for growth, user acquisition  
+* Increased marketing support for Stacks ecosystem  
+* More ecosystem funds for broadly beneficial integrations, like bridges, oracles, stablecoins, etc.  
+* Dedicated grants for core protocol, apps, tooling, and infrastructure development.  
+* Access to liquidity support for early-stage Stacks-based projects  
+* Direct incentives for user acquisition and application growth (e.g., TVL programs)  
+* Marketing and branding resources to help amplify applications  
+* Technical assistance and subsidized audits or security services  
+* Faster go-to-market enablement via ecosystem-wide BizDev and GTM teams.  
+* Predictable and open access to proposal funding via the Treasury Committee.  
+* Confidence that Stacks is positioned to compete with top ecosystems  
+* Higher velocity of Stacks network improvements, functionality, and releases
+
+**📈 Holders / Investors**
+
+* Clear market signaling and transparency from forward-looking STX allocation schedules.  
+* Improved STX market liquidity and dynamics via increased capital markets support.  
+* Robust treasury management programs  
+* Increased project visibility and activity, driving ecosystem growth, demand, and network functionality for STX.  
+* Dedicated sBTC and DeFi growth efforts create new demand drivers for Stacks  
+* Expanded developer ecosystem increases long-term value accrual potential  
+* Predictable inflation schedule with consolidated dilution, aligned across contributors.  
+* Puts Stacks resources more in line with other top ecosystems \- examples like Uniswap, Optimism, and Arbitrum have shown that treasuries can drive significant value.
+
+**🧑‍💻 Users**
+
+* Faster access to quality apps and DeFi protocols boasting deep liquidity  
+* Lower onboarding friction via stablecoins, bridges, and fiat onramps.  
+* More robust education, learn-and-earn, and UX enhancements driven by dedicated funding.  
+* Greater network security, performance, and features through continuous core investment.  
+* Global marketing and KOL campaigns that bring in new users and increase liquidity.  
+* Community-aligned incentives (e.g., LP rewards, yield campaigns) directly benefit users.  
+* New integrations that make Stacks-based products more widely available
+
+**🏗 Key Contributors**
+
+* Streamlined structure that frees the most impactful contributors to contribute to a wider scope for the project.  
+* Eliminates structural blockers tied to legacy compliance burdens.  
+* Consolidated ops (custody, reporting, legal) reduce overhead and friction for core teams.  
+* Unlocks participation in marketing, token incentives, and integrations.  
+* Freedom to focus on execution  
+* Clarity on scope and roles across new operational entity, the Stacks Foundation, and the Stacks Endowment.  
+* Ability to scale faster thanks to larger and more predictable budget flows.  
+* Stronger accountability and feedback loops via SIP-driven funding renewals.  
+* More talent attraction and retention with access to funding, stability, and runway.  
+* Strategic resource coordination across contributors (e.g., global GTM team, sBTC rollout).  
+* Examples like the Optimism Foundation show how consolidated treasuries empower execution.
+
+**🤝 Key Partners (Exchanges, Custodians, Oracles, Wallets, and Other Infra Participants)**
+
+* Clear points of contact thanks to consolidation for execution and technical operations.  
+* Faster integration timelines due to a unified core team responsible for protocol upgrades, support, and testing.  
+* Improved reliability and confidence in roadmap delivery via public commitments and long-term funding.  
+* Dedicated support for integrations (e.g., funding for dev time, audits, or infrastructure deployment).  
+* Expanded market activity from treasury-backed growth campaigns (e.g., new STX/sBTC listings, liquidity incentives).  
+* Lower organizational complexity when negotiating integration, marketing, or technical agreements.  
+* Active liquidity and incentive support to boost usage post-integration (especially valuable for exchanges and wallets).  
+* Stronger long-term alignment between infrastructure partners and ecosystem growth priorities.  
+* Greater brand lift as Stacks expands visibility and market cap, helping partners benefit from being early or core participants.
+
+**📦 Casual Holders**
+
+* Clear understanding of who does what in the ecosystem and where/how to get involved  
+* Increased token utility and use cases resulting in a stronger, more valuable ecosystem.  
+* Higher visibility of Stacks through global marketing and product announcements.  
+* Predictable emissions and inflation are aligned with long-term growth.  
+* Confidence that the ecosystem is addressing past inefficiencies and growing responsibly.  
+* Improved app and protocol quality through funded security, liquidity, and dev support.  
+* Trust in long-term alignment from professional treasury operations and public reporting.
+
+### **Immediate Action Post-SIP (if approved)**
+
+* The legal formation of both entities will be completed within 60 days of SIP approval. The research for this proposal has resulted in a significant head start on these requirements.  
+* The Appointments Committee will fill the remaining seats based on community nominations, opening these nominations within 60 days of SIP approval.  
+* Leadership searches for the Stacks Endowment (CIO) and operational entity (CEO) will commence, with positions posted publicly within 60 days.  
+* The new operational entity, in collaboration with the Stacks Endowment and Stacks Builders will finalize details of a retroactive grants program that will focus on growth, enabling predictable capital relative to measurable impact to the ecosystem, such as user, TVL, or other growth indicators.  
+* Grant applications for critical work in the very short term will be opened by the Stacks Endowment, likely leveraging support from the Stacks Foundation’s team and systems. The goal of these grants is to serve any short-term critical needs or opportunities in the initial 90 days of the Endowment's existence until a more formal program can be deployed, including the aforementioned retroactive grant program.
+
+## **Voting Timeline**
+
+The voting timeline will be established and shared over the next 1-2 weeks as the community has time to digest the SIP and provide and integrate feedback.
+
+## **Activation**
+
+Users can vote to approve this SIP with either their locked/stacked STX or with unlocked/liquid STX, or both. The SIP voting page can be found at [stx.eco](https://stx.eco/). The criteria for the stacker and non-stacker voting is as follows.
+
+**To Vote:**
+
+In line with prior SIPs, in order for this SIP to activate, the following criteria must be met:
+
+* At least 80 million stacked STX must vote, with at least 80% of all stacked STX committed by voting must be in favor of the proposal (vote "yes").  
+* At least 80% of all liquid STX committed by voting must be in favor of the proposal (vote "yes").
+
+All STX holders vote by sending Stacks dust to the corresponding Stacks address from the account where their Stacks are held (stacked or liquid). To simplify things, users can create their votes by visiting the [stx.eco](https://stx.eco/) platform. Voting power is determined by a snapshot of the amount of STX (stacked and unstacked) at the block height at which the voting started (preventing the same STX from being transferred between accounts and used to effectively double vote).
+
+Solo stackers only can also vote by sending a bitcoin dust transaction (6000 sats) to the corresponding bitcoin address.

@@ -26,36 +26,45 @@
 
 # Abstract
 
-This SIP proposes a change to the different phases of the stacking process so that stackers can change
-their stacking settings without the so-called cooldown cycle. Furthermore, the relationship between stackers
+This SIP proposes a change to stacking process so that stackers can change their stacking settings without the so-called cooldown cycle. Furthermore, the relationship between stackers
 and signers is strengthened and stacking overall is simplified.
 
 The specification defines that
 
-- the beginning of the prepare phase is moved by 90 Bitcoin blocks towards the end of the cycle.
-- the length of the prepare phase is reduced to 10 Bitcoin blocks.
-- locked Stacks token ready for unlocking are unlocked at 90 blocks before the beginning of the prepare phase.
+- solo stackers and delegating stackers have to follow the same flow and use the same contract functions: All delegate block voting power to signers.
+- stackers can change their stacking settings for the next cycle before the prepare phase, including the chosen signer (switch pools).
+- locked Stacks token are locked for 1 cycle at the time and that the locking period is extended by another cycle if the user does not request to unlock token.
 - delegated stacking tokens are locked immediately.
 - stacking rewards are received by the Bitcoin address specified by the signer.
-- solo stackers and delegating stackers have to follow the same flow.
+- locking Stacks tokens is protected by a new type of post conditions, enabling stacking through a contract in a single transactions.
 
 # Introduction
+
+## Current Situation
+
+Currently, the stacking protocol has a few aspects that makes using and integration stacking harder than it could be:
+
+- There are two groups of stackers: solo stackers and delegated stackers. They use different sets of PoX contract functions
+
+- When using a contract for stacking, the contract needs to added as an allowed pox contract. This requires a separate transaction.
+
+- Solo stackers do all transactions with their cold wallet holding the whole stx balance. They need to make a transaction at least once every 12 cycles (6 months). In contrast, delegated stackers need to do only a single transaction with their wallet for the entire stacking.
+
+- Signers make off-chain agreements with pool operators about revenue sharing.
 
 ## Glossary
 
 | Term               | Definition                                                                                                                                               |
 | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Cooldown Cycle** | The period of 1 stacking cycle where stackers cannot stack their STX tokens because their tokens are unlocked only at the beginning of a stacking cycle. |
-| **Signer**         |                                                                                                                                                          |
-| **Delegation**     |                                                                                                                                                          |
-| **PoX Contract**   |                                                                                                                                                          |
+| **Signer**         | The node operators that verify and confirm proposed blocks by miners.                                                                                    |
+| **Delegation**     | Current meaning: delegating the management of stacking. New meaning: delegating the voting power for proposed blocks.                                    |
+| **PoX Contract**   | The smart contract that users interact with to lock their tokens.                                                                                        |
 
 ## Problem Statement
 
 The current stacking process has two different paths, one for solo stackers, one for delegated stackers,
-resulting in a more complex user experience and more complex code. Furthermore, users cannot change their
-stacking settings (decrease amount, change PoX reward address, etc.) without an unlocked cycle where users cannot earn
-stacking rewards.
+resulting in a more complex user experience and more complex code.
 
 The process is defined by a prepare phase of 100 bitcoin blocks that is used to find an anchor block
 for the next stacking cycle. Stackers must lock
@@ -74,13 +83,15 @@ I get penalized for switching. In today's model with cooldown cycles, users get 
 if a validator does not perform. Even if there are penalties for signers not performing / being down,
 the switching costs are too high for users to switch (2 weeks worth of yield).
 
+Furthermore, users cannot change their
+stacking settings (decrease amount, change PoX reward address, etc.) without an unlocked cycle where users cannot earn
+stacking rewards.
+
 ## Proposed Solution
 
 This SIP proposes a new Proof of Transfer (PoX) contract without
 the flow for solo stacking and moves responsibilities from pool operators to signers. It also
-defines the end of the locking period to be before the start of the stacking cycle.
-
-The user will be able to switch from one signer to another with a single contract call and without a cool down period.
+defines a new locking mechanism that allows users to switch from one signer to another with a single contract call and without a cool down period.
 
 # Specification
 
@@ -96,44 +107,75 @@ The following PoX contract functions shall be removed
 - stack-increase
 - stack-extend
 
-## Locking period
+## Locking Post Conditions
 
-Stacking transactions shall result in locking periods that end 100 blocks before the beginning of a stacking period. This includes
+The following type of post conditions are added to the current definition in SIP-005 (`TransactionPostCondition`)
 
-- delegate-stack-stx
-- delegate-stack-extend
+- `LockingLimnit(PostConditionPrincipal, FungibleConditionCode, u64)`
 
-The PoX contract has to be changed and return the unlock height as previous unlock height minus 100 blocks for mainnet. E.g.
+A transaction (using Deny mode) with this post condition will abort if the locked Stacks tokens of the principal does not satisfy the provided conditions. The logic follows the conditions of STX transfer.
 
-```
-(new-unlock-ht (- (reward-cycle-to-burn-height (+ u1 last-extend-cycle)) u100))
-```
+## Automatic Extend and Locking period
 
-The unlocking process of the stacks node needs to be adapted accordingly.
+The following function shall be removed
 
-## Prepare phase
+- `delegate-stack-extend`
 
-The prepare phase shall start 10 blocks before the beginning of the stacking cycle and last for 10 blocks.
+In addition, the stacking settings for each stacker (user with delegation) shall be applied for the next stacking cycle if the user did not signal end of stacking by calling `revoke-delegate-stx` 200 blocks before the start of the next cycle.
 
-The prepare cycle length defined in PoX contract has be changed to
+This results in the following structure of the stacking cycle:
 
-```
-(define-constant PREPARE_CYCLE_LENGTH (if is-in-mainnet u10 u5))
-```
+- bitcoin block 1-1900: stacking as usual, user can signal change of stacking settings.
+- bitcoin block 1901-2000: stacking as usual, signers can still aggregate stacking changes.
+- bitcoin block 2001-2100 (prepare phase): no rewards for stackers, changes to stacking are applied to the cycle after next.
 
-## Relationship Between Stackers and Signers
+That means the locking period is 1 cycle with automatic extend for another cycle until the user decided to end stacking.
 
-The signature provided by signers to stackers shall use one of the following topics
+## Semantic Change of Delegation
+
+When signers verify and accept proposed blocks by miners, their voting power corresponds to the amount of stacked Stacks tokens (see SIP-021). The new stacking process shall change the delegation flow as follows:
+
+- `delegate-stx` shall be renamed to `delegate`. The function takes the arguments: amount, delegate-to, signature, optional bitcoin block height defining the end of stacking and auto extending, optional max-amount. The amount defines how many Stacks tokens are locked immediately. The max-amount the maximum of Stacks tokens that can be locked in the future. delegate-to describes the signer. Signature is a signature of the signer indicating that the signer accepted to delegation of voting power.
+
+- `revoke-delegate-stx` shall be renamed to `revoke-delegate`. After calling this functions auto extend is stopped and Stacks tokens are unlocked for the user at the end of the current cycle.
+
+- `delegate-increase` is replaced by `delegate`. Users can just call delegate with a higher amount.
+
+- `delegate-extend` is removed because the locking period is extended automatically each cycle.
+
+## Aggregation Commit and PoX Reward Address
+
+Signers provide a PoX reward address during the aggregation commit call. This bitcoin address shall be used to receive stacking rewards.
+
+There is no chance in the registration of PoX reward addresses. In particular, there can be more than one PoX reward address per signer and Stacks tokens part of a PoX reward address that aggregated less than the minimum required for at least 1 reward slot are NOT unlocked.
+
+## Relation between Stackers and Signers
+
+The signatures provided by signers to stackers shall use one of the following topics
 
 - delegate
-- delegate-increase
-- delegate-extend
 - agg-commit
 - agg-increase
+
+The other topics are not used anymore.
 
 ## Transition to PoX-5
 
 A new PoX contract requires that all stacked Stacks tokens are unlocked and Stackers need to lock their Stacks token again using the new PoX-5 contract. The process shall be similar to the previous upgrades of the PoX contract. PoX-4 contract shall be deactivated and PoX-5 contract shall be activated at the beginning of epoch 3.2 All locked Stacks tokens shall be unlocked automatically 1 block after the beginning of epoch 3.2.
+
+## Registration of Signers
+
+Signers handle three private keys:
+
+1. one for signing blocks and delegation approval;
+2. one for PoX reward address and reward distribution;
+3. one for aggregation on the Stacks blockchain.
+
+The Stacks address of the first key is used by Stacks holders during delegation for `delegate-to`.
+
+The encoded bitcoin address of the second key and the Stacks address of the third key are announced in a registration contract call. The new function of the PoX contract is named `signer-register` and just takes the encoded bitcoin address, and the stacks address as parameters.
+
+Note, for solo stackers these three keys can be just a single key. For more complex setup, the keys can be handles by different independant entities. Also, the PoX reward address can be a deposit address for sBTC.
 
 # Related Work
 

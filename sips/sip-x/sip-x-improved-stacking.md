@@ -131,14 +131,15 @@ This results in the following structure of the stacking cycle:
 - bitcoin block 2001-2100 (prepare phase): no rewards for stackers, changes to stacking are applied to the cycle after next.
 
 ```mermaid
-gantt
+timeline
     title Stacking Cycle Structure
-    dateFormat  x
-    axisFormat  %s
-    section Stacking Cycle
-    Stacking as usual, user can signal change of stacking settings :active, a1, 1, 1900
-    Stacking as usual, signers can still aggregate stacking changes :a2, 1901, 100
-    Prepare phase, no rewards, changes applied to cycle after next :a3, 2001, 100
+    section  Earning
+    1 : Stacking as usual : User can signal change of stacking settings
+    ... : Usual reward distribution
+    1901 : Stacking as usual : Auto extension :  Signers can still aggregate stacking changes
+    section No earning
+    2001 : Prepare phase, no rewards: delegate txs applied only to cycle after next
+    2100 : End of cycle
 ```
 
 That means the locking period is 1 cycle, with automatic extension for another cycle until the user decides to end stacking.

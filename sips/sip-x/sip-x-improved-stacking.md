@@ -150,7 +150,7 @@ When signers verify and accept proposed blocks by miners, their voting power cor
 
 - `delegate-stx` shall be renamed to `delegate`. The function takes the arguments: `amount`, `delegate-to`, `signature`, optional bitcoin `block-height` defining the end of stacking and auto extending, optional `max-amount`. The `amount` defines how many Stacks tokens are locked immediately. The `max-amount` the maximum of Stacks tokens that can be locked in the future through auto extending. If omitted the whole balance is locked. The argument `delegate-to` describes the signer. The argument `signature` is a signature of the signer indicating that the signer accepted the delegation of voting power.
 
-- `revoke-delegate-stx` shall be renamed to `revoke-delegate`. After calling this functions, auto extension is stopped and Stacks tokens are unlocked for the user at the end of the current cycle.
+- `revoke-delegate-stx` shall be renamed to `revoke-delegate`. After calling this functions, auto extension is stopped and Stacks tokens are unlocked for the user at the end of the current cycle. If the signer the user delegated to did not aggregated enough Stacks tokens to receive at least one reward slot then the user's Stacks token are unlocked immediately through this call.
 
 - `delegate-increase` is replaced by `delegate`. Users can simply call delegate with a higher amount.
 
@@ -162,7 +162,7 @@ Signers provide a PoX reward address during the aggregation commit call. This bi
 
 There is no change in the registration of PoX reward addresses. In particular, there can be more than one PoX reward address per signer.
 
-Stacks tokens that are part of a PoX reward address that aggregated less than the minimum required for at least one reward slot shall be unlocked at the beginning of the cycle.
+Stacks tokens that are part of a PoX reward address that aggregated less than the minimum required for at least one reward slot can be unlocked through `revoke-delegate`.
 
 ## Relation between Stackers and Signers
 

@@ -91,7 +91,7 @@ stacking rewards.
 ## Proposed Solution
 
 This SIP proposes a new Proof of Transfer (PoX) contract without
-the flow for solo stacking and moves responsibilities from pool operators to signers who were introduced in the Nakamot upgrade. It also
+the flow for solo stacking and moves responsibilities from pool operators to signers who were introduced in the Nakamoto upgrade. It also
 defines a new locking mechanism that allows users to switch from one signer to another with a single contract call and without a cooldown period.
 
 # Specification

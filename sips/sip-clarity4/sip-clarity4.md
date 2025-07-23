@@ -136,6 +136,22 @@ error, in the same way as if the contract did not own those assets.
   be transferred or burned. Any attempt to access other assets will result in an
   error, as though the contract did not own those assets. The return value of
   the body of code is returned as the result of the `with-assets` call.
+- **Example**:
+  ```clarity
+  (with-assets
+    {
+      stx: u0,
+      fts: (list {
+        contract: (contract-of token),
+        token: name,
+        amount: amount-a,
+      }),
+      nfts: (list),
+    }
+    (as-contract (contract-call? token transfer amount-a tx-sender caller none))
+  )
+  ```
+
 
 # Related Work
 

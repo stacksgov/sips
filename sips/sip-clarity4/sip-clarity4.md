@@ -60,7 +60,7 @@ secure and composable smart contracts. Specifically, it proposes:
 
 # Specification
 
-## Fetching a contract body: `(code-body-of? principal)`
+## Fetching a contract body: `code-body-of?`
 
 Originally proposed [here](https://github.com/clarity-lang/reference/issues/88).
 
@@ -73,7 +73,7 @@ invariants and design properties.
 - **Signature**: `(code-body-of? contract-principal)`
 - **Description**: Returns the code body of the contract principal specified as
   input, or an error if the principal is not a contract, does not exist, or the
-  body is too large.
+  body is too large. Returns:
   - `(ok "code body string")` on success.
   - `(err u0)` if the principal is not a contract principal.
   - `(err u1)` if the specified contract does not exist.
@@ -82,6 +82,60 @@ invariants and design properties.
   ```clarity
   (code-body-of? 'SP2QEZ06AGJ3RKJPBV14SY1V5BBFNAW33D96YPGZF.BNS-V2)
   ```
+
+## Limiting asset access: `with-assets`
+
+Originally proposed [here](https://github.com/clarity-lang/reference/issues/64).
+
+`with-assets` allows a contract to limit a body of code to only have access to a
+specific set of its assets, preventing unauthorized access to those not
+explicitly listed. This is particularly useful when calling external contracts
+within an `as-contract` scope, as it ensures that the called code cannot
+unexpectedly move the contract's assets. Within the body of code, attempts to
+transfer or burn assets not listed in the `with-assets` call will result in an
+error, in the same way as if the contract did not own those assets.
+
+- **Input**:
+
+```
+{
+  stx: uint,
+  fts: (list
+    32
+    {
+      contract: principal,
+      token: (string-ascii 128),
+      amount: uint,
+    }
+  ),
+  nfts: (list
+    32
+    {
+      contract: principal,
+      token: (string-ascii 128),
+      identifier: uint,
+    }
+  ),
+}
+```
+
+`A` (result type of the body of code)
+
+- **Output**: `A` (result type of the body of code)
+- **Signature**: `(with-assets assets body)`
+- **Description**: Executes the body of code with the specified assets available
+  for transfer or burn. The assets are defined as a map containing:
+
+  - `stx`: The amount of STX available for transfer.
+  - `fts`: A list of fungible tokens, each defined by its contract principal,
+    token name, and amount.
+  - `nfts`: A list of non-fungible tokens, each defined by its contract
+    principal, token name, and identifier.
+
+  Within the body of code, only the assets listed in the `with-assets` call can
+  be transferred or burned. Any attempt to access other assets will result in an
+  error, as though the contract did not own those assets. The return value of
+  the body of code is returned as the result of the `with-assets` call.
 
 # Related Work
 

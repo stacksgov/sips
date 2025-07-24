@@ -51,12 +51,12 @@ secure and composable smart contracts. Specifically, it proposes:
 1. **A new Clarity function to fetch a contract's code body.** This enables
    on-chain code inspection, for example allowing contract A to validate that
    contract B follows a specific template and is therefore safe to interact
-   with. This is especially useful for enabling safe, trustless self-listing of
-   tokens in marketplaces.
+   with. This is especially useful for enabling bridges and marketplaces to
+   safely and trustlessly support a dynamic set of assets.
 2. **A new Clarity function to limit asset access within a body of code.** This
-   allows a contract to safely call arbitrarty external contracts (e.g. passed
-   in as traits) while ensuring that the executed code has only limited access
-   to the contract's assets, protecting against potential malicious behavior.
+   allows a contract to safely call arbitrary external contracts (e.g. passed in
+   as traits) while ensuring that the executed code has only limited access to
+   the contract's assets, protecting against potential malicious behavior.
 
 # Specification
 
@@ -136,6 +136,7 @@ error, in the same way as if the contract did not own those assets.
   be transferred or burned. Any attempt to access other assets will result in an
   error, as though the contract did not own those assets. The return value of
   the body of code is returned as the result of the `with-assets` call.
+
 - **Example**:
   ```clarity
   (with-assets
@@ -151,7 +152,6 @@ error, in the same way as if the contract did not own those assets.
     (as-contract (contract-call? token transfer amount-a tx-sender caller none))
   )
   ```
-
 
 # Related Work
 

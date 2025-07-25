@@ -69,7 +69,7 @@ specified as input. Useful to prove that a deployed contract respects specific
 invariants and design properties.
 
 - **Input**: `principal`
-- **Output**: `(response (string-ascii 1048576) uint)`
+- **Output**: `(response (string-ascii 1048571) uint)`
 - **Signature**: `(code-body-of? contract-principal)`
 - **Description**: Returns the code body of the contract principal specified as
   input, or an error if the principal is not a contract, does not exist, or the

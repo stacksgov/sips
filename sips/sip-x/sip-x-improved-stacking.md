@@ -122,7 +122,7 @@ The following function shall be removed:
 
 - `delegate-stack-extend`
 
-In addition, the stacking settings for each Stacker (user with delegation) shall be applied for the next stacking cycle if the user did not signal the end of stacking by calling `revoke-delegate-stx` 200 blocks before the start of the next cycle.
+In addition, the stacking settings for each Stacker (user with delegation) shall be applied for the next stacking cycle if the user did not signal the end of stacking by calling `revoke-designation` 200 blocks before the start of the next cycle.
 
 This results in the following structure of the stacking cycle:
 
@@ -144,15 +144,19 @@ timeline
 
 That means the locking period is 1 cycle, with automatic extension for another cycle until the user decides to end stacking.
 
+The amount of stacking STX can increase during the automatic extension up to the minimum of the balance and a user specified maximum amount.
+
+The amount of stacked STX does not decrease during the automatic extension. If the user requested a decrease of the stacked amount, this difference is unlocked at the end of the stacking period.
+
 ## Semantic Change of Delegation
 
 When signers verify and accept proposed blocks by miners, their voting power corresponds to the amount of stacked Stacks tokens (see SIP-021). The new stacking process changes the delegation flow as follows:
 
 - `delegate-stx` shall be renamed to `designate`. The function takes the arguments: `amount`, `signature`, optional bitcoin `block-height` defining the end of stacking and auto extending, optional `pox-addr` defining that pox-address that the signer must use, optional `max-amount`. The `amount` defines how many Stacks tokens are locked immediately. The `max-amount` defines the maximum of Stacks tokens that can be locked in the future through auto extending. If provided the minimum of the user's stx balance and `max-amount` is locked. If omitted, the whole user's balance is locked. Users can use sponsored transactions to call revoke-delegate-stx in case there is no unlocked stx in the account. The argument `signature` is a signature of the signer indicating that the signer accepted the delegation of voting power. The signing follows the structured message signing with the parameters and topic `designate` as message. The public key of the signature can be used to identify the signer similar to the Stacks address of the pool operator in the previous PoX design.
 
-- `revoke-delegate-stx` shall be renamed to `revoke-designate`. After calling this function, auto extension is stopped and Stacks tokens are unlocked for the user at the end of the current cycle. If a signer does not aggregate enough Stacks tokens to receive at least one reward slot (or does not commit at all) then the user's Stacks token are unlocked immediately through this call.
+- `revoke-delegate-stx` shall be renamed to `revoke-designation`. After calling this function, auto extension is stopped and Stacks tokens are unlocked for the user at the end of the current cycle. If a signer does not aggregate enough Stacks tokens to receive at least one reward slot (or does not commit at all) then the user's Stacks token are unlocked immediately through this call.
 
-- `delegate-increase` is replaced by `designate-update-amount`. It sets max-amount to the new value. The amount can be smaller than the currently locked amount. As tokens are only locked for 1 cycle at a time, handling decreasing is now easy enough in comparison to the previous system with locking periods of up to 12 cycles.
+- `delegate-increase` is replaced by `update-max-amount`. It sets max-amount to the new value. This value is applied when the user's designation is extended for the next cycle. The amount can be smaller than the currently locked amount. As tokens are only locked for 1 cycle at a time, handling decreasing is now easy enough in comparison to the previous system with locking periods of up to 12 cycles.
 
 - `delegate-extend` is removed because the locking period is automatically extended each cycle.
 
@@ -160,18 +164,19 @@ When signers verify and accept proposed blocks by miners, their voting power cor
 
 When a transaction locks or unlocks STX for the user a corresponding event shall be emitted. The following events used in PoX 4 are used:
 
-- `stack-stx` (rename to `designate`)
-- `stack-increase` (renamed to `designate-increase`)
-- `stack-decrease` (renamed to `designate-decrease`)
-- `stack-extend` (rename to `designate-extend`)
-- `stack-aggregation-commit` (renamed to `signer-accept`)
+- `designate` when the user designates a signer
+- `designate-increase` when the amount of voting power is increased by a user
+- `designate-decrease` when the amount of voting power is decreased by a user.
+- `designate-extend` when the designation is extended by 1 cycle for a user.
+- `signer-accept` when the signer accepts the designation from all users.
 
 Furthermore, a function `get-stacker-info` shall return for the given principal
 
 - the accepted stacked amount by the signer and the cycle of acceptance `(optional {amount: uint), cycle: uint})`
 - the current stacked amount `uint`
+- the current max-amount `(optional uint)`
 
-When stackers designate the first time, the function `get-stacker-info` returns only the current stacked amount until it was accepted by the signer.
+When stackers designate the first time, the function `get-stacker-info` the accepted stacked amount is `none`.
 
 ## Role of Signers
 
@@ -199,6 +204,10 @@ Signers handle two or three private keys:
 3. optionally, one for PoX reward address and reward distribution.
 
 Note, for solo Stackers these keys can be just a single key. For more complex setup, the keys can be handled by different independent entities. Also, the PoX reward address can be a deposit address for sBTC of a Stacks smart contract. In this case, the signer does not hold a private key for the PoX reward address.
+
+### Voting Power
+
+The voting power for a signer is the sum of the accepted stacked STX, not the sum of the currently stacked STX because users can have descreased the stacking amount.
 
 ## Transition to PoX-5
 

@@ -127,7 +127,7 @@ In addition, the stacking settings for each Stacker (user with delegation) shall
 This results in the following structure of the stacking cycle:
 
 - bitcoin block 1-1900: stacking as usual, user can signal change of stacking settings.
-- bitcoin block 1901-2000: stacking as usual, signers can still aggregate stacking changes.
+- bitcoin block 1901-2000: stacking as usual, signers can still aggregate stacking changes, signalled changes by users will be applied only for the next cycle.
 - bitcoin block 2001-2100 (prepare phase): no rewards for Stackers, changes to stacking are applied to the cycle after next.
 
 ```mermaid

@@ -105,8 +105,9 @@ In order to implement this, a new Clarity type is introduced: `condition`. A
   specifying a maximum amount of each token that can be moved.
   - `(condition-ft token-contract:principal amount:uint)`
 - `condition-nft`: Creates a condition that checks non-fungible token assets,
-  specifying a specific identifier that can be moved.
-  - `(condition-nft token-contract:principal identifier:uint)`
+  specifying a specific identifier that can be moved. `identifier` can be any
+  type.
+  - `(condition-nft token-contract:principal identifier:T)`
 - `condition-state`: Creates a condition that checks contract state, specifying
   a data-var or map which may be modified.
 

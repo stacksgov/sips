@@ -48,108 +48,88 @@ This SIP addresses common feedback and requests from builders in the ecosystem.
 It proposes new Clarity features to make it easier for developers to write
 secure and composable smart contracts. Specifically, it proposes:
 
-1. **A new Clarity function to fetch a contract's code body.** This enables
-   on-chain code inspection, for example allowing contract A to validate that
-   contract B follows a specific template and is therefore safe to interact
-   with. This is especially useful for enabling bridges and marketplaces to
-   safely and trustlessly support a dynamic set of assets.
-2. **A new Clarity function to limit asset access within a body of code.** This
-   allows a contract to safely call arbitrary external contracts (e.g. passed in
-   as traits) while ensuring that the executed code has only limited access to
-   the contract's assets, protecting against potential malicious behavior.
+1. **A new Clarity function to fetch the hash of a contract's code body.** This
+   enables on-chain contract code validation, for example allowing contract A to
+   validate that contract B follows a specific template and is therefore safe to
+   interact with. This is especially useful for enabling bridges and
+   marketplaces to safely and trustlessly support a dynamic set of assets.
+2. **A new Clarity function to allow a contract to set post-conditions to
+   protect its assets.** This allows a contract to safely call arbitrary
+   external contracts (e.g. passed in as traits) while ensuring that if the
+   executed code moves assets beyond those specified, the changes will be rolled
+   back.
 
 # Specification
 
-## Fetching a contract body: `code-body-of?`
+## Fetching the hash of a contract body: `contract-hash?`
 
 Originally proposed [here](https://github.com/clarity-lang/reference/issues/88).
 
-`code-body-of?` returns, on success, the code body of the contract principal
-specified as input. Useful to prove that a deployed contract respects specific
-invariants and design properties.
+`contract-hash?` returns, on success, the SHA-512/256 hash of the code body of
+the contract principal specified as input. This is useful to prove that a
+deployed contract follows a specific template.
 
 - **Input**: `principal`
-- **Output**: `(response (string-ascii 1048571) uint)`
-- **Signature**: `(code-body-of? contract-principal)`
-- **Description**: Returns the code body of the contract principal specified as
-  input, or an error if the principal is not a contract, does not exist, or the
-  body is too large. Returns:
-  - `(ok "code body string")` on success.
-  - `(err u0)` if the principal is not a contract principal.
-  - `(err u1)` if the specified contract does not exist.
-  - `(err u2)` if the code body does not fit in the string-ascii.
+- **Output**: `(response (buff 32) uint)`
+- **Signature**: `(contract-hash? contract-principal)`
+- **Description**: Returns the SHA-512/256 hash of the code body of the contract
+  principal specified as input, or an error if the principal is not a contract,
+  does not exist, or the body is too large. Returns:
+  - `(ok 0x<hash>)`, where `<hash>` is the SHA-512/256 hash of the code body, on
+    success
+  - `(err u0)` if the principal is not a contract principal
+  - `(err u1)` if the specified contract does not exist
 - **Example**:
   ```clarity
-  (code-body-of? 'SP2QEZ06AGJ3RKJPBV14SY1V5BBFNAW33D96YPGZF.BNS-V2)
+  (contract-hash? 'SP2QEZ06AGJ3RKJPBV14SY1V5BBFNAW33D96YPGZF.BNS-V2) ;; Returns (ok 0x9f8104ff869aba1205cd5e15f6404dd05675f4c3fe0817c623c425588d981c2f)
   ```
 
-## Limiting asset access: `with-assets`
+## Limiting asset access: `with-post-conditions`
 
 Originally proposed [here](https://github.com/clarity-lang/reference/issues/64).
 
-`with-assets` allows a contract to limit a body of code to only have access to a
-specific set of its assets, preventing unauthorized access to those not
-explicitly listed. This is particularly useful when calling external contracts
-within an `as-contract` scope, as it ensures that the called code cannot
-unexpectedly move the contract's assets. Within the body of code, attempts to
-transfer or burn assets not listed in the `with-assets` call will result in an
-error, in the same way as if the contract did not own those assets.
+`with-post-conditions` allows a contract to specify a set of conditions to check
+after the execution of an expression, to ensure that the expression does not
+move any assets from the contract that are not explicitly specified. This is
+particularly useful when calling external contracts within an `as-contract`
+scope, as it ensures that the called code cannot unexpectedly move the
+contract's assets.
+
+In order to implement this, a new Clarity type is introduced: `condition`. A
+`condition` can be created using the following four new Clarity functions:
+
+- `condition-stx`: Creates a condition that checks STX assets, specifying a
+  maximum amount of STX that can be moved.
+  - `(condition-stx amount:uint)`
+- `condition-ft`: Creates a condition that checks fungible token assets,
+  specifying a maximum amount of each token that can be moved.
+  - `(condition-ft token-contract:principal amount:uint)`
+- `condition-nft`: Creates a condition that checks non-fungible token assets,
+  specifying a specific identifier that can be moved.
+  - `(condition-nft token-contract:principal identifier:uint)`
+- `condition-state`: Creates a condition that checks contract state, specifying
+  a data-var or map which may be modified.
+
+  - `(condition-state contract-principal:principal name:(string-ascii 128)`
 
 - **Input**:
 
-```
-{
-  stx: uint,
-  fts: (list
-    32
-    {
-      contract: principal,
-      token: (string-ascii 128),
-      amount: uint,
-    }
-  ),
-  nfts: (list
-    32
-    {
-      contract: principal,
-      token: (string-ascii 128),
-      identifier: uint,
-    }
-  ),
-}
-```
+  - `conditions`:`(list 32 condition)`: A list of conditions to be checked after
+    the execution of the body of code.
+  - `body`: A Clarity expression to be executed, with return type `A`
 
-`A` (result type of the body of code)
-
-- **Output**: `A` (result type of the body of code)
-- **Signature**: `(with-assets assets body)`
-- **Description**: Executes the body of code with the specified assets available
-  for transfer or burn. The assets are defined as a map containing:
-
-  - `stx`: The amount of STX available for transfer.
-  - `fts`: A list of fungible tokens, each defined by its contract principal,
-    token name, and amount.
-  - `nfts`: A list of non-fungible tokens, each defined by its contract
-    principal, token name, and identifier.
-
-  Within the body of code, only the assets listed in the `with-assets` call can
-  be transferred or burned. Any attempt to access other assets will result in an
-  error, as though the contract did not own those assets. The return value of
-  the body of code is returned as the result of the `with-assets` call.
+- **Output**: `(response A condition)`
+- **Signature**: `(with-post-conditions conditions body)`
+- **Description**: Executes the expression `body`, then evaluates the specified
+  `conditions` to ensure that the assets moved by `body` do not exceed the
+  specified limits. Any assets not explicitly specified in the list of
+  conditions will have an implicit condition that they cannot be moved.
 
 - **Example**:
   ```clarity
-  (with-assets
-    {
-      stx: u0,
-      fts: (list {
-        contract: (contract-of token),
-        token: name,
-        amount: amount-a,
-      }),
-      nfts: (list),
-    }
-    (as-contract (contract-call? token transfer amount-a tx-sender caller none))
+  (with-post-conditions
+    (list (ft-condition (contract-of trait-a) amount-a))
+    (as-contract (contract-call? trait-a transfer amount-a tx-sender caller none))
   )
   ```
 

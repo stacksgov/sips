@@ -58,6 +58,11 @@ secure and composable smart contracts. Specifically, it proposes:
    external contracts (e.g. passed in as traits) while ensuring that if the
    executed code moves assets beyond those specified, the changes will be rolled
    back.
+3. **A new Clarity function to convert simple values into `string-ascii`
+   values.** This function will enable developers to easily convert values like
+   `bool`s and `principal`s into their ASCII string representations,
+   facilitating the generation of string-based messages for interacting with
+   cross-chain protocols.
 
 # Specification
 
@@ -132,6 +137,29 @@ In order to implement this, a new Clarity type is introduced: `condition`. A
     (list (ft-condition (contract-of trait-a) amount-a))
     (as-contract (contract-call? trait-a transfer amount-a tx-sender caller none))
   )
+  ```
+
+## Conversion to `string-ascii`
+
+Originally proposed [here](https://github.com/clarity-lang/reference/issues/82).
+
+`to-ascii` is a new Clarity function that converts simple values into their
+`string-ascii` representations.
+
+- **Input**: `int` | `uint` | `bool` | `principal` | `(buff 1048574)` |
+  `(string-utf8 1048576)`
+- **Output**: `(response (string-ascii 1048576) uint)`
+- **Signature**: `(to-ascii value)`
+- **Description**: Returns the `string-ascii` representation of the input value
+  in an `ok` response on success. The only error condition is if the input type
+  is `string-utf8` and the value contains non-ASCII characters, in which case,
+  `(err u1)` is returned.
+- **Example**:
+  ```clarity
+  (to-ascii true) ;; Returns (ok "true")
+  (to-ascii 42) ;; Returns (ok "42")
+  (to-ascii 'SP2QEZ06AGJ3RKJPBV14SY1V5BBFNAW33D96YPGZF) ;; Returns (ok "SP2QEZ06AGJ3RKJPBV14SY1V5BBFNAW33D96YPGZF")
+  (to-ascii 0x12345678) ;; Returns (ok "0x12345678")
   ```
 
 # Related Work

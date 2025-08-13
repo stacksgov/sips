@@ -146,9 +146,9 @@ Originally proposed [here](https://github.com/clarity-lang/reference/issues/82).
 `to-ascii` is a new Clarity function that converts simple values into their
 `string-ascii` representations.
 
-- **Input**: `int` | `uint` | `bool` | `principal` | `(buff 1048574)` |
-  `(string-utf8 1048576)`
-- **Output**: `(response (string-ascii 1048576) uint)`
+- **Input**: `int` | `uint` | `bool` | `principal` | `(buff 524284)` |
+  `(string-utf8 1048571)`
+- **Output**: `(response (string-ascii 1048571) uint)`
 - **Signature**: `(to-ascii value)`
 - **Description**: Returns the `string-ascii` representation of the input value
   in an `ok` response on success. The only error condition is if the input type

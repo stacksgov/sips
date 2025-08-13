@@ -53,8 +53,8 @@ secure and composable smart contracts. Specifically, it proposes:
    validate that contract B follows a specific template and is therefore safe to
    interact with. This is especially useful for enabling bridges and
    marketplaces to safely and trustlessly support a dynamic set of assets.
-2. **A new Clarity function to allow a contract to set post-conditions to
-   protect its assets.** This allows a contract to safely call arbitrary
+2. **A new set of Clarity functions to allow a contract to set post-conditions
+   to protect its assets.** These allow a contract to safely call arbitrary
    external contracts (e.g. passed in as traits) while ensuring that if the
    executed code moves assets beyond those specified, the changes will be rolled
    back.
@@ -89,55 +89,99 @@ deployed contract follows a specific template.
   (contract-hash? 'SP2QEZ06AGJ3RKJPBV14SY1V5BBFNAW33D96YPGZF.BNS-V2) ;; Returns (ok 0x9f8104ff869aba1205cd5e15f6404dd05675f4c3fe0817c623c425588d981c2f)
   ```
 
-## Limiting asset access: `with-post-conditions`
+## Limiting asset access: `restrict-assets?`
 
 Originally proposed [here](https://github.com/clarity-lang/reference/issues/64).
 
-`with-post-conditions` allows a contract to specify a set of conditions to check
-after the execution of an expression, to ensure that the expression does not
-move any assets from the contract that are not explicitly specified. This is
-particularly useful when calling external contracts within an `as-contract`
-scope, as it ensures that the called code cannot unexpectedly move the
-contract's assets.
+`restrict-assets?` establishes a deny-all outflow policy for a specific
+principal during the evaluation of its inner expression. Within the inner
+expression, the contract may selectively grant outflow allowances using
+`with-stx`, `with-ft`, and `with-nft`. After the inner expression finishes, the
+Clarity VM compares the net outflow of the scoped principal against the granted
+allowances. If any allowance is exceeded, `restrict-assets?` returns an error;
+otherwise, it returns `ok` with the result of the inner expression.
 
-In order to implement this, a new Clarity type is introduced: `condition`. A
-`condition` can be created using the following four new Clarity functions:
+The most important use case of these new builtins is to allow a contract to
+protect its own assets. To ensure that the contract's assets are safe by
+default, the existing `as-contract` expression will now implicitly behave as
+though there is a `restrict-assets?` expression around its body, specifying the
+contract principal. The `with-stx`, `with-ft`, and `with-nft` builtins can be
+used within the `as-contract` body to allow access to specific assets owned by
+the contract.
 
-- `condition-stx`: Creates a condition that checks STX assets, specifying a
-  maximum amount of STX that can be moved.
-  - `(condition-stx amount:uint)`
-- `condition-ft`: Creates a condition that checks fungible token assets,
-  specifying a maximum amount of each token that can be moved.
-  - `(condition-ft token-contract:principal amount:uint)`
-- `condition-nft`: Creates a condition that checks non-fungible token assets,
-  specifying a specific identifier that can be moved. `identifier` can be any
-  type.
-  - `(condition-nft token-contract:principal identifier:T)`
-- `condition-state`: Creates a condition that checks contract state, specifying
-  a data-var or map which may be modified.
+`with-stx`, `with-ft`, and `with-nft` apply to the principal specified by the
+nearest enclosing `restrict-assets?` or `as-contract` expression in the lexical
+scope. Using any of these forms outside such a scope results in an analysis
+error.
 
-  - `(condition-state contract-principal:principal name:(string-ascii 128)`
+- `restrict-assets?`
 
-- **Input**:
+  - **Input**:
+    - `asset-owner`: `principal`: The principal whose assets are being
+      protected.
+    - `body`: `A`: A Clarity expression to be executed, with return type `A`
+  - **Output**: `(response A uint)`
+  - **Signature**: `(restrict-assets? asset-owner body)`
+  - **Description**: Executes the expression `body`, then checks the asset
+    outflows against the granted allowances. Returns:
 
-  - `conditions`:`(list 32 condition)`: A list of conditions to be checked after
-    the execution of the body of code.
-  - `body`: A Clarity expression to be executed, with return type `A`
+    - `(ok result)` if the outflows are within the allowances, where `result` is
+      the result of the `body` expression.
+    - `(err u1)` if an STX allowance was violated
+    - `(err u2)` if an FT allowance was violated
+    - `(err u3)` if an NFT allowance was violated
 
-- **Output**: `(response A condition)`
-- **Signature**: `(with-post-conditions conditions body)`
-- **Description**: Executes the expression `body`, then evaluates the specified
-  `conditions` to ensure that the assets moved by `body` do not exceed the
-  specified limits. Any assets not explicitly specified in the list of
-  conditions will have an implicit condition that they cannot be moved.
+  - **Example**:
+    ```clarity
+    (define-public (foo)
+      (restrict-assets? tx-sender
+        (try! (stx-transfer? u1000000 tx-sender (as-contract tx-sender)))
+      )
+    ) ;; Returns (err u1)
+    (define-public (bar)
+      (restrict-assets? tx-sender
+        (+ u1 u2)
+      )
+    ) ;; Returns (ok u3)
+    ```
 
-- **Example**:
-  ```clarity
-  (with-post-conditions
-    (list (ft-condition (contract-of trait-a) amount-a))
-    (as-contract (contract-call? trait-a transfer amount-a tx-sender caller none))
-  )
-  ```
+- `with-stx`
+
+  - **Input**:
+    - `amount`: `uint`: The amount of STX to grant access to.
+    - `body`: `A`: A Clarity expression to be executed, with return type `A`
+  - **Output**: `A`
+  - **Signature**: `(with-stx amount body)`
+  - **Description**: Adds an outflow allowance for `amount` uSTX from the
+    `asset-owner` of the nearest enclosing `restrict-assets?` or `as-contract`
+    expression, then executes the expression `body` and returns its result.
+
+- `with-ft`
+
+  - **Input**:
+    - `contract-id`: `principal`: The contract defining the FT asset.
+    - `token-name`: `(string-ascii 128)`: The name of the FT.
+    - `amount`: `uint`: The amount of FT to grant access to.
+    - `body`: `A`: A Clarity expression to be executed, with return type `A`
+  - **Output**: `A`
+  - **Signature**: `(with-ft contract-id token-name amount body)`
+  - **Description**: Adds an outflow allowance for `amount` of the fungible
+    token defined in `contract-id` with name `token-name` from the `asset-owner`
+    of the nearest enclosing `restrict-assets?` or `as-contract` expression,
+    then executes the expression `body` and returns its result.
+
+- `with-nft`
+  - **Input**:
+    - `contract-id`: `principal`: The contract defining the FT asset.
+    - `token-name`: `(string-ascii 128)`: The name of the FT.
+    - `identifier`: `T`: The identifier of the token to grant access to.
+    - `body`: `A`: A Clarity expression to be executed, with return type `A`
+  - **Output**: `A`
+  - **Signature**: `(with-nft contract-id token-name identifier body)`
+  - **Description**: Adds an outflow allowance the non-fungible token identified
+    by `identifier` defined in `contract-id` with name `token-name` from the
+    `asset-owner` of the nearest enclosing `restrict-assets?` or `as-contract`
+    expression, then executes the expression `body` and returns its result.
 
 ## Conversion to `string-ascii`
 

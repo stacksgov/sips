@@ -1,6 +1,6 @@
 # Preamble
 
-**SIP Number:** XXX
+**SIP Number:** 032
 
 **Title:** Improved Stacking Protocol
 

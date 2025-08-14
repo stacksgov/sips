@@ -6,9 +6,10 @@
 
 **Authors:**
 
-- Marvin Janssen <marvin@ryder.id>
 - Adriano Di Luzio <adriano@bitcoinl2labs.com>
 - Brice Dobry <brice@hiro.so>
+- Marvin Janssen <marvin@ryder.id>
+- Jude Nelson <jude@stacks.org>
 
 **Consideration:** Technical
 

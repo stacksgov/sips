@@ -78,8 +78,8 @@ deployed contract follows a specific template.
 - **Output**: `(response (buff 32) uint)`
 - **Signature**: `(contract-hash? contract-principal)`
 - **Description**: Returns the SHA-512/256 hash of the code body of the contract
-  principal specified as input, or an error if the principal is not a contract,
-  does not exist, or the body is too large. Returns:
+  principal specified as input, or an error if the principal is not a contract
+  or the specified contract does not exist. Returns:
   - `(ok 0x<hash>)`, where `<hash>` is the SHA-512/256 hash of the code body, on
     success
   - `(err u0)` if the principal is not a contract principal
@@ -155,6 +155,17 @@ error.
   - **Description**: Adds an outflow allowance for `amount` uSTX from the
     `asset-owner` of the nearest enclosing `restrict-assets?` or `as-contract`
     expression, then executes the expression `body` and returns its result.
+  - **Example**:
+    ```clarity
+    (restrict-assets? tx-sender
+      (with-stx u1000000
+        (try! (stx-transfer? u2000000 tx-sender (as-contract tx-sender)))
+      )) ;; Returns (err u1)
+    (restrict-assets? tx-sender
+      (with-stx u1000000
+        (try! (stx-transfer? u1000000 tx-sender (as-contract tx-sender)))
+      )) ;; Returns (ok true)
+    ```
 
 - `with-ft`
 
@@ -169,11 +180,22 @@ error.
     token defined in `contract-id` with name `token-name` from the `asset-owner`
     of the nearest enclosing `restrict-assets?` or `as-contract` expression,
     then executes the expression `body` and returns its result.
+  - **Example**:
+    ```clarity
+    (restrict-assets? tx-sender
+      (with-ft token-trait "stackaroo" u50
+        (try! (contract-call? token-trait transfer u100 tx-sender (as-contract tx-sender) none))
+      )) ;; Returns (err u2)
+    (restrict-assets? tx-sender
+      (with-ft token-trait "stackaroo" u50
+        (try! (contract-call? token-trait transfer u20 tx-sender (as-contract tx-sender) none))
+      )) ;; Returns (ok true)
+    ```
 
 - `with-nft`
   - **Input**:
-    - `contract-id`: `principal`: The contract defining the FT asset.
-    - `token-name`: `(string-ascii 128)`: The name of the FT.
+    - `contract-id`: `principal`: The contract defining the NFT asset.
+    - `token-name`: `(string-ascii 128)`: The name of the NFT.
     - `identifier`: `T`: The identifier of the token to grant access to.
     - `body`: `A`: A Clarity expression to be executed, with return type `A`
   - **Output**: `A`
@@ -182,6 +204,17 @@ error.
     by `identifier` defined in `contract-id` with name `token-name` from the
     `asset-owner` of the nearest enclosing `restrict-assets?` or `as-contract`
     expression, then executes the expression `body` and returns its result.
+  - **Example**:
+    ```clarity
+    (restrict-assets? tx-sender
+      (with-nft nft-trait "stackaroo" u123
+        (try! (contract-call? nft-trait transfer u4 tx-sender (as-contract tx-sender)))
+      )) ;; Returns (err u3)
+    (restrict-assets? tx-sender
+      (with-nft nft-trait "stackaroo" u123
+        (try! (contract-call? nft-trait transfer u123 tx-sender (as-contract tx-sender)))
+      )) ;; Returns (ok true)
+    ```
 
 ## Conversion to `string-ascii`
 

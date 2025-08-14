@@ -132,6 +132,7 @@ results in an analysis error.
     - `(err u1)` if an STX allowance was violated
     - `(err u2)` if an FT allowance was violated
     - `(err u3)` if an NFT allowance was violated
+    - `(err u4)` if a stacking allowance was violated
 
   - **Example**:
     ```clarity
@@ -238,7 +239,7 @@ results in an analysis error.
         (try! (contract-call? 'SP000000000000000000002Q6VF78.pox-4 delegate-stx
           u1100000000000 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM none none
         ))
-      )) ;; Returns (err u1)
+      )) ;; Returns (err u4)
     (restrict-assets? tx-sender
       (with-stacking u1000000000000
         (try! (contract-call? 'SP000000000000000000002Q6VF78.pox-4 delegate-stx

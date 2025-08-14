@@ -108,12 +108,13 @@ default, the existing `as-contract` expression will now implicitly behave as
 though there is a `restrict-assets?` expression around its body, specifying the
 contract principal. The `with-stx`, `with-ft`, and `with-nft` builtins can be
 used within the `as-contract` body to allow access to specific assets owned by
-the contract.
+the contract, and `with-stacking` can be used to allow the body to stack STX via
+calls to the `stack-stx` or `delegate-stx` functions of the active PoX contract.
 
-`with-stx`, `with-ft`, and `with-nft` apply to the principal specified by the
-nearest enclosing `restrict-assets?` or `as-contract` expression in the lexical
-scope. Using any of these forms outside such a scope results in an analysis
-error.
+`with-stx`, `with-ft`, `with-nft`, and `with-stacking` apply to the principal
+specified by the nearest enclosing `restrict-assets?` or `as-contract`
+expression in the lexical scope. Using any of these forms outside such a scope
+results in an analysis error.
 
 - `restrict-assets?`
 
@@ -149,7 +150,7 @@ error.
 - `with-stx`
 
   - **Input**:
-    - `amount`: `uint`: The amount of STX to grant access to.
+    - `amount`: `uint`: The amount of uSTX to grant access to.
     - `body`: `A`: A Clarity expression to be executed, with return type `A`
   - **Output**: `A`
   - **Signature**: `(with-stx amount body)`
@@ -194,6 +195,7 @@ error.
     ```
 
 - `with-nft`
+
   - **Input**:
     - `contract-id`: `principal`: The contract defining the NFT asset.
     - `token-name`: `(string-ascii 128)`: The name of the NFT.
@@ -214,6 +216,34 @@ error.
     (restrict-assets? tx-sender
       (with-nft nft-trait "stackaroo" u123
         (try! (contract-call? nft-trait transfer u123 tx-sender (as-contract tx-sender)))
+      )) ;; Returns (ok true)
+    ```
+
+- `with-stacking`
+
+  - **Input**:
+    - `amount`: `uint`: The amount of uSTX that can be locked.
+    - `body`: `A`: A Clarity expression to be executed, with return type `A`
+  - **Output**: `A`
+  - **Signature**: `(with-stacking amount body)`
+  - **Description**: Adds a stacking allowance for `amount` uSTX from the
+    `asset-owner` of the nearest enclosing `restrict-assets?` or `as-contract`
+    expression, then executes the expression `body` and returns its result. This
+    restricts calls to `delegate-stx` and `stack-stx` to lock less than or equal
+    to the amount specified in PoX.
+  - **Example**:
+    ```clarity
+    (restrict-assets? tx-sender
+      (with-stacking u1000000000000
+        (try! (contract-call? 'SP000000000000000000002Q6VF78.pox-4 delegate-stx
+          u1100000000000 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM none none
+        ))
+      )) ;; Returns (err u1)
+    (restrict-assets? tx-sender
+      (with-stacking u1000000000000
+        (try! (contract-call? 'SP000000000000000000002Q6VF78.pox-4 delegate-stx
+          u900000000000 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM none none
+        ))
       )) ;; Returns (ok true)
     ```
 

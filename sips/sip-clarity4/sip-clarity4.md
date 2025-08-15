@@ -94,55 +94,76 @@ deployed contract follows a specific template.
 
 Originally proposed [here](https://github.com/clarity-lang/reference/issues/64).
 
-`restrict-assets?` establishes a deny-all outflow policy for a specific
-principal during the evaluation of its inner expression. Within the inner
-expression, the contract may selectively grant outflow allowances using
-`with-stx`, `with-ft`, and `with-nft`. After the inner expression finishes, the
-Clarity VM compares the net outflow of the scoped principal against the granted
-allowances. If any allowance is exceeded, `restrict-assets?` returns an error;
-otherwise, it returns `ok` with the result of the inner expression.
+`restrict-assets?` establishes a context with a deny-all outflow policy for a
+specific principal during the evaluation of its body expressions. It accepts a
+set of allowances, defined using `with-stx`, `with-ft`, `with-nft`, and
+`with-stacking`, which selectively grant outflow allowances. After the body
+expressions finish, the Clarity VM checks the **gross** outflow from the scoped
+principal against the granted allowances. If any allowance is exceeded,
+`restrict-assets?` returns an error; otherwise, it returns `ok` with the result
+of the last body expression.
 
 The most important use case of these new builtins is to allow a contract to
 protect its own assets. To ensure that the contract's assets are safe by
-default, the existing `as-contract` expression will now implicitly behave as
-though there is a `restrict-assets?` expression around its body, specifying the
-contract principal. The `with-stx`, `with-ft`, and `with-nft` builtins can be
-used within the `as-contract` body to allow access to specific assets owned by
-the contract, and `with-stacking` can be used to allow the body to stack STX via
-calls to the `stack-stx` or `delegate-stx` functions of the active PoX contract.
+default, the new `as-contract?` expression is similar to the existing
+`as-contract` expression, but will implicitly behave as though there is a
+`restrict-assets?` expression around its body, specifying the contract principal
+as the asset owner. The old `as-contract` is no longer available in Clarity 4.
+Similar to `restrict-assets?`, `as-contract?` accepts a set of `with-stx`,
+`with-ft`, `with-nft`, and `with-stacking` expressions which selectively grant
+outflow allowances from the contract's assets.
 
-`with-stx`, `with-ft`, `with-nft`, and `with-stacking` apply to the principal
-specified by the nearest enclosing `restrict-assets?` or `as-contract`
-expression in the lexical scope. Using any of these forms outside such a scope
-results in an analysis error.
+- `with-stx` grants an outflow allowance for a specific amount of STX via calls
+  to the `stx-transfer?` function.
+- `with-ft` grants an outflow allowance for a specific amount of the specified
+  fungible token.
+- `with-nft` grants an outflow allowance for a specific identifier of the
+  specified NFT.
+- `with-stacking` grants an outflow allowance for a specific amount of STX via
+  calls to the `stack-stx` or `delegate-stx` functions of the active PoX
+  contract.
+
+Use of `with-stx`, `with-ft`, `with-nft`, or `with-stacking` outside of
+`restrict-assets?` or `as-contract?` results in an analysis error.
 
 - `restrict-assets?`
 
   - **Input**:
     - `asset-owner`: `principal`: The principal whose assets are being
       protected.
-    - `body`: `A`: A Clarity expression to be executed, with return type `A`
-  - **Output**: `(response A uint)`
-  - **Signature**: `(restrict-assets? asset-owner body)`
-  - **Description**: Executes the expression `body`, then checks the asset
-    outflows against the granted allowances. Returns:
+    - `((with-stx|with-ft|with-nft|with-stacking)*)`: The set of allowances to
+      grant during the evaluation of the body expressions.
+    - `AnyType* A`: The Clarity expressions to be executed within the context,
+      with the final expression returning type `A`, where `A` is not a
+      `response`
+  - **Output**: `(response A int)`
+  - **Signature**:
+    `(restrict-assets? asset-owner ((with-stx|with-ft|with-nft|with-stacking)*) expr-body1 expr-body2 ... expr-body-last)`
+  - **Description**: Executes the body expressions, then checks the asset
+    outflows against the granted allowances, in declaration order. If any
+    allowance is violated, the body expressions are reverted, an error is
+    returned, and an event is emitted with the full details of the violation to
+    help with debugging. Note that the `asset-owner` and allowance setup
+    expressions are evaluated before executing the body expressions. The final
+    body expression cannot return a `response` value in order to avoid returning
+    a nested `response` value from the `restrict-assets?` (nested responses are
+    error-prone). Returns:
 
     - `(ok x)` if the outflows are within the allowances, where `x` is the
       result of the `body` expression and has type `A`.
-    - `(err u1)` if an STX allowance was violated
-    - `(err u2)` if an FT allowance was violated
-    - `(err u3)` if an NFT allowance was violated
-    - `(err u4)` if a stacking allowance was violated
+    - `(err index)` if an allowance was violated, where `index` is the 0-based
+      index of the first violated allowance in the list of granted allowances,
+      or -1 if an asset with no allowance caused the violation.
 
   - **Example**:
     ```clarity
     (define-public (foo)
-      (restrict-assets? tx-sender
-        (try! (stx-transfer? u1000000 tx-sender (as-contract tx-sender)))
+      (restrict-assets? tx-sender ()
+        (try! (stx-transfer? u1000000 tx-sender 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM))
       )
-    ) ;; Returns (err u1)
+    ) ;; Returns (err -1)
     (define-public (bar)
-      (restrict-assets? tx-sender
+      (restrict-assets? tx-sender ()
         (+ u1 u2)
       )
     ) ;; Returns (ok u3)
@@ -152,100 +173,142 @@ results in an analysis error.
 
   - **Input**:
     - `amount`: `uint`: The amount of uSTX to grant access to.
-    - `body`: `A`: A Clarity expression to be executed, with return type `A`
-  - **Output**: `A`
-  - **Signature**: `(with-stx amount body)`
+  - **Output**: Not applicable
+  - **Signature**: `(with-stx amount)`
   - **Description**: Adds an outflow allowance for `amount` uSTX from the
-    `asset-owner` of the nearest enclosing `restrict-assets?` or `as-contract`
-    expression, then executes the expression `body` and returns its result.
+    `asset-owner` of the enclosing `restrict-assets?` or `as-contract?`
+    expression.
   - **Example**:
     ```clarity
     (restrict-assets? tx-sender
-      (with-stx u1000000
-        (try! (stx-transfer? u2000000 tx-sender (as-contract tx-sender)))
-      )) ;; Returns (err u1)
+      ((with-stx u1000000))
+      (try! (stx-transfer? u2000000 tx-sender 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM))
+    ) ;; Returns (err 0)
     (restrict-assets? tx-sender
-      (with-stx u1000000
-        (try! (stx-transfer? u1000000 tx-sender (as-contract tx-sender)))
-      )) ;; Returns (ok true)
+      ((with-stx u1000000))
+      (try! (stx-transfer? u1000000 tx-sender 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM))
+    ) ;; Returns (ok true)
     ```
 
 - `with-ft`
 
   - **Input**:
     - `contract-id`: `principal`: The contract defining the FT asset.
-    - `token-name`: `(string-ascii 128)`: The name of the FT.
+    - `token-name`: `(string-ascii 128)`: The name of the FT or `"*"` for any FT
+      defined in `contract-id`.
     - `amount`: `uint`: The amount of FT to grant access to.
-    - `body`: `A`: A Clarity expression to be executed, with return type `A`
-  - **Output**: `A`
-  - **Signature**: `(with-ft contract-id token-name amount body)`
+  - **Output**: Not applicable
+  - **Signature**: `(with-ft contract-id token-name amount)`
   - **Description**: Adds an outflow allowance for `amount` of the fungible
     token defined in `contract-id` with name `token-name` from the `asset-owner`
-    of the nearest enclosing `restrict-assets?` or `as-contract` expression,
-    then executes the expression `body` and returns its result.
+    of the enclosing `restrict-assets?` or `as-contract?` expression. Note,
+    `token-name` should match the name used in the `define-fungible-token` call
+    in the contract.
   - **Example**:
     ```clarity
     (restrict-assets? tx-sender
-      (with-ft token-trait "stackaroo" u50
-        (try! (contract-call? token-trait transfer u100 tx-sender (as-contract tx-sender) none))
-      )) ;; Returns (err u2)
+      ((with-ft (contract-of token-trait) "stackaroo" u50))
+      (try! (contract-call? token-trait transfer u100 tx-sender 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM none))
+      ) ;; Returns (err 0)
     (restrict-assets? tx-sender
-      (with-ft token-trait "stackaroo" u50
-        (try! (contract-call? token-trait transfer u20 tx-sender (as-contract tx-sender) none))
-      )) ;; Returns (ok true)
+      ((with-ft (contract-of token-trait) "stackaroo" u50))
+      (try! (contract-call? token-trait transfer u20 tx-sender 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM none))
+    ) ;; Returns (ok true)
     ```
 
 - `with-nft`
 
   - **Input**:
     - `contract-id`: `principal`: The contract defining the NFT asset.
-    - `token-name`: `(string-ascii 128)`: The name of the NFT.
+    - `token-name`: `(string-ascii 128)`: The name of the NFT or `"*"` for any
+      NFT defined in `contract-id`.
     - `identifier`: `T`: The identifier of the token to grant access to.
-    - `body`: `A`: A Clarity expression to be executed, with return type `A`
-  - **Output**: `A`
-  - **Signature**: `(with-nft contract-id token-name identifier body)`
-  - **Description**: Adds an outflow allowance the non-fungible token identified
-    by `identifier` defined in `contract-id` with name `token-name` from the
-    `asset-owner` of the nearest enclosing `restrict-assets?` or `as-contract`
-    expression, then executes the expression `body` and returns its result.
+  - **Output**: Not applicable
+  - **Signature**: `(with-nft contract-id token-name identifier)`
+  - **Description**: Adds an outflow allowance for the non-fungible token
+    identified by `identifier` defined in `contract-id` with name `token-name`
+    from the `asset-owner` of the enclosing `restrict-assets?` or `as-contract?`
+    expression. Note, `token-name` should match the name used in the
+    `define-non-fungible-token` call in the contract.
   - **Example**:
     ```clarity
     (restrict-assets? tx-sender
-      (with-nft nft-trait "stackaroo" u123
-        (try! (contract-call? nft-trait transfer u4 tx-sender (as-contract tx-sender)))
-      )) ;; Returns (err u3)
+      ((with-nft (contract-of nft-trait) "stackaroo" u123))
+      (try! (contract-call? nft-trait transfer u4 tx-sender 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM))
+    ) ;; Returns (err 0)
     (restrict-assets? tx-sender
-      (with-nft nft-trait "stackaroo" u123
-        (try! (contract-call? nft-trait transfer u123 tx-sender (as-contract tx-sender)))
-      )) ;; Returns (ok true)
+      ((with-nft (contract-of nft-trait) "stackaroo" u123))
+      (try! (contract-call? nft-trait transfer u123 tx-sender 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM))
+    ) ;; Returns (ok true)
     ```
 
 - `with-stacking`
 
   - **Input**:
     - `amount`: `uint`: The amount of uSTX that can be locked.
-    - `body`: `A`: A Clarity expression to be executed, with return type `A`
-  - **Output**: `A`
-  - **Signature**: `(with-stacking amount body)`
+  - **Output**: Not applicable
+  - **Signature**: `(with-stacking amount)`
   - **Description**: Adds a stacking allowance for `amount` uSTX from the
-    `asset-owner` of the nearest enclosing `restrict-assets?` or `as-contract`
-    expression, then executes the expression `body` and returns its result. This
-    restricts calls to `delegate-stx` and `stack-stx` to lock less than or equal
-    to the amount specified in PoX.
+    `asset-owner` of the enclosing `restrict-assets?` or `as-contract?`
+    expression. This restricts calls to `delegate-stx` and `stack-stx` in the
+    active PoX contract to lock up to the amount of uSTX specified.
   - **Example**:
     ```clarity
     (restrict-assets? tx-sender
-      (with-stacking u1000000000000
-        (try! (contract-call? 'SP000000000000000000002Q6VF78.pox-4 delegate-stx
-          u1100000000000 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM none none
-        ))
-      )) ;; Returns (err u4)
+      ((with-stacking u1000000000000))
+      (try! (contract-call? 'SP000000000000000000002Q6VF78.pox-4 delegate-stx
+        u1100000000000 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM none none
+      ))
+    ) ;; Returns (err 0)
     (restrict-assets? tx-sender
-      (with-stacking u1000000000000
-        (try! (contract-call? 'SP000000000000000000002Q6VF78.pox-4 delegate-stx
-          u900000000000 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM none none
-        ))
-      )) ;; Returns (ok true)
+      ((with-stacking u1000000000000))
+      (try! (contract-call? 'SP000000000000000000002Q6VF78.pox-4 delegate-stx
+        u900000000000 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM none none
+      ))
+    ) ;; Returns (ok true)
+    ```
+
+- `as-contract?`
+
+  - **Input**:
+    - `((with-stx|with-ft|with-nft|with-stacking)*)`: The set of allowances to
+      grant during the evaluation of the body expressions.
+    - `AnyType* A`: The Clarity expressions to be executed within the context,
+      with the final expression returning type `A`, where `A` is not a
+      `response`
+  - **Output**: `(response A int)`
+  - **Signature**:
+    `(as-contract? ((with-stx|with-ft|with-nft|with-stacking)*) expr-body1 expr-body2 ... expr-body-last)`
+  - **Description**: Switches the current context's `tx-sender` and
+    `contract-caller` values to the contract's principal and executes the body
+    expressions within that context, then checks the asset outflows from the
+    contract against the granted allowances, in declaration order. If any
+    allowance is violated, the body expressions are reverted, an error is
+    returned, and an event is emitted with the full details of the violation to
+    help with debugging. Note that the allowance setup expressions are evaluated
+    before executing the body expressions. The final body expression cannot
+    return a `response` value in order to avoid returning a nested `response`
+    value from the `restrict-assets?` (nested responses are error-prone).
+    Returns:
+
+    - `(ok x)` if the outflows are within the allowances, where `x` is the
+      result of the `body` expression and has type `A`.
+    - `(err index)` if an allowance was violated, where `index` is the 0-based
+      index of the first violated allowance in the list of granted allowances, or -1
+      if an asset with no allowance caused the violation.
+
+  - **Example**:
+    ```clarity
+    (define-public (foo)
+      (as-contract? ()
+        (try! (stx-transfer? u1000000 tx-sender recipient))
+      )
+    ) ;; Returns (err -1)
+    (define-public (bar)
+      (as-contract? ((with-stx u1000000))
+        (try! (stx-transfer? u1000000 tx-sender recipient))
+      )
+    ) ;; Returns (ok true)
     ```
 
 ## Conversion to `string-ascii`

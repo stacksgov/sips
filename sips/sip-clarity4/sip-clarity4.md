@@ -127,8 +127,8 @@ results in an analysis error.
   - **Description**: Executes the expression `body`, then checks the asset
     outflows against the granted allowances. Returns:
 
-    - `(ok result)` if the outflows are within the allowances, where `result` is
-      the result of the `body` expression.
+    - `(ok x)` if the outflows are within the allowances, where `x` is the
+      result of the `body` expression and has type `A`.
     - `(err u1)` if an STX allowance was violated
     - `(err u2)` if an FT allowance was violated
     - `(err u3)` if an NFT allowance was violated

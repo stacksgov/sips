@@ -83,8 +83,8 @@ deployed contract follows a specific template.
   or the specified contract does not exist. Returns:
   - `(ok 0x<hash>)`, where `<hash>` is the SHA-512/256 hash of the code body, on
     success
-  - `(err u0)` if the principal is not a contract principal
-  - `(err u1)` if the specified contract does not exist
+  - `(err u1)` if the principal is not a contract principal
+  - `(err u2)` if the specified contract does not exist
 - **Example**:
   ```clarity
   (contract-hash? 'SP2QEZ06AGJ3RKJPBV14SY1V5BBFNAW33D96YPGZF.BNS-V2) ;; Returns (ok 0x9f8104ff869aba1205cd5e15f6404dd05675f4c3fe0817c623c425588d981c2f)

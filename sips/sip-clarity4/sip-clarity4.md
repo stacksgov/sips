@@ -294,8 +294,8 @@ Use of `with-stx`, `with-ft`, `with-nft`, or `with-stacking` outside of
     - `(ok x)` if the outflows are within the allowances, where `x` is the
       result of the `body` expression and has type `A`.
     - `(err index)` if an allowance was violated, where `index` is the 0-based
-      index of the first violated allowance in the list of granted allowances, or -1
-      if an asset with no allowance caused the violation.
+      index of the first violated allowance in the list of granted allowances,
+      or -1 if an asset with no allowance caused the violation.
 
   - **Example**:
     ```clarity
@@ -311,27 +311,27 @@ Use of `with-stx`, `with-ft`, `with-nft`, or `with-stacking` outside of
     ) ;; Returns (ok true)
     ```
 
-## Conversion to `string-ascii`
+## Conversion to `string-ascii`: `to-ascii?`
 
 Originally proposed [here](https://github.com/clarity-lang/reference/issues/82).
 
-`to-ascii` is a new Clarity function that converts simple values into their
+`to-ascii?` is a new Clarity function that converts simple values into their
 `string-ascii` representations.
 
 - **Input**: `int` | `uint` | `bool` | `principal` | `(buff 524284)` |
   `(string-utf8 1048571)`
 - **Output**: `(response (string-ascii 1048571) uint)`
-- **Signature**: `(to-ascii value)`
+- **Signature**: `(to-ascii? value)`
 - **Description**: Returns the `string-ascii` representation of the input value
   in an `ok` response on success. The only error condition is if the input type
   is `string-utf8` and the value contains non-ASCII characters, in which case,
   `(err u1)` is returned.
 - **Example**:
   ```clarity
-  (to-ascii true) ;; Returns (ok "true")
-  (to-ascii 42) ;; Returns (ok "42")
-  (to-ascii 'SP2QEZ06AGJ3RKJPBV14SY1V5BBFNAW33D96YPGZF) ;; Returns (ok "SP2QEZ06AGJ3RKJPBV14SY1V5BBFNAW33D96YPGZF")
-  (to-ascii 0x12345678) ;; Returns (ok "0x12345678")
+  (to-ascii? true) ;; Returns (ok "true")
+  (to-ascii? 42) ;; Returns (ok "42")
+  (to-ascii? 'SP2QEZ06AGJ3RKJPBV14SY1V5BBFNAW33D96YPGZF) ;; Returns (ok "SP2QEZ06AGJ3RKJPBV14SY1V5BBFNAW33D96YPGZF")
+  (to-ascii? 0x12345678) ;; Returns (ok "0x12345678")
   ```
 
 # Related Work

@@ -64,6 +64,10 @@ secure and composable smart contracts. Specifically, it proposes:
    `bool`s and `principal`s into their ASCII string representations,
    facilitating the generation of string-based messages for interacting with
    cross-chain protocols.
+4. **A new Clarity keyword to get the timestamp of the _current_ block.** This
+   keyword will allow developers to easily access the timestamp of the block
+   currently being processed, enabling time-based logic and features in their
+   smart contracts. This is especially important for DeFi applications.
 
 # Specification
 
@@ -332,6 +336,27 @@ Originally proposed [here](https://github.com/clarity-lang/reference/issues/82).
   (to-ascii? 42) ;; Returns (ok "42")
   (to-ascii? 'SP2QEZ06AGJ3RKJPBV14SY1V5BBFNAW33D96YPGZF) ;; Returns (ok "SP2QEZ06AGJ3RKJPBV14SY1V5BBFNAW33D96YPGZF")
   (to-ascii? 0x12345678) ;; Returns (ok "0x12345678")
+  ```
+
+## Timestamp for current block: `block-time`
+
+`block-time` is a new Clarity keyword that returns the timestamp of the current
+block in seconds since the Unix epoch. This is the same timestamp that is in the
+block header, which is verified by the signers to be:
+
+- Greater than the timestamp of its parent block
+- At most 15 seconds into the future
+
+This same timestamp can also be retrieved for previous blocks using
+`(get-stacks-block-info? time height)`, which exists since Clarity 3, but cannot
+be used for the current block.
+
+- **Output**: `uint`
+- **Example**:
+  ```clarity
+  (if (> block-time 1755820800)
+    (print "after 2025-07-22")
+    (print "before 2025-07-22"))
   ```
 
 # Related Work

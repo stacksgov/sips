@@ -79,8 +79,8 @@ The current PoX contract allows users to lock Stacks tokens during the prepare p
 and the tokens are locked without earning stacking rewards for one cycle.
 
 The cooldown cycle for unstacking from a pool presents a problem for network decentralization.
-As a Stacker, when I delegate to a signer and that signer does not perform and gets low yield,
-I get penalized for switching. In today's model with cooldown cycles, users get double penalized
+When a stacker delegates to a signer and that signer does not perform and gets low yield,
+the stacker gets penalized for switching. In today's model with cooldown cycles, users get double penalized
 if a signer does not perform. Even if there are penalties for signers not performing / being down,
 the switching costs are too high for users to switch (two weeks' worth of yield).
 
@@ -98,7 +98,7 @@ defines a new locking mechanism that allows users to switch from one signer to a
 
 Applying these upgrades to the Stacks blockchain requires a consensus-breaking network upgrade,
 in this case, a hard fork. Like other such changes, this will require a new Stacks epoch.
-In this SIP, we will refer to this new epoch as Stacks 3.2.
+In this SIP, we will refer to this new epoch as Stacks 3.3.
 
 ## Delegated Stacking only
 
@@ -203,7 +203,7 @@ Signers handle two or three private keys:
 2. one for delegation approval and register transactions on the Stacks blockchain;
 3. optionally, one for PoX reward address and reward distribution.
 
-Note, for solo Stackers these keys can be just a single key. For more complex setup, the keys can be handled by different independent entities. Also, the PoX reward address can be a deposit address for sBTC of a Stacks smart contract. In this case, the signer does not hold a private key for the PoX reward address.
+Note, for solo Stackers these keys could be theoretically just a single key. For more complex setups, the keys can be handled by different independent entities. Also, the PoX reward address can be a deposit address for sBTC of a Stacks smart contract. In this case, the signer does not hold a private key for the PoX reward address.
 
 ### Voting Power
 
@@ -211,7 +211,7 @@ The voting power for a signer is the sum of the accepted stacked STX, not the su
 
 ## Transition to PoX-5
 
-A new PoX contract requires that all stacked Stacks tokens are unlocked and Stackers need to lock their Stacks token again using the new PoX-5 contract. The process shall be similar to the previous upgrades of the PoX contract. The PoX-4 contract shall be deactivated and the PoX-5 contract shall be activated at the beginning of epoch 3.2. All locked Stacks tokens shall be unlocked automatically one block after the beginning of epoch 3.2. Nevertheless, these tokens will earn rewards until the end of the cycle.
+A new PoX contract requires that all stacked Stacks tokens are unlocked and Stackers need to lock their Stacks token again using the new PoX-5 contract. The process shall be similar to the previous upgrades of the PoX contract. The PoX-4 contract shall be deactivated and the PoX-5 contract shall be activated at the beginning of epoch 3.3. All locked Stacks tokens shall be unlocked automatically one block after the beginning of epoch 3.3. Nevertheless, these tokens will earn rewards until the end of the cycle.
 
 ## Reference implementation
 
@@ -225,7 +225,7 @@ The previous PoX process is described in [SIP 007](https://github.com/stacksgov/
 
 # Activation
 
-This SIP requires a hard fork and shall be activated on Stacks 3.2, as defined by the SIP for epoch 3.2.
+This SIP requires a hard fork and shall be activated on Stacks 3.3, as defined by the SIP for epoch 3.3.
 
 ## Appendix
 

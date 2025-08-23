@@ -162,15 +162,12 @@ When signers verify and accept proposed blocks by miners, their voting power cor
 
 ## Amount of Stacked STX
 
-When a transaction locks or unlocks STX for the user a corresponding event shall be emitted. The following events used in PoX 4 are used:
+When a transaction locks or unlocks STX for the user a corresponding event shall be emitted. The following events are used:
 
 - `designate` when the user designates a signer
 - `designate-increase` when the amount of voting power is increased by a user
 - `designate-decrease` when the amount of voting power is decreased by a user.
 - `designate-extend` when the designation is extended by 1 cycle for a user.
-
-The new event is added:
-
 - `signer-accept` when the signer accepts the designation from all users.
 
 Furthermore, a function `get-stacker-info` shall return for the given principal
@@ -185,11 +182,11 @@ When stackers designate the first time, the function `get-stacker-info` the acce
 
 ### PoX Reward Addresses
 
-`Stacks-aggregation-commit` is replaced by `signer-register`. Signers indicate their liveness and provide a PoX reward address and a Stacks address with this call. The bitcoin address shall be used to receive stacking rewards. It can be used by Stackers as `pox-addr` parameter during `delegate`/`designate` call.
+`Stacks-aggregation-commit` is replaced by `signer-accept`. Signers indicate their liveness and provide a PoX reward address and a Stacks address with this call. The bitcoin address shall be used to receive stacking rewards. It can be used by Stackers as `pox-addr` parameter during `delegate`/`designate` call.
 
-The `signer-register` call can only be called between 1901st and 2000th block of a stacking cycle. During this period, Stackers can't change their stacking settings, therefore, no aggregate is required.
+Furthermore, the `signer-accept` call indicates the acceptance of the designation of all users before the call. The very first call to `signer-accept` by a signer can already accept designations if the signer's details have been communicated off-chain before.
 
-There is no change in the registration of PoX reward addresses. In particular, there can be more than one PoX reward address per signer.
+The `signer-accept` call can only be called between 1901st and 2000th block of a stacking cycle. During this period, Stackers can't change their stacking settings, therefore, no aggregate is required.
 
 ### Signatures
 

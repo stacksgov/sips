@@ -168,6 +168,9 @@ When a transaction locks or unlocks STX for the user a corresponding event shall
 - `designate-increase` when the amount of voting power is increased by a user
 - `designate-decrease` when the amount of voting power is decreased by a user.
 - `designate-extend` when the designation is extended by 1 cycle for a user.
+
+The new event is added:
+
 - `signer-accept` when the signer accepts the designation from all users.
 
 Furthermore, a function `get-stacker-info` shall return for the given principal

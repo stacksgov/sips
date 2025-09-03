@@ -323,7 +323,7 @@ Originally proposed [here](https://github.com/clarity-lang/reference/issues/82).
 `string-ascii` representations.
 
 - **Input**: `int` | `uint` | `bool` | `principal` | `(buff 524284)` |
-  `(string-utf8 1048571)`
+  `(string-utf8 262144)`
 - **Output**: `(response (string-ascii 1048571) uint)`
 - **Signature**: `(to-ascii? value)`
 - **Description**: Returns the `string-ascii` representation of the input value

@@ -13,7 +13,7 @@
 
 **Consideration:** Technical
 
-**Type:** Consensus
+**Type:** Consensus (hard fork)
 
 **Status:** Draft
 
@@ -23,7 +23,8 @@
 
 **Sign-off:**
 
-**Discussions-To:** https://github.com/stacksgov/sips
+**Discussions-To:**
+https://forum.stacks.org/t/clarity-4-proposal-new-builtins-for-vital-ecosystem-projects/18266
 
 # Abstract
 
@@ -45,15 +46,16 @@ several pain points when interacting with other, sometimes untrusted, contracts.
 Securely calling unknown contracts unlocks powerful use cases, but demands
 careful safeguards.
 
-This SIP addresses common feedback and requests from builders in the ecosystem.
-It proposes new Clarity features to make it easier for developers to write
-secure and composable smart contracts. Specifically, it proposes:
+This SIP addresses common feedback and requests from developers in the
+ecosystem. It proposes new Clarity features to make it easier for developers to
+write secure and composable smart contracts. Specifically, it proposes:
 
 1. **A new Clarity function to fetch the hash of a contract's code body.** This
    enables on-chain contract code validation, for example allowing contract A to
    validate that contract B follows a specific template and is therefore safe to
-   interact with. This is especially useful for enabling bridges and
-   marketplaces to safely and trustlessly support a dynamic set of assets.
+   interact with. This is especially useful for enabling services, such as
+   bridges and marketplaces, to safely and trustlessly support a dynamic set of
+   assets.
 2. **A new set of Clarity functions to allow a contract to set post-conditions
    to protect its assets.** These allow a contract to safely call arbitrary
    external contracts (e.g. passed in as traits) while ensuring that if the
@@ -73,7 +75,7 @@ secure and composable smart contracts. Specifically, it proposes:
 
 ## Fetching the hash of a contract body: `contract-hash?`
 
-Originally proposed [here](https://github.com/clarity-lang/reference/issues/88).
+Originally proposed here: https://github.com/clarity-lang/reference/issues/88
 
 `contract-hash?` returns, on success, the SHA-512/256 hash of the code body of
 the contract principal specified as input. This is useful to prove that a
@@ -96,7 +98,7 @@ deployed contract follows a specific template.
 
 ## Limiting asset access: `restrict-assets?`
 
-Originally proposed [here](https://github.com/clarity-lang/reference/issues/64).
+Originally proposed here: https://github.com/clarity-lang/reference/issues/64
 
 `restrict-assets?` establishes a context with a deny-all outflow policy for a
 specific principal during the evaluation of its body expressions. It accepts a
@@ -207,13 +209,14 @@ Use of `with-stx`, `with-ft`, `with-nft`, or `with-stacking` outside of
     token defined in `contract-id` with name `token-name` from the `asset-owner`
     of the enclosing `restrict-assets?` or `as-contract?` expression. Note,
     `token-name` should match the name used in the `define-fungible-token` call
-    in the contract.
+    in the contract. When `"*"` is used for the token name, the allowance
+    applies to **all** FTs defined in `contract-id`.
   - **Example**:
     ```clarity
     (restrict-assets? tx-sender
       ((with-ft (contract-of token-trait) "stackaroo" u50))
       (try! (contract-call? token-trait transfer u100 tx-sender 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM none))
-      ) ;; Returns (err 0)
+    ) ;; Returns (err 0)
     (restrict-assets? tx-sender
       ((with-ft (contract-of token-trait) "stackaroo" u50))
       (try! (contract-call? token-trait transfer u20 tx-sender 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM none))
@@ -233,7 +236,8 @@ Use of `with-stx`, `with-ft`, `with-nft`, or `with-stacking` outside of
     identified by `identifier` defined in `contract-id` with name `token-name`
     from the `asset-owner` of the enclosing `restrict-assets?` or `as-contract?`
     expression. Note, `token-name` should match the name used in the
-    `define-non-fungible-token` call in the contract.
+    `define-non-fungible-token` call in the contract. When `"*"` is used for the
+    token name, the allowance applies to **all** NFTs defined in `contract-id`.
   - **Example**:
     ```clarity
     (restrict-assets? tx-sender
@@ -317,7 +321,7 @@ Use of `with-stx`, `with-ft`, `with-nft`, or `with-stacking` outside of
 
 ## Conversion to `string-ascii`: `to-ascii?`
 
-Originally proposed [here](https://github.com/clarity-lang/reference/issues/82).
+Originally proposed here: https://github.com/clarity-lang/reference/issues/82
 
 `to-ascii?` is a new Clarity function that converts simple values into their
 `string-ascii` representations.
@@ -367,7 +371,9 @@ Not applicable.
 
 Because this SIP introduces new Clarity operators, it is a consensus-breaking
 change. A contract that uses one of these new operators would be invalid before
-this SIP is activated, and valid after it is activated.
+this SIP is activated, and valid after it is activated. The old `as-contract`
+builtin function is no longer available in Clarity 4, since it has been replaced
+with the safer `as-contract?`.
 
 # Activation
 

@@ -119,6 +119,18 @@ Similar to `restrict-assets?`, `as-contract?` accepts a set of `with-stx`,
 `with-ft`, `with-nft`, and `with-stacking` expressions which selectively grant
 outflow allowances from the contract's assets.
 
+With this new `as-contract?`, the expression needed to get the principal of the
+current contract, a common pattern, becomes ugly:
+
+```clarity
+(unwrap-panic (as-contract? () tx-sender))
+```
+
+To avoid that, a new builtin keyword. `current-contract` is added which will
+return the principal for the current contract.
+
+The new allowance expressions are:
+
 - `with-stx` grants an outflow allowance for a specific amount of STX via calls
   to the `stx-transfer?` function.
 - `with-ft` grants an outflow allowance for a specific amount of the specified
@@ -317,6 +329,14 @@ Use of `with-stx`, `with-ft`, `with-nft`, or `with-stacking` outside of
         (try! (stx-transfer? u1000000 tx-sender recipient))
       )
     ) ;; Returns (ok true)
+    ```
+
+- `current-contract`
+  - **Description**: Returns the principal of the current contract.
+  - **Output**: `principal`
+  - **Example**:
+    ```clarity
+    (stx-transfer? u1000000 tx-sender current-contract)
     ```
 
 ## Conversion to `string-ascii`: `to-ascii?`

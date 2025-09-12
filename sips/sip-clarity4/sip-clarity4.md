@@ -28,8 +28,8 @@ https://forum.stacks.org/t/clarity-4-proposal-new-builtins-for-vital-ecosystem-p
 
 # Abstract
 
-This SIP details Version 4 of the Clarity Smart Contract Language, which
-introduces new operations to make it easier to build secure Smart Contracts on
+This SIP details Version 4 of the Clarity smart contract language, which
+introduces new operations to make it easier to build secure smart contracts on
 Stacks.
 
 # License and Copyright
@@ -126,7 +126,7 @@ current contract, a common pattern, becomes ugly:
 (unwrap-panic (as-contract? () tx-sender))
 ```
 
-To avoid that, a new builtin keyword. `current-contract` is added which will
+To avoid that, a new builtin keyword `current-contract` is added which will
 return the principal for the current contract.
 
 The new allowance expressions are:
@@ -164,11 +164,11 @@ Use of `with-stx`, `with-ft`, `with-nft`, or `with-stacking` outside of
     help with debugging. Note that the `asset-owner` and allowance setup
     expressions are evaluated before executing the body expressions. The final
     body expression cannot return a `response` value in order to avoid returning
-    a nested `response` value from the `restrict-assets?` (nested responses are
+    a nested `response` value from `restrict-assets?` (nested responses are
     error-prone). Returns:
 
     - `(ok x)` if the outflows are within the allowances, where `x` is the
-      result of the `body` expression and has type `A`.
+      result of the final body expression and has type `A`.
     - `(err index)` if an allowance was violated, where `index` is the 0-based
       index of the first violated allowance in the list of granted allowances,
       or -1 if an asset with no allowance caused the violation.
@@ -219,7 +219,7 @@ Use of `with-stx`, `with-ft`, `with-nft`, or `with-stacking` outside of
   - **Signature**: `(with-ft contract-id token-name amount)`
   - **Description**: Adds an outflow allowance for `amount` of the fungible
     token defined in `contract-id` with name `token-name` from the `asset-owner`
-    of the enclosing `restrict-assets?` or `as-contract?` expression. Note,
+    of the enclosing `restrict-assets?` or `as-contract?` expression. Note that
     `token-name` should match the name used in the `define-fungible-token` call
     in the contract. When `"*"` is used for the token name, the allowance
     applies to **all** FTs defined in `contract-id`.
@@ -247,7 +247,7 @@ Use of `with-stx`, `with-ft`, `with-nft`, or `with-stacking` outside of
   - **Description**: Adds an outflow allowance for the non-fungible token
     identified by `identifier` defined in `contract-id` with name `token-name`
     from the `asset-owner` of the enclosing `restrict-assets?` or `as-contract?`
-    expression. Note, `token-name` should match the name used in the
+    expression. Note that `token-name` should match the name used in the
     `define-non-fungible-token` call in the contract. When `"*"` is used for the
     token name, the allowance applies to **all** NFTs defined in `contract-id`.
   - **Example**:
@@ -308,11 +308,10 @@ Use of `with-stx`, `with-ft`, `with-nft`, or `with-stacking` outside of
     help with debugging. Note that the allowance setup expressions are evaluated
     before executing the body expressions. The final body expression cannot
     return a `response` value in order to avoid returning a nested `response`
-    value from the `restrict-assets?` (nested responses are error-prone).
-    Returns:
+    value from `as-contract?` (nested responses are error-prone). Returns:
 
     - `(ok x)` if the outflows are within the allowances, where `x` is the
-      result of the `body` expression and has type `A`.
+      result of the final body expression and has type `A`.
     - `(err index)` if an allowance was violated, where `index` is the 0-based
       index of the first violated allowance in the list of granted allowances,
       or -1 if an asset with no allowance caused the violation.
@@ -331,13 +330,32 @@ Use of `with-stx`, `with-ft`, `with-nft`, or `with-stacking` outside of
     ) ;; Returns (ok true)
     ```
 
-- `current-contract`
-  - **Description**: Returns the principal of the current contract.
-  - **Output**: `principal`
-  - **Example**:
-    ```clarity
-    (stx-transfer? u1000000 tx-sender current-contract)
-    ```
+## Built-in keyword: `current-contract`
+
+In many smart contracts, there is a common pattern for retrieving the current
+contract's principal:
+
+```clarity
+(as-contract tx-sender)
+```
+
+With the new `as-contract?` and the removal of `as-contract`, the expression
+required to retrieve the current contract's principal has changed to:
+
+```clarity
+(unwrap-panic (as-contract? () tx-sender))
+```
+
+This new expression is more verbose and less readable. To address this, a new
+built-in keyword `current-contract` is introduced. This keyword provides a
+straightforward way to access the current contract's principal.
+
+- **Description**: Returns the principal of the current contract.
+- **Output**: `principal`
+- **Example**:
+  ```clarity
+  (stx-transfer? u1000000 tx-sender current-contract)
+  ```
 
 ## Conversion to `string-ascii`: `to-ascii?`
 
@@ -375,6 +393,11 @@ This same timestamp can also be retrieved for previous blocks using
 `(get-stacks-block-info? time height)`, which exists since Clarity 3, but cannot
 be used for the current block.
 
+Note that `block-time` will properly account for the context of an `at-block`
+expression. If the `at-block` sets the context to a block that is from before
+Clarity 4 has activated, attempting to use `block-time` in that context will
+result in a runtime error.
+
 - **Output**: `uint`
 - **Example**:
   ```clarity
@@ -391,9 +414,14 @@ Not applicable.
 
 Because this SIP introduces new Clarity operators, it is a consensus-breaking
 change. A contract that uses one of these new operators would be invalid before
-this SIP is activated, and valid after it is activated. The old `as-contract`
-builtin function is no longer available in Clarity 4, since it has been replaced
-with the safer `as-contract?`.
+this SIP is activated, and valid after it is activated.
+
+The old `as-contract` builtin function is no longer available in Clarity 4,
+since it has been replaced with the safer `as-contract?`.
+
+All new keywords introduced in Clarity 4 can no longer be used as identifiers in
+a Clarity 4 smart contract. This means that some existing contracts would need
+to be modified if published as Clarity 4 contracts.
 
 # Activation
 

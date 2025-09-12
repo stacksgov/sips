@@ -140,9 +140,14 @@ The new allowance expressions are:
 - `with-stacking` grants an outflow allowance for a specific amount of STX via
   calls to the `stack-stx` or `delegate-stx` functions of the active PoX
   contract.
+- `with-all-assets-unsafe` is allowed only within `as-contract?` and grants
+  unrestricted access to all assets of the contract and as such, should be used
+  with caution.
 
 Use of `with-stx`, `with-ft`, `with-nft`, or `with-stacking` outside of
-`restrict-assets?` or `as-contract?` results in an analysis error.
+`restrict-assets?` or `as-contract?` results in an analysis error. Similarly,
+use of `with-all-assets-unsafe` outside of `as-contract?` results in an analysis
+error.
 
 - `restrict-assets?`
 
@@ -288,17 +293,46 @@ Use of `with-stx`, `with-ft`, `with-nft`, or `with-stacking` outside of
     ) ;; Returns (ok true)
     ```
 
+- `with-all-assets-unsafe`
+
+  - **Input**: None
+  - **Output**: Not applicable
+  - **Signature**: `(with-all-assets-unsafe)`
+  - **Description**: Grants unrestricted access to all assets of the contract to
+    the enclosing `as-contract?` expression. Note that this is not allowed in
+    `restrict-assets?` and will trigger an analysis error, since usage there
+    does not make sense (i.e. just remove the `restrict-assets?` instead). **_⚠️
+    Security Warning: This should be used with extreme caution, as it
+    effectively disables all asset protection for the contract. ⚠️_** This
+    dangerous allowance should only be used when the code executing within the
+    `as-contract?` body is verified to be trusted through other means (e.g.
+    checking traits against an allow list, passed in from a trusted caller), and
+    even then the more restrictive allowances should be preferred when possible.
+    - **Example**:
+    ```clarity
+    (define-public (execute-trait (trusted-trait <sample-trait>))
+      (begin
+        (asserts! (is-eq contract-caller TRUSTED_CALLER) ERR_UNTRUSTED_CALLER)
+        (as-contract? ((with-all-assets-unsafe))
+          (contract-call? trusted-trait execute)
+        )
+      )
+    )
+    ```
+
 - `as-contract?`
 
   - **Input**:
-    - `((with-stx|with-ft|with-nft|with-stacking)*)`: The set of allowances to
-      grant during the evaluation of the body expressions.
+    - `((with-stx|with-ft|with-nft|with-stacking)*|with-all-assets-unsafe)`: The
+      set of allowances to grant during the evaluation of the body expressions.
+      Note that `with-all-assets-unsafe` is mutually exclusive with other
+      allowances.
     - `AnyType* A`: The Clarity expressions to be executed within the context,
       with the final expression returning type `A`, where `A` is not a
       `response`
   - **Output**: `(response A int)`
   - **Signature**:
-    `(as-contract? ((with-stx|with-ft|with-nft|with-stacking)*) expr-body1 expr-body2 ... expr-body-last)`
+    `(as-contract? ((with-stx|with-ft|with-nft|with-stacking)*|with-all-assets-unsafe) expr-body1 expr-body2 ... expr-body-last)`
   - **Description**: Switches the current context's `tx-sender` and
     `contract-caller` values to the contract's principal and executes the body
     expressions within that context, then checks the asset outflows from the

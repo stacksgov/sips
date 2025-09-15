@@ -22,7 +22,7 @@
 
 **Discussions-To:**
 
-- [Stacks Forum Discussions](https://forum.stacks.org/t/remove-cool-down-cycle-in-stacking/17899)
+- https://forum.stacks.org/t/remove-cool-down-cycle-in-stacking/17899
 
 # Abstract
 

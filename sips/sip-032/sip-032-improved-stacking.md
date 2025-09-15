@@ -10,7 +10,7 @@
 
 **Consideration:** Technical
 
-**Type:** Consensus
+**Type:** Consensus (hard fork)
 
 **Status:** Draft
 

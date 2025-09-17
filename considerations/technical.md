@@ -11,7 +11,6 @@ Members:
 - Friedger <mail@friedger.de>
 - Jesse Wiley <jesse@stacks.org>
 - Mike Cohen <mjoecohen@gmail.com>
-- 0xdima <dima@stackscreener.io>
 - Setzeus <jnajera1917@gmail.com>
 - Vlad <vlad@asigna.io>
 
@@ -34,8 +33,6 @@ Created-by: SIP-000
 **Jesse Wiley**: Jesse Wiley is a seasoned DevOps expert - he makes sure all systems are running smoothly and the right security considerations have been made.
 
 **Mike Cohen**: Independent contributor to Stacks blockchain. Developer of stx.eco supporting Stacks governance and protocol upgrade voting.
-
-**0xdima**: Building SatScreener, a Bitcoin L1/L2 analytics platform with real time data for traders. Co-Founder of the Stx-20 protocol, an on-chain metaprotocol for inscriptions on stacks.
 
 **Setzeus**: Setzeus is the founder of StrataLabs, a Bitcoin studio that consults L1 & L2s (such as Stacks) / launched a Bitcoin development environment (BitScript). Through his work at TrustMachines he's been hacking away on sBTC & is eager to continue contributing to the Stacks community in any way.
 
@@ -85,6 +82,12 @@ The minutes include any discussion topics that came up about the SIP. Also, when
 We choose to adopt the bylaws Steering Committee member @jcnelson set out in this doc: https://gist.github.com/jcnelson/3fcc635ede20ce98d1eae60941eb127a
 
 Starting from those bylaws, this CAB will continue to evaluate what works, what doesn't work, and use the feedback and lessons learned to improve the process and increase involvement along the way.
+
+## Previous CAB Members
+
+- 0xdima <dima@stackscreener.io>; Jan 2024 ~ Jun 2025
+
+**0xdima**: Building SatScreener, a Bitcoin L1/L2 analytics platform with real time data for traders. Co-Founder of the Stx-20 protocol, an on-chain metaprotocol for inscriptions on stacks.
 
 ---
 

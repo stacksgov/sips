@@ -246,11 +246,12 @@ error.
     - `contract-id`: `principal`: The contract defining the NFT asset.
     - `token-name`: `(string-ascii 128)`: The name of the NFT or `"*"` for any
       NFT defined in `contract-id`.
-    - `identifier`: `T`: The identifier of the token to grant access to.
+    - `identifiers`: `(list 128 T)`: The identifiers of the token to grant
+      access to.
   - **Output**: Not applicable
-  - **Signature**: `(with-nft contract-id token-name identifier)`
-  - **Description**: Adds an outflow allowance for the non-fungible token
-    identified by `identifier` defined in `contract-id` with name `token-name`
+  - **Signature**: `(with-nft contract-id token-name identifiers)`
+  - **Description**: Adds an outflow allowance for the non-fungible token(s)
+    identified by `identifiers` defined in `contract-id` with name `token-name`
     from the `asset-owner` of the enclosing `restrict-assets?` or `as-contract?`
     expression. Note that `token-name` should match the name used in the
     `define-non-fungible-token` call in the contract. When `"*"` is used for the
@@ -258,11 +259,11 @@ error.
   - **Example**:
     ```clarity
     (restrict-assets? tx-sender
-      ((with-nft (contract-of nft-trait) "stackaroo" u123))
+      ((with-nft (contract-of nft-trait) "stackaroo" (list u123)))
       (try! (contract-call? nft-trait transfer u4 tx-sender 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM))
     ) ;; Returns (err 0)
     (restrict-assets? tx-sender
-      ((with-nft (contract-of nft-trait) "stackaroo" u123))
+      ((with-nft (contract-of nft-trait) "stackaroo" (list u123)))
       (try! (contract-call? nft-trait transfer u123 tx-sender 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM))
     ) ;; Returns (ok true)
     ```

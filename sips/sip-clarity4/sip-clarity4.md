@@ -276,8 +276,9 @@ error.
   - **Signature**: `(with-stacking amount)`
   - **Description**: Adds a stacking allowance for `amount` uSTX from the
     `asset-owner` of the enclosing `restrict-assets?` or `as-contract?`
-    expression. This restricts calls to `delegate-stx` and `stack-stx` in the
-    active PoX contract to lock up to the amount of uSTX specified.
+    expression. This restricts calls to the active PoX contract that either
+    delegate funds for stacking or stack directly, ensuring that the locked
+    amount is limited by the amount of uSTX specified.
   - **Example**:
     ```clarity
     (restrict-assets? tx-sender

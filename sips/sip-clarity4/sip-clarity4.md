@@ -1,6 +1,6 @@
 # Preamble
 
-**SIP Number:** XYZ
+**SIP Number:** 033
 
 **Title:** Clarity Smart Contract Language, version 4
 
@@ -29,8 +29,8 @@ https://forum.stacks.org/t/clarity-4-proposal-new-builtins-for-vital-ecosystem-p
 # Abstract
 
 This SIP details Version 4 of the Clarity smart contract language, which
-introduces new operations to make it easier to build secure smart contracts on
-Stacks.
+introduces new operations to provide mechanisms for building more secure smart
+contracts on Stacks.
 
 # License and Copyright
 
@@ -42,9 +42,9 @@ copyright is held by the Stacks Open Internet Foundation.
 
 The Clarity smart contract language powers decentralized applications across a
 wide range of domains. Over years of real-world use, developers have encountered
-several pain points when interacting with other, sometimes untrusted, contracts.
-Securely calling unknown contracts unlocks powerful use cases, but demands
-careful safeguards.
+several security and interoperability challenges when interacting with other,
+sometimes untrusted, contracts. Securely calling unknown contracts unlocks
+powerful use cases, but demands careful safeguards.
 
 This SIP addresses common feedback and requests from developers in the
 ecosystem. It proposes new Clarity features to make it easier for developers to
@@ -73,7 +73,7 @@ write secure and composable smart contracts. Specifically, it proposes:
 
 # Specification
 
-## Fetching the hash of a contract body: `contract-hash?`
+## Fetching the Hash of a Contract Body: `contract-hash?`
 
 Originally proposed here: https://github.com/clarity-lang/reference/issues/88
 
@@ -96,7 +96,7 @@ deployed contract follows a specific template.
   (contract-hash? 'SP2QEZ06AGJ3RKJPBV14SY1V5BBFNAW33D96YPGZF.BNS-V2) ;; Returns (ok 0x9f8104ff869aba1205cd5e15f6404dd05675f4c3fe0817c623c425588d981c2f)
   ```
 
-## Limiting asset access: `restrict-assets?`
+## Limiting Asset Access: `restrict-assets?`
 
 Originally proposed here: https://github.com/clarity-lang/reference/issues/64
 
@@ -303,10 +303,10 @@ error.
   - **Description**: Grants unrestricted access to all assets of the contract to
     the enclosing `as-contract?` expression. Note that this is not allowed in
     `restrict-assets?` and will trigger an analysis error, since usage there
-    does not make sense (i.e. just remove the `restrict-assets?` instead). **_⚠️
-    Security Warning: This should be used with extreme caution, as it
-    effectively disables all asset protection for the contract. ⚠️_** This
-    dangerous allowance should only be used when the code executing within the
+    does not make sense (i.e. just remove the `restrict-assets?` instead).
+    **Security Warning:** This should be used with extreme caution, as it
+    effectively disables all asset protection for the contract. This dangerous
+    allowance should only be used when the code executing within the
     `as-contract?` body is verified to be trusted through other means (e.g.
     checking traits against an allow list, passed in from a trusted caller), and
     even then the more restrictive allowances should be preferred when possible.
@@ -366,17 +366,17 @@ error.
     ) ;; Returns (ok true)
     ```
 
-## Built-in keyword: `current-contract`
+## Built-in Keyword: `current-contract`
 
-In many smart contracts, there is a common pattern for retrieving the current
-contract's principal:
+In many smart contracts using Clarity 3 or below, there is a common pattern for
+retrieving the current contract's principal:
 
 ```clarity
 (as-contract tx-sender)
 ```
 
-With the new `as-contract?` and the removal of `as-contract`, the expression
-required to retrieve the current contract's principal has changed to:
+With the new `as-contract?` and the removal of `as-contract` in Clarity 4, the
+expression required to retrieve the current contract's principal has changed to:
 
 ```clarity
 (unwrap-panic (as-contract? () tx-sender))
@@ -407,7 +407,14 @@ Originally proposed here: https://github.com/clarity-lang/reference/issues/82
 - **Description**: Returns the `string-ascii` representation of the input value
   in an `ok` response on success. The only error condition is if the input type
   is `string-utf8` and the value contains non-ASCII characters, in which case,
-  `(err u1)` is returned.
+  `(err u1)` is returned. Note that the limitation on the maximum sizes of
+  `buff` and `string-utf8` inputs is due to the Clarity value size limit of 1MB.
+  The `(string-utf8 262144)` is the maximum allowed size of a `string-utf8`
+  value, and the `(buff 524284)` limit is chosen because the ASCII
+  representation of a `buff` is `0x` followed by two ASCII characters per byte
+  in the `buff`. This means that the ASCII representation of a `(buff 524284)`
+  is `2 + 2 * 524284 = 1048570` characters at 1 byte each, and the remainder is
+  required for the `response` value wrapping the `string-ascii`.
 - **Example**:
   ```clarity
   (to-ascii? true) ;; Returns (ok "true")
@@ -416,11 +423,12 @@ Originally proposed here: https://github.com/clarity-lang/reference/issues/82
   (to-ascii? 0x12345678) ;; Returns (ok "0x12345678")
   ```
 
-## Timestamp for current block: `block-time`
+## Timestamp for Current Block: `block-time`
 
 `block-time` is a new Clarity keyword that returns the timestamp of the current
 block in seconds since the Unix epoch. This is the same timestamp that is in the
-block header, which is verified by the signers to be:
+block header, which is verified by the signers to be (see
+https://github.com/stacks-network/stacks-core/blob/fe868ea6a1bf993793f1e09c3d397b5dde49b93d/stackslib/src/net/api/postblock_proposal.rs#L494-L512):
 
 - Greater than the timestamp of its parent block
 - At most 15 seconds into the future
@@ -444,7 +452,20 @@ result in a runtime error.
 
 # Related Work
 
-Not applicable.
+## Clarity 1
+
+https://github.com/stacksgov/sips/blob/main/sips/sip-002/sip-002-smart-contract-language.md
+https://github.com/stacksgov/sips/blob/main/sips/sip-006/sip-006-runtime-cost-assessment.md
+https://github.com/stacksgov/sips/blob/main/sips/sip-008/sip-008-analysis-cost-assessment.md
+
+## Clarity 2 introduced with SIP015
+
+https://github.com/stacksgov/sips/blob/main/sips/sip-015/sip-015-network-upgrade.md
+https://github.com/stacksgov/sips/blob/main/sips/sip-020/sip-020-bitwise-ops.md
+
+## Clarity 3 introduced with SIP021
+
+https://github.com/stacksgov/sips/blob/main/sips/sip-021/sip-021-nakamoto.md
 
 # Backwards Compatibility
 
@@ -457,12 +478,50 @@ since it has been replaced with the safer `as-contract?`.
 
 All new keywords introduced in Clarity 4 can no longer be used as identifiers in
 a Clarity 4 smart contract. This means that some existing contracts would need
-to be modified if published as Clarity 4 contracts.
+to be modified if published as Clarity 4 contracts. Smart contracts can continue
+to be published using older versions of Clarity by specifying the version in the
+deploy transaction.
 
 # Activation
 
-TBD
+Users can vote to approve this SIP with either their locked/stacked STX or with
+unlocked/liquid STX, or both. The SIP voting page can be found at
+[stx.eco](https://stx.eco/).
+
+In line with prior SIPs, in order for this SIP to activate, the following
+criteria must be met:
+
+- At least 80 million stacked STX must vote, with at least 80% of all stacked
+  STX committed by voting must be in favor of the proposal (vote "yes").
+- At least 80% of all liquid STX committed by voting must be in favor of the
+  proposal (vote "yes").
+
+STX tokens generated via the SIP-031 emissions are not eligible to be used for
+voting on this SIP.
+
+All STX holders vote by sending Stacks dust to the corresponding Stacks address
+from the account where their Stacks are held (stacked or liquid). To simplify
+things, users can create their votes by visiting the [stx.eco](TBD) platform.
+Voting power is determined by a snapshot of the amount of STX (stacked and
+unstacked) at the block height at which the voting started (preventing the same
+STX from being transferred between accounts and used to effectively double
+vote). The voting addresses are also shared below
+
+Solo stackers only can also vote by sending a bitcoin dust transaction (6000
+sats) to the corresponding bitcoin address.
+
+| Vote | Bitcoin | Stacks | ASCII Encoding | Msg        |
+| ---- | ------- | ------ | -------------- | ---------- |
+| yes  |         |        |                | yes-sip-33 |
+| no   |         |        |                | no-sip-33  |
+
+## Activation Height
+
+If the SIP passes, it will activate at **Bitcoin block TBD** (estimated as
+<month> <day> at <time> UTC).
 
 # Reference Implementations
 
-TBD
+A reference implementation of the Clarity 4 language is in progress in pull
+request [#6516](https://github.com/stacks-network/stacks-core/pull/6516) in the
+`stacks-core` repository.

@@ -73,7 +73,7 @@ Add Header 2 ## and Header 3 ### and Header 4 #### as necessary
 
 # Activation Status
 
-_This section will be updated by SIP Repo maintainers._
+_This section is for recording Stacks community wide STX token voting results. This section will be updated by SIP Repo maintainers. If your SIP is not a consensus breaking SIP, unlikely it will require this section, so please remove accordingly._
 
 # Reference Implementation
 

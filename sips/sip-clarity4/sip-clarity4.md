@@ -154,12 +154,12 @@ error.
   - **Input**:
     - `asset-owner`: `principal`: The principal whose assets are being
       protected.
-    - `((with-stx|with-ft|with-nft|with-stacking)*)`: The set of allowances to
-      grant during the evaluation of the body expressions.
+    - `((with-stx|with-ft|with-nft|with-stacking)*)`: The set of allowances (at
+      most 128) to grant during the evaluation of the body expressions .
     - `AnyType* A`: The Clarity expressions to be executed within the context,
       with the final expression returning type `A`, where `A` is not a
       `response`
-  - **Output**: `(response A int)`
+  - **Output**: `(response A uint)`
   - **Signature**:
     `(restrict-assets? asset-owner ((with-stx|with-ft|with-nft|with-stacking)*) expr-body1 expr-body2 ... expr-body-last)`
   - **Description**: Executes the body expressions, then checks the asset
@@ -176,7 +176,7 @@ error.
       result of the final body expression and has type `A`.
     - `(err index)` if an allowance was violated, where `index` is the 0-based
       index of the first violated allowance in the list of granted allowances,
-      or -1 if an asset with no allowance caused the violation.
+      or `u128` if an asset with no allowance caused the violation.
 
   - **Example**:
     ```clarity
@@ -184,7 +184,7 @@ error.
       (restrict-assets? tx-sender ()
         (try! (stx-transfer? u1000000 tx-sender 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM))
       )
-    ) ;; Returns (err -1)
+    ) ;; Returns (err u128)
     (define-public (bar)
       (restrict-assets? tx-sender ()
         (+ u1 u2)
@@ -206,7 +206,7 @@ error.
     (restrict-assets? tx-sender
       ((with-stx u1000000))
       (try! (stx-transfer? u2000000 tx-sender 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM))
-    ) ;; Returns (err 0)
+    ) ;; Returns (err u0)
     (restrict-assets? tx-sender
       ((with-stx u1000000))
       (try! (stx-transfer? u1000000 tx-sender 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM))
@@ -233,7 +233,7 @@ error.
     (restrict-assets? tx-sender
       ((with-ft (contract-of token-trait) "stackaroo" u50))
       (try! (contract-call? token-trait transfer u100 tx-sender 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM none))
-    ) ;; Returns (err 0)
+    ) ;; Returns (err u0)
     (restrict-assets? tx-sender
       ((with-ft (contract-of token-trait) "stackaroo" u50))
       (try! (contract-call? token-trait transfer u20 tx-sender 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM none))
@@ -261,7 +261,7 @@ error.
     (restrict-assets? tx-sender
       ((with-nft (contract-of nft-trait) "stackaroo" (list u123)))
       (try! (contract-call? nft-trait transfer u4 tx-sender 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM))
-    ) ;; Returns (err 0)
+    ) ;; Returns (err u0)
     (restrict-assets? tx-sender
       ((with-nft (contract-of nft-trait) "stackaroo" (list u123)))
       (try! (contract-call? nft-trait transfer u123 tx-sender 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM))
@@ -286,7 +286,7 @@ error.
       (try! (contract-call? 'SP000000000000000000002Q6VF78.pox-4 delegate-stx
         u1100000000000 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM none none
       ))
-    ) ;; Returns (err 0)
+    ) ;; Returns (err u0)
     (restrict-assets? tx-sender
       ((with-stacking u1000000000000))
       (try! (contract-call? 'SP000000000000000000002Q6VF78.pox-4 delegate-stx
@@ -326,13 +326,13 @@ error.
 
   - **Input**:
     - `((with-stx|with-ft|with-nft|with-stacking)*|with-all-assets-unsafe)`: The
-      set of allowances to grant during the evaluation of the body expressions.
-      Note that `with-all-assets-unsafe` is mutually exclusive with other
-      allowances.
+      set of allowances (at most 128) to grant during the evaluation of the body
+      expressions. Note that `with-all-assets-unsafe` is mutually exclusive with
+      other allowances.
     - `AnyType* A`: The Clarity expressions to be executed within the context,
       with the final expression returning type `A`, where `A` is not a
       `response`
-  - **Output**: `(response A int)`
+  - **Output**: `(response A uint)`
   - **Signature**:
     `(as-contract? ((with-stx|with-ft|with-nft|with-stacking)*|with-all-assets-unsafe) expr-body1 expr-body2 ... expr-body-last)`
   - **Description**: Switches the current context's `tx-sender` and
@@ -350,7 +350,7 @@ error.
       result of the final body expression and has type `A`.
     - `(err index)` if an allowance was violated, where `index` is the 0-based
       index of the first violated allowance in the list of granted allowances,
-      or -1 if an asset with no allowance caused the violation.
+      or `u128` if an asset with no allowance caused the violation.
 
   - **Example**:
     ```clarity
@@ -358,7 +358,7 @@ error.
       (as-contract? ()
         (try! (stx-transfer? u1000000 tx-sender recipient))
       )
-    ) ;; Returns (err -1)
+    ) ;; Returns (err u128)
     (define-public (bar)
       (as-contract? ((with-stx u1000000))
         (try! (stx-transfer? u1000000 tx-sender recipient))

@@ -22,6 +22,9 @@ License: BSD-2-Clause
 
 Sign-off: _This field will be updated by SIP Repo maintainers._
 
+Discussions-To:
+* Link to where previous discussions took place. For example a mailing list or a Stacks Forum thread. 
+
 # Abstract
 
 Insert text.

@@ -1,6 +1,6 @@
 # Preamble
 
-SIP Number: 0xx
+SIP Number:  _This field will be updated by SIP Repo maintainers._
 
 Title: xx
 

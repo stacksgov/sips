@@ -27,7 +27,7 @@ Discussions-To:
 
 # Abstract
 
-Insert text.
+High-level summary of the proposed improvement.
 
 # License and Copyright
 

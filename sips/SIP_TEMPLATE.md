@@ -68,10 +68,6 @@ Summarize alternative solutions that address the same or similar problems, and b
 
 Describe the timeline, falsifiable criteria, and process for activating the SIP once it is ratified.
 
-# Activation Status
-
-_This section is for recording Stacks community wide STX token voting results. This section will be updated by SIP Repo maintainers. If your SIP is not a consensus breaking SIP, unlikely it will require this section, so please remove accordingly._
-
 # Reference Implementation
 
 One or more references to one or more production-quality implementations of the SIP, if applicable. This section is only informative — the SIP ratification process is independent of any engineering processes (or other processes) that would be followed to produce implementations.

@@ -50,8 +50,7 @@ list of recommended licenses.
 
 # Introduction
 
-Insert text.
-Add Header 2 ## and Header 3 ### and Header 4 #### as necessary
+Provide a high-level summary of the problem(s) that this SIP proposes to solve, as well as a high-level description of how the proposal solves them. This section shall emphasize its novel contributions, and briefly describe how they address the problem(s). Any motivational arguments and example problems and solutions belong in this section.
 
 # Specification
 

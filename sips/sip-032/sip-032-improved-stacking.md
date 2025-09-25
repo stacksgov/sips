@@ -152,11 +152,11 @@ The amount of stacked STX does not decrease during the automatic extension. If t
 
 When signers verify and accept proposed blocks by miners, their voting power corresponds to the amount of stacked Stacks tokens (see SIP-021). The new stacking process changes the delegation flow as follows:
 
-- `delegate-stx` shall be renamed to `designate`. The function takes the arguments: `amount`, `signature`, optional bitcoin `block-height` defining the end of stacking and auto extending, optional `pox-addr` defining that pox-address that the signer must use, optional `max-amount`. The `amount` defines how many Stacks tokens are locked immediately. The `max-amount` defines the maximum of Stacks tokens that can be locked in the future through auto extending. If provided the minimum of the user's stx balance and `max-amount` is locked. If omitted, the whole user's balance is locked. Users can use sponsored transactions to call revoke-delegate-stx in case there is no unlocked stx in the account. The argument `signature` is a signature of the signer indicating that the signer accepted the delegation of voting power. The signing follows the structured message signing with the parameters and topic `designate` as message. The public key of the signature can be used to identify the signer similar to the Stacks address of the pool operator in the previous PoX design.
+- `delegate-stx` shall be renamed to `designate`. The function takes the arguments: `amount`, `signature`, optional bitcoin `block-height` defining the end of stacking and auto extending, optional `pox-addr` defining that pox-address that the signer must use, optional `amount-allowance`. The `amount` defines how many Stacks tokens are locked immediately. The `amount-allowance` defines the maximum of Stacks tokens that can be locked in the future through auto extending. If provided, the minimum of the user's stx balance and `amount-allowance` is locked. If omitted, the `amount` is used as `amount-allowance`. Users can use sponsored transactions to call revoke-delegate-stx in case there is no unlocked stx in the account. The argument `signature` is a signature of the signer indicating that the signer accepted the delegation of voting power. The signing follows the structured message signing with the parameters and topic `designate` as message. The public key of the signature can be used to identify the signer similar to the Stacks address of the pool operator in the previous PoX design.
 
 - `revoke-delegate-stx` shall be renamed to `revoke-designation`. After calling this function, auto extension is stopped and Stacks tokens are unlocked for the user at the end of the current cycle. If a signer does not aggregate enough Stacks tokens to receive at least one reward slot (or does not commit at all) then the user's Stacks token are unlocked immediately through this call.
 
-- `delegate-increase` is replaced by `update-max-amount`. It sets max-amount to the new value. This value is applied when the user's designation is extended for the next cycle. The amount can be smaller than the currently locked amount. As tokens are only locked for 1 cycle at a time, handling decreasing is now easy enough in comparison to the previous system with locking periods of up to 12 cycles.
+- `delegate-increase` is replaced by `update-amount-allowance`. It sets `amount-allowance` to the new value. This value is applied when the user's designation is extended for the next cycle. The amount can be smaller than the currently locked amount. As tokens are only locked for 1 cycle at a time, handling decreasing is now easy enough in comparison to the previous system with locking periods of up to 12 cycles.
 
 - `delegate-extend` is removed because the locking period is automatically extended each cycle.
 
@@ -174,7 +174,7 @@ Furthermore, a function `get-stacker-info` shall return for the given principal
 
 - the accepted stacked amount by the signer and the cycle of acceptance `(optional {amount: uint), cycle: uint})`
 - the current stacked amount `uint`
-- the current max-amount `(optional uint)`
+- the current amount-allowance `(optional uint)`
 
 When stackers designate the first time, the function `get-stacker-info` the accepted stacked amount is `none`.
 

@@ -164,13 +164,12 @@ error.
     `(restrict-assets? asset-owner ((with-stx|with-ft|with-nft|with-stacking)*) expr-body1 expr-body2 ... expr-body-last)`
   - **Description**: Executes the body expressions, then checks the asset
     outflows against the granted allowances, in declaration order. If any
-    allowance is violated, the body expressions are reverted, an error is
-    returned, and an event is emitted with the full details of the violation to
-    help with debugging. Note that the `asset-owner` and allowance setup
-    expressions are evaluated before executing the body expressions. The final
-    body expression cannot return a `response` value in order to avoid returning
-    a nested `response` value from `restrict-assets?` (nested responses are
-    error-prone). Returns:
+    allowance is violated, the body expressions are reverted and an error is
+    returned. Note that the `asset-owner` and allowance setup expressions are
+    evaluated before executing the body expressions. The final body expression
+    cannot return a `response` value in order to avoid returning a nested
+    `response` value from `restrict-assets?` (nested responses are error-prone).
+    Returns:
 
     - `(ok x)` if the outflows are within the allowances, where `x` is the
       result of the final body expression and has type `A`.
@@ -339,12 +338,11 @@ error.
     `contract-caller` values to the contract's principal and executes the body
     expressions within that context, then checks the asset outflows from the
     contract against the granted allowances, in declaration order. If any
-    allowance is violated, the body expressions are reverted, an error is
-    returned, and an event is emitted with the full details of the violation to
-    help with debugging. Note that the allowance setup expressions are evaluated
-    before executing the body expressions. The final body expression cannot
-    return a `response` value in order to avoid returning a nested `response`
-    value from `as-contract?` (nested responses are error-prone). Returns:
+    allowance is violated, the body expressions are reverted and an error is
+    returned. Note that the allowance setup expressions are evaluated before
+    executing the body expressions. The final body expression cannot return a
+    `response` value in order to avoid returning a nested `response` value from
+    `as-contract?` (nested responses are error-prone). Returns:
 
     - `(ok x)` if the outflows are within the allowances, where `x` is the
       result of the final body expression and has type `A`.

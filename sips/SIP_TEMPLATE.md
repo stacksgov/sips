@@ -56,13 +56,13 @@ Provide a high-level summary of the problem(s) that this SIP proposes to solve, 
 
 Provide the detailed technical specification. It may include code snippets, diagrams, performance evaluations, and other supplemental data to justify particular design decisions. However, a copy of all external supplemental data (such as links to research papers) must be included with the SIP, and must be made available under an approved copyright license.
 
-# Backwards Compatibility
-
-Address any backwards-incompatiblity concerns that may arise with the implementation of this SIP, as well as describe (or reference) technical mitigations for breaking changes. This section may be left blank for non-technical SIPs.
-
 # Related Work
 
 Summarize alternative solutions that address the same or similar problems, and briefly describe why they are not adequate solutions. This section may reference alternative solutions in other blockchain projects, in research papers from academia and industry, other open-source projects, and so on. This section must be accompanied by a bibliography of sufficient detail such that someone reading the SIP can find and evaluate the related works.
+
+# Backwards Compatibility
+
+Address any backwards-incompatiblity concerns that may arise with the implementation of this SIP, as well as describe (or reference) technical mitigations for breaking changes. This section may be left blank for non-technical SIPs.
 
 # Activation
 

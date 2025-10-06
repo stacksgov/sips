@@ -12,7 +12,7 @@ Author(s):
 
 Status: Draft
 
-Consideration: Technical, Governance
+Consideration: Technical
 
 Type: Consensus
 

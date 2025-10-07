@@ -5,6 +5,7 @@ SIP Number: 033
 Title: Clarity Smart Contract Language, version 4
 
 Author(s):
+
 - Adriano Di Luzio <adriano@bitcoinl2labs.com>
 - Brice Dobry <brice@hiro.so>
 - Marvin Janssen <marvin@ryder.id>
@@ -427,11 +428,11 @@ Originally proposed here: https://github.com/clarity-lang/reference/issues/82
   (to-ascii? 0x12345678) ;; Returns (ok "0x12345678")
   ```
 
-## Timestamp for Current Block: `block-time`
+## Timestamp for Current Block: `stacks-block-time`
 
-`block-time` is a new Clarity keyword that returns the timestamp of the current
-block in seconds since the Unix epoch. This is the same timestamp that is in the
-block header, which is verified by the signers to be (see
+`stacks-block-time` is a new Clarity keyword that returns the timestamp of the
+current block in seconds since the Unix epoch. This is the same timestamp that
+is in the block header, which is verified by the signers to be (see
 https://github.com/stacks-network/stacks-core/blob/fe868ea6a1bf993793f1e09c3d397b5dde49b93d/stackslib/src/net/api/postblock_proposal.rs#L494-L512):
 
 - Greater than the timestamp of its parent block
@@ -441,15 +442,15 @@ This same timestamp can also be retrieved for previous blocks using
 `(get-stacks-block-info? time height)`, which exists since Clarity 3, but cannot
 be used for the current block.
 
-Note that `block-time` will properly account for the context of an `at-block`
-expression. If the `at-block` sets the context to a block that is from before
-Clarity 4 has activated, attempting to use `block-time` in that context will
-result in a runtime error.
+Note that `stacks-block-time` will properly account for the context of an
+`at-block` expression. If the `at-block` sets the context to a block that is
+from before Clarity 4 has activated, attempting to use `stacks-block-time` in
+that context will result in a runtime error.
 
 - **Output**: `uint`
 - **Example**:
   ```clarity
-  (if (> block-time 1755820800)
+  (if (> stacks-block-time 1755820800)
     (print "after 2025-07-22")
     (print "before 2025-07-22"))
   ```

@@ -1,29 +1,30 @@
 # Preamble
 
-**SIP Number:** 033
+SIP Number: 033
 
-**Title:** Clarity Smart Contract Language, version 4
+Title: Clarity Smart Contract Language, version 4
 
-**Authors:**
-
+Author(s):
 - Adriano Di Luzio <adriano@bitcoinl2labs.com>
 - Brice Dobry <brice@hiro.so>
 - Marvin Janssen <marvin@ryder.id>
 - Jude Nelson <jude@stacks.org>
 
-**Consideration:** Technical
+Status: Draft
 
-**Type:** Consensus (hard fork)
+Consideration: Technical
 
-**Status:** Draft
+Type: Consensus
 
-**Created:** 2025-06-20
+Layer: Consensus (hard fork)
 
-**License:** CC0-1.0
+Created: 2025-06-20
 
-**Sign-off:**
+License: CC0-1.0
 
-**Discussions-To:**
+Sign-off:
+
+Discussions-To:
 https://forum.stacks.org/t/clarity-4-proposal-new-builtins-for-vital-ecosystem-projects/18266
 
 # Abstract
@@ -32,7 +33,7 @@ This SIP details Version 4 of the Clarity smart contract language, which
 introduces new operations to provide mechanisms for building more secure smart
 contracts on Stacks.
 
-# License and Copyright
+# Copyright
 
 This SIP is made available under the terms of the CC0 (Creative Commons Zero)
 license, available at https://opensource.org/licenses/CC0-1.0. This SIP’s

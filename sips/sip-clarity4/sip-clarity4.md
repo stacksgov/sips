@@ -564,11 +564,18 @@ sats) to the corresponding bitcoin address.
 
 ## Activation Height
 
-If the SIP passes, it will activate at **Bitcoin block TBD** (estimated as
-<month> <day> at <time> UTC).
+If the SIP passes, a Bitcoin block height will be selected to activate the new
+behavior, targeting 16:00 UTC on November 6, 2025.
 
 # Reference Implementations
 
-A reference implementation of the Clarity 4 language is in progress in pull
-request [#6516](https://github.com/stacks-network/stacks-core/pull/6516) in the
-`stacks-core` repository.
+A reference implementation of the Clarity 4 language is in progress in the
+`stacks-core` repository. At the time of this writing, the following PRs have
+been opened (additional PRs will be needed to complete the implementation):
+
+- [#6403: `contract-hash?`](https://github.com/stacks-network/stacks-core/pull/6403)
+- [#6436: `to-ascii?`](https://github.com/stacks-network/stacks-core/pull/6436)
+- [#6450: `current-contract`](https://github.com/stacks-network/stacks-core/pull/6450)
+- [#6478: `block-time`](https://github.com/stacks-network/stacks-core/pull/6478)
+- [#6516: contract post-conditions](https://github.com/stacks-network/stacks-core/pull/6516)
+- [#6570: rename `block-time` to `stacks-block-time`](https://github.com/stacks-network/stacks-core/pull/6570)

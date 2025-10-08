@@ -462,7 +462,7 @@ which is widely used for cryptographic operations. These functions are:
 
 - `secp256r1-recover?`
 
-  - **Input**: `(buff 32), (buff 65)`
+  - **Input**: `(buff 32), (buff 64)`
   - **Output**: `(response (buff 33) uint)`
   - **Signature**: `(secp256r1-recover? message-hash signature)`
   - **Description**: The `secp256r1-recover?` function recovers the public key
@@ -474,12 +474,12 @@ which is widely used for cryptographic operations. These functions are:
   - **Example**:
     ```clarity
     (secp256r1-recover? 0x033510403a646d23ee4f005061c2ca6af5da7c32c83758e8e9b6ac4cc1c2153c
-      0x9608dc164b76d2e19365ffa67b48981e441d323c3109718aee245d6ac8ccd21ddadadb94303c922c0d79d131ea59a0b6ba83e1157695db01189bb4b7e9f14b7200) ;; Returns (ok 0x037a6b62e3c8b14f1b5933f5d5ab0509a8e7d95a111b8d3b264d95bfa753b00296)
+      0x9608dc164b76d2e19365ffa67b48981e441d323c3109718aee245d6ac8ccd21ddadadb94303c922c0d79d131ea59a0b6ba83e1157695db01189bb4b7e9f14b72) ;; Returns (ok 0x037a6b62e3c8b14f1b5933f5d5ab0509a8e7d95a111b8d3b264d95bfa753b00296)
     ```
 
 - `secp256r1-verify`
 
-  - **Input**: `(buff 32), (buff 64) | (buff 65), (buff 33)`
+  - **Input**: `(buff 32), (buff 64), (buff 33)`
   - **Output**: `bool`
   - **Signature**: `(secp256r1-verify message-hash signature public-key)`
   - **Description**: The `secp256r1-verify` function verifies that the provided
@@ -491,9 +491,9 @@ which is widely used for cryptographic operations. These functions are:
   - **Example**:
     ```clarity
     (secp256r1-verify 0x033510403a646d23ee4f005061c2ca6af5da7c32c83758e8e9b6ac4cc1c2153c
-      0x9608dc164b76d2e19365ffa67b48981e441d323c3109718aee245d6ac8ccd21ddadadb94303c922c0d79d131ea59a0b6ba83e1157695db01189bb4b7e9f14b7200 0x037a6b62e3c8b14f1b5933f5d5ab0509a8e7d95a111b8d3b264d95bfa753b00296) ;; Returns true
+      0x9608dc164b76d2e19365ffa67b48981e441d323c3109718aee245d6ac8ccd21ddadadb94303c922c0d79d131ea59a0b6ba83e1157695db01189bb4b7e9f14b72 0x037a6b62e3c8b14f1b5933f5d5ab0509a8e7d95a111b8d3b264d95bfa753b00296) ;; Returns true
     (secp256r1-verify 0x0000000000000000000000000000000000000000000000000000000000000000
-      0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+      0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
       0x037a6b62e3c8b14f1b5933f5d5ab0509a8e7d95a111b8d3b264d95bfa753b00296) ;; Returns false
     ```
 

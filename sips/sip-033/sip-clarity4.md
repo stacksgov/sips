@@ -72,9 +72,8 @@ write secure and composable smart contracts. Specifically, it proposes:
    keyword will allow developers to easily access the timestamp of the block
    currently being processed, enabling time-based logic and features in their
    smart contracts. This is especially important for DeFi applications.
-5. **New secp256r1 signature primitives: `secp256r1-recover?` and
-   `secp256r1-verify`.** These functions provide on-chain support for the
-   secp256r1 curve, enabling public-key recovery from signatures and signature
+5. **New secp256r1 signature primitive: `secp256r1-verify`.** This function
+   provides on-chain support for the secp256r1 curve, enabling signature
    verification for applications that use secp256r1-based keys (WebAuthn for
    example).
 
@@ -457,25 +456,8 @@ that context will result in a runtime error.
 
 ## Secp256r1 Functions
 
-Clarity 4 introduces functions for working with the secp256r1 elliptic curve,
-which is widely used for cryptographic operations. These functions are:
-
-- `secp256r1-recover?`
-
-  - **Input**: `(buff 32), (buff 64)`
-  - **Output**: `(response (buff 33) uint)`
-  - **Signature**: `(secp256r1-recover? message-hash signature)`
-  - **Description**: The `secp256r1-recover?` function recovers the public key
-    used to sign the message whose SHA-256 hash is `message-hash` using the
-    provided `signature`. If the signature does not match the message hash, it
-    returns `(err u1)`. If the signature is invalid or malformed, it returns
-    `(err u2)`. The signature is expected to be 65 bytes (64 bytes of compact
-    signature data plus a recovery id in the final byte).
-  - **Example**:
-    ```clarity
-    (secp256r1-recover? 0x033510403a646d23ee4f005061c2ca6af5da7c32c83758e8e9b6ac4cc1c2153c
-      0x9608dc164b76d2e19365ffa67b48981e441d323c3109718aee245d6ac8ccd21ddadadb94303c922c0d79d131ea59a0b6ba83e1157695db01189bb4b7e9f14b72) ;; Returns (ok 0x037a6b62e3c8b14f1b5933f5d5ab0509a8e7d95a111b8d3b264d95bfa753b00296)
-    ```
+Clarity 4 introduces a new function to verify signatures for the secp256r1
+elliptic curve, which is widely used for cryptographic operations.
 
 - `secp256r1-verify`
 

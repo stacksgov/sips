@@ -6,10 +6,11 @@ Title: Clarity Smart Contract Language, version 4
 
 Author(s):
 
-- Adriano Di Luzio <adriano@bitcoinl2labs.com>
-- Brice Dobry <brice@hiro.so>
+- Brice Dobry <brice@stackslabs.com>
 - Marvin Janssen <marvin@ryder.id>
 - Jude Nelson <jude@stacks.org>
+- Rapha.btc <ra@fak.fun>
+- Adriano Di Luzio <adriano@bitcoinl2labs.com>
 
 Status: Draft
 

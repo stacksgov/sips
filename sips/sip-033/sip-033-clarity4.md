@@ -468,9 +468,9 @@ elliptic curve, which is widely used for cryptographic operations.
   - **Description**: The `secp256r1-verify` function verifies that the provided
     `signature` of the `message-hash` was produced by the private key
     corresponding to `public-key`. The `message-hash` is the SHA-256 hash of the
-    message. The `signature` may be 64 bytes (compact signature) or 65 bytes
-    including an optional recovery id. Returns `true` if the signature is valid
-    for the given `public-key` and message hash, otherwise returns `false`.
+    message. The `signature` must be 64 bytes (compact signature). Returns
+    `true` if the signature is valid for the given `public-key` and message
+    hash, otherwise returns `false`.
   - **Example**:
     ```clarity
     (secp256r1-verify 0x033510403a646d23ee4f005061c2ca6af5da7c32c83758e8e9b6ac4cc1c2153c

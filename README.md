@@ -45,6 +45,7 @@ may submit a SIP.
 * [SIP-027](./sips/sip-027/sip-027-non-sequential-multisig-transactions.md): Non-sequential Multisig Transactions
 * [SIP-028](./sips/sip-028/sip-028-sbtc_peg.md): Signer Criteria for sBTC, A Decentralized and Programmable Asset Backed 1:1 with BTC
 * [SIP-029](./sips/sip-029/sip-029-halving-alignment.md): Bootstrapping sBTC Liquidity and Nakamoto Signer Incentives
+* [SIP-031](./sips/sip-031/sip-031.md): Five-Year Stacks Growth Emissions
 
 ## How to Get Involved
 

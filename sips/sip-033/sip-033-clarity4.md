@@ -458,7 +458,8 @@ that context will result in a runtime error.
 ## Secp256r1 Functions
 
 Clarity 4 introduces a new function to verify signatures for the secp256r1
-elliptic curve, which is widely used for cryptographic operations.
+elliptic curve, which is widely used for cryptographic operations (e.g.
+WebAuthn/passkeys, FIDO, YubiKey).
 
 - `secp256r1-verify`
 
@@ -540,10 +541,10 @@ vote). The voting addresses are also shared below
 Solo stackers only can also vote by sending a bitcoin dust transaction (6000
 sats) to the corresponding bitcoin address.
 
-| Vote | Bitcoin | Stacks | ASCII Encoding | Msg        |
-| ---- | ------- | ------ | -------------- | ---------- |
-| yes  |         |        |                | yes-sip-33 |
-| no   |         |        |                | no-sip-33  |
+| Vote | Bitcoin                        | Stacks                              | ASCII Encoding                           | Msg        |
+| ---- | ------------------------------ | ----------------------------------- | ---------------------------------------- | ---------- |
+| yes  | 11111111111mdWK2VXcrA1ebz4vAVd | SP00000000001WPAWSDEDMQ0B9K6EAH8TPN | 000000000000000000007965732d7369702d3333 | yes-sip-33 |
+| no   | 111111111111ACW5wa4RwyeosCaEC9 | SP000000000006WVSDEDMQ0B9K6D2S0945  | 00000000000000000000006e6f2d7369702d3333 | no-sip-33  |
 
 ## Activation Height
 

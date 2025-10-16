@@ -9,6 +9,8 @@ Members:
 - j2p2 <i.digg.tech@gmail.com>
 - Friedger <mail@friedger.de>
 - Jesse Wiley <jesse@stacks.org>
+- Radu
+- Setzeus <jnajera1917@gmail.com>
 - Vlad <vlad@asigna.io>
 
 Discussions-to: https://github.com/stacksgov/sips
@@ -26,6 +28,10 @@ Created-by: SIP-000
 **Friedger**: Friedger is an entredeveloper based in Europe. He contributed to the Stacks ecosystem in various forms.
 
 **Jesse Wiley**: Jesse Wiley is a seasoned DevOps expert - he makes sure all systems are running smoothly and the right security considerations have been made.
+
+**Radu**: Radu is a testing expert with several years of experience in fuzz testing. He is co-creator of Rendezvous, the first fuzzer for Clarity smart contracts, and a core contributor to the Stacks blockchain. He has been building on Stacks for 4+ years and has contributed to multiple decentralized protocols, including PoX-related, DeFi, and GameFi projects.
+
+**Setzeus**: Setzeus is the founder of StrataLabs, a Bitcoin studio that consults L1 & L2s (such as Stacks) / launched a Bitcoin development environment (BitScript). Through his work at TrustMachines he's been hacking away on sBTC & is eager to continue contributing to the Stacks community in anyway.
 
 **Vlad**: CTO and co-founder of multiple Stacks and Bitcoin based projects, including Asigna, STX20, and sOrdinals. Contributor to the multisig SIP and its implementation, as well as to the Stacks ecosystem opensource projects.
 

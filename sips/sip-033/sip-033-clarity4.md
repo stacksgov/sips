@@ -517,7 +517,7 @@ deploy transaction.
 
 Users can vote to approve this SIP with either their locked/stacked STX or with
 unlocked/liquid STX, or both. The SIP voting page can be found at
-[stx.eco](https://stx.eco/).
+https://stx.is/clarity4vote.
 
 In line with prior SIPs, in order for this SIP to activate, the following
 criteria must be met:
@@ -532,10 +532,11 @@ voting on this SIP.
 
 All STX holders vote by sending Stacks dust to the corresponding Stacks address
 from the account where their Stacks are held (stacked or liquid). To simplify
-things, users can create their votes by visiting the [stx.eco](TBD) platform.
-Voting power is determined by a snapshot of the amount of STX (stacked and
-unstacked) at the block height at which the voting started (preventing the same
-STX from being transferred between accounts and used to effectively double
+things, users can create their votes by visiting the
+[ballot.gg](https://ballot.gg/4110d783-f95a-4aed-85eb-a0b97324bb3e/18PmM4YrmZeuQV4iwcEnxsV9kUi3VSVRdu)
+platform. Voting power is determined by a snapshot of the amount of STX (stacked
+and unstacked) at the block height at which the voting started (preventing the
+same STX from being transferred between accounts and used to effectively double
 vote). The voting addresses are also shared below
 
 Solo stackers only can also vote by sending a bitcoin dust transaction (6000

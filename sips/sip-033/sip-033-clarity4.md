@@ -25,6 +25,7 @@ Created: 2025-06-20
 License: CC0-1.0
 
 Sign-off:
+- Jesse Wiley <jesse@stacks.org>, Chairperson, Technical CAB
 
 Discussions-To:
 https://forum.stacks.org/t/clarity-4-proposal-new-builtins-for-vital-ecosystem-projects/18266

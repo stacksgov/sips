@@ -12,7 +12,7 @@ Author(s):
 - Rapha.btc <ra@fak.fun>
 - Adriano Di Luzio <adriano@bitcoinl2labs.com>
 
-Status: Draft
+Status: Activation-In-Progress
 
 Consideration: Technical
 
@@ -25,7 +25,7 @@ Created: 2025-06-20
 License: CC0-1.0
 
 Sign-off:
-- Jesse Wiley <jesse@stacks.org>, Chairperson, Technical CAB
+- Jesse Wiley <jesse@stacks.org>, Chairperson, Technical CAB: https://github.com/stacksgov/sips/blob/main/considerations/minutes/technical-cab/2025-10-06-sip-033.md
 
 Discussions-To:
 https://forum.stacks.org/t/clarity-4-proposal-new-builtins-for-vital-ecosystem-projects/18266

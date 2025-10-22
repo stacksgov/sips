@@ -6,10 +6,10 @@ SIP Number: 000-1
 Title: Stacks Improvement Proposal Process
 
 Author(s): 
-* Brice
+* Brice Dobry
 * HeroGamer
-* Jw
-* Jude
+* Jesse Wiley
+* Jude Nelson
 
 Status: Draft
 

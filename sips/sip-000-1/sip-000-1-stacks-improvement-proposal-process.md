@@ -5,25 +5,27 @@ SIP Number: 000-1
 
 Title: Stacks Improvement Proposal Process
 
-Author: 
+Author(s): 
 - Jw
 - Jude
 - Brice
 - HeroGamer
 
+Status: Draft
+
 Consideration: Governance 
 
 Type: Meta 
 
-Status: Ratified 
+Layer: NA
 
-Created: 2020-06-23 
+Created: 2025-10-22 
 
 License: BSD-2-Clause 
 
 Sign-off: tbc
 
-Discussions-To: https://github.com/stacksgov/sips 
+Discussions-To: https://github.com/stacksgov/sips/issues/228
 
 Replaces: SIP-000
 
@@ -46,6 +48,10 @@ operational procedures. The set of SIPs that have been ratified shall
 sufficiently describe the design, governance, and operationalization of the
 Stacks blockchain, as well as the means by which future changes to its official
 design, implementation, operation, and governance may be incorporated.
+
+This SIP-000-1 replaces SIP-000 to update and clarify the governance and operational framework of the Stacks Improvement Proposal (SIP) process. After several years of firsthand operation and feedback from SIP authors, Editors, CAB members, and the Steering Committee, this revision incorporates procedural refinements to improve transparency, consistency, and accountability across the SIP lifecycle.
+
+Key updates include clearer authoring and submission rules, standardized CAB engagement requirements, defined voting procedures and minimum timelines, explicit handling of hard fork SIPs, and strengthened maintenance responsibilities for the Steering Committee and Editors. These changes aim to make the SIP process more predictable, auditable, and efficient while preserving its community-driven and open-governance foundation.
 
 # License and Copyright
 

@@ -25,6 +25,8 @@ Sign-off: tbc
 
 Discussions-To: https://github.com/stacksgov/sips 
 
+Replaces: SIP-000
+
 # Abstract
 
 A Stacks Improvement Proposal (SIP) is a design document that provides

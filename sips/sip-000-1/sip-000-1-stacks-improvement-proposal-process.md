@@ -1,7 +1,7 @@
 
 # Preamble
 
-SIP Number: 000_1
+SIP Number: 000-1
 
 Title: Stacks Improvement Proposal Process
 

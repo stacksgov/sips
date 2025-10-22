@@ -1,11 +1,15 @@
 
 # Preamble
 
-SIP Number: 000
+SIP Number: 000-1
 
 Title: Stacks Improvement Proposal Process
 
-Author: Jude Nelson <jude@stacks.org>, Ken Liao <yukanliao@gmail.com>
+Author: 
+- Jw
+- Jude
+- Brice
+- HeroGamer
 
 Consideration: Governance 
 
@@ -17,7 +21,7 @@ Created: 2020-06-23
 
 License: BSD-2-Clause 
 
-Sign-off: Jude Nelson <jude@stacks.org>, Technical Steering Committee Chair
+Sign-off: tbc
 
 Discussions-To: https://github.com/stacksgov/sips 
 

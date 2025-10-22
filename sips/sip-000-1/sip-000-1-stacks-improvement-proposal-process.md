@@ -6,10 +6,10 @@ SIP Number: 000-1
 Title: Stacks Improvement Proposal Process
 
 Author(s): 
-- Jw
-- Jude
-- Brice
-- HeroGamer
+* Brice
+* HeroGamer
+* Jw
+* Jude
 
 Status: Draft
 
@@ -49,7 +49,7 @@ sufficiently describe the design, governance, and operationalization of the
 Stacks blockchain, as well as the means by which future changes to its official
 design, implementation, operation, and governance may be incorporated.
 
-This SIP-000-1 replaces SIP-000 to update and clarify the governance and operational framework of the Stacks Improvement Proposal (SIP) process. After several years of firsthand operation and feedback from SIP authors, Editors, CAB members, and the Steering Committee, this revision incorporates procedural refinements to improve transparency, consistency, and accountability across the SIP lifecycle.
+This SIP-000-1 replaces SIP-000 to update and clarify the governance and operational framework of the SIP process. After several years of firsthand operation and feedback from SIP authors, Editors, CAB members, and the Steering Committee, this revision incorporates procedural refinements to improve transparency, consistency, and accountability across the SIP lifecycle.
 
 Key updates include clearer authoring and submission rules, standardized CAB engagement requirements, defined voting procedures and minimum timelines, explicit handling of hard fork SIPs, and strengthened maintenance responsibilities for the Steering Committee and Editors. These changes aim to make the SIP process more predictable, auditable, and efficient while preserving its community-driven and open-governance foundation.
 
@@ -128,9 +128,10 @@ Each SIP shall contain the following sections, in the given order:
       a SIP; its author does not provide it.
     - _Title_. A concise description of the SIP, no more than 20 words long.
     - _Author_. A list of names and email addresses of the SIP's author(s).
+    - _Status_. This SIP's point in the SIP workflow (see below).
     - _Consideration_. What class of SIP this is (see below).
     - _Type_. The SIP track for consideration (see below).
-    - _Status_. This SIP's point in the SIP workflow (see below).
+    - _Layer_. The logical layer of the Stacks blockchain affected (see below).
     - _Created_. The ISO 8601 date when this SIP was created.
     - _License_. The content license for the SIP (see below for permitted
       licenses).
@@ -138,22 +139,11 @@ Each SIP shall contain the following sections, in the given order:
       ratify the SIP. This field is not filled in entirely until ratification,
       but is incrementally filled in as the SIP progresses through the ratification
       process.
-- Additional SIP fields, which are sometimes required, include:
-    - _Layer_. The logical layer of the Stacks blockchain affected. Must be one
-    - of the following:
-        - _Consensus (soft fork)_. For backwards-compatible proposals for
-          transaction-processing.
-        - _Consensus (hard fork)_. For backwards-incompatible proposals for
-          transaction-processing.
-        - _Peer Services_. For proposals to the peer-to-peer network protocol
-          stack.
-        - _API/RPC_. For proposals to the Stacks blockchain's official
-          programmatic interfaces.
-        - _Traits_. For proposals for new standardized Clarity trait definitions.
-        - _Applications_. For proposals for standardized application protocols
-          that interface with the Stacks blockchain.
     - _Discussions-To_. A mailing list where ongoing discussion of the SIP takes
       place.
+      
+- Additional SIP fields, which are sometimes required, include:
+
     - _Comments-Summary_. The comments summary tone.
     - _Comments-URI_. A link to the Stacks blockchain wiki for comments.
     - _License-Code_. Abbreviation for code under a different license than the SIP
@@ -163,6 +153,7 @@ Each SIP shall contain the following sections, in the given order:
     - _Requires_. A list of SIPs that must be implemented prior to this SIP.
     - _Replaces_. A list of SIPs that this SIP replaces.
     - _Superceded-By_. A list of SIPs that replace this SIP.
+
 
 - _Abstract_. This section shall provide a high-level summary of the proposed
   improvement. It shall not exceed 5000 words.
@@ -223,69 +214,7 @@ directory, and must be named as `SIP-XXXX-YYY.ext`, where:
 - `YYY` is the serial number of the file, starting with 1,
 - `.ext` is the file extension.
 
-## SIP Types
-
-The types of SIPs are as follows:
-
-- _Consensus_. This SIP type means that all Stacks blockchain implementations
-  would need to adopt this SIP to remain compatible with one another. If this is
-the SIP type, then the SIP preamble must have the Layer field set to either
-_Consensus (soft fork)_ or _Consensus (hard fork)_.
-- _Standard_. This SIP type means that the proposed change affects one or more
-  implementations, but does not affect network consensus. If this is the SIP
-type, then the SIP preamble must have the Layer field set to indicate which
-aspect(s) of the Stacks blockchain are affected by the proposal.
-- _Operation_. This SIP type means that the proposal concerns the operation of the
-  Stacks blockchain -- in particular, it concerns node operators and miners.
-The difference between this SIP type and the Standard type is that this type
-does not change any existing protocols.
-- _Meta_. This SIP type means that the proposal concerns the SIP ratification
-  process. Such a SIP is a proposal to change the way SIPs are handled.
-- _Informational_. This is a SIP type that provides useful information, but does
-  not require any action to be taken on the part of any user.
-
-New types of SIPs may be created with the ratification of a Meta-type SIP under
-the governance consideration (see below). SIP types may not be removed.
-
-## SIP Considerations
-
-A SIP's consideration determines the particular steps needed to ratify the SIP
-and incorporate it into the Stacks blockchain. Different SIP considerations have
-different criteria for ratification. A SIP can have more than one consideration,
-since a SIP may need to be vetted by different users with different domains of
-expertise.
-
-
-- _Technical_. The SIP is technical in nature, and must be vetted by users with
-  the relevant technical expertise.
-- _Economic_. The SIP concerns the blockchain's token economics. This not only
-  includes the STX token, but also any on-chain tokens created within smart
-contracts. SIPs that are concerned with fundraising methods, grants, bounties,
-and so on also belong in this SIP track.
-- _Governance_. The SIP concerns the governance of the Stacks blockchain,
-  including the SIP process. This includes amendments to the SIP Ratification
-Process, as well as structural considerations such as the creation (or removal)
-of various committees, editorial bodies, and formally recognized special
-interest groups. In addition, governance SIPs may propose changes to the way by
-which committee members are selected.
-- _Ethics_. This SIP concerns the behaviors of office-holders in the SIP
-  Ratification Process that can affect its widespread adoption.  Such SIPs
-describe what behaviors shall be deemed acceptable, and which behaviors shall be
-considered harmful to this end (including any remediation or loss of privileges
-that misbehavior may entail).  SIPs that propose formalizations of ethics like
-codes of conduct, procedures for conflict resolution, criteria for involvement
-in governance, and so on would belong in this SIP consideration.
-- _Diversity_. This SIP concerns proposals to grow the set of users, with an
-  emphasis on including users who are traditionally not involved with
-open-source software projects. SIPs that are concerned with evangelism,
-advertising, outreach, and so on must have this consideration.
-
-Each SIP consideration shall have a dedicated Advisory Board that ultimately
-vets SIPs under their consideration for possible ratification in a timely
-fashion (see below).  New considerations may be created via the ratification of
-a Meta-type SIP under the governance consideration.
-
-## SIP Workflow
+## SIP Status
 
 As a SIP is considered for ratification, it passes through multiple statuses as
 determined by one or more committees (see next section). A SIP may have exactly
@@ -328,13 +257,197 @@ state once the SIP(s) that replace it have been processed.
   may not be ratified, and may not be re-submitted as a Draft.  It must be
 re-assigned a SIP number if taken up again.
     
-
 The act of ratifying a SIP is the act of transitioning it to the Ratified status
 -- that is, moving it from Draft to Accepted, from Accepted to Recommended, and
 Recommended to Activation-In-Progress, and from Activation-In-Progress to
 Ratified, all without the SIP being transitioned to Rejected, Obsolete,
 Replaced, or Withdrawn status.  A SIP's current status is recorded in its Status
 field in its preamble.
+
+## SIP Considerations
+
+A SIP's consideration determines the particular steps needed to ratify the SIP
+and incorporate it into the Stacks blockchain. Different SIP considerations have
+different criteria for ratification. A SIP can have more than one consideration,
+since a SIP may need to be vetted by different users with different domains of
+expertise.
+
+
+- _Technical_. The SIP is technical in nature, and must be vetted by users with
+  the relevant technical expertise.
+- _Economic_. The SIP concerns the blockchain's token economics. This not only
+  includes the STX token, but also any on-chain tokens created within smart
+contracts. SIPs that are concerned with fundraising methods, grants, bounties,
+and so on also belong in this SIP track.
+- _Governance_. The SIP concerns the governance of the Stacks blockchain,
+  including the SIP process. This includes amendments to the SIP Ratification
+Process, as well as structural considerations such as the creation (or removal)
+of various committees, editorial bodies, and formally recognized special
+interest groups. In addition, governance SIPs may propose changes to the way by
+which committee members are selected.
+- _Ethics_. This SIP concerns the behaviors of office-holders in the SIP
+  Ratification Process that can affect its widespread adoption.  Such SIPs
+describe what behaviors shall be deemed acceptable, and which behaviors shall be
+considered harmful to this end (including any remediation or loss of privileges
+that misbehavior may entail).  SIPs that propose formalizations of ethics like
+codes of conduct, procedures for conflict resolution, criteria for involvement
+in governance, and so on would belong in this SIP consideration.
+- _Diversity_. This SIP concerns proposals to grow the set of users, with an
+  emphasis on including users who are traditionally not involved with
+open-source software projects. SIPs that are concerned with evangelism,
+advertising, outreach, and so on must have this consideration.
+
+Each SIP consideration shall have a dedicated Advisory Board that ultimately
+vets SIPs under their consideration for possible ratification in a timely
+fashion (see below).  New considerations may be created via the ratification of
+a Meta-type SIP under the governance consideration.
+
+## SIP Types
+
+The types of SIPs are as follows:
+
+- _Consensus_. This SIP type means that all Stacks blockchain implementations
+  would need to adopt this SIP to remain compatible with one another. If this is
+the SIP type, then the SIP preamble must have the Layer field set to either
+_Consensus (soft fork)_ or _Consensus (hard fork)_.
+- _Standard_. This SIP type means that the proposed change affects one or more
+  implementations, but does not affect network consensus. If this is the SIP
+type, then the SIP preamble must have the Layer field set to indicate which
+aspect(s) of the Stacks blockchain are affected by the proposal.
+- _Operation_. This SIP type means that the proposal concerns the operation of the
+  Stacks blockchain -- in particular, it concerns node operators and miners.
+The difference between this SIP type and the Standard type is that this type
+does not change any existing protocols.
+- _Meta_. This SIP type means that the proposal concerns the SIP ratification
+  process. Such a SIP is a proposal to change the way SIPs are handled.
+- _Informational_. This is a SIP type that provides useful information, but does
+  not require any action to be taken on the part of any user.
+
+New types of SIPs may be created with the ratification of a Meta-type SIP under
+the governance consideration (see below). SIP types may not be removed.
+
+## SIP Layers
+
+The layers of SIPs are as follows:
+
+- _Consensus (soft fork)_. For backwards-compatible proposals for
+          transaction-processing.
+- _Consensus (hard fork)_. For backwards-incompatible proposals for
+          transaction-processing.
+- _Peer Services_. For proposals to the peer-to-peer network protocol
+          stack.
+- _API/RPC_. For proposals to the Stacks blockchain's official
+          programmatic interfaces.
+- _Traits_. For proposals for new standardized Clarity trait definitions.
+- _Applications_. For proposals for standardized application protocols
+          that interface with the Stacks blockchain.
+
+## SIP lifecycle
+
+The lifecycle of a SIP is summarized in the flow-chart below:
+
+```
+    ------------------
+    |     Draft      |  <-------------------------. Revise and resubmit
+    ------------------                            |
+           |                             --------------------
+    Submit to SIP Editor ------------->  |     Rejected     |
+           |                             --------------------
+           |                                      ^
+           V                                      |
+    ------------------                            |
+    |   Accepted     | -------------------------/ | /--------------------------------.
+    ------------------                            |                                  |
+           |                             --------------------                        |
+    Review by Consideration ---------->  |     Rejected     |                        | 
+    Advisory Board(s)                    --------------------                        |
+           |                                      ^                                  |
+           V                                      |                                  |
+    -------------------------                     |                                  |
+    |      Recommended       | -----------------/ | /------------------------------->|
+    -------------------------                     |                                  |
+           |                              --------------------                       |
+    Vote by the Steering    ----------->  |    Rejected      |                       |
+    Committee for activation              --------------------                       |
+           |                                      ^                                  |
+           V                                      |                                  |
+    --------------------------                    |                                  |
+    | Activation-in-Progress | -----------------/ | /------------------------------->|
+    --------------------------                    |                                  |
+           |                             ---------------------                       |
+    All activation  ------------------>  |     Rejected      |                       |
+    criteria are met       |             ---------------------  ------------------   |
+           |               |----------------------------------> |    Obsolete    |   |
+           V               |      ---------------------         ------------------   |
+    ------------------     *--->  |     Replaced      | --------------->|<-----------*
+    |   Ratified     |            ---------------------                 | 
+    ------------------                                                  V
+                                                                -------------------
+                                                                |    Withdrawn    |
+                                                                ------------------- 
+```
+
+When a SIP is transitioned to Rejected, it is not deleted, but is preserved in
+the SIP repository so that it can be referenced as related or prior work by
+other SIPs. Once a SIP is Rejected, it may be re-submitted as a Draft at a later
+date. SIP Editors may decide how often to re-consider rejected SIPs as an
+anti-spam measure, but the Steering Committee and Consideration Advisory Boards
+may opt to independently re-consider rejected SIPs at their own discretion.
+
+Once a SIP has been moved to Ratified status, the only changes that may be made
+to it are fixing errata and adding supplementary materials.  Substantial changes
+to the SIP's body should be done as a separate SIP.
+
+### SIP Authoring Rules
+
+- SIP pull requests **must be submitted from a fork** of the SIPs repository. Direct branches in the main SIP repository are prohibited, except for a small group of maintainers explicitly granted override privileges.
+  
+- SIP authors may not resolve review comments on their own submissions unless a substantive change or clear justification is provided. Resolution of comments should be observable to reviewers and CABs.
+
+### Expectation of Minimum Timelines And Rules
+
+- Define explicit minimum periods:
+    - Draft open in SIP Repo as PR for comments and SIP Editors editing: 2 weeks
+    - CAB review: 2 week
+    - Final CAB comments resolution: 2 weeks
+      
+- A public vote cannot begin until:
+    - All comments are addressed
+    - The SIP is approved by relevant CAB(s) and SIP Editor, CAB chairs and Editor to add that sign-off themselves in the SIP as comment suggestion
+
+This establishes a minimum of **Minimum 6 weeks** from draft being opened to the earliest possible public vote. Longer timelines are encouraged for complex proposals.
+
+- Minimum wait time before public vote to allow for comprehensive discussion and resolution of comments. If all comments have been addressed after CAB review, it could be agreed to host public vote earlier, however it should be expected, it all depends on the comments resolution. Therefore it is critical for the SIP author(s) to be proactive during the review period.
+
+- Emergency SIPs may bypass wait times under exceptional circumstances.
+
+### Documentation, Repo Maintancne, Merging into Main
+
+- SIPs must conform to the template and formatting rules defined in SIP-000. SIP template.md can be found https://github.com/stacksgov/sips/tree/main/sips
+- SIPs must be written in plain language. Marketing claims or promotional material are not permitted in the main SIP text. Such material may be provided in supplementary reference documents.
+- SIPs can only be merged into Main when:
+    - the SIP has received all relevant CABs sign-offs
+    - relevant CABs Minutes submitted and merged
+    - Sign-off from a Steering Committee member
+    - For SIPs that have public vote, typically Consensus breaking SIPs, "Activation Status" (Voting Results) must be added to SIP text which the numbers must have been verified, any verification script attached
+
+### Hard Fork SIPs
+
+For SIPs that involve consensus changes or hard forks:
+
+- A **dedicated release branch** must be created for the hard fork.
+- Only milestone changes relevant to that release may be merged.
+- Changes unrelated to the hard fork must not be introduced via this branch.
+
+### SIP Versioning and Replacement Update Policy
+
+- All SIPs except for SIP-000 to adopt Replacement Model. SIP-000 will be an outlier, since it defines the process by which all over sips must adhere.
+
+- The SIP that is replaced by must add the field to Preamble "Superceded-By: SIP-XYZ", and the new SIP that is replacing old SIP must the field in Preamable "Replaces: SIP-XYZ"
+
+- SIP-000 to take the approach of adding -1 increment such as SIP-000-1, SIP-000-2 for updating the SIP process.
+
+- Replacing SIP-XYZ with another SIP-XYZ or SIP-XYZ-1, must contain the complete, definitive text, it can't just be a list of changes with back-pointers to the old SIP-000.
 
 ## SIP Committees
 
@@ -720,62 +833,6 @@ Conduct.
 Newly-Accepted SIPs, new SIP Editor recruitment, and SIP Editor retirement shall
 be submitted as pull requests by SIP Editors to the SIP repository.
 
-## SIP Workflow
-
-The lifecycle of a SIP is summarized in the flow-chart below:
-
-```
-    ------------------
-    |     Draft      |  <-------------------------. Revise and resubmit
-    ------------------                            |
-           |                             --------------------
-    Submit to SIP Editor ------------->  |     Rejected     |
-           |                             --------------------
-           |                                      ^
-           V                                      |
-    ------------------                            |
-    |   Accepted     | -------------------------/ | /--------------------------------.
-    ------------------                            |                                  |
-           |                             --------------------                        |
-    Review by Consideration ---------->  |     Rejected     |                        | 
-    Advisory Board(s)                    --------------------                        |
-           |                                      ^                                  |
-           V                                      |                                  |
-    -------------------------                     |                                  |
-    |      Recommended       | -----------------/ | /------------------------------->|
-    -------------------------                     |                                  |
-           |                              --------------------                       |
-    Vote by the Steering    ----------->  |    Rejected      |                       |
-    Committee for activation              --------------------                       |
-           |                                      ^                                  |
-           V                                      |                                  |
-    --------------------------                    |                                  |
-    | Activation-in-Progress | -----------------/ | /------------------------------->|
-    --------------------------                    |                                  |
-           |                             ---------------------                       |
-    All activation  ------------------>  |     Rejected      |                       |
-    criteria are met       |             ---------------------  ------------------   |
-           |               |----------------------------------> |    Obsolete    |   |
-           V               |      ---------------------         ------------------   |
-    ------------------     *--->  |     Replaced      | --------------->|<-----------*
-    |   Ratified     |            ---------------------                 | 
-    ------------------                                                  V
-                                                                -------------------
-                                                                |    Withdrawn    |
-                                                                ------------------- 
-```
-
-When a SIP is transitioned to Rejected, it is not deleted, but is preserved in
-the SIP repository so that it can be referenced as related or prior work by
-other SIPs. Once a SIP is Rejected, it may be re-submitted as a Draft at a later
-date. SIP Editors may decide how often to re-consider rejected SIPs as an
-anti-spam measure, but the Steering Committee and Consideration Advisory Boards
-may opt to independently re-consider rejected SIPs at their own discretion.
-
-Once a SIP has been moved to Ratified status, the only changes that may be made
-to it are fixing errata and adding supplementary materials.  Substantial changes
-to the SIP's body should be done as a separate SIP.
-
 ## Public Venues for Conducting Business
 
 The canonical set of SIPs in all state shall be recorded in the same medium that
@@ -841,6 +898,10 @@ process.
 [4] https://www.zfnd.org/governance/
 
 [5] https://debian-handbook.info/browse/stable/sect.debian-internals.html
+
+# Backwards Compatibility
+
+NA
 
 # Activation
 

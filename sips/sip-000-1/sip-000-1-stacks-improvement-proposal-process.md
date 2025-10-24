@@ -404,6 +404,17 @@ to the SIP's body should be done as a separate SIP.
   
 - SIP authors may not resolve review comments on their own submissions unless a substantive change or clear justification is provided. Resolution of comments should be observable to reviewers and CABs.
 
+### Post-CAB Vote Updates
+
+- Once a CAB vote concludes, the SIP is considered approved in its voted form.
+
+- However, minor updates may still be made after the CAB vote and before merge under the following conditions:
+    - The changes are editorial or implementation-detail only — i.e. they do not alter the SIP’s intent, semantics, or functional behavior as approved.
+    - Any such change must be shared in the relevant CAB communication channel(s), and the diff must be visible in the PR for auditability.
+
+- If any CAB member believes the change alters meaning, a CAB re-vote must be called.
+- The CAB Chair should note such updates in the meeting Minutes and/or SIP PR discussion for record-keeping.
+
 ### Expectation of Minimum Timelines And Rules
 
 - Define explicit minimum periods:

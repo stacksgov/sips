@@ -432,7 +432,7 @@ This establishes a minimum of **Minimum 6 weeks** from draft being opened to the
 
 - Emergency SIPs may bypass wait times under exceptional circumstances.
 
-### Documentation, Repo Maintancne, Merging into Main
+### Documentation, Repo Maintenance, Merging into Main
 
 - SIPs must conform to the template and formatting rules defined in SIP-000. SIP template.md can be found https://github.com/stacksgov/sips/tree/main/sips
 - SIPs must be written in plain language. Marketing claims or promotional material are not permitted in the main SIP text. Such material may be provided in supplementary reference documents.
@@ -454,7 +454,7 @@ For SIPs that involve consensus changes or hard forks:
 
 - All SIPs except for SIP-000 to adopt Replacement Model. SIP-000 will be an outlier, since it defines the process by which all over sips must adhere.
 
-- The SIP that is replaced by must add the field to Preamble "Superceded-By: SIP-XYZ", and the new SIP that is replacing old SIP must the field in Preamable "Replaces: SIP-XYZ"
+- The SIP that is replaced by must add the field to Preamble "Superceded-By: SIP-XYZ", and the new SIP that is replacing old SIP must the field in Preamble "Replaces: SIP-XYZ"
 
 - SIP-000 to take the approach of adding -1 increment such as SIP-000-1, SIP-000-2 for updating the SIP process.
 

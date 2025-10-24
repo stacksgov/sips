@@ -8,7 +8,7 @@ Title: Stacks Improvement Proposal Process
 Author(s): 
 * Brice Dobry
 * HeroGamer
-* Jesse Wiley
+* Jesse Wiley (jesse@stacks.org)
 * Jude Nelson
 
 Status: Draft

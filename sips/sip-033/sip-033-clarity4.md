@@ -26,6 +26,7 @@ License: CC0-1.0
 
 Sign-off:
 - Jesse Wiley <jesse@stacks.org>, Chairperson, Technical CAB: https://github.com/stacksgov/sips/blob/main/considerations/minutes/technical-cab/2025-10-06-sip-033.md
+- werner.btc <werner@trustmachines.co>, SIP Editor, Editors
 
 Discussions-To:
 https://forum.stacks.org/t/clarity-4-proposal-new-builtins-for-vital-ecosystem-projects/18266

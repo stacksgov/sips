@@ -553,6 +553,13 @@ sats) to the corresponding bitcoin address.
 If the SIP passes, a Bitcoin block height will be selected to activate the new
 behavior, targeting 16:00 UTC on November 6, 2025.
 
+### Note (2025-11-03)
+
+Due to an issue identified in the late stages of testing before the release, the
+activation height has been postponed to Bitcoin block height 923,222, targeting
+16:00 UTC on November 11, 2025 to ensure that all network participants have
+sufficient time to upgrade their stacks-node software.
+
 # Reference Implementations
 
 A reference implementation of the Clarity 4 language is in progress in the

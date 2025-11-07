@@ -428,7 +428,7 @@ to the SIP's body should be done as a separate SIP.
 
 This establishes a minimum of **Minimum 6 weeks** from draft being opened to the earliest possible public vote. Longer timelines are encouraged for complex proposals.
 
-- Minimum wait time before public vote to allow for comprehensive discussion and resolution of comments. If all comments have been addressed after CAB review, it could be agreed to host public vote earlier, however it should be expected, it all depends on the comments resolution. Therefore it is critical for the SIP author(s) to be proactive during the review period.
+- Minimum wait time before public vote to allow for comprehensive discussion and resolution of comments. If all comments have been addressed after CAB review, it could be agreed to host public vote earlier, however it should not be expected, it all depends on the comments resolution. Therefore it is critical for the SIP author(s) to be proactive during the review period.
 
 - Emergency SIPs may bypass wait times under exceptional circumstances.
 

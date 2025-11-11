@@ -561,6 +561,28 @@ activation height has been postponed to Bitcoin block height 923,222, targeting
 16:00 UTC on November 11, 2025 to ensure that all network participants have
 sufficient time to upgrade their stacks-node software.
 
+## Activation Status
+
+At the end of Bitcoin block height 921,445, the following vote was recorded: **A total of 209,211,338 STX participated, with 209,211,088 STX (99.999881%) voting 'Yes' and 250 STX (0.000119%) voting 'No'.**
+
+A breakdown of the onchain vote is as follows:
+- For STX locked in stacking, a total of 206,433,235 STX participated.
+     - Of this, 206,433,235 STX (100%) voted 'Yes'.
+     - while 0 STX (0%) voted 'No'.
+- For unlocked STX, a total of 2,778,103 STX participated.
+     - Of this, 2,777,853 STX (99.991001%) voted 'Yes'.
+     - while 250 STX (0.008999%) voted 'No'.
+
+Total of 185 addresses participated, a breakdown is as follows:
+- Via Ballot.gg website: 79 addresses
+- STX Dust Transactions: 36 addresses
+- Bitcoin Address Votes: 70 addresses
+
+A copy of the scripts used to tabulate the results can be found [here](https://github.com/stacksgov/sips/tree/main/sips/sip-033)
+
+### Note (2025-11-11)
+Raja from Blocksurvey, the developer of the voting platform ballot.gg, initiated one vote of 250 STX to verify that the “No” option was functioning correctly via STX dust transactions (1 out of 36 total transactions). This vote was cast solely for testing purposes.
+
 # Reference Implementations
 
 A reference implementation of the Clarity 4 language is in progress in the

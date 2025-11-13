@@ -578,7 +578,7 @@ Total of 185 addresses participated, a breakdown is as follows:
 - STX Dust Transactions: 36 addresses
 - Bitcoin Address Votes: 70 addresses
 
-A copy of the scripts used to tabulate the results can be found [here](https://github.com/stacksgov/sips/tree/main/sips/sip-033)
+The open-source Ballot.gg repository, which includes the tally process and the audit script used to process and verify the results, can be found here: https://github.com/BlockSurvey/ballot/tree/main?tab=readme-ov-file#poll-results-auditor
 
 ### Note (2025-11-11)
 Raja from Blocksurvey, the developer of the voting platform ballot.gg, initiated one vote of 250 STX to verify that the “No” option was functioning correctly via STX dust transactions (1 out of 36 total transactions). This vote was cast solely for testing purposes.

@@ -2,7 +2,7 @@
 
 SIP Number: XXX  
 Title: Standard for Multi-Party Agent Coordination  
-Author: [Author Name] (<email@example.com>)  
+Author: [Kwame Bryan] (<kwame.bryan@gmail.com>)  
 Consideration: Technical  
 Type: Standard  
 Status: Draft  

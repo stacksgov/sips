@@ -1,362 +1,637 @@
-;; SIP-XXX Agent Coordination Contract
-;; This contract implements the core logic of SIP-XXX: proposing intents, collecting acceptances, and state transitions.
+;; ERC-8001 Agent Coordination Protocol - Stacks Implementation
 ;;
-;; Constants (status codes and error codes)
-(define-constant NONE u0)
-(define-constant PROPOSED u1)
-(define-constant READY u2)
-(define-constant EXECUTED u3)
-(define-constant CANCELLED u4)
-(define-constant EXPIRED u5)
+;; Trustless multi-party coordination for AI agents and humans.
+;; Flow: PROPOSE - ACCEPT (signatures) - EXECUTE or CANCEL
+;;
+;; Clarity 3 (uses block-height for expiry)
+;; Block time: ~10 min. 1 hour = 6 blocks, 1 day = 144 blocks
 
-(define-constant ERR_UNAUTHORISED u401)          ;; Caller is not authorised to perform this action (e.g., not the initiator)
-(define-constant ERR_NOT_FOUND u404)             ;; Specified intent not found
-(define-constant ERR_INVALID_STATE u405)         ;; Operation not allowed in current state (e.g., accepting an already executed intent)
-(define-constant ERR_INVALID_SIGNATURE u406)     ;; Provided signature did not verify correctly
-(define-constant ERR_DUPLICATE_PARTICIPANT u407) ;; Duplicate participant in list (violates uniqueness)
-(define-constant ERR_NOT_PARTICIPANT u408)       ;; Caller not in participants list
-(define-constant ERR_ALREADY_ACCEPTED u409)      ;; This participant’s acceptance already recorded
-(define-constant ERR_EXPIRED u410)               ;; Intent or acceptance has expired, action not allowed
-(define-constant ERR_NONCE_NOT_HIGHER u411)      ;; Nonce provided is not higher than the initiator’s previous nonce
-(define-constant ERR_INVALID_PARAMS u412)        ;; General invalid parameters (e.g., missing agent in list, unsorted list in strict implementation)
+;; =============================================================================
+;; CONSTANTS
+;; =============================================================================
 
-;; Data maps
-(define-map intents ((intent-hash (buff 32)))
-    (
-        (agent principal)               ;; initiator of the intent
-        (expiry uint)                   ;; expiration time for the intent
-        (nonce uint)                    ;; nonce of the intent (for initiator)
-        (coord-type (buff 32))          ;; coordination type identifier
-        (coord-value uint)              ;; coordination value field
-        (participants (list 100 principal))  ;; list of participants' principals (unique, sorted)
-        (status uint)                   ;; current status code of the intent
-        (accept-count uint)             ;; how many acceptances have been collected
-    )
+;; Coordination States
+(define-constant STATE_NONE u0)
+(define-constant STATE_PROPOSED u1)
+(define-constant STATE_READY u2)
+(define-constant STATE_EXECUTED u3)
+(define-constant STATE_CANCELLED u4)
+(define-constant STATE_EXPIRED u5)
+
+;; Error Codes
+(define-constant ERR_UNAUTHORIZED (err u100))
+(define-constant ERR_NOT_FOUND (err u101))
+(define-constant ERR_INVALID_STATE (err u102))
+(define-constant ERR_INVALID_SIGNATURE (err u103))
+(define-constant ERR_NOT_PARTICIPANT (err u104))
+(define-constant ERR_ALREADY_ACCEPTED (err u105))
+(define-constant ERR_INTENT_EXPIRED (err u106))
+(define-constant ERR_NONCE_TOO_LOW (err u107))
+(define-constant ERR_INVALID_PARTICIPANTS (err u108))
+(define-constant ERR_ACCEPTANCE_EXPIRED (err u109))
+(define-constant ERR_PAYLOAD_MISMATCH (err u110))
+(define-constant ERR_SERIALIZATION_FAILED (err u111))
+(define-constant ERR_DUPLICATE_INTENT (err u112))
+
+;; SIP-018 Structured Data Signing
+(define-constant SIP018_PREFIX 0x534950303138)
+(define-constant DOMAIN_NAME "ERC-8001-Agent-Coordination")
+(define-constant DOMAIN_VERSION "1")
+(define-constant MSG_TYPE_INTENT "AgentIntent")
+(define-constant MSG_TYPE_ACCEPTANCE "AcceptanceAttestation")
+
+;; =============================================================================
+;; DATA MAPS
+;; =============================================================================
+
+(define-map intents
+  { intent-hash: (buff 32) }
+  {
+    agent: principal,
+    payload-hash: (buff 32),
+    expiry: uint,
+    nonce: uint,
+    coordination-type: (buff 32),
+    coordination-value: uint,
+    participants: (list 20 principal),
+    status: uint,
+    accept-count: uint
+  }
 )
 
-(define-map last-nonce ((agent principal)) ((nonce uint)))  ;; tracks the latest nonce used by each initiator
-
-(define-map acceptances ((intent-hash (buff 32)) (participant principal)) ((accept-expiry uint)))
-
-;; Private helper: convert a principal to a 21-byte buffer (version byte + 20-byte hash)
-(define-private (principal->bytes (p principal))
-    (let ((res (principal-destruct? p)))
-        (match res
-            err (unwrap-panic res)   ;; principal-destruct? only errors if principal is invalid; unwrap-panic triggers if so
-            ok-data
-                (let ((version (tuple-get ok-data "version")) (hash-bytes (tuple-get ok-data "hash-bytes")))
-                    ;; concatenate version and hash (both buffers) to produce 21-byte representation
-                    (concat version hash-bytes)
-                )
-        )
-    )
+(define-map agent-nonces
+  { agent: principal }
+  uint
 )
 
-;; Private helper: check if a list of principals contains a given principal
-(define-private (contains? (plist (list 100 principal)) (p principal))
-    (if (is-eq plist (list))
-        false
-        (let ((head (unwrap-panic (get 0 plist))))
-            (or (is-eq head p) (contains? (list-drop-n 1 plist) p))
-        )
-    )
+(define-map acceptances
+  { intent-hash: (buff 32), participant: principal }
+  {
+    expiry: uint,
+    conditions: (buff 32)
+  }
 )
 
-;; Private helper: check if a participants list has unique entries (no duplicates).
-(define-private (is-unique-list (plist (list 100 principal)))
-    (if (is-eq plist (list))
-        true
-        (let (
-                (head (unwrap-panic (get 0 plist)))
-                (tail (list-drop-n 1 plist))
-             )
-            (if (contains? tail head)
-                false
-                (is-unique-list tail)
-            )
-        )
-    )
+;; =============================================================================
+;; SIP-018 HASHING
+;; =============================================================================
+
+(define-read-only (get-domain-tuple)
+  {
+    name: DOMAIN_NAME,
+    version: DOMAIN_VERSION,
+    chain-id: chain-id
+  }
 )
 
-;; Compute an intent hash from given fields (simplified for reference: includes contract domain and key fields)
-(define-private (compute-intent-hash (agent principal) (participants (list 100 principal)) (payload-hash (buff 32)) (expiry uint) (nonce uint) (coord-type (buff 32)) (coord-value uint))
-    (keccak256
-        (concat
-            (principal->bytes (as-contract tx-sender))   ;; domain: using contract's principal (current contract) - Clarity uses (as-contract tx-sender) as current contract principal
-            (principal->bytes agent)
-            payload-hash
-        )
-    )
+(define-read-only (get-domain-hash)
+  (sha256 (unwrap-panic (to-consensus-buff? (get-domain-tuple))))
 )
-;; NOTE: In a full implementation, the hash should include all fields (expiry, nonce, coord-type, coord-value, participants list, etc.) in a deterministic encoded form,
-;; along with chain-id and contract name for domain separation. This simplified version only includes critical parts for brevity.
 
-;; Public function: propose a new intent
-(define-public (propose-intent (agent principal) (participants (list 100 principal)) (expiry uint) (nonce uint) (coord-type (buff 32)) (coord-value uint) (payload-hash (buff 32)))
-    (begin
-        ;; Only the agent (initiator) can propose their intent
-        (if (not (is-eq agent tx-sender))
-            (err ERR_UNAUTHORISED)
-        )
-        ;; Participants list must contain the agent
-        (if (not (contains? participants agent))
-            (err ERR_INVALID_PARAMS)  ;; initiator not in participants list
-        )
-        ;; Check participant list uniqueness (and sorting, if we enforce separately)
-        (if (not (is-unique-list participants))
-            (err ERR_DUPLICATE_PARTICIPANT)
-        )
-        ;; Nonce must be greater than last used nonce for this agent
-        (let ((prev-nonce (unwrap-or (map-get? last-nonce ((agent agent))) {nonce: u0})))
-            (if (<= nonce (get nonce prev-nonce))
-                (err ERR_NONCE_NOT_HIGHER)
+(define-private (compute-structured-data-hash (message-buff (buff 8192)))
+  (sha256
+    (concat SIP018_PREFIX
+      (concat (get-domain-hash) (sha256 message-buff))
+    )
+  )
+)
+
+;; =============================================================================
+;; INTENT HASH COMPUTATION
+;; =============================================================================
+
+(define-private (make-intent-message
+    (payload-hash (buff 32))
+    (expiry uint)
+    (nonce uint)
+    (agent principal)
+    (coordination-type (buff 32))
+    (coordination-value uint)
+    (participants (list 20 principal)))
+  {
+    msg-type: MSG_TYPE_INTENT,
+    payload-hash: payload-hash,
+    expiry: expiry,
+    nonce: nonce,
+    agent: agent,
+    coordination-type: coordination-type,
+    coordination-value: coordination-value,
+    participants: participants
+  }
+)
+
+(define-read-only (compute-intent-hash
+    (payload-hash (buff 32))
+    (expiry uint)
+    (nonce uint)
+    (agent principal)
+    (coordination-type (buff 32))
+    (coordination-value uint)
+    (participants (list 20 principal)))
+  (let (
+    (intent-msg (make-intent-message
+      payload-hash expiry nonce agent
+      coordination-type coordination-value participants))
+  )
+    (match (to-consensus-buff? intent-msg)
+      serialized (ok (compute-structured-data-hash serialized))
+      ERR_SERIALIZATION_FAILED
+    )
+  )
+)
+
+;; =============================================================================
+;; ACCEPTANCE HASH COMPUTATION
+;; =============================================================================
+
+(define-private (make-acceptance-message
+    (intent-hash (buff 32))
+    (participant principal)
+    (accept-nonce uint)
+    (expiry uint)
+    (conditions (buff 32)))
+  {
+    msg-type: MSG_TYPE_ACCEPTANCE,
+    intent-hash: intent-hash,
+    participant: participant,
+    nonce: accept-nonce,
+    expiry: expiry,
+    conditions: conditions
+  }
+)
+
+(define-read-only (compute-acceptance-digest
+    (intent-hash (buff 32))
+    (participant principal)
+    (accept-nonce uint)
+    (expiry uint)
+    (conditions (buff 32)))
+  (let (
+    (acceptance-msg (make-acceptance-message
+      intent-hash participant accept-nonce expiry conditions))
+  )
+    (match (to-consensus-buff? acceptance-msg)
+      serialized (ok (compute-structured-data-hash serialized))
+      ERR_SERIALIZATION_FAILED
+    )
+  )
+)
+
+;; =============================================================================
+;; PARTICIPANT VALIDATION
+;; =============================================================================
+
+(define-private (principal-in-list? (p principal) (plist (list 20 principal)))
+  (is-some (index-of? plist p))
+)
+
+;; Compare principals by comparing bytes of consensus buffer
+;; Uses element-at? which returns (buff 1) avoiding type issues
+(define-private (principal-lt? (a principal) (b principal))
+  (let (
+    (a-buff (unwrap-panic (to-consensus-buff? a)))
+    (b-buff (unwrap-panic (to-consensus-buff? b)))
+  )
+    ;; Compare first 8 bytes (sufficient for ordering)
+    (let (
+      (a0 (buff-to-uint-be (default-to 0x00 (element-at? a-buff u0))))
+      (b0 (buff-to-uint-be (default-to 0x00 (element-at? b-buff u0))))
+      (a1 (buff-to-uint-be (default-to 0x00 (element-at? a-buff u1))))
+      (b1 (buff-to-uint-be (default-to 0x00 (element-at? b-buff u1))))
+      (a2 (buff-to-uint-be (default-to 0x00 (element-at? a-buff u2))))
+      (b2 (buff-to-uint-be (default-to 0x00 (element-at? b-buff u2))))
+      (a3 (buff-to-uint-be (default-to 0x00 (element-at? a-buff u3))))
+      (b3 (buff-to-uint-be (default-to 0x00 (element-at? b-buff u3))))
+      (a4 (buff-to-uint-be (default-to 0x00 (element-at? a-buff u4))))
+      (b4 (buff-to-uint-be (default-to 0x00 (element-at? b-buff u4))))
+      (a5 (buff-to-uint-be (default-to 0x00 (element-at? a-buff u5))))
+      (b5 (buff-to-uint-be (default-to 0x00 (element-at? b-buff u5))))
+      (a6 (buff-to-uint-be (default-to 0x00 (element-at? a-buff u6))))
+      (b6 (buff-to-uint-be (default-to 0x00 (element-at? b-buff u6))))
+      (a7 (buff-to-uint-be (default-to 0x00 (element-at? a-buff u7))))
+      (b7 (buff-to-uint-be (default-to 0x00 (element-at? b-buff u7))))
+    )
+      ;; Lexicographic comparison
+      (if (< a0 b0) true
+      (if (> a0 b0) false
+      (if (< a1 b1) true
+      (if (> a1 b1) false
+      (if (< a2 b2) true
+      (if (> a2 b2) false
+      (if (< a3 b3) true
+      (if (> a3 b3) false
+      (if (< a4 b4) true
+      (if (> a4 b4) false
+      (if (< a5 b5) true
+      (if (> a5 b5) false
+      (if (< a6 b6) true
+      (if (> a6 b6) false
+      (< a7 b7)))))))))))))))
+    )
+  )
+)
+
+(define-private (check-sorted-step
+    (current principal)
+    (state { valid: bool, prev: (optional principal) }))
+  (let ((prev-opt (get prev state)))
+    (if (not (get valid state))
+      { valid: false, prev: (some current) }
+      (match prev-opt
+        prev-val
+          { valid: (principal-lt? prev-val current), prev: (some current) }
+        { valid: true, prev: (some current) }
+      )
+    )
+  )
+)
+
+(define-private (is-sorted-unique? (plist (list 20 principal)))
+  (let ((n (len plist)))
+    (if (<= n u1)
+      true
+      (get valid (fold check-sorted-step plist { valid: true, prev: none }))
+    )
+  )
+)
+
+(define-private (validate-participants
+    (participants (list 20 principal))
+    (agent principal))
+  (and
+    (> (len participants) u0)
+    (is-sorted-unique? participants)
+    (principal-in-list? agent participants)
+  )
+)
+
+;; =============================================================================
+;; SIGNATURE VERIFICATION
+;; =============================================================================
+
+(define-private (verify-signature
+    (message-hash (buff 32))
+    (signature (buff 65))
+    (expected-signer principal))
+  (match (secp256k1-recover? message-hash signature)
+    recovered-pubkey
+      (match (principal-of? recovered-pubkey)
+        recovered-principal (is-eq recovered-principal expected-signer)
+        err-principal false
+      )
+    err-recover false
+  )
+)
+
+;; =============================================================================
+;; STATUS HELPERS
+;; =============================================================================
+
+(define-private (get-effective-status (stored-status uint) (expiry uint))
+  (if (or (is-eq stored-status STATE_EXECUTED)
+          (is-eq stored-status STATE_CANCELLED))
+    stored-status
+    (if (> stacks-block-height expiry)
+      STATE_EXPIRED
+      stored-status
+    )
+  )
+)
+
+(define-private (check-acceptance-fresh
+    (participant principal)
+    (state { fresh: bool, intent-hash: (buff 32) }))
+  (if (not (get fresh state))
+    state
+    (match (map-get? acceptances
+              { intent-hash: (get intent-hash state), participant: participant })
+      acceptance
+        {
+          fresh: (<= stacks-block-height (get expiry acceptance)),
+          intent-hash: (get intent-hash state)
+        }
+      { fresh: false, intent-hash: (get intent-hash state) }
+    )
+  )
+)
+
+(define-private (all-acceptances-fresh?
+    (intent-hash (buff 32))
+    (participants (list 20 principal)))
+  (get fresh
+    (fold check-acceptance-fresh
+      participants
+      { fresh: true, intent-hash: intent-hash }))
+)
+
+;; =============================================================================
+;; PUBLIC: PROPOSE
+;; =============================================================================
+
+(define-public (propose-coordination
+    (payload-hash (buff 32))
+    (expiry uint)
+    (nonce uint)
+    (coordination-type (buff 32))
+    (coordination-value uint)
+    (participants (list 20 principal)))
+  (let (
+    (agent tx-sender)
+    (now stacks-block-height)
+    (prev-nonce (default-to u0 (map-get? agent-nonces { agent: agent })))
+  )
+    (asserts! (> expiry now) ERR_INTENT_EXPIRED)
+    (asserts! (> nonce prev-nonce) ERR_NONCE_TOO_LOW)
+    (asserts! (validate-participants participants agent) ERR_INVALID_PARTICIPANTS)
+
+    (let (
+      (intent-hash-result (compute-intent-hash
+        payload-hash expiry nonce agent
+        coordination-type coordination-value participants))
+    )
+      (match intent-hash-result
+        intent-hash
+          (begin
+            (asserts! (is-none (map-get? intents { intent-hash: intent-hash }))
+                      ERR_DUPLICATE_INTENT)
+
+            (map-set intents { intent-hash: intent-hash }
+              {
+                agent: agent,
+                payload-hash: payload-hash,
+                expiry: expiry,
+                nonce: nonce,
+                coordination-type: coordination-type,
+                coordination-value: coordination-value,
+                participants: participants,
+                status: STATE_PROPOSED,
+                accept-count: u0
+              }
             )
-        )
-        ;; Expiry must be in the future (greater than current block time)
-        (let ((now (stacks-block-time)))
-            (if (<= expiry now)
-                (err ERR_EXPIRED)
-            )
-        )
-        ;; Compute unique intent hash (ID)
-        (let ((intent-hash (compute-intent-hash agent participants payload-hash expiry nonce coord-type coord-value)))
-            ;; Ensure not already used (i.e., not conflicting with an existing intent)
-            (if (map-get? intents ((intent-hash intent-hash)))
-                (err ERR_INVALID_PARAMS)  ;; collision or reuse
-            )
-            ;; Store the intent
-            (map-set intents
-                ((intent-hash intent-hash))
-                (
-                    (agent agent)
-                    (expiry expiry)
-                    (nonce nonce)
-                    (coord-type coord-type)
-                    (coord-value coord-value)
-                    (participants participants)
-                    (status PROPOSED)
-                    (accept-count u0)
-                )
-            )
-            ;; Update the initiator's last nonce
-            (map-set last-nonce ((agent agent)) ((nonce nonce)))
-            ;; Return the intent identifier
+
+            (map-set agent-nonces { agent: agent } nonce)
+
+            (print {
+              event: "coordination-proposed",
+              intent-hash: intent-hash,
+              agent: agent,
+              coordination-type: coordination-type,
+              coordination-value: coordination-value,
+              participant-count: (len participants),
+              expiry: expiry
+            })
+
             (ok intent-hash)
-        )
+          )
+        err-val (err err-val)
+      )
     )
+  )
 )
 
-;; Public function: accept an intent (participant provides their signature)
-(define-public (accept-intent (intent-hash (buff 32)) (accept-expiry uint) (conditions (buff 32)) (signature (buff 65)))
-    (begin
-        ;; Ensure the intent exists
-        (let ((intent-data (map-get? intents ((intent-hash intent-hash)))))
-            (if (is-none intent-data)
-                (err ERR_NOT_FOUND)
-            )
-            (let (
-                    (intent (unwrap intent-data ERR_NOT_FOUND))
-                    (now (stacks-block-time))
-                 )
-                ;; Check intent status is Proposed (still collecting signatures)
-                (if (not (is-eq (get status intent) PROPOSED))
-                    (err ERR_INVALID_STATE)
-                )
-                ;; Intent must not be expired
-                (if (> now (get expiry intent))
-                    (begin
-                        ;; Mark as expired if past expiry
-                        (map-set intents ((intent-hash intent-hash)) (tuple (agent (get agent intent)) (expiry (get expiry intent)) (nonce (get nonce intent)) (coord-type (get coord-type intent)) (coord-value (get coord-value intent)) (participants (get participants intent)) (status EXPIRED) (accept-count (get accept-count intent))))
-                        (err ERR_EXPIRED)
+;; =============================================================================
+;; PUBLIC: ACCEPT
+;; =============================================================================
+
+(define-public (accept-coordination
+    (intent-hash (buff 32))
+    (accept-expiry uint)
+    (conditions (buff 32))
+    (signature (buff 65)))
+  (let (
+    (caller tx-sender)
+    (now stacks-block-height)
+    (accept-nonce u0)
+  )
+    (match (map-get? intents { intent-hash: intent-hash })
+      intent
+        (begin
+          (asserts! (<= now (get expiry intent)) ERR_INTENT_EXPIRED)
+          (asserts! (is-eq (get status intent) STATE_PROPOSED) ERR_INVALID_STATE)
+          (asserts! (principal-in-list? caller (get participants intent))
+                    ERR_NOT_PARTICIPANT)
+          (asserts! (is-none (map-get? acceptances
+                      { intent-hash: intent-hash, participant: caller }))
+                    ERR_ALREADY_ACCEPTED)
+          (asserts! (> accept-expiry now) ERR_ACCEPTANCE_EXPIRED)
+
+          (let (
+            (digest-result (compute-acceptance-digest
+              intent-hash caller accept-nonce accept-expiry conditions))
+          )
+            (match digest-result
+              digest
+                (begin
+                  (asserts! (verify-signature digest signature caller)
+                            ERR_INVALID_SIGNATURE)
+
+                  (map-set acceptances
+                    { intent-hash: intent-hash, participant: caller }
+                    { expiry: accept-expiry, conditions: conditions }
+                  )
+
+                  (let (
+                    (new-count (+ (get accept-count intent) u1))
+                    (total-required (len (get participants intent)))
+                    (new-status (if (>= new-count total-required)
+                                  STATE_READY
+                                  STATE_PROPOSED))
+                  )
+                    (map-set intents { intent-hash: intent-hash }
+                      (merge intent {
+                        accept-count: new-count,
+                        status: new-status
+                      })
                     )
+
+                    (print {
+                      event: "coordination-accepted",
+                      intent-hash: intent-hash,
+                      participant: caller,
+                      accepted-count: new-count,
+                      required-count: total-required,
+                      is-ready: (>= new-count total-required)
+                    })
+
+                    (ok (>= new-count total-required))
+                  )
                 )
-                ;; The caller must be one of the participants
-                (if (not (contains? (get participants intent) tx-sender))
-                    (err ERR_NOT_PARTICIPANT)
-                )
-                ;; Check if already accepted by this participant
-                (if (map-get? acceptances ((intent-hash intent-hash) (participant tx-sender)))
-                    (err ERR_ALREADY_ACCEPTED)
-                )
-                ;; The acceptance's expiry must not be in the past and not beyond intent expiry
-                (if (<= accept-expiry now)
-                    (err ERR_EXPIRED)
-                )
-                (if (> accept-expiry (get expiry intent))
-                    (err ERR_INVALID_PARAMS)   ;; participant's acceptance expiry cannot exceed intent expiry
-                )
-                ;; Verify the signature: recover the public key and derive principal
-                (let (
-                        ;; Prepare message hash for verification: we hash intent-hash + participant + their constraints + contract domain
-                        (msg-hash (keccak256
-                                     (concat
-                                       (principal->bytes (as-contract tx-sender))
-                                       intent-hash
-                                       (principal->bytes tx-sender)
-                                       conditions
-                                       (buff 0)    ;; Note: if we included accept-expiry and nonce in the signed data, we'd need to encode them here.
-                                     )
-                                   ))
-                        (recover-result (secp256k1-recover? msg-hash signature))
-                     )
-                    (match recover-result
-                        err (err ERR_INVALID_SIGNATURE)
-                        ok (let ((pubkey recover-result))
-                                (let ((derived-principal (principal-of? pubkey)))
-                                    (match derived-principal
-                                        err (err ERR_INVALID_SIGNATURE)
-                                        ok (let ((signer (unwrap derived-principal ERR_INVALID_SIGNATURE)))
-                                                ;; Check that the derived principal matches the tx-sender (the claimed participant)
-                                                (if (is-eq signer tx-sender)
-                                                    (begin
-                                                        ;; Record the acceptance
-                                                        (map-set acceptances ((intent-hash intent-hash) (participant tx-sender)) ((accept-expiry accept-expiry)))
-                                                        ;; Increment acceptance count
-                                                        (map-set intents ((intent-hash intent-hash))
-                                                            (tuple
-                                                                (agent (get agent intent))
-                                                                (expiry (get expiry intent))
-                                                                (nonce (get nonce intent))
-                                                                (coord-type (get coord-type intent))
-                                                                (coord-value (get coord-value intent))
-                                                                (participants (get participants intent))
-                                                                (status (get status intent))
-                                                                (accept-count (+ u1 (get accept-count intent)))
-                                                            )
-                                                        )
-                                                        ;; If this was the last required acceptance, update status to Ready
-                                                        (let ((new-count (+ u1 (get accept-count intent))) (total (len (get participants intent))))
-                                                            (if (>= new-count total)
-                                                                (map-set intents ((intent-hash intent-hash)) (tuple
-                                                                    (agent (get agent intent))
-                                                                    (expiry (get expiry intent))
-                                                                    (nonce (get nonce intent))
-                                                                    (coord-type (get coord-type intent))
-                                                                    (coord-value (get coord-value intent))
-                                                                    (participants (get participants intent))
-                                                                    (status READY)
-                                                                    (accept-count new-count)
-                                                                ))
-                                                            )
-                                                        )
-                                                        (ok true)
-                                                    )
-                                                    (err ERR_INVALID_SIGNATURE)
-                                                )
-                                            )
-                                    )
-                                )
-                            )
-                    )
-                )
+              err-val (err err-val)
             )
+          )
         )
+      ERR_NOT_FOUND
     )
+  )
 )
 
-;; Public function: execute an intent (mark as executed if ready)
-(define-public (execute-intent (intent-hash (buff 32)))
-    (begin
-        (let ((intent-data (map-get? intents ((intent-hash intent-hash)))))
-            (if (is-none intent-data)
-                (err ERR_NOT_FOUND)
-            )
-            (let ((intent (unwrap intent-data ERR_NOT_FOUND)) (now (stacks-block-time)))
-                ;; Only allow execution if status is Ready
-                (if (not (is-eq (get status intent) READY))
-                    (err ERR_INVALID_STATE)
-                )
-                ;; Check current time against intent expiry
-                (if (> now (get expiry intent))
-                    (err ERR_EXPIRED)
-                )
-                ;; Check that all acceptance attestations are still valid (not expired individually)
-                (let ((plist (get participants intent)))
-                    (if (is-expired-acceptance? intent-hash plist now)
-                        (err ERR_EXPIRED)
-                    )
-                )
-                ;; (Business logic for executing the intent's action would go here, if applicable)
-                ;; Mark intent as executed
-                (map-set intents ((intent-hash intent-hash))
-                    (tuple
-                        (agent (get agent intent))
-                        (expiry (get expiry intent))
-                        (nonce (get nonce intent))
-                        (coord-type (get coord-type intent))
-                        (coord-value (get coord-value intent))
-                        (participants (get participants intent))
-                        (status EXECUTED)
-                        (accept-count (get accept-count intent))
-                    )
-                )
-                (ok true)
-            )
+;; =============================================================================
+;; PUBLIC: EXECUTE
+;; =============================================================================
+
+(define-public (execute-coordination
+    (intent-hash (buff 32))
+    (payload (buff 1024))
+    (execution-data (buff 1024)))
+  (let ((now stacks-block-height))
+    (match (map-get? intents { intent-hash: intent-hash })
+      intent
+        (begin
+          (asserts! (is-eq (get status intent) STATE_READY) ERR_INVALID_STATE)
+          (asserts! (<= now (get expiry intent)) ERR_INTENT_EXPIRED)
+          (asserts! (all-acceptances-fresh? intent-hash (get participants intent))
+                    ERR_ACCEPTANCE_EXPIRED)
+          (asserts! (is-eq (sha256 payload) (get payload-hash intent))
+                    ERR_PAYLOAD_MISMATCH)
+
+          (map-set intents { intent-hash: intent-hash }
+            (merge intent { status: STATE_EXECUTED })
+          )
+
+          (print {
+            event: "coordination-executed",
+            intent-hash: intent-hash,
+            executor: tx-sender,
+            payload-hash: (get payload-hash intent),
+            coordination-type: (get coordination-type intent),
+            coordination-value: (get coordination-value intent)
+          })
+
+          (ok true)
         )
+      ERR_NOT_FOUND
     )
+  )
 )
 
-;; Public function: cancel an intent (initiator only)
-(define-public (cancel-intent (intent-hash (buff 32)))
-    (begin
-        (let ((intent-data (map-get? intents ((intent-hash intent-hash)))))
-            (if (is-none intent-data)
-                (err ERR_NOT_FOUND)
-            )
-            (let ((intent (unwrap intent-data ERR_NOT_FOUND)))
-                ;; Only initiator can cancel
-                (if (not (is-eq (get agent intent) tx-sender))
-                    (err ERR_UNAUTHORISED)
-                )
-                ;; Only allow cancellation if not already executed or cancelled
-                (if (or (is-eq (get status intent) EXECUTED) (is-eq (get status intent) CANCELLED))
-                    (err ERR_INVALID_STATE)
-                )
-                ;; Mark as cancelled
-                (map-set intents ((intent-hash intent-hash))
-                    (tuple
-                        (agent (get agent intent))
-                        (expiry (get expiry intent))
-                        (nonce (get nonce intent))
-                        (coord-type (get coord-type intent))
-                        (coord-value (get coord-value intent))
-                        (participants (get participants intent))
-                        (status CANCELLED)
-                        (accept-count (get accept-count intent))
-                    )
-                )
-                (ok true)
-            )
+;; =============================================================================
+;; PUBLIC: CANCEL
+;; =============================================================================
+
+(define-public (cancel-coordination
+    (intent-hash (buff 32))
+    (reason (string-ascii 64)))
+  (let ((now stacks-block-height))
+    (match (map-get? intents { intent-hash: intent-hash })
+      intent
+        (let (
+          (agent (get agent intent))
+          (status (get status intent))
+          (expiry (get expiry intent))
         )
+          (asserts! (not (is-eq status STATE_EXECUTED)) ERR_INVALID_STATE)
+          (asserts! (not (is-eq status STATE_CANCELLED)) ERR_INVALID_STATE)
+          (asserts! (or (is-eq tx-sender agent) (> now expiry))
+                    ERR_UNAUTHORIZED)
+
+          (map-set intents { intent-hash: intent-hash }
+            (merge intent { status: STATE_CANCELLED })
+          )
+
+          (print {
+            event: "coordination-cancelled",
+            intent-hash: intent-hash,
+            canceller: tx-sender,
+            reason: reason,
+            was-expired: (> now expiry)
+          })
+
+          (ok true)
+        )
+      ERR_NOT_FOUND
     )
+  )
 )
 
-;; Read-only function: get the status code of an intent
+;; =============================================================================
+;; READ-ONLY: QUERIES
+;; =============================================================================
+
 (define-read-only (get-coordination-status (intent-hash (buff 32)))
-    (let ((intent-data (map-get? intents ((intent-hash intent-hash)))))
-        (if (is-none intent-data)
-            (err ERR_NOT_FOUND)
-            (ok (get status (unwrap intent-data ERR_NOT_FOUND)))
-        )
-    )
+  (match (map-get? intents { intent-hash: intent-hash })
+    intent
+      (let (
+        (effective-status (get-effective-status
+          (get status intent)
+          (get expiry intent)))
+        (accepted-list (get-accepted-participants intent-hash (get participants intent)))
+      )
+        (ok {
+          status: effective-status,
+          agent: (get agent intent),
+          participants: (get participants intent),
+          accepted-by: accepted-list,
+          accept-count: (get accept-count intent),
+          expiry: (get expiry intent),
+          coordination-type: (get coordination-type intent),
+          coordination-value: (get coordination-value intent),
+          payload-hash: (get payload-hash intent)
+        })
+      )
+    ERR_NOT_FOUND
+  )
 )
 
-;; Private helper: check if any acceptance has expired at a given time
-(define-private (is-expired-acceptance? (intent-hash (buff 32)) (plist (list 100 principal)) (current-time uint))
-    (if (is-eq plist (list))
-        false
-        (let ((participant (unwrap-panic (get 0 plist))))
-            (let ((acc-data (map-get? acceptances ((intent-hash intent-hash) (participant participant)))))
-                (if (is-none acc-data)
-                    false   ;; if a participant hasn't accepted, from perspective of execution readiness this function might not be called because status wouldn't be Ready.
-                    (let ((acc (unwrap acc-data (err ERR_NOT_FOUND))))
-                        (if (> current-time (get accept-expiry acc))
-                            true
-                            (is-expired-acceptance? intent-hash (list-drop-n 1 plist) current-time)
-                        )
-                    )
-                )
-            )
-        )
-    )
+(define-private (collect-accepted
+    (p principal)
+    (state { accepted: (list 20 principal), intent-hash: (buff 32) }))
+  (if (is-some (map-get? acceptances
+        { intent-hash: (get intent-hash state), participant: p }))
+    {
+      accepted: (unwrap-panic (as-max-len?
+        (append (get accepted state) p) u20)),
+      intent-hash: (get intent-hash state)
+    }
+    state
+  )
+)
+
+(define-read-only (get-accepted-participants
+    (intent-hash (buff 32))
+    (participants (list 20 principal)))
+  (get accepted
+    (fold collect-accepted participants
+      { accepted: (list), intent-hash: intent-hash }))
+)
+
+(define-read-only (get-required-acceptances (intent-hash (buff 32)))
+  (match (map-get? intents { intent-hash: intent-hash })
+    intent (ok (len (get participants intent)))
+    ERR_NOT_FOUND
+  )
+)
+
+(define-read-only (get-agent-nonce (agent principal))
+  (default-to u0 (map-get? agent-nonces { agent: agent }))
+)
+
+(define-read-only (get-acceptance
+    (intent-hash (buff 32))
+    (participant principal))
+  (map-get? acceptances { intent-hash: intent-hash, participant: participant })
+)
+
+;; =============================================================================
+;; READ-ONLY: SIGNING HELPERS
+;; =============================================================================
+
+(define-read-only (get-signing-domain)
+  {
+    name: DOMAIN_NAME,
+    version: DOMAIN_VERSION,
+    chain-id: chain-id,
+    domain-hash: (get-domain-hash)
+  }
+)
+
+(define-read-only (get-acceptance-message-to-sign
+    (intent-hash (buff 32))
+    (participant principal)
+    (expiry uint)
+    (conditions (buff 32)))
+  {
+    domain: (get-domain-tuple),
+    message: (make-acceptance-message
+      intent-hash participant u0 expiry conditions)
+  }
 )

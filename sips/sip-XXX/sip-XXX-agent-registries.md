@@ -618,8 +618,6 @@ This SIP will be considered activated when:
 2. At least one complete implementation of all three registries is deployed to mainnet
 3. The implementation passes all test cases from the reference implementation
 
-The activation criteria should be met no later than Bitcoin block 900000.
-
 # Reference Implementations
 
 ## Source Code

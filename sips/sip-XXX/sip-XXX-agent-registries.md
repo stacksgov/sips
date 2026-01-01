@@ -19,20 +19,20 @@ Created: 2026-01-01
 
 License: CC0-1.0
 
-Sign-off:
+Sign-offs:
 
 Layer: Traits
 
-Discussions-To: https://github.com/stacksgov/sips
+Discussions-To:
+- SIP pull request: https://github.com/stacksgov/sips/pull/XXX
 
 # Abstract
 
 This SIP defines a standard set of traits for AI agent registries on the Stacks blockchain. It establishes three core registries: an Identity Registry for agent registration and ownership, a Reputation Registry for client feedback and scoring, and a Validation Registry for third-party verification. These traits enable interoperable agent identity, reputation tracking, and validation across applications built on Stacks, while maintaining compatibility with the ERC-8004 Agent Commerce Protocol for cross-chain agent identity.
 
-# License and Copyright
+# Copyright
 
-This SIP is made available under the terms of the Creative Commons CC0 1.0 Universal license, available at https://creativecommons.org/publicdomain/zero/1.0/
-This SIP's copyright is held by the Stacks Open Internet Foundation.
+This SIP is made available under the terms of the Creative Commons CC0 1.0 Universal license, available at https://creativecommons.org/publicdomain/zero/1.0/. This SIP's copyright is held by the Stacks Open Internet Foundation.
 
 # Introduction
 
@@ -42,7 +42,7 @@ This SIP addresses three core requirements for agent commerce:
 
 1. **Identity**: Agents need unique, verifiable identities with associated metadata and URIs pointing to off-chain information.
 
-2. **Reputation**: Clients interacting with agents need a way to provide feedback and view aggregated reputation scores. This feedback system must support both on-chain approval and off-chain signature-based authorization via SIP-018.
+2. **Reputation**: Clients interacting with agents need a way to provide feedback and view aggregated reputation scores. This feedback system must support both on-chain approval and off-chain signature-based authorization via SIP-018 [1].
 
 3. **Validation**: Third-party validators (such as auditors, compliance services, or capability verifiers) need a standardized way to approve or reject agents based on specific criteria.
 
@@ -215,7 +215,7 @@ This method should be defined as read-only, i.e. `define-read-only`.
 
 ## Reputation Registry Trait
 
-The Reputation Registry enables clients to provide feedback on agents and allows agents to respond. It supports two authorization methods: on-chain approval and SIP-018 signed structured data for off-chain authorization.
+The Reputation Registry enables clients to provide feedback on agents and allows agents to respond. It supports two authorization methods: on-chain approval and SIP-018 [1] signed structured data for off-chain authorization.
 
 ### Trait Functions
 
@@ -252,7 +252,7 @@ This method must be defined with `define-public`.
 
 `(give-feedback-signed ((agent-id uint) (score uint) (tags (list 10 (string-utf8 64))) (feedback-uri (string-utf8 512)) (signature (buff 65)) (auth-expiry uint)) (response uint uint))`
 
-Submit feedback using SIP-018 signed authorization instead of on-chain approval. The signature must be valid according to SIP-018 structured data signing, and the auth-expiry block height must not have passed.
+Submit feedback using SIP-018 [1] signed authorization instead of on-chain approval. The signature must be valid according to SIP-018 structured data signing, and the auth-expiry block height must not have passed.
 
 This method must be defined with `define-public`.
 
@@ -522,7 +522,7 @@ This method should be defined as read-only, i.e. `define-read-only`.
 
 # Multichain Identity
 
-This standard supports cross-chain agent identity using CAIP-2 (Chain Agnostic Improvement Proposal) compliant identifiers. This enables agents registered on Stacks to be referenced from other chains and vice versa.
+This standard supports cross-chain agent identity using CAIP-2 [4] compliant identifiers. This enables agents registered on Stacks to be referenced from other chains and vice versa.
 
 ## Identifier Format
 
@@ -543,7 +543,7 @@ Where:
 | Stacks Mainnet | 1 | `stacks:1:identity-registry:42` |
 | Stacks Testnet | 2147483648 | `stacks:2147483648:identity-registry:0` |
 
-This format aligns with ERC-8004 multichain identifiers, enabling consistent agent identity across Ethereum, Stacks, and other supported chains.
+This format aligns with ERC-8004 [3] multichain identifiers, enabling consistent agent identity across Ethereum, Stacks, and other supported chains.
 
 # Implementing in Wallets and Applications
 
@@ -573,7 +573,7 @@ The URI returned by `get-uri` should point to a JSON file with the following rec
 
 ## SIP-018 Signature Integration
 
-For `give-feedback-signed`, the structured data domain and message should follow SIP-018 conventions. The message should include:
+For `give-feedback-signed`, the structured data domain and message should follow SIP-018 [1] conventions. The message should include:
 - Agent ID
 - Score
 - Tags
@@ -594,13 +594,13 @@ When displaying agent reputation:
 
 ## ERC-8004
 
-This SIP is designed to be compatible with [ERC-8004](https://eips.ethereum.org/EIPS/eip-8004), the Agent Commerce Protocol on Ethereum. Both standards define the same three registries (Identity, Reputation, Validation) with equivalent functionality, enabling cross-chain agent identity.
+This SIP is designed to be compatible with ERC-8004 [3], the Agent Commerce Protocol on Ethereum. Both standards define the same three registries (Identity, Reputation, Validation) with equivalent functionality, enabling cross-chain agent identity.
 
 Key differences in the Stacks implementation:
 - Uses Clarity traits instead of Solidity interfaces
-- Leverages SIP-018 for signed structured data instead of EIP-712
+- Leverages SIP-018 [1] for signed structured data instead of EIP-712
 - Uses direct ownership maps instead of ERC-721 for identity (agents are not transferable)
-- Follows SIP-019 notification patterns for events
+- Follows SIP-019 [2] notification patterns for events
 
 ## Other Agent Standards
 
@@ -637,3 +637,13 @@ The following contracts are deployed on Stacks testnet:
 ## Mainnet Deployments
 
 Mainnet deployment addresses will be added upon activation.
+
+# References
+
+[1] SIP-018: Signed Structured Data - https://github.com/stacksgov/sips/blob/main/sips/sip-018/sip-018-signed-structured-data.md
+
+[2] SIP-019: Notifications for Token Metadata Updates - https://github.com/stacksgov/sips/blob/main/sips/sip-019/sip-019-token-metadata-update-notifications.md
+
+[3] ERC-8004: Agent Commerce Protocol - https://eips.ethereum.org/EIPS/eip-8004
+
+[4] CAIP-2: Blockchain ID Specification - https://github.com/ChainAgnostic/CAIPs/blob/main/CAIPs/caip-2.md

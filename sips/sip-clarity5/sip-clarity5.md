@@ -55,7 +55,7 @@ In Clarity 5 and above, `secp256r1-verify` will no longer double-hash its input.
 
 ## Runtime error when passing an empty buffer to `from-consensus-buff?` (see issue [#6683](https://github.com/stacks-network/stacks-core/issues/6683))
 
-Beginning in epoch 3.4, computing the cost of passing an empty buffer to
+Beginning in Clarity 5, computing the cost of passing an empty buffer to
 `from-consensus-buff?` will no longer trigger a runtime error. Instead, the cost
 will be charged appropriately, and the expression will return `none`, as
 originally intended.

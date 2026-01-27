@@ -72,7 +72,7 @@ depth of 64 and several user applications have been hitting this limit recently.
 This value was not specified in any previous SIPs, but was chosen to constrain
 memory usage by the VM. Upon further testing, it has been determined that this
 value can safely be increased to 128 without imposing u nreasonable requirements
-on Stacks node runners. Effective in Clarity 5, the stack depth will be set
+on Stacks node runners. Effective in epoch 3.4, the stack depth will be set
 to 128.
 
 ## Rejectable transactions

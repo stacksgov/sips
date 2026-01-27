@@ -126,7 +126,8 @@ Stacks core engineers implementing the changes.
 
 # Reference Implementation
 
-At the time of this writing, only one of these items has a public implementation
-available:
+At the time of this writing, the following public implementations are available
+so far:
 
 - [`secp256r1-verify?` change](https://github.com/stacks-network/stacks-core/pull/6763)
+- [`from-consensus-buff?` change](https://github.com/stacks-network/stacks-core/pull/6820)

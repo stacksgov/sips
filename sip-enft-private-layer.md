@@ -185,7 +185,7 @@ If an envelope descriptor is set/updated, contracts **MAY** emit:
 ```
 
 **Notes**
-- Events are intended for indexers/wallets discovery and UI updates.
+- Events are intended for indexers/wallets discovery and user interface updates.
 - `envelope-uri` is intentionally excluded from the event for safety; wallets should fetch it via the read-only function if needed.
 - Indexers should treat these events as hints and verify by reading the latest on-chain state as required.
 
@@ -200,7 +200,7 @@ This SIP is additive and does not break existing SIP-009 NFT contracts. Projects
 ## Security Considerations
 
 ### Read-only visibility and “owner gating”
-`get-owner-envelope` ownership checks are primarily for **wallet UX consistency**, not cryptographic secrecy. Read-only calls can be simulated by node operators; therefore, **confidentiality MUST NOT rely solely on on-chain gating**.
+`get-owner-envelope` ownership checks are primarily for **wallet UX consistency**, not cryptographic secrecy. Read-only calls can be simulated by any party running a node; therefore, **confidentiality MUST NOT rely solely on on-chain gating**.
 
 If the envelope or payload must remain private, it **SHOULD** be protected off-chain via:
 - encryption (e.g., encrypt payload/key per owner), and/or

@@ -1,6 +1,6 @@
 # Preamble
 
-SIP Number:
+SIP Number: 035
 
 Title: Clarification of Clarity's `secp256r1-verify` Behavior
 

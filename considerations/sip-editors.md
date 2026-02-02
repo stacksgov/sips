@@ -25,6 +25,10 @@ Invite tree:
 
 **AcrossFire**: AcrossFire has experience as a DevOps engineer, Linux enthusiast, and a passionate Bitcoiner. He has experience with systems administration and enjoys automating maintenance tasks using tools like Puppet, Ansible, Docker, Kubernetes and others. He likes to bring this experience to Bitcoin by running Bitcoin and Stacks nodes and doing what he can to optimize the experience.
 
+**Jesse Wiley**: Jesse Wiley is a seasoned DevOps expert - he makes sure all systems are running smoothly and the right security considerations have been made.
+
+**Claire Gadd**: Director of communications for the Stacks Foundation.
+
 **werner.btc**: Since 2021, Werner has been an active Stacks community member and helper. As an artist, tester, and jack of many traits, my contributions are rooted in a passion for supporting the Stacks ecosystem. Werner is dedicated to working towards a more equitable, open internet that is inherently safe through the adoption of Bitcoin technology.
 
 ## About this SIP Editor Committee

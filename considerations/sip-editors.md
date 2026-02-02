@@ -5,6 +5,7 @@ Members:
 - AcrossFire <acrossfirebtc@protonmail.com>
 - Jesse Wiley <jesse@stacks.org>
 - Claire Gadd <claire@stacks.org>
+- werner.btc <werner@trustmachines.co>
 
 
 Discussions-to: https://github.com/stacksgov/sips

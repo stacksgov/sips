@@ -8,7 +8,7 @@ Author(s):
 
 - Brice Dobry <brice@stackslabs.com>
 
-Status: Accepted
+Status: Ratified
 
 Consideration: Technical
 

@@ -3,9 +3,8 @@
 Members:
 
 - AcrossFire <acrossfirebtc@protonmail.com>
-- j2p2 <i.digg.tech@gmail.com>
-- Rafael Cárdenas <rafael@hiro.so>
-- werner.btc <werner@trustmachines.co>
+- Jesse Wiley <jesse@stacks.org>
+- Claire Gadd <claire@stacks.org>
 
 
 Discussions-to: https://github.com/stacksgov/sips

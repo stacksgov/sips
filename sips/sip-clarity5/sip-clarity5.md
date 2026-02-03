@@ -52,6 +52,7 @@ VM, without making any changes to its intended behavior.
 ## Resolve the discrepancy in `secp256r1-verify` described in SIP-035
 
 In Clarity 5 and above, `secp256r1-verify` will no longer double-hash its input.
+See [SIP-035](/sips/sip-035/sip-secp256r1-verify.md) for details.
 
 ## Runtime error when passing an empty buffer to `from-consensus-buff?` (see issue [#6683](https://github.com/stacks-network/stacks-core/issues/6683))
 
@@ -93,8 +94,8 @@ downsides:
 - These unmineable transactions remain in the mempool, unprocessed, until they
   age out
 
-With the upgrade to Clarity 5, all outstanding "rejectable" errors will
-transitioned to includable errors.
+With the upgrade to epoch 3.4, all reachable "rejectable" errors, will become
+includable errors.
 
 # Related Work
 

@@ -582,6 +582,20 @@ For `give-feedback-signed`, the structured data domain and message should follow
 
 Wallets implementing feedback functionality should provide clear UI for users to understand what they are signing.
 
+## Use Cases and Common Patterns
+
+The following patterns illustrate how agent registries can be used across applications:
+
+1. **Portable Reputation** - Agents maintain a verifiable track record that can move across platforms and chains. An agent registered on Stacks can reference its reputation history when interacting with services on other chains via CAIP-2 identifiers.
+
+2. **Spam Prevention** - Index limits and approval mechanisms in the Reputation Registry reduce review bombing and low-quality feedback. The `approve-client` function ensures only authorized clients can submit feedback.
+
+3. **Transparency** - All feedback is public and immutable unless explicitly revoked by the author. The `revoke-feedback` function allows authors to retract feedback while preserving the on-chain record that it existed.
+
+4. **Dispute Resolution** - Agents can respond to negative feedback via `append-response` and provide on-chain context, creating a transparent dialogue between agents and their clients.
+
+5. **Bitcoin-Level Security** - Stacks settlement ensures reputation data remains durable and tamper-resistant, even if individual platforms disappear.
+
 ## Displaying Reputation
 
 When displaying agent reputation:
@@ -622,7 +636,9 @@ This SIP will be considered activated when:
 
 ## Source Code
 
-The reference implementation is available at: https://github.com/aibtcdev/erc-8004-stacks
+Reference implementations are available at:
+- Stacks (Clarity): https://github.com/aibtcdev/erc-8004-stacks
+- Ethereum (Solidity): https://github.com/erc-8004/erc-8004-contracts
 
 ## Testnet Deployments
 

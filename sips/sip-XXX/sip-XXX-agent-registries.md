@@ -1355,3 +1355,5 @@ Mainnet deployment addresses will be added upon activation.
 [3] ERC-8004: Agent Commerce Protocol - https://eips.ethereum.org/EIPS/eip-8004
 
 [4] CAIP-2: Blockchain ID Specification - https://github.com/ChainAgnostic/CAIPs/blob/main/CAIPs/caip-2.md
+
+[5] SIP-009: Standard NFT Trait - https://github.com/stacksgov/sips/blob/main/sips/sip-009/sip-009-nft-standard.md

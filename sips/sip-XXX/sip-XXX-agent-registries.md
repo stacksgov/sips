@@ -80,9 +80,14 @@ This method must be defined with `define-public`.
 
 `(register-full ((token-uri (string-utf8 512)) (metadata-entries (list 10 {key: (string-utf8 128), value: (buff 512)}))) (response uint uint))`
 
-Register a new agent with both a URI and initial metadata entries. The metadata entries allow storing up to 10 key-value pairs directly on-chain. Returns the newly assigned agent ID.
+Register a new agent with both a URI and initial metadata entries. The metadata entries allow storing up to 10 key-value pairs directly on-chain. The reserved key "agentWallet" cannot be included in metadata entries; the agent wallet is automatically set to the owner on registration. Returns the newly assigned agent ID.
 
 This method must be defined with `define-public`.
+
+| error code | reason |
+| ---------- | ------ |
+| u1003 | Metadata set operation failed |
+| u1004 | Reserved key (agentWallet cannot be set during registration) |
 
 #### Set Agent URI
 
@@ -101,7 +106,7 @@ This method must be defined with `define-public`.
 
 `(set-metadata ((agent-id uint) (key (string-utf8 128)) (value (buff 512))) (response bool uint))`
 
-Set or update a metadata key-value pair for an agent. Only the agent owner or an approved operator may call this function.
+Set or update a metadata key-value pair for an agent. Only the agent owner or an approved operator may call this function. The reserved key "agentWallet" cannot be set via this function; use the agent wallet functions instead.
 
 This method must be defined with `define-public`.
 
@@ -110,6 +115,7 @@ This method must be defined with `define-public`.
 | u1000 | Caller is not authorized |
 | u1001 | Agent does not exist |
 | u1003 | Metadata set operation failed |
+| u1004 | Reserved key (agentWallet cannot be set directly) |
 
 #### Set Approval for All
 
@@ -126,51 +132,147 @@ This method must be defined with `define-public`.
 
 #### Owner Of
 
-`(owner-of ((agent-id uint)) (response principal uint))`
+`(owner-of ((agent-id uint)) (optional principal))`
 
-Return the owner principal of the specified agent.
+Return the owner principal of the specified agent, or none if the agent does not exist. This is a legacy function; prefer using get-owner for SIP-009 compatibility.
 
 This method should be defined as read-only, i.e. `define-read-only`.
-
-| error code | reason |
-| ---------- | ------ |
-| u1001 | Agent does not exist |
 
 #### Get URI
 
-`(get-uri ((agent-id uint)) (response (string-utf8 512) uint))`
+`(get-uri ((agent-id uint)) (optional (string-utf8 512)))`
 
-Return the URI associated with the specified agent.
+Return the URI associated with the specified agent, or none if not set or agent does not exist.
 
 This method should be defined as read-only, i.e. `define-read-only`.
 
-| error code | reason |
-| ---------- | ------ |
-| u1001 | Agent does not exist |
-
 #### Get Metadata
 
-`(get-metadata ((agent-id uint) (key (string-utf8 128))) (response (optional (buff 512)) uint))`
+`(get-metadata ((agent-id uint) (key (string-utf8 128))) (optional (buff 512)))`
 
-Return the value for a specific metadata key, or none if the key is not set.
+Return the value for a specific metadata key, or none if the key is not set or agent does not exist.
 
 This method should be defined as read-only, i.e. `define-read-only`.
 
 #### Is Approved for All
 
-`(is-approved-for-all ((agent-id uint) (operator principal)) (response bool uint))`
+`(is-approved-for-all ((agent-id uint) (operator principal)) bool)`
 
-Check if the specified principal is an approved operator for the agent.
+Check if the specified principal is an approved operator for the agent. Returns false if agent does not exist.
 
 This method should be defined as read-only, i.e. `define-read-only`.
 
 #### Get Version
 
-`(get-version () (response (string-ascii 16) uint))`
+`(get-version () (string-utf8 8))`
 
 Return the contract version string.
 
 This method should be defined as read-only, i.e. `define-read-only`.
+
+#### Get Last Token ID
+
+`(get-last-token-id () (response uint uint))`
+
+Return the ID of the most recently registered agent. This is a SIP-009 NFT trait function.
+
+This method should be defined as read-only, i.e. `define-read-only`.
+
+| error code | reason |
+| ---------- | ------ |
+| u1001 | No agents have been registered yet |
+
+#### Get Token URI
+
+`(get-token-uri ((token-id uint)) (response (optional (string-utf8 512)) uint))`
+
+Return the URI for the specified token ID (agent ID). Returns none wrapped in an ok response if the URI is empty or token doesn't exist. This is a SIP-009 NFT trait function.
+
+This method should be defined as read-only, i.e. `define-read-only`.
+
+#### Get Owner
+
+`(get-owner ((token-id uint)) (response (optional principal) uint))`
+
+Return the owner principal for the specified token ID (agent ID). Returns none wrapped in an ok response if the token doesn't exist. This is a SIP-009 NFT trait function that complements the legacy owner-of function.
+
+This method should be defined as read-only, i.e. `define-read-only`.
+
+#### Transfer
+
+`(transfer ((token-id uint) (sender principal) (recipient principal)) (response bool uint))`
+
+Transfer agent identity NFT from sender to recipient. Only the token owner can initiate transfers, and tx-sender must equal the sender parameter. Clears agent-wallet on transfer to prevent stale wallet associations. This is a SIP-009 NFT trait function.
+
+This method must be defined with `define-public`.
+
+| error code | reason |
+| ---------- | ------ |
+| u1000 | Caller is not authorized (sender is not the token owner) |
+| u1001 | Agent does not exist |
+| u1005 | Invalid sender (tx-sender must equal sender parameter) |
+
+#### Get Agent Wallet
+
+`(get-agent-wallet ((agent-id uint)) (optional principal))`
+
+Return the agent wallet principal for the specified agent, or none if not set. The agent wallet is a reserved metadata key that allows agents to control a separate wallet from their owner account.
+
+This method should be defined as read-only, i.e. `define-read-only`.
+
+#### Set Agent Wallet Direct
+
+`(set-agent-wallet-direct ((agent-id uint)) (response bool uint))`
+
+Set the agent wallet to tx-sender. Requires caller to be authorized (owner or approved operator). The wallet proves ownership via transaction signature. Returns error if tx-sender is already the current wallet.
+
+This method must be defined with `define-public`.
+
+| error code | reason |
+| ---------- | ------ |
+| u1000 | Caller is not authorized |
+| u1001 | Agent does not exist |
+| u1006 | Wallet already set to this principal |
+
+#### Set Agent Wallet Signed
+
+`(set-agent-wallet-signed ((agent-id uint) (new-wallet principal) (deadline uint) (signature (buff 65))) (response bool uint))`
+
+Set agent wallet using SIP-018 signature from the new wallet principal. Requires caller to be authorized (owner or approved operator). The signature must be valid and deadline must be current block height or future (within MAX_DEADLINE_DELAY of 1500 blocks).
+
+This method must be defined with `define-public`.
+
+| error code | reason |
+| ---------- | ------ |
+| u1000 | Caller is not authorized |
+| u1001 | Agent does not exist |
+| u1007 | Expired signature (deadline passed or exceeds MAX_DEADLINE_DELAY) |
+| u1008 | Invalid signature (recovery failed or doesn't match new-wallet) |
+
+#### Unset Agent Wallet
+
+`(unset-agent-wallet ((agent-id uint)) (response bool uint))`
+
+Remove the agent wallet association. Requires caller to be authorized (owner or approved operator).
+
+This method must be defined with `define-public`.
+
+| error code | reason |
+| ---------- | ------ |
+| u1000 | Caller is not authorized |
+| u1001 | Agent does not exist |
+
+#### Is Authorized or Owner
+
+`(is-authorized-or-owner ((spender principal) (agent-id uint)) (response bool uint))`
+
+Check if the specified principal is either the owner or an approved operator for the agent. Used for cross-contract authorization checks (e.g., reputation registry self-feedback prevention).
+
+This method should be defined as read-only, i.e. `define-read-only`.
+
+| error code | reason |
+| ---------- | ------ |
+| u1001 | Agent does not exist |
 
 ### Identity Registry Trait Implementation
 
@@ -195,20 +297,43 @@ This method should be defined as read-only, i.e. `define-read-only`.
     ;; Grant or revoke operator permissions
     (set-approval-for-all (uint principal bool) (response bool uint))
 
-    ;; Get agent owner
-    (owner-of (uint) (response principal uint))
+    ;; Set agent wallet to tx-sender
+    (set-agent-wallet-direct (uint) (response bool uint))
+
+    ;; Set agent wallet with SIP-018 signature
+    (set-agent-wallet-signed (uint principal uint (buff 65)) (response bool uint))
+
+    ;; Remove agent wallet
+    (unset-agent-wallet (uint) (response bool uint))
+
+    ;; Transfer agent identity NFT
+    (transfer (uint principal principal) (response bool uint))
+
+    ;; Get agent owner (legacy)
+    (owner-of (uint) (optional principal))
 
     ;; Get agent URI
-    (get-uri (uint) (response (string-utf8 512) uint))
+    (get-uri (uint) (optional (string-utf8 512)))
 
     ;; Get metadata value for key
-    (get-metadata (uint (string-utf8 128)) (response (optional (buff 512)) uint))
+    (get-metadata (uint (string-utf8 128)) (optional (buff 512)))
 
     ;; Check operator approval
-    (is-approved-for-all (uint principal) (response bool uint))
+    (is-approved-for-all (uint principal) bool)
+
+    ;; Get agent wallet
+    (get-agent-wallet (uint) (optional principal))
+
+    ;; Check if spender is authorized or owner
+    (is-authorized-or-owner (principal uint) (response bool uint))
 
     ;; Get contract version
-    (get-version () (response (string-ascii 16) uint))
+    (get-version () (string-utf8 8))
+
+    ;; SIP-009 NFT trait functions
+    (get-last-token-id () (response uint uint))
+    (get-token-uri (uint) (response (optional (string-utf8 512)) uint))
+    (get-owner (uint) (response (optional principal) uint))
   )
 )
 ```
@@ -492,6 +617,11 @@ This method should be defined as read-only, i.e. `define-read-only`.
 | u1001 | Agent not found |
 | u1002 | Agent already exists |
 | u1003 | Metadata set failed |
+| u1004 | Reserved key (agentWallet cannot be set via set-metadata) |
+| u1005 | Invalid sender (tx-sender must match sender parameter in transfer) |
+| u1006 | Wallet already set (tx-sender is already the agent wallet) |
+| u1007 | Expired signature (deadline passed or exceeds MAX_DEADLINE_DELAY) |
+| u1008 | Invalid signature (recovery failed or doesn't match expected principal) |
 
 ### Validation Registry Errors (u2000-u2999)
 

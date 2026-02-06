@@ -662,71 +662,107 @@ This method should be defined as read-only, i.e. `define-read-only`.
 
 ## Error Code Summary
 
-### Identity Registry Errors (u1000-u1999)
+This section lists all error codes used across the three registry contracts in v2.0.0.
+
+### Identity Registry Errors (u1000-u1008)
 
 | error code | reason |
 | ---------- | ------ |
-| u1000 | Not authorized |
+| u1000 | Not authorized (caller is not owner or approved operator) |
 | u1001 | Agent not found |
 | u1002 | Agent already exists |
 | u1003 | Metadata set failed |
-| u1004 | Reserved key (agentWallet cannot be set via set-metadata) |
+| u1004 | Reserved key (agentWallet cannot be set via set-metadata or during registration) |
 | u1005 | Invalid sender (tx-sender must match sender parameter in transfer) |
 | u1006 | Wallet already set (tx-sender is already the agent wallet) |
 | u1007 | Expired signature (deadline passed or exceeds MAX_DEADLINE_DELAY) |
 | u1008 | Invalid signature (recovery failed or doesn't match expected principal) |
 
-### Validation Registry Errors (u2000-u2999)
+### Validation Registry Errors (u2000-u2005)
 
 | error code | reason |
 | ---------- | ------ |
-| u2000 | Not authorized |
+| u2000 | Not authorized (caller is not owner, approved operator, or designated validator) |
 | u2001 | Agent not found |
 | u2002 | Validation not found |
 | u2003 | Validation already exists |
-| u2004 | Invalid validator |
-| u2005 | Invalid response score |
+| u2004 | Invalid validator (cannot be self) |
+| u2005 | Invalid response (exceeds 100) |
 
-### Reputation Registry Errors (u3000-u3999)
+### Reputation Registry Errors (u3000-u3012)
 
 | error code | reason |
 | ---------- | ------ |
-| u3000 | Not authorized |
+| u3000 | Not authorized (signer is not owner or approved operator) |
 | u3001 | Agent not found |
 | u3002 | Feedback not found |
 | u3003 | Feedback already revoked |
-| u3004 | Invalid score (exceeds 100) |
-| u3005 | Self-feedback not allowed |
-| u3006 | Invalid index |
+| u3004 | Invalid value (reserved, unused in v2.0.0) |
+| u3005 | Self-feedback not allowed (caller is owner or approved operator) |
+| u3006 | Invalid index (must be > 0) |
 | u3007 | Signature verification failed |
 | u3008 | Authorization expired |
 | u3009 | Index limit exceeded |
-| u3010 | Empty feedback URI |
+| u3010 | Empty response URI |
+| u3011 | Invalid decimals (exceeds 18) |
+| u3012 | Empty client list (reserved, unused in v2.0.0) |
 
 # Multichain Identity
 
-This standard supports cross-chain agent identity using CAIP-2 [4] compliant identifiers. This enables agents registered on Stacks to be referenced from other chains and vice versa.
+This standard supports cross-chain agent identity using CAIP-2 [4] compliant identifiers, enabling agents registered on Stacks to be referenced from other chains and vice versa. Agents advertise all their cross-chain registrations in the registration file's `registrations` array.
 
 ## Identifier Format
 
+Each agent is uniquely identified globally using the CAIP-2 format:
+
 ```
-stacks:<chainId>:<registry>:<agentId>
+<namespace>:<chainId>:<registry>:<agentId>
 ```
 
-Where:
-- `stacks` is the namespace identifier
+For Stacks agents:
+- `<namespace>` is `stacks`
 - `<chainId>` is the chain identifier (1 for mainnet, 2147483648 for testnet)
-- `<registry>` is the registry contract name
+- `<registry>` is the fully-qualified registry contract principal
 - `<agentId>` is the agent's numeric ID
 
 ## Chain Identifiers
 
 | Network | Chain ID | Example |
 | ------- | -------- | ------- |
-| Stacks Mainnet | 1 | `stacks:1:identity-registry:42` |
-| Stacks Testnet | 2147483648 | `stacks:2147483648:identity-registry:0` |
+| Stacks Mainnet | 1 | `stacks:1:SP000000000000000000002Q6VF78.identity-registry:42` |
+| Stacks Testnet | 2147483648 | `stacks:2147483648:ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.identity-registry:0` |
 
-This format aligns with ERC-8004 [3] multichain identifiers, enabling consistent agent identity across Ethereum, Stacks, and other supported chains.
+## Cross-Chain Registration
+
+Agents can be registered on multiple blockchains and advertise all registrations in their registration file's `registrations` array. Each entry contains:
+
+```json
+{
+  "agentId": 42,
+  "agentRegistry": "stacks:1:SP000000000000000000002Q6VF78.identity-registry"
+}
+```
+
+### Example: Multi-Chain Agent
+
+An agent registered on both Stacks mainnet (agent ID 42) and Ethereum mainnet (agent ID 123) would list both in the registration file:
+
+```json
+{
+  "registrations": [
+    {
+      "agentId": 42,
+      "agentRegistry": "stacks:1:SP000000000000000000002Q6VF78.identity-registry"
+    },
+    {
+      "agentId": 123,
+      "agentRegistry": "eip155:1:0x742d35Cc6634C0532925a3b844Bc454e4438f44e"
+    }
+  ]
+}
+```
+
+This enables applications on any chain to discover the agent's presence on other chains and aggregate reputation signals across the entire network. For complete details on cross-chain agent identity, see ERC-8004 [3].
 
 # Implementing in Wallets and Applications
 
@@ -736,34 +772,138 @@ Developers building applications that interact with agent registries should foll
 
 Before interacting with a registry contract, applications should verify that the contract implements the appropriate trait. This can be done by checking the contract's interface or attempting to call read-only functions.
 
-## Agent Metadata
+## Agent Registration File
 
-The URI returned by `get-uri` should point to a JSON file with the following recommended schema:
+The URI returned by `get-uri` (or `get-token-uri` for SIP-009 compatibility) points to the agent registration file. The URI may use any scheme: `ipfs://` (e.g., `ipfs://QmHash`), `https://` (e.g., `https://example.com/agent.json`), or a base64-encoded `data:` URI (e.g., `data:application/json;base64,eyJ0eXBlIjoi...`) for fully on-chain metadata.
+
+The registration file MUST follow the ERC-8004 [3] registration file structure to ensure cross-chain compatibility:
 
 ```json
 {
+  "type": "https://eips.ethereum.org/EIPS/eip-8004#registration-v1",
   "name": "Agent Name",
   "description": "Description of the agent's purpose and capabilities",
   "image": "https://example.com/agent-avatar.png",
-  "capabilities": ["capability1", "capability2"],
-  "endpoints": {
-    "api": "https://api.example.com/agent",
-    "websocket": "wss://ws.example.com/agent"
-  },
-  "version": "1.0.0"
+  "services": [
+    {
+      "name": "web",
+      "endpoint": "https://web.agentxyz.com/"
+    },
+    {
+      "name": "A2A",
+      "endpoint": "https://agent.example/.well-known/agent-card.json",
+      "version": "0.3.0"
+    },
+    {
+      "name": "MCP",
+      "endpoint": "https://mcp.agent.eth/",
+      "version": "2025-06-18"
+    },
+    {
+      "name": "OASF",
+      "endpoint": "ipfs://{cid}",
+      "version": "0.8",
+      "skills": [],
+      "domains": []
+    },
+    {
+      "name": "ENS",
+      "endpoint": "agent.eth",
+      "version": "v1"
+    },
+    {
+      "name": "email",
+      "endpoint": "mail@agent.com"
+    }
+  ],
+  "x402Support": false,
+  "active": true,
+  "registrations": [
+    {
+      "agentId": 42,
+      "agentRegistry": "stacks:1:SP000000000000000000002Q6VF78.identity-registry"
+    }
+  ],
+  "supportedTrust": [
+    "reputation",
+    "validation"
+  ]
 }
 ```
 
+### Required Fields
+
+- `type`: MUST be `"https://eips.ethereum.org/EIPS/eip-8004#registration-v1"`
+- `name`: Human-readable agent name
+- `description`: Natural language description of the agent's purpose and capabilities
+- `image`: URI pointing to agent avatar image
+
+### Optional Fields
+
+- `services`: Array of service endpoints (A2A, MCP, OASF, ENS, DID, web, email, etc.)
+- `x402Support`: Boolean indicating support for x402 payment protocol
+- `active`: Boolean indicating agent operational status
+- `registrations`: Array of on-chain registrations across multiple blockchains (see Multichain Identity section)
+- `supportedTrust`: Array of trust models supported by the agent (e.g., `"reputation"`, `"validation"`, `"crypto-economic"`, `"tee-attestation"`)
+
+The `services` array allows agents to advertise multiple communication endpoints. Each service entry contains a `name`, `endpoint`, and optional `version`. The flexibility of this structure enables agents to support emerging protocols while maintaining backward compatibility with existing standards.
+
 ## SIP-018 Signature Integration
 
-For `give-feedback-signed`, the structured data domain and message should follow SIP-018 [1] conventions. The message should include:
-- Agent ID
-- Score
-- Tags
-- Feedback URI
-- Expiry block height
+This standard uses SIP-018 [1] signed structured data for two operations: `set-agent-wallet-signed` in the Identity Registry and `give-feedback-signed` in the Reputation Registry.
 
-Wallets implementing feedback functionality should provide clear UI for users to understand what they are signing.
+### Hash Construction
+
+The SIP-018 message hash is constructed as follows:
+
+```clarity
+(sha256 (concat SIP018_PREFIX (concat domain-hash structured-data-hash)))
+```
+
+Where:
+- `SIP018_PREFIX` is `0x534950303138` (the ASCII string "SIP018" in hexadecimal)
+- `domain-hash` is `sha256(to-consensus-buff? domain)` where domain is `{name: (string-ascii 64), version: (string-ascii 64), chain-id: uint}`
+- `structured-data-hash` is `sha256(to-consensus-buff? message)` where message contains the function-specific fields
+- `to-consensus-buff?` is Clarity's native serialization format (analogous to EIP-712's typed data encoding)
+
+### Set Agent Wallet Message
+
+For `set-agent-wallet-signed`, the message structure is:
+
+```clarity
+{
+  agent-id: uint,
+  new-wallet: principal,
+  owner: principal,
+  deadline: uint
+}
+```
+
+The signature must be produced by the `new-wallet` principal to prove wallet ownership.
+
+### Give Feedback Signed Message
+
+For `give-feedback-signed`, the message structure is:
+
+```clarity
+{
+  agent-id: uint,
+  client: principal,
+  index-limit: uint,
+  expiry: uint,
+  signer: principal
+}
+```
+
+The signature must be produced by the `signer` (agent owner or approved operator) to authorize the client to submit feedback up to the specified index limit before the expiry block height.
+
+### Wallet Implementation
+
+Wallets implementing SIP-018 signing for agent registries should:
+- Display the domain (contract name, version, chain ID) prominently
+- Show all message fields in human-readable format
+- Warn users about deadline/expiry constraints
+- Use `secp256k1-recover?` for signature verification with the message hash as input
 
 ## Use Cases and Common Patterns
 

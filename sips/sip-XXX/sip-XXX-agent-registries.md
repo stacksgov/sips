@@ -1284,19 +1284,34 @@ The agent wallet system's primary security benefit is separation of concerns: th
 
 # Related Work
 
-## ERC-8004
+## ERC-8004 (Ethereum/Solidity)
 
-This SIP is designed to be compatible with ERC-8004 [3], the Agent Commerce Protocol on Ethereum. Both standards define the same three registries (Identity, Reputation, Validation) with equivalent functionality, enabling cross-chain agent identity.
+This SIP is designed to be compatible with ERC-8004 [3], the Agent Commerce Protocol on Ethereum. Both standards define the same three registries (Identity, Reputation, Validation) with equivalent functionality, enabling cross-chain agent identity via CAIP-2 [4] identifiers.
 
-Key differences in the Stacks implementation:
-- Uses Clarity traits instead of Solidity interfaces
-- Leverages SIP-018 [1] for signed structured data instead of EIP-712
-- Uses direct ownership maps instead of ERC-721 for identity (agents are not transferable)
-- Follows SIP-019 [2] notification patterns for events
+Key differences in the Stacks v2.0.0 implementation:
+- **Traits vs Interfaces**: Uses Clarity traits instead of Solidity interfaces
+- **NFT Standard**: Implements SIP-009 [5] NFT trait for agent identities (transferable, standard wallet/explorer integration) instead of ERC-721
+- **Signed Data**: Leverages SIP-018 [1] for signed structured data instead of EIP-712
+- **Signed Values**: Uses signed integer values with decimals (0-18) for reputation scores, supporting negative feedback and WAD normalization
+- **Agent Wallets**: Includes reserved metadata system for agent-controlled wallets separate from owner accounts
+- **Authorization Model**: Strict tx-sender authorization model (prevents delegation attacks) with optional operator approval
+- **Event Patterns**: Follows SIP-019 [2] notification patterns for token metadata updates
 
-## Other Agent Standards
+The Ethereum implementation is available at https://github.com/erc8004-org/erc8004-contracts.
 
-Various blockchain projects have proposed agent identity solutions, but most focus solely on identity without integrated reputation and validation. This standard's three-registry approach provides a more complete foundation for agent commerce.
+## Solana Program (s8004)
+
+A Solana Anchor implementation of ERC-8004 is available at https://github.com/Woody4618/s8004. The Solana program uses Account-based storage (PDAs) and Borsh serialization instead of map-based storage and Clarity's consensus buffers. Like the Stacks implementation, it supports CAIP-2 multichain identifiers using the format `solana:<chainId>:<programId>:<agentId>`.
+
+Key architectural differences from Stacks:
+- **Account Model**: Agents stored in Program Derived Accounts (PDAs) instead of NFT tokens
+- **Rent**: Requires rent-exempt balance for account storage (Solana's economic model)
+- **Concurrency**: Parallel transaction processing enabled by explicit account dependencies
+- **Serialization**: Uses Borsh instead of Clarity's consensus buffers
+
+## Cross-Chain Agent Identity
+
+All three implementations (Ethereum, Stacks, Solana) support the ERC-8004 registration file format, which includes a `registrations` array for tracking agent presence across multiple blockchains. This enables agents to maintain a single canonical metadata file while proving ownership of identities on multiple chains. Applications can resolve agent identities by fetching the registration file URI and validating on-chain ownership for each listed registration.
 
 # Backwards Compatibility
 

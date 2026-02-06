@@ -94,8 +94,8 @@ downsides:
 - These unmineable transactions remain in the mempool, unprocessed, until they
   age out
 
-With the upgrade to epoch 3.4, all reachable "rejectable" errors, will become
-includable errors.
+With the upgrade to epoch 3.4, all known reachable "rejectable" errors, will
+become includable errors.
 
 # Related Work
 

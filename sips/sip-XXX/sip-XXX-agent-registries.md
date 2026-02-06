@@ -905,6 +905,183 @@ Wallets implementing SIP-018 signing for agent registries should:
 - Warn users about deadline/expiry constraints
 - Use `secp256k1-recover?` for signature verification with the message hash as input
 
+## Authorization Model
+
+The v2.0.0 contracts implement a strict authorization model based on transaction sender identity and cross-contract authorization checks. This section documents the key patterns used throughout the registry implementations.
+
+### tx-sender vs contract-caller
+
+All ownership and authorization checks in v2.0.0 use `tx-sender` exclusively, never `contract-caller`. This is a critical security decision that prevents delegation attacks.
+
+**Why tx-sender?**
+
+Using `tx-sender` ensures that only the actual transaction originator can perform privileged operations. If contracts used `contract-caller` instead, a malicious intermediary contract could impersonate the owner by calling registry functions on behalf of users, even without explicit permission.
+
+**Example from identity-registry.clar:**
+
+```clarity
+(define-public (set-agent-uri (agent-id uint) (new-uri (string-utf8 512)))
+  (begin
+    (asserts! (is-authorized agent-id tx-sender) ERR_NOT_AUTHORIZED)
+    (map-set uris {agent-id: agent-id} new-uri)
+    ;; ...
+  )
+)
+```
+
+The `is-authorized` helper checks if `tx-sender` (not `contract-caller`) is either the NFT owner or an approved operator:
+
+```clarity
+(define-private (is-authorized (agent-id uint) (caller principal))
+  (let (
+    (owner-opt (nft-get-owner? agent-identity agent-id))
+  )
+    (match owner-opt owner
+      (or
+        (is-eq caller owner)
+        (is-approved-for-all agent-id caller)
+      )
+      false
+    )
+  )
+)
+```
+
+**Trade-off:** This approach prevents delegation through intermediary contracts. For delegated operations, owners must use `set-approval-for-all` to explicitly grant operator permissions instead of relying on contract-level delegation.
+
+### is-authorized-or-owner Pattern
+
+The Identity Registry exposes a public read-only function for cross-contract authorization checks:
+
+```clarity
+(define-read-only (is-authorized-or-owner (spender principal) (agent-id uint))
+  (let (
+    (owner (unwrap! (nft-get-owner? agent-identity agent-id) ERR_AGENT_NOT_FOUND))
+  )
+    (ok (or
+      (is-eq spender owner)
+      (is-approved-for-all agent-id spender)
+    ))
+  )
+)
+```
+
+This function returns `(response bool uint)`:
+- `(ok true)` if the spender is authorized (owner or approved operator)
+- `(ok false)` if the spender is not authorized
+- `(err u1001)` if the agent does not exist
+
+**Usage in reputation-registry.clar:**
+
+The Reputation Registry uses this function to prevent self-feedback. In the permissionless `give-feedback` function:
+
+```clarity
+(let (
+  (auth-check (contract-call? .identity-registry is-authorized-or-owner caller agent-id))
+)
+  ;; Verify agent exists (is-authorized-or-owner returns error if not)
+  (asserts! (is-ok auth-check) ERR_AGENT_NOT_FOUND)
+  ;; Verify caller is NOT authorized (prevent self-feedback)
+  (asserts! (not (unwrap-panic auth-check)) ERR_SELF_FEEDBACK)
+  ;; ... continue with feedback submission
+)
+```
+
+This pattern enables composable authorization across registry contracts while maintaining the tx-sender security model.
+
+### Agent Wallet System
+
+The Identity Registry includes a special metadata system for agent wallets through the reserved key `"agentWallet"`. This enables agents to control a separate wallet from their owner account—useful when the owner is a multisig or custody solution, but the agent needs a hot wallet for rapid transactions.
+
+**Reserved Key Protection:**
+
+The `"agentWallet"` key cannot be set via the standard `set-metadata` function or included in the `metadata-entries` array during `register-full`. Attempting to do so returns error u1004 (ERR_RESERVED_KEY).
+
+**Automatic Initialization:**
+
+When an agent is registered, the agent wallet is automatically set to the owner's address:
+
+```clarity
+(define-public (register-full
+  (token-uri (string-utf8 512))
+  (metadata-entries (list 10 {key: (string-utf8 128), value: (buff 512)}))
+)
+  (let ((agent-id (var-get next-agent-id)) (owner tx-sender))
+    ;; ... mint NFT and set URI ...
+    ;; Auto-set agent-wallet to owner
+    (map-set agent-wallets {agent-id: agent-id} owner)
+    ;; ...
+  )
+)
+```
+
+**Transfer Behavior:**
+
+When an agent identity NFT is transferred via the `transfer` function, the agent wallet is automatically cleared to prevent stale wallet associations:
+
+```clarity
+(define-public (transfer (token-id uint) (sender principal) (recipient principal))
+  (begin
+    (asserts! (is-eq tx-sender sender) ERR_INVALID_SENDER)
+    ;; ... authorization checks ...
+    ;; Clear agent wallet before transfer
+    (map-delete agent-wallets {agent-id: token-id})
+    (try! (nft-transfer? agent-identity token-id sender recipient))
+    ;; ...
+  )
+)
+```
+
+The new owner must then re-verify wallet ownership using one of the update methods below.
+
+**Update Methods:**
+
+Two functions allow updating the agent wallet, each proving wallet ownership differently:
+
+1. **Direct Update (Transaction Signature):**
+
+   ```clarity
+   (define-public (set-agent-wallet-direct (agent-id uint))
+     (let ((owner (unwrap! (nft-get-owner? agent-identity agent-id) ERR_AGENT_NOT_FOUND)))
+       ;; Check caller is authorized (owner or approved operator)
+       (asserts! (is-authorized agent-id tx-sender) ERR_NOT_AUTHORIZED)
+       ;; ... check wallet not already set to tx-sender ...
+       ;; Set new wallet
+       (map-set agent-wallets {agent-id: agent-id} tx-sender)
+       (ok true)
+     )
+   )
+   ```
+
+   The wallet proves ownership by being the transaction sender (`tx-sender`). Only the agent owner or an approved operator can initiate this call, but the wallet being set is always `tx-sender`.
+
+2. **Signed Update (SIP-018 Signature):**
+
+   ```clarity
+   (define-public (set-agent-wallet-signed
+     (agent-id uint)
+     (new-wallet principal)
+     (deadline uint)
+     (signature (buff 65))
+   )
+     (let ((owner (unwrap! (nft-get-owner? agent-identity agent-id) ERR_AGENT_NOT_FOUND)))
+       ;; Authorization check (caller must be owner or operator)
+       (asserts! (is-authorized agent-id tx-sender) ERR_NOT_AUTHORIZED)
+       ;; Deadline validation
+       (asserts! (<= current-height deadline) ERR_EXPIRED_SIGNATURE)
+       (asserts! (<= deadline (+ current-height MAX_DEADLINE_DELAY)) ERR_EXPIRED_SIGNATURE)
+       ;; Verify signature from new-wallet
+       ;; ... SIP-018 signature verification ...
+       (map-set agent-wallets {agent-id: agent-id} new-wallet)
+       (ok true)
+     )
+   )
+   ```
+
+   The new wallet proves ownership by providing a valid SIP-018 signature. The deadline must be the current block height or future, but within MAX_DEADLINE_DELAY (1500 blocks, approximately 5 minutes at 200s block times). This prevents replay attacks while allowing reasonable clock skew.
+
+The agent wallet can be read via `get-agent-wallet` (returns `(optional principal)`) and removed via `unset-agent-wallet`.
+
 ## Use Cases and Common Patterns
 
 The following patterns illustrate how agent registries can be used across applications:
@@ -926,6 +1103,184 @@ When displaying agent reputation:
 - Indicate whether feedback entries have been revoked
 - Display recent feedback with associated tags for context
 - Consider filtering by validation status for quality assurance
+
+# Security Considerations
+
+This section outlines potential security risks and recommended mitigations for implementations of the agent registry standard.
+
+## Sybil Attacks on Permissionless Feedback
+
+The Reputation Registry allows permissionless feedback by default—any principal can submit feedback for any agent without prior authorization. While this openness enables broad participation, it creates vulnerability to Sybil attacks where a single entity creates multiple client accounts to artificially inflate or deflate an agent's reputation.
+
+**Attack Scenario:**
+
+An attacker controls 100 principals and submits positive feedback from all of them to boost their own agent's reputation, or negative feedback to harm a competitor.
+
+**Built-in Protections:**
+
+1. **Self-feedback prevention**: The `give-feedback` function uses `is-authorized-or-owner` to verify the caller is not the agent owner or an approved operator. This prevents the simplest form of self-promotion.
+
+2. **Three authorization paths**: Agents can choose their feedback model:
+   - **Permissionless** (`give-feedback`): Anyone can submit feedback except the owner/operators
+   - **On-chain approval** (`give-feedback-approved`): Only pre-authorized clients can submit feedback
+   - **SIP-018 signed** (`give-feedback-signed`): Off-chain authorization with cryptographic signatures
+
+**Recommended Mitigations:**
+
+- **Application-level filtering**: Applications SHOULD filter feedback by trusted client lists rather than accepting all feedback equally. For example, only show feedback from clients who have been validated, have established reputations themselves, or have paid bonds.
+
+- **Meta-reputation systems**: Implement reputation-of-raters where client credibility is tracked. Weight feedback from high-reputation clients more heavily than unknown clients.
+
+- **Economic barriers**: Require clients to stake tokens or pay fees to submit feedback, making Sybil attacks economically infeasible at scale.
+
+- **Curated feedback**: Agents concerned about spam should use `approve-client` to pre-authorize trusted clients with index limits, or use `give-feedback-signed` for full off-chain control.
+
+- **Temporal analysis**: Monitor feedback submission patterns. Sudden bursts of feedback from new clients should be flagged for review.
+
+## On-Chain URI Pointers vs Full Data Storage
+
+The registry contracts store URI pointers (strings up to 512 characters) rather than full data on-chain. This design choice optimizes for gas costs and flexibility but introduces availability and mutability risks.
+
+**Design Rationale:**
+
+Storing full agent registration files, feedback details, or validation reports on-chain would be prohibitively expensive and inflexible. Large JSON files would cost thousands of dollars in transaction fees and couldn't be updated without redeploying contracts.
+
+**Risks:**
+
+1. **URI target disappearance**: A URI pointing to `https://example.com/agent.json` will fail if the server goes offline or the domain expires.
+
+2. **URI target mutation**: Centrally-hosted URIs can be changed after registration, potentially misleading users who expect immutable records.
+
+3. **Censorship**: Centralized hosting providers can remove content or block access.
+
+**Recommended Mitigations:**
+
+- **Content-addressed storage**: Use IPFS URIs with CID (Content Identifier) encoding. Example: `ipfs://QmX7M9CiYXjVeFnrSUdREuH3QdFkX3vKkMcfLH2RuH7RjN`. The CID cryptographically guarantees content integrity—if the content changes, the CID changes.
+
+- **Hash verification**: For non-content-addressed URIs, include hash fields (`feedback-hash`, `response-hash`, `request-hash`) in function calls. Applications should verify the hash matches the fetched content.
+
+- **Redundant storage**: Mirror critical URIs across multiple storage providers (IPFS, Arweave, Filecoin, centralized backups).
+
+- **On-chain fallback**: For critical metadata, use base64-encoded `data:` URIs to store content directly on-chain: `data:application/json;base64,eyJ0eXBlIjoi...`
+
+- **Monitoring services**: Implement URI availability monitoring and alert systems for broken links.
+
+**Current Implementation:**
+
+- `identity-registry`: Stores `token-uri` (512 char string)
+- `reputation-registry`: Stores feedback values on-chain, emits `feedback-uri` in events (not stored)
+- `validation-registry`: Stores `request-uri` and `response-uri` (512 char strings each)
+
+## Validator Incentive Alignment
+
+The Validation Registry provides a standard interface for third-party validators to submit verification responses but does not include built-in economic incentives. This creates a free-rider problem where validators lack motivation to provide accurate, timely responses.
+
+**Problem:**
+
+Without staking, bonding, or payment mechanisms, validators can:
+- Submit inaccurate responses with no penalty
+- Delay responses indefinitely
+- Collude with agents to provide favorable scores
+- Abandon requests after accepting them
+
+**Progressive Validation Design:**
+
+The v2.0.0 `validation-response` function allows validators to submit multiple updates per request (preliminary → final scores) without monotonic constraints. This supports iterative validation workflows but also enables validators to change scores arbitrarily.
+
+**Recommended Mitigations:**
+
+1. **Wrapper contracts with staking**: Deploy proxy contracts that require validators to stake tokens before accepting requests. Slashing conditions can penalize late or inaccurate responses.
+
+2. **Meta-validation**: Track validator accuracy by comparing responses across multiple validators for the same agent. Validators with poor accuracy records should be deprioritized.
+
+3. **Multi-validator aggregation**: Request validation from multiple independent validators and aggregate scores (median, weighted average). This reduces reliance on any single validator's honesty.
+
+4. **Validator bonds**: Implement challenge-response systems where validators post bonds that can be forfeited if their responses are successfully disputed.
+
+5. **Reputation of validators**: Maintain validator reputation scores based on historical accuracy, response time, and client satisfaction. Applications should filter validators by reputation.
+
+6. **Payment integration**: Integrate with payment protocols (x402, direct transfers) to compensate validators for work. Payments can be released upon completion or held in escrow subject to dispute resolution.
+
+**Example Staking Wrapper Pattern:**
+
+```clarity
+(define-public (request-validation-with-bond (validator principal) (agent-id uint) ...)
+  (begin
+    ;; Require validator to have staked minimum bond
+    (asserts! (>= (get-validator-stake validator) MIN_STAKE) ERR_INSUFFICIENT_STAKE)
+    ;; Forward request to validation-registry
+    (contract-call? .validation-registry validation-request validator agent-id ...)
+    ;; Lock validator stake until response or timeout
+  )
+)
+```
+
+## tx-sender Authorization and Delegation
+
+The exclusive use of `tx-sender` for authorization checks provides strong security guarantees but limits delegation patterns.
+
+**Security Benefit:**
+
+By checking `tx-sender` instead of `contract-caller`, the registries prevent intermediary contract attacks. A malicious contract cannot impersonate the owner by forwarding calls, because `tx-sender` always represents the transaction originator, not the immediate caller.
+
+**Example Attack (prevented by tx-sender):**
+
+If contracts used `contract-caller`:
+1. Alice owns agent #42
+2. Bob deploys a malicious contract that calls `set-agent-uri(42, "evil-uri")`
+3. Bob tricks Alice into calling his contract for an unrelated purpose
+4. The malicious contract's call to `set-agent-uri` would have `contract-caller = malicious-contract`
+5. If authorization checked `contract-caller`, the call would fail (good)
+6. But if the malicious contract first called another intermediary that then called the registry, `contract-caller` could be spoofed
+
+Using `tx-sender` prevents this entire class of attacks because `tx-sender` always equals Alice regardless of call chain depth.
+
+**Trade-off:**
+
+The downside is that delegation through smart contracts is not supported. For example, a DAO contract cannot directly manage agents on behalf of members. However, the `set-approval-for-all` function provides an alternative: owners can explicitly grant operator permissions to contracts, enabling controlled delegation.
+
+**Recommendation:**
+
+For DAO or multisig agent management, use `set-approval-for-all` to grant the DAO/multisig contract operator privileges. This provides explicit, revocable delegation without compromising the tx-sender security model.
+
+## Agent Wallet Security
+
+The agent wallet system introduces additional security considerations around key management and transfer handling.
+
+**Automatic Clearing on Transfer:**
+
+When an agent identity NFT is transferred, the `agentWallet` metadata is automatically cleared (set to none). This prevents stale wallet associations where the old owner retains payment rights after transferring ownership.
+
+**Example scenario (mitigated):**
+1. Alice owns agent #42 with wallet set to 0xABC
+2. Alice transfers agent #42 to Bob
+3. Without automatic clearing, 0xABC would still receive payments intended for Bob
+4. With automatic clearing, Bob must re-verify a new wallet, ensuring payment control matches ownership
+
+**Deadline Validation:**
+
+The `set-agent-wallet-signed` function requires a `deadline` parameter that must satisfy:
+- `deadline >= stacks-block-height` (not expired)
+- `deadline <= stacks-block-height + MAX_DEADLINE_DELAY` (not too far in future)
+
+Where `MAX_DEADLINE_DELAY = 1500` blocks (approximately 5 minutes at 200-second block times).
+
+**Purpose:**
+- **Replay attack prevention**: Signatures expire after the deadline, preventing old signatures from being reused
+- **Clock skew tolerance**: The future deadline allows for reasonable network propagation delays
+- **Bounded validity**: MAX_DEADLINE_DELAY prevents signatures from being valid indefinitely
+
+**Chain-ID Binding:**
+
+SIP-018 signatures include the `chain-id` in the domain hash, preventing cross-chain replay attacks. A signature valid on testnet (chain-id 2147483648) cannot be replayed on mainnet (chain-id 1).
+
+**Key Rotation Recommendation:**
+
+Applications should encourage users to rotate agent wallet keys regularly, especially for high-value agents. Since `set-agent-wallet-signed` signatures expire quickly (1500 blocks maximum), there's no long-term signature reuse risk, but compromised keys should still be rotated immediately.
+
+**Wallet Separation Benefits:**
+
+The agent wallet system's primary security benefit is separation of concerns: the owner key (which holds the NFT) can be a cold wallet or multisig, while the agent wallet can be a hot wallet used for frequent micropayments or protocol interactions. This limits exposure if the agent wallet is compromised—the attacker gains payment routing but not identity ownership.
 
 # Related Work
 

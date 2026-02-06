@@ -24,8 +24,7 @@ Sign-off:
 
 Discussions-To:
 
-- Link to where previous discussions took place. For example a mailing list or a
-  Stacks Forum thread.
+- https://forum.stacks.org/t/clarity-5-and-epoch-3-4/18659
 
 # Abstract
 
@@ -72,7 +71,7 @@ Currently, the Clarity VM limits the call stack of a transaction execution to a
 depth of 64 and several user applications have been hitting this limit recently.
 This value was not specified in any previous SIPs, but was chosen to constrain
 memory usage by the VM. Upon further testing, it has been determined that this
-value can safely be increased to 128 without imposing u nreasonable requirements
+value can safely be increased to 128 without imposing unreasonable requirements
 on Stacks node runners. Effective in epoch 3.4, the stack depth will be set
 to 128.
 

@@ -346,108 +346,150 @@ The Reputation Registry enables clients to provide feedback on agents and allows
 
 #### Approve Client
 
-`(approve-client ((agent-id uint) (client principal) (max-index uint)) (response bool uint))`
+`(approve-client ((agent-id uint) (client principal) (index-limit uint)) (response bool uint))`
 
-Pre-authorize a client to provide feedback for an agent up to the specified index limit. Only the agent owner or approved operator may call this function.
-
-This method must be defined with `define-public`.
-
-| error code | reason |
-| ---------- | ------ |
-| u3000 | Caller is not authorized |
-| u3001 | Agent does not exist |
-
-#### Give Feedback
-
-`(give-feedback ((agent-id uint) (score uint) (tags (list 10 (string-utf8 64))) (feedback-uri (string-utf8 512))) (response uint uint))`
-
-Submit feedback for an agent. Requires prior on-chain approval via `approve-client`. Score must be between 0 and 100. Tags provide categorical labels for the feedback. The feedback-uri points to additional off-chain feedback data. Returns the feedback index.
+Pre-authorize a client to provide feedback for an agent up to the specified index limit. Only the agent owner or approved operator may call this function. This enables rate-limited, on-chain approval for trusted clients.
 
 This method must be defined with `define-public`.
 
 | error code | reason |
 | ---------- | ------ |
 | u3000 | Caller is not authorized |
+
+#### Give Feedback (Permissionless)
+
+`(give-feedback ((agent-id uint) (value int) (value-decimals uint) (tag1 (string-utf8 64)) (tag2 (string-utf8 64)) (endpoint (string-utf8 512)) (feedback-uri (string-utf8 512)) (feedback-hash (buff 32))) (response uint uint))`
+
+Submit feedback for an agent without prior authorization. Anyone may submit feedback except the agent owner or approved operators (self-feedback is blocked). The value is a signed integer with decimals 0-18 for high-precision ratings (WAD-normalized in summaries). Tags provide categorical labels. The endpoint is emit-only (for off-chain routing), while feedback-uri and feedback-hash provide content verification. Returns the feedback index.
+
+This method must be defined with `define-public`.
+
+| error code | reason |
+| ---------- | ------ |
 | u3001 | Agent does not exist |
-| u3004 | Score exceeds maximum (100) |
 | u3005 | Cannot provide feedback on self |
-| u3010 | Feedback URI is empty |
+| u3011 | Invalid decimals (exceeds 18) |
 
-#### Give Feedback Signed
+#### Give Feedback (Approved)
 
-`(give-feedback-signed ((agent-id uint) (score uint) (tags (list 10 (string-utf8 64))) (feedback-uri (string-utf8 512)) (signature (buff 65)) (auth-expiry uint)) (response uint uint))`
+`(give-feedback-approved ((agent-id uint) (value int) (value-decimals uint) (tag1 (string-utf8 64)) (tag2 (string-utf8 64)) (endpoint (string-utf8 512)) (feedback-uri (string-utf8 512)) (feedback-hash (buff 32))) (response uint uint))`
 
-Submit feedback using SIP-018 [1] signed authorization instead of on-chain approval. The signature must be valid according to SIP-018 structured data signing, and the auth-expiry block height must not have passed.
+Submit feedback with on-chain approval via `approve-client`. The client must have been pre-authorized with an index limit greater than or equal to the next feedback index. Self-feedback is blocked. Returns the feedback index.
 
 This method must be defined with `define-public`.
 
 | error code | reason |
 | ---------- | ------ |
 | u3001 | Agent does not exist |
-| u3004 | Score exceeds maximum |
+| u3005 | Cannot provide feedback on self |
+| u3009 | Index limit exceeded |
+| u3011 | Invalid decimals (exceeds 18) |
+
+#### Give Feedback (Signed)
+
+`(give-feedback-signed ((agent-id uint) (value int) (value-decimals uint) (tag1 (string-utf8 64)) (tag2 (string-utf8 64)) (endpoint (string-utf8 512)) (feedback-uri (string-utf8 512)) (feedback-hash (buff 32)) (signer principal) (index-limit uint) (expiry uint) (signature (buff 65))) (response uint uint))`
+
+Submit feedback using SIP-018 signed authorization. The signer must be the agent owner or approved operator, and must sign a structured data message containing agent-id, client (tx-sender), index-limit, and expiry. The signature is verified using secp256k1 recovery. Self-feedback is blocked. Returns the feedback index.
+
+This method must be defined with `define-public`.
+
+| error code | reason |
+| ---------- | ------ |
+| u3000 | Signer is not authorized |
+| u3001 | Agent does not exist |
 | u3005 | Cannot provide feedback on self |
 | u3007 | Signature verification failed |
 | u3008 | Authorization has expired |
-| u3010 | Feedback URI is empty |
+| u3009 | Index limit exceeded |
+| u3011 | Invalid decimals (exceeds 18) |
 
 #### Revoke Feedback
 
 `(revoke-feedback ((agent-id uint) (index uint)) (response bool uint))`
 
-Revoke previously submitted feedback. Only the original feedback submitter may revoke their feedback.
+Revoke previously submitted feedback. Only the original feedback submitter (tx-sender) may revoke their own feedback. Revoked feedback is excluded from summary aggregations.
 
 This method must be defined with `define-public`.
 
 | error code | reason |
 | ---------- | ------ |
-| u3000 | Caller is not authorized |
 | u3002 | Feedback entry not found |
 | u3003 | Feedback already revoked |
+| u3006 | Invalid index (must be > 0) |
 
 #### Append Response
 
-`(append-response ((agent-id uint) (index uint) (response-uri (string-utf8 512))) (response bool uint))`
+`(append-response ((agent-id uint) (client principal) (index uint) (response-uri (string-utf8 512)) (response-hash (buff 32))) (response bool uint))`
 
-Allow an agent to respond to feedback. Only the agent owner or approved operator may respond.
+Allow anyone to respond to feedback. Multiple responders can respond to the same feedback entry, and each responder can respond multiple times (tracked via response-count). The response-uri must not be empty.
 
 This method must be defined with `define-public`.
 
 | error code | reason |
 | ---------- | ------ |
-| u3000 | Caller is not authorized |
 | u3002 | Feedback entry not found |
+| u3006 | Invalid index (must be > 0) |
+| u3010 | Response URI is empty |
 
 #### Read Feedback
 
-`(read-feedback ((agent-id uint) (client principal) (index uint)) (response {score: uint, tags: (list 10 (string-utf8 64)), feedback-uri: (string-utf8 512), revoked: bool, block-height: uint} uint))`
+`(read-feedback ((agent-id uint) (client principal) (index uint)) (response (optional {value: int, value-decimals: uint, tag1: (string-utf8 64), tag2: (string-utf8 64), is-revoked: bool}) uint))`
 
-Retrieve a specific feedback entry.
+Retrieve a specific feedback entry. Returns none if the feedback does not exist.
 
 This method should be defined as read-only, i.e. `define-read-only`.
 
-| error code | reason |
-| ---------- | ------ |
-| u3002 | Feedback entry not found |
-
 #### Get Summary
 
-`(get-summary ((agent-id uint) (filter-client (optional principal)) (filter-tags (optional (list 10 (string-utf8 64))))) (response {count: uint, average-score: uint, total-score: uint} uint))`
+`(get-summary ((agent-id uint) (client-addresses (list 200 principal)) (tag1 (string-utf8 64)) (tag2 (string-utf8 64))) (response {count: uint, summary-value: int, summary-value-decimals: uint} uint))`
 
-Calculate aggregate reputation metrics for an agent, optionally filtered by client or tags. Returns the count of feedback entries, average score, and total score.
+Calculate aggregate reputation metrics for an agent across specified clients and optional tag filters. All feedback values are normalized to WAD (18 decimals) for averaging, then scaled back to the mode (most common) decimals value among the feedback entries. Empty tag strings match all values. Returns empty summary if client-addresses is empty or no matching feedback exists.
 
 This method should be defined as read-only, i.e. `define-read-only`.
 
 #### Read All Feedback
 
-`(read-all-feedback ((agent-id uint) (offset uint) (limit uint)) (response (list 50 {client: principal, index: uint, score: uint, tags: (list 10 (string-utf8 64)), revoked: bool}) uint))`
+`(read-all-feedback ((agent-id uint) (opt-clients (optional (list 50 principal))) (opt-tag1 (optional (string-utf8 64))) (opt-tag2 (optional (string-utf8 64))) (include-revoked bool)) (response (list 50 {client: principal, index: uint, value: int, value-decimals: uint, tag1: (string-utf8 64), tag2: (string-utf8 64), is-revoked: bool}) uint))`
 
-Retrieve paginated feedback entries for an agent. Maximum limit is 50 entries per call.
+Retrieve feedback entries for an agent with optional filters. If opt-clients is none, reads from all clients who have given feedback. Tag filters are optional. Maximum 50 entries returned.
+
+This method should be defined as read-only, i.e. `define-read-only`.
+
+#### Get Last Index
+
+`(get-last-index ((agent-id uint) (client principal)) (response uint uint))`
+
+Get the last feedback index submitted by a client for an agent. Returns 0 if no feedback has been submitted.
+
+This method should be defined as read-only, i.e. `define-read-only`.
+
+#### Get Clients
+
+`(get-clients ((agent-id uint)) (response (optional (list 1024 principal)) uint))`
+
+Get the list of all clients who have given feedback for an agent.
+
+This method should be defined as read-only, i.e. `define-read-only`.
+
+#### Get Approved Limit
+
+`(get-approved-limit ((agent-id uint) (client principal)) (response uint uint))`
+
+Get the approved index limit for a client. Returns 0 if no approval exists.
+
+This method should be defined as read-only, i.e. `define-read-only`.
+
+#### Get Response Count
+
+`(get-response-count ((agent-id uint) (opt-client (optional principal)) (opt-feedback-index (optional uint)) (opt-responders (optional (list 200 principal)))) (response uint uint))`
+
+Flexible response counting with optional filters. Can count responses across all clients, a specific client, a specific feedback entry, or specific responders. If opt-client is none, counts across all clients. If opt-feedback-index is none or 0, counts all feedback for the client(s). If opt-responders is provided, only counts responses from those principals.
 
 This method should be defined as read-only, i.e. `define-read-only`.
 
 #### Get Responders
 
-`(get-responders ((agent-id uint) (index uint)) (response (list 10 principal) uint))`
+`(get-responders ((agent-id uint) (client principal) (index uint)) (response (optional (list 256 principal)) uint))`
 
 Get the list of principals who have responded to a specific feedback entry.
 
@@ -461,29 +503,44 @@ This method should be defined as read-only, i.e. `define-read-only`.
     ;; Pre-authorize a client to provide feedback
     (approve-client (uint principal uint) (response bool uint))
 
-    ;; Submit feedback with on-chain approval
-    (give-feedback (uint uint (list 10 (string-utf8 64)) (string-utf8 512)) (response uint uint))
+    ;; Submit feedback (permissionless)
+    (give-feedback (uint int uint (string-utf8 64) (string-utf8 64) (string-utf8 512) (string-utf8 512) (buff 32)) (response uint uint))
 
-    ;; Submit feedback with SIP-018 signature
-    (give-feedback-signed (uint uint (list 10 (string-utf8 64)) (string-utf8 512) (buff 65) uint) (response uint uint))
+    ;; Submit feedback (on-chain approval)
+    (give-feedback-approved (uint int uint (string-utf8 64) (string-utf8 64) (string-utf8 512) (string-utf8 512) (buff 32)) (response uint uint))
+
+    ;; Submit feedback (SIP-018 signature)
+    (give-feedback-signed (uint int uint (string-utf8 64) (string-utf8 64) (string-utf8 512) (string-utf8 512) (buff 32) principal uint uint (buff 65)) (response uint uint))
 
     ;; Revoke submitted feedback
     (revoke-feedback (uint uint) (response bool uint))
 
     ;; Respond to feedback
-    (append-response (uint uint (string-utf8 512)) (response bool uint))
+    (append-response (uint principal uint (string-utf8 512) (buff 32)) (response bool uint))
 
     ;; Read single feedback entry
-    (read-feedback (uint principal uint) (response {score: uint, tags: (list 10 (string-utf8 64)), feedback-uri: (string-utf8 512), revoked: bool, block-height: uint} uint))
+    (read-feedback (uint principal uint) (response (optional {value: int, value-decimals: uint, tag1: (string-utf8 64), tag2: (string-utf8 64), is-revoked: bool}) uint))
 
-    ;; Get aggregate reputation summary
-    (get-summary (uint (optional principal) (optional (list 10 (string-utf8 64)))) (response {count: uint, average-score: uint, total-score: uint} uint))
+    ;; Get aggregate reputation summary (WAD-normalized)
+    (get-summary (uint (list 200 principal) (string-utf8 64) (string-utf8 64)) (response {count: uint, summary-value: int, summary-value-decimals: uint} uint))
 
-    ;; Read paginated feedback
-    (read-all-feedback (uint uint uint) (response (list 50 {client: principal, index: uint, score: uint, tags: (list 10 (string-utf8 64)), revoked: bool}) uint))
+    ;; Read filtered feedback
+    (read-all-feedback (uint (optional (list 50 principal)) (optional (string-utf8 64)) (optional (string-utf8 64)) bool) (response (list 50 {client: principal, index: uint, value: int, value-decimals: uint, tag1: (string-utf8 64), tag2: (string-utf8 64), is-revoked: bool}) uint))
+
+    ;; Get last feedback index for a client
+    (get-last-index (uint principal) (response uint uint))
+
+    ;; Get all clients who gave feedback
+    (get-clients (uint) (response (optional (list 1024 principal)) uint))
+
+    ;; Get approved index limit for a client
+    (get-approved-limit (uint principal) (response uint uint))
+
+    ;; Get response count with optional filters
+    (get-response-count (uint (optional principal) (optional uint) (optional (list 200 principal))) (response uint uint))
 
     ;; Get responders to feedback
-    (get-responders (uint uint) (response (list 10 principal) uint))
+    (get-responders (uint principal uint) (response (optional (list 256 principal)) uint))
   )
 )
 ```

@@ -553,9 +553,9 @@ The Validation Registry enables third-party validators to approve or reject agen
 
 #### Validation Request
 
-`(validation-request ((agent-id uint) (validator principal) (request-hash (buff 32))) (response bool uint))`
+`(validation-request ((validator principal) (agent-id uint) (request-uri (string-utf8 512)) (request-hash (buff 32))) (response bool uint))`
 
-Request validation from a specific validator. Only the agent owner or approved operator may initiate a request. The request-hash is a unique identifier for this validation request.
+Request validation from a specific validator. Only the agent owner or approved operator may initiate a request. Creates an initial validation record with response=0 and has-response=false. The request-uri points to off-chain validation request details, and the request-hash is a unique identifier for this validation request.
 
 This method must be defined with `define-public`.
 
@@ -568,9 +568,9 @@ This method must be defined with `define-public`.
 
 #### Validation Response
 
-`(validation-response ((request-hash (buff 32)) (score uint) (response-hash (buff 32)) (tag (string-utf8 64))) (response bool uint))`
+`(validation-response ((request-hash (buff 32)) (response uint) (response-uri (string-utf8 512)) (response-hash (buff 32)) (tag (string-utf8 64))) (response bool uint))`
 
-Submit a validation response. Only the designated validator for the request may respond. Score must be between 0 and 100, where 0 indicates rejection and higher scores indicate varying levels of approval.
+Submit a validation response. Only the designated validator for the request may respond. This function supports progressive validation and can be called multiple times to update the response score, response-uri, response-hash, and tag. The response score must be between 0 and 100, where 0 indicates rejection and higher scores indicate varying levels of approval. There is no monotonic requirement, so the response score can decrease in subsequent calls (e.g., from preliminary to final assessment). The response-uri points to off-chain validation response details.
 
 This method must be defined with `define-public`.
 
@@ -578,47 +578,43 @@ This method must be defined with `define-public`.
 | ---------- | ------ |
 | u2000 | Caller is not the designated validator |
 | u2002 | Validation request not found |
-| u2005 | Score exceeds maximum (100) |
+| u2005 | Invalid response (exceeds 100) |
 
 #### Get Validation Status
 
-`(get-validation-status ((request-hash (buff 32))) (response {validator: principal, agent-id: uint, score: uint, response-hash: (buff 32), tag: (string-utf8 64), last-update: uint} uint))`
+`(get-validation-status ((request-hash (buff 32))) (optional {validator: principal, agent-id: uint, response: uint, response-hash: (buff 32), tag: (string-utf8 64), last-update: uint, has-response: bool}))`
 
-Retrieve the status of a validation request.
+Retrieve the status of a validation request. Returns none if the validation is not found. The has-response field indicates whether the validator has provided a response (false after validation-request, true after first validation-response call). The response field (renamed from score for clarity) contains the validation score.
 
 This method should be defined as read-only, i.e. `define-read-only`.
 
-| error code | reason |
-| ---------- | ------ |
-| u2002 | Validation not found |
-
 #### Get Summary
 
-`(get-summary ((agent-id uint) (filter-validators (optional (list 10 principal))) (filter-tags (optional (list 10 (string-utf8 64))))) (response {count: uint, average-score: uint, total-score: uint} uint))`
+`(get-summary ((agent-id uint) (opt-validators (optional (list 200 principal))) (opt-tag (optional (string-utf8 64)))) {count: uint, avg-response: uint})`
 
-Calculate aggregate validation metrics for an agent, optionally filtered by validators or tags.
+Calculate aggregate validation metrics for an agent, optionally filtered by validators and a single tag. The opt-tag parameter accepts a single optional string instead of a list - an empty string or none matches all tags. Only validations where has-response is true are counted in the aggregation. Returns a tuple with count (number of matching validations) and avg-response (average validation score), or {count: 0, avg-response: 0} if no matching validations exist.
 
 This method should be defined as read-only, i.e. `define-read-only`.
 
 #### Get Agent Validations
 
-`(get-agent-validations ((agent-id uint)) (response (list 1024 (buff 32)) uint))`
+`(get-agent-validations ((agent-id uint)) (optional (list 1024 (buff 32))))`
 
-Get all validation request hashes for an agent.
+Get all validation request hashes for an agent. Returns none if the agent has no validations.
 
 This method should be defined as read-only, i.e. `define-read-only`.
 
 #### Get Validator Requests
 
-`(get-validator-requests ((validator principal)) (response (list 1024 (buff 32)) uint))`
+`(get-validator-requests ((validator principal)) (optional (list 1024 (buff 32))))`
 
-Get all validation request hashes assigned to a validator.
+Get all validation request hashes assigned to a validator. Returns none if the validator has no requests.
 
 This method should be defined as read-only, i.e. `define-read-only`.
 
 #### Get Identity Registry
 
-`(get-identity-registry () (response principal uint))`
+`(get-identity-registry () principal)`
 
 Return the principal of the linked Identity Registry contract.
 
@@ -626,7 +622,7 @@ This method should be defined as read-only, i.e. `define-read-only`.
 
 #### Get Version
 
-`(get-version () (response (string-ascii 16) uint))`
+`(get-version () (string-utf8 8))`
 
 Return the contract version string.
 
@@ -638,28 +634,28 @@ This method should be defined as read-only, i.e. `define-read-only`.
 (define-trait validation-registry-trait
   (
     ;; Request validation from a validator
-    (validation-request (uint principal (buff 32)) (response bool uint))
+    (validation-request (principal uint (string-utf8 512) (buff 32)) (response bool uint))
 
-    ;; Submit validation response
-    (validation-response ((buff 32) uint (buff 32) (string-utf8 64)) (response bool uint))
+    ;; Submit validation response (progressive: can be called multiple times)
+    (validation-response ((buff 32) uint (string-utf8 512) (buff 32) (string-utf8 64)) (response bool uint))
 
-    ;; Get validation status
-    (get-validation-status ((buff 32)) (response {validator: principal, agent-id: uint, score: uint, response-hash: (buff 32), tag: (string-utf8 64), last-update: uint} uint))
+    ;; Get validation status (returns none if not found)
+    (get-validation-status ((buff 32)) (optional {validator: principal, agent-id: uint, response: uint, response-hash: (buff 32), tag: (string-utf8 64), last-update: uint, has-response: bool}))
 
-    ;; Get aggregate validation summary
-    (get-summary (uint (optional (list 10 principal)) (optional (list 10 (string-utf8 64)))) (response {count: uint, average-score: uint, total-score: uint} uint))
+    ;; Get aggregate validation summary (only counts entries with has-response=true)
+    (get-summary (uint (optional (list 200 principal)) (optional (string-utf8 64))) {count: uint, avg-response: uint})
 
     ;; Get all validations for an agent
-    (get-agent-validations (uint) (response (list 1024 (buff 32)) uint))
+    (get-agent-validations (uint) (optional (list 1024 (buff 32))))
 
     ;; Get all requests for a validator
-    (get-validator-requests (principal) (response (list 1024 (buff 32)) uint))
+    (get-validator-requests (principal) (optional (list 1024 (buff 32))))
 
     ;; Get linked identity registry
-    (get-identity-registry () (response principal uint))
+    (get-identity-registry () principal)
 
     ;; Get contract version
-    (get-version () (response (string-ascii 16) uint))
+    (get-version () (string-utf8 8))
   )
 )
 ```

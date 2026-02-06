@@ -1331,7 +1331,8 @@ This SIP will be considered activated when:
 
 Reference implementations are available at:
 - Stacks (Clarity): https://github.com/aibtcdev/erc-8004-stacks
-- Ethereum (Solidity): https://github.com/erc-8004/erc-8004-contracts
+- Ethereum (Solidity): https://github.com/erc8004-org/erc8004-contracts
+- Solana (Anchor): https://github.com/Woody4618/s8004
 
 ## Testnet Deployments
 

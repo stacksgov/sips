@@ -28,7 +28,7 @@ Discussions-To:
 
 # Abstract
 
-This SIP defines a standard set of traits for AI agent registries on the Stacks blockchain. It establishes three core registries: an Identity Registry for agent registration and ownership, a Reputation Registry for client feedback and scoring, and a Validation Registry for third-party verification. These traits enable interoperable agent identity, reputation tracking, and validation across applications built on Stacks, while maintaining compatibility with the ERC-8004 Agent Commerce Protocol for cross-chain agent identity.
+This SIP defines a standard set of traits for AI agent registries on the Stacks blockchain. It establishes three core registries: an Identity Registry implementing the SIP-009 NFT trait for agent registration and ownership, a Reputation Registry supporting signed value scoring with WAD normalization and three authorization paths (permissionless, on-chain approval, SIP-018 signed), and a Validation Registry enabling progressive third-party verification responses. The Identity Registry includes an agent wallet system via reserved metadata keys, enabling agents to control their own wallets separate from owner accounts. These traits enable interoperable agent identity, reputation tracking, and validation across applications built on Stacks, while maintaining compatibility with the ERC-8004 Agent Commerce Protocol for cross-chain agent identity.
 
 # Copyright
 
@@ -40,11 +40,11 @@ As AI agents become increasingly prevalent in blockchain ecosystems, there is a 
 
 This SIP addresses three core requirements for agent commerce:
 
-1. **Identity**: Agents need unique, verifiable identities with associated metadata and URIs pointing to off-chain information.
+1. **Identity**: Agents need unique, verifiable identities with associated metadata and URIs pointing to off-chain information. By implementing the SIP-009 NFT trait, agent identities gain standard wallet visibility, explorer integration, and transfer event tracking. The registry also supports an agent wallet system through reserved metadata keys, enabling agents to control separate wallets from their owner accounts—agents can prove wallet ownership via transaction signatures (tx-sender) or owners can provide SIP-018 signatures to update the wallet.
 
-2. **Reputation**: Clients interacting with agents need a way to provide feedback and view aggregated reputation scores. This feedback system must support both on-chain approval and off-chain signature-based authorization via SIP-018 [1].
+2. **Reputation**: Clients interacting with agents need a way to provide feedback and view aggregated reputation scores using signed values (integer value + decimals 0-18) that support negative feedback and high-precision ratings. The feedback system operates permissionlessly by default (no pre-approval required), with self-feedback blocked via cross-contract authorization checks. Agents can optionally enable on-chain approval or accept SIP-018 signed feedback, providing three distinct authorization paths to balance openness with control.
 
-3. **Validation**: Third-party validators (such as auditors, compliance services, or capability verifiers) need a standardized way to approve or reject agents based on specific criteria.
+3. **Validation**: Third-party validators (such as auditors, compliance services, or capability verifiers) need a standardized way to approve or reject agents based on specific criteria. The validation system supports progressive responses, allowing validators to submit multiple updates per request (e.g., preliminary → final scores) following a soft-to-hard finality workflow without monotonic constraints.
 
 The Stacks blockchain's programming language, Clarity, provides built-in primitives for defining traits that allow different smart contracts to interoperate. This SIP defines traits for agent registries that any compliant implementation must follow, enabling wallets, applications, and other contracts to interact with agent registries in a consistent manner.
 
@@ -56,7 +56,7 @@ The agent registry standard consists of three separate traits, each addressing a
 
 ## Identity Registry Trait
 
-The Identity Registry manages agent registration, ownership, and metadata. Unlike SIP-009 NFTs, this registry uses direct ownership maps rather than NFT traits, as agents are not intended to be freely transferable assets.
+The Identity Registry manages agent registration, ownership, and metadata. It implements the SIP-009 NFT trait, providing standard wallet and explorer compatibility while maintaining sequential agent ID assignment and cross-contract authorization checks.
 
 ### Trait Functions
 

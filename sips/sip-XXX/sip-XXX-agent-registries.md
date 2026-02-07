@@ -276,64 +276,43 @@ This method should be defined as read-only, i.e. `define-read-only`.
 
 ### Identity Registry Trait Implementation
 
+**Design Rationale:** The trait only includes public state-changing functions and response-wrapped read-only functions (SIP-009 trait functions + `is-authorized-or-owner`). Clarity traits can only enforce function signatures that return `(response ...)` types. Read-only functions that return raw types like `(optional principal)`, `bool`, or `(string-utf8 8)` (`owner-of`, `get-uri`, `get-metadata`, `is-approved-for-all`, `get-agent-wallet`, `get-version`) are not included in the trait because Clarity cannot enforce their signatures via the trait system. These functions are still part of the implementation contract but exist outside the trait definition.
+
 ```clarity
+;; title: identity-registry-trait
+;; version: 2.0.0
+;; summary: Trait definition for ERC-8004 Identity Registry
+;; description: Defines the interface for identity registry contracts. Includes all public state-changing functions and response-wrapped read-only functions (SIP-009 + is-authorized-or-owner).
+
 (define-trait identity-registry-trait
   (
-    ;; Register a new agent with empty URI
+    ;; Registration functions
     (register () (response uint uint))
-
-    ;; Register a new agent with URI
     (register-with-uri ((string-utf8 512)) (response uint uint))
-
-    ;; Register a new agent with URI and metadata
     (register-full ((string-utf8 512) (list 10 {key: (string-utf8 128), value: (buff 512)})) (response uint uint))
 
-    ;; Update agent URI
+    ;; Metadata management
     (set-agent-uri (uint (string-utf8 512)) (response bool uint))
-
-    ;; Set metadata key-value pair
     (set-metadata (uint (string-utf8 128) (buff 512)) (response bool uint))
 
-    ;; Grant or revoke operator permissions
+    ;; Approval management
     (set-approval-for-all (uint principal bool) (response bool uint))
 
-    ;; Set agent wallet to tx-sender
+    ;; Agent wallet management
     (set-agent-wallet-direct (uint) (response bool uint))
-
-    ;; Set agent wallet with SIP-018 signature
     (set-agent-wallet-signed (uint principal uint (buff 65)) (response bool uint))
-
-    ;; Remove agent wallet
     (unset-agent-wallet (uint) (response bool uint))
 
-    ;; Transfer agent identity NFT
+    ;; NFT transfer (SIP-009)
     (transfer (uint principal principal) (response bool uint))
 
-    ;; Get agent owner (legacy)
-    (owner-of (uint) (optional principal))
-
-    ;; Get agent URI
-    (get-uri (uint) (optional (string-utf8 512)))
-
-    ;; Get metadata value for key
-    (get-metadata (uint (string-utf8 128)) (optional (buff 512)))
-
-    ;; Check operator approval
-    (is-approved-for-all (uint principal) bool)
-
-    ;; Get agent wallet
-    (get-agent-wallet (uint) (optional principal))
-
-    ;; Check if spender is authorized or owner
-    (is-authorized-or-owner (principal uint) (response bool uint))
-
-    ;; Get contract version
-    (get-version () (string-utf8 8))
-
-    ;; SIP-009 NFT trait functions
+    ;; SIP-009 trait functions (response-wrapped read-only)
     (get-last-token-id () (response uint uint))
     (get-token-uri (uint) (response (optional (string-utf8 512)) uint))
     (get-owner (uint) (response (optional principal) uint))
+
+    ;; Authorization helper (response-wrapped read-only)
+    (is-authorized-or-owner (principal uint) (response bool uint))
   )
 )
 ```

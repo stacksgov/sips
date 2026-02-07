@@ -584,25 +584,25 @@ This method should be defined as read-only, i.e. `define-read-only`.
 
 #### Get Summary
 
-`(get-summary ((agent-id uint) (opt-validators (optional (list 200 principal))) (opt-tag (optional (string-utf8 64)))) {count: uint, avg-response: uint})`
+`(get-summary ((agent-id uint)) {count: uint, avg-response: uint})`
 
-Calculate aggregate validation metrics for an agent, optionally filtered by validators and a single tag. The opt-tag parameter accepts a single optional string instead of a list - an empty string or none matches all tags. Only validations where has-response is true are counted in the aggregation. Returns a tuple with count (number of matching validations) and avg-response (average validation score), or {count: 0, avg-response: 0} if no matching validations exist.
+Returns O(1) aggregate metrics using running totals. Only validations where has-response is true are counted. Returns {count: uint, avg-response: uint} where avg-response is the average validation score, or {count: u0, avg-response: u0} if no validations exist. For filtered aggregations (by validator/tag), use SIP-019 indexer.
 
 This method should be defined as read-only, i.e. `define-read-only`.
 
 #### Get Agent Validations
 
-`(get-agent-validations ((agent-id uint)) (optional (list 1024 (buff 32))))`
+`(get-agent-validations ((agent-id uint) (opt-cursor (optional uint))) {validations: (list 14 (buff 32)), cursor: (optional uint)})`
 
-Get all validation request hashes for an agent. Returns none if the agent has no validations.
+Get validation request hashes for an agent using cursor-based pagination (PAGE_SIZE=14). Returns {validations: (list 14 (buff 32)), cursor: (optional uint)} where cursor is some(offset) if more results exist.
 
 This method should be defined as read-only, i.e. `define-read-only`.
 
 #### Get Validator Requests
 
-`(get-validator-requests ((validator principal)) (optional (list 1024 (buff 32))))`
+`(get-validator-requests ((validator principal) (opt-cursor (optional uint))) {requests: (list 14 (buff 32)), cursor: (optional uint)})`
 
-Get all validation request hashes assigned to a validator. Returns none if the validator has no requests.
+Get validation request hashes assigned to a validator using cursor-based pagination (PAGE_SIZE=14). Returns {requests: (list 14 (buff 32)), cursor: (optional uint)} where cursor is some(offset) if more results exist.
 
 This method should be defined as read-only, i.e. `define-read-only`.
 

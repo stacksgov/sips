@@ -592,32 +592,21 @@ This method should be defined as read-only, i.e. `define-read-only`.
 
 ### Validation Registry Trait Implementation
 
+**Design Rationale:** The trait only includes public state-changing functions. Clarity traits can only enforce function signatures that return `(response ...)` types. Read-only functions like `get-validation-status`, `get-summary`, `get-agent-validations`, `get-validator-requests`, `get-identity-registry`, and `get-version` return raw types (tuples, optionals, principals, strings) that cannot be enforced by Clarity traits. These functions are still part of the implementation contract but exist outside the trait definition.
+
 ```clarity
+;; title: validation-registry-trait
+;; version: 2.0.0
+;; summary: Trait definition for ERC-8004 Validation Registry
+;; description: Defines the interface for validation registry contracts. Includes all public state-changing functions. Read-only functions are not included as they return raw types (tuples, optionals).
+
 (define-trait validation-registry-trait
   (
-    ;; Request validation from a validator
+    ;; Validation request
     (validation-request (principal uint (string-utf8 512) (buff 32)) (response bool uint))
 
-    ;; Submit validation response (progressive: can be called multiple times)
+    ;; Validation response
     (validation-response ((buff 32) uint (string-utf8 512) (buff 32) (string-utf8 64)) (response bool uint))
-
-    ;; Get validation status (returns none if not found)
-    (get-validation-status ((buff 32)) (optional {validator: principal, agent-id: uint, response: uint, response-hash: (buff 32), tag: (string-utf8 64), last-update: uint, has-response: bool}))
-
-    ;; Get aggregate validation summary (only counts entries with has-response=true)
-    (get-summary (uint (optional (list 200 principal)) (optional (string-utf8 64))) {count: uint, avg-response: uint})
-
-    ;; Get all validations for an agent
-    (get-agent-validations (uint) (optional (list 1024 (buff 32))))
-
-    ;; Get all requests for a validator
-    (get-validator-requests (principal) (optional (list 1024 (buff 32))))
-
-    ;; Get linked identity registry
-    (get-identity-registry () principal)
-
-    ;; Get contract version
-    (get-version () (string-utf8 8))
   )
 )
 ```

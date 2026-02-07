@@ -476,50 +476,33 @@ This method should be defined as read-only, i.e. `define-read-only`.
 
 ### Reputation Registry Trait Implementation
 
+**Design Rationale:** The trait only includes public state-changing functions. Clarity traits can only enforce function signatures that return `(response ...)` types. Read-only functions like `read-feedback`, `get-summary`, `read-all-feedback`, `get-last-index`, `get-clients`, `get-approved-limit`, `get-response-count`, and `get-responders` return raw types (tuples, uints, optionals) that cannot be enforced by Clarity traits. These functions are still part of the implementation contract but exist outside the trait definition.
+
 ```clarity
+;; title: reputation-registry-trait
+;; version: 2.0.0
+;; summary: Trait definition for ERC-8004 Reputation Registry
+;; description: Defines the interface for reputation registry contracts. Includes all public state-changing functions. Read-only functions are not included as they return raw types (tuples, uints, optionals).
+
 (define-trait reputation-registry-trait
   (
-    ;; Pre-authorize a client to provide feedback
+    ;; Client approval
     (approve-client (uint principal uint) (response bool uint))
 
-    ;; Submit feedback (permissionless)
+    ;; Feedback submission (permissionless)
     (give-feedback (uint int uint (string-utf8 64) (string-utf8 64) (string-utf8 512) (string-utf8 512) (buff 32)) (response uint uint))
 
-    ;; Submit feedback (on-chain approval)
+    ;; Feedback submission (pre-approved client)
     (give-feedback-approved (uint int uint (string-utf8 64) (string-utf8 64) (string-utf8 512) (string-utf8 512) (buff 32)) (response uint uint))
 
-    ;; Submit feedback (SIP-018 signature)
+    ;; Feedback submission (signed authorization)
     (give-feedback-signed (uint int uint (string-utf8 64) (string-utf8 64) (string-utf8 512) (string-utf8 512) (buff 32) principal uint uint (buff 65)) (response uint uint))
 
-    ;; Revoke submitted feedback
+    ;; Feedback management
     (revoke-feedback (uint uint) (response bool uint))
 
-    ;; Respond to feedback
+    ;; Response management
     (append-response (uint principal uint (string-utf8 512) (buff 32)) (response bool uint))
-
-    ;; Read single feedback entry
-    (read-feedback (uint principal uint) (response (optional {value: int, value-decimals: uint, tag1: (string-utf8 64), tag2: (string-utf8 64), is-revoked: bool}) uint))
-
-    ;; Get aggregate reputation summary (WAD-normalized)
-    (get-summary (uint (list 200 principal) (string-utf8 64) (string-utf8 64)) (response {count: uint, summary-value: int, summary-value-decimals: uint} uint))
-
-    ;; Read filtered feedback
-    (read-all-feedback (uint (optional (list 50 principal)) (optional (string-utf8 64)) (optional (string-utf8 64)) bool) (response (list 50 {client: principal, index: uint, value: int, value-decimals: uint, tag1: (string-utf8 64), tag2: (string-utf8 64), is-revoked: bool}) uint))
-
-    ;; Get last feedback index for a client
-    (get-last-index (uint principal) (response uint uint))
-
-    ;; Get all clients who gave feedback
-    (get-clients (uint) (response (optional (list 1024 principal)) uint))
-
-    ;; Get approved index limit for a client
-    (get-approved-limit (uint principal) (response uint uint))
-
-    ;; Get response count with optional filters
-    (get-response-count (uint (optional principal) (optional uint) (optional (list 200 principal))) (response uint uint))
-
-    ;; Get responders to feedback
-    (get-responders (uint principal uint) (response (optional (list 256 principal)) uint))
   )
 )
 ```

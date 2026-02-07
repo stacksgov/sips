@@ -412,71 +412,103 @@ This method must be defined with `define-public`.
 
 #### Read Feedback
 
-`(read-feedback ((agent-id uint) (client principal) (index uint)) (response (optional {value: int, value-decimals: uint, tag1: (string-utf8 64), tag2: (string-utf8 64), is-revoked: bool}) uint))`
+`(read-feedback ((agent-id uint) (client principal) (index uint)) (optional {value: int, value-decimals: uint, wad-value: int, tag1: (string-utf8 64), tag2: (string-utf8 64), is-revoked: bool}))`
 
-Retrieve a specific feedback entry. Returns none if the feedback does not exist.
+Retrieve a specific feedback entry. Returns none if the feedback does not exist. The wad-value field contains the WAD-normalized (18 decimals) value for O(1) aggregation.
 
 This method should be defined as read-only, i.e. `define-read-only`.
 
 #### Get Summary
 
-`(get-summary ((agent-id uint) (client-addresses (list 200 principal)) (tag1 (string-utf8 64)) (tag2 (string-utf8 64))) (response {count: uint, summary-value: int, summary-value-decimals: uint} uint))`
+`(get-summary ((agent-id uint)) {count: uint, summary-value: int, summary-value-decimals: uint})`
 
-Calculate aggregate reputation metrics for an agent across specified clients and optional tag filters. All feedback values are normalized to WAD (18 decimals) for averaging, then scaled back to the mode (most common) decimals value among the feedback entries. Empty tag strings match all values. Returns empty summary if client-addresses is empty or no matching feedback exists.
+Returns O(1) aggregate metrics using running totals. All feedback values are normalized to WAD (18 decimals) for averaging. The summary-value is the average WAD-normalized value, and summary-value-decimals is always u18. Returns {count: u0, summary-value: 0, summary-value-decimals: u18} if no feedback exists. For filtered aggregations (by client/tag), use SIP-019 indexer.
 
 This method should be defined as read-only, i.e. `define-read-only`.
 
 #### Read All Feedback
 
-`(read-all-feedback ((agent-id uint) (opt-clients (optional (list 50 principal))) (opt-tag1 (optional (string-utf8 64))) (opt-tag2 (optional (string-utf8 64))) (include-revoked bool)) (response (list 50 {client: principal, index: uint, value: int, value-decimals: uint, tag1: (string-utf8 64), tag2: (string-utf8 64), is-revoked: bool}) uint))`
+`(read-all-feedback ((agent-id uint) (opt-tag1 (optional (string-utf8 64))) (opt-tag2 (optional (string-utf8 64))) (include-revoked bool) (opt-cursor (optional uint))) {items: (list 14 {client: principal, index: uint, value: int, value-decimals: uint, wad-value: int, tag1: (string-utf8 64), tag2: (string-utf8 64), is-revoked: bool}), cursor: (optional uint)})`
 
-Retrieve feedback entries for an agent with optional filters. If opt-clients is none, reads from all clients who have given feedback. Tag filters are optional. Maximum 50 entries returned.
+Retrieve feedback entries for an agent using cursor-based pagination (PAGE_SIZE=14). Uses global feedback sequence for cross-client iteration. Tag filters are optional (none matches all). Returns {items: (list 14 {...}), cursor: (optional uint)} where cursor is some(offset) if more results exist. Items include wad-value field for WAD-normalized values.
 
 This method should be defined as read-only, i.e. `define-read-only`.
 
 #### Get Last Index
 
-`(get-last-index ((agent-id uint) (client principal)) (response uint uint))`
+`(get-last-index ((agent-id uint) (client principal)) uint)`
 
-Get the last feedback index submitted by a client for an agent. Returns 0 if no feedback has been submitted.
+Get the last feedback index submitted by a client for an agent. Returns u0 if no feedback has been submitted.
+
+This method should be defined as read-only, i.e. `define-read-only`.
+
+#### Get Agent Feedback Count
+
+`(get-agent-feedback-count ((agent-id uint)) uint)`
+
+Get the total number of feedback entries for an agent across all clients. Returns the last global index, or u0 if no feedback exists. This is the global feedback sequence counter.
 
 This method should be defined as read-only, i.e. `define-read-only`.
 
 #### Get Clients
 
-`(get-clients ((agent-id uint)) (response (optional (list 1024 principal)) uint))`
+`(get-clients ((agent-id uint) (opt-cursor (optional uint))) {clients: (list 14 principal), cursor: (optional uint)})`
 
-Get the list of all clients who have given feedback for an agent.
+Get clients who have given feedback for an agent using cursor-based pagination (PAGE_SIZE=14). Returns {clients: (list 14 principal), cursor: (optional uint)} where cursor is some(offset) if more results exist.
 
 This method should be defined as read-only, i.e. `define-read-only`.
 
 #### Get Approved Limit
 
-`(get-approved-limit ((agent-id uint) (client principal)) (response uint uint))`
+`(get-approved-limit ((agent-id uint) (client principal)) uint)`
 
-Get the approved index limit for a client. Returns 0 if no approval exists.
+Get the approved index limit for a client. Returns u0 if no approval exists.
+
+This method should be defined as read-only, i.e. `define-read-only`.
+
+#### Get Response Count Single
+
+`(get-response-count-single ((agent-id uint) (client principal) (index uint) (responder principal)) uint)`
+
+Get the response count for a specific responder on a specific feedback entry. Returns u0 if no responses exist. This is a legacy function kept for backwards compatibility; prefer get-response-count for flexible querying.
 
 This method should be defined as read-only, i.e. `define-read-only`.
 
 #### Get Response Count
 
-`(get-response-count ((agent-id uint) (opt-client (optional principal)) (opt-feedback-index (optional uint)) (opt-responders (optional (list 200 principal)))) (response uint uint))`
+`(get-response-count ((agent-id uint) (opt-client (optional principal)) (opt-feedback-index (optional uint)) (opt-responders (optional (list 200 principal))) (opt-cursor (optional uint))) {total: uint, cursor: (optional uint)})`
 
-Flexible response counting with optional filters. Can count responses across all clients, a specific client, a specific feedback entry, or specific responders. If opt-client is none, counts across all clients. If opt-feedback-index is none or 0, counts all feedback for the client(s). If opt-responders is provided, only counts responses from those principals.
+Flexible response counting with optional filters and cursor-based pagination. Can count responses across all clients, a specific client, a specific feedback entry, or specific responders. If opt-client is none, counts across all clients. If opt-feedback-index is none or 0, counts all feedback for the client(s). If opt-responders is provided, only counts responses from those principals. Returns {total: uint, cursor: (optional uint)} where cursor is some(offset) if more results exist (when paginating across clients/feedback).
 
 This method should be defined as read-only, i.e. `define-read-only`.
 
 #### Get Responders
 
-`(get-responders ((agent-id uint) (client principal) (index uint)) (response (optional (list 256 principal)) uint))`
+`(get-responders ((agent-id uint) (client principal) (index uint) (opt-cursor (optional uint))) {responders: (list 14 principal), cursor: (optional uint)})`
 
-Get the list of principals who have responded to a specific feedback entry.
+Get principals who have responded to a specific feedback entry using cursor-based pagination (PAGE_SIZE=14). Returns {responders: (list 14 principal), cursor: (optional uint)} where cursor is some(offset) if more results exist.
+
+This method should be defined as read-only, i.e. `define-read-only`.
+
+#### Get Identity Registry
+
+`(get-identity-registry () principal)`
+
+Return the principal of the linked Identity Registry contract. This is hardcoded to .identity-registry at deployment time.
+
+This method should be defined as read-only, i.e. `define-read-only`.
+
+#### Get Auth Message Hash
+
+`(get-auth-message-hash ((agent-id uint) (client principal) (index-limit uint) (expiry uint) (signer principal)) (buff 32))`
+
+Calculate the SIP-018 message hash for give-feedback-signed authorization. Exposed for off-chain tooling to generate signatures. Returns the 32-byte hash that must be signed by the signer principal.
 
 This method should be defined as read-only, i.e. `define-read-only`.
 
 ### Reputation Registry Trait Implementation
 
-**Design Rationale:** The trait only includes public state-changing functions. Clarity traits can only enforce function signatures that return `(response ...)` types. Read-only functions like `read-feedback`, `get-summary`, `read-all-feedback`, `get-last-index`, `get-clients`, `get-approved-limit`, `get-response-count`, and `get-responders` return raw types (tuples, uints, optionals) that cannot be enforced by Clarity traits. These functions are still part of the implementation contract but exist outside the trait definition.
+**Design Rationale:** The trait only includes public state-changing functions. Clarity traits can only enforce function signatures that return `(response ...)` types. Read-only functions like `read-feedback`, `get-summary`, `read-all-feedback`, `get-last-index`, `get-agent-feedback-count`, `get-clients`, `get-approved-limit`, `get-response-count-single`, `get-response-count`, `get-responders`, `get-identity-registry`, and `get-auth-message-hash` return raw types (tuples, uints, optionals, buffs, principals) that cannot be enforced by Clarity traits. These functions are still part of the implementation contract but exist outside the trait definition.
 
 ```clarity
 ;; title: reputation-registry-trait

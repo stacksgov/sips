@@ -150,7 +150,7 @@ index 64d3a5d..253164b 100644
  token is owned by the account.  It can take the following values:
  * `0x10`: "The account will SEND this non-fungible token"
  * `0x11`: "The account will NOT SEND this non-fungible token"
-+* `0x12`: "The account may SEND this non-fungible token"
++* `0x12`: "The account MAY SEND this non-fungible token"
 
  Post-conditions are defined in terms of which assets each account sends or
  does not send during the transaction's execution.  To enforce post-conditions,

@@ -182,5 +182,5 @@ prior to activation.
 
 # Reference Implementation
 
-At the time of this writing, there does not yet exist a reference
-implementation.
+Implementation of these new features in in progress in
+https://github.com/stacks-network/stacks-core/pull/6885.

@@ -712,8 +712,8 @@ For Stacks agents:
 
 | Network | Chain ID | Example |
 | ------- | -------- | ------- |
-| Stacks Mainnet | 1 | `stacks:1:SP000000000000000000002Q6VF78.identity-registry:42` |
-| Stacks Testnet | 2147483648 | `stacks:2147483648:ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.identity-registry:0` |
+| Stacks Mainnet | 1 | `stacks:1:SP1NMR7MY0TJ1QA7WQBZ6504KC79PZNTRQH4YGFJD.identity-registry-v2:42` |
+| Stacks Testnet | 2147483648 | `stacks:2147483648:ST3YT0XW92E6T2FE59B2G5N2WNNFSBZ6MZKQS5D18.identity-registry-v2:0` |
 
 ## Cross-Chain Registration
 
@@ -722,7 +722,7 @@ Agents can be registered on multiple blockchains and advertise all registrations
 ```json
 {
   "agentId": 42,
-  "agentRegistry": "stacks:1:SP000000000000000000002Q6VF78.identity-registry"
+  "agentRegistry": "stacks:1:SP1NMR7MY0TJ1QA7WQBZ6504KC79PZNTRQH4YGFJD.identity-registry-v2"
 }
 ```
 
@@ -735,7 +735,7 @@ An agent registered on both Stacks mainnet (agent ID 42) and Ethereum mainnet (a
   "registrations": [
     {
       "agentId": 42,
-      "agentRegistry": "stacks:1:SP000000000000000000002Q6VF78.identity-registry"
+      "agentRegistry": "stacks:1:SP1NMR7MY0TJ1QA7WQBZ6504KC79PZNTRQH4YGFJD.identity-registry-v2"
     },
     {
       "agentId": 123,
@@ -804,7 +804,7 @@ The registration file MUST follow the ERC-8004 [3] registration file structure t
   "registrations": [
     {
       "agentId": 42,
-      "agentRegistry": "stacks:1:SP000000000000000000002Q6VF78.identity-registry"
+      "agentRegistry": "stacks:1:SP1NMR7MY0TJ1QA7WQBZ6504KC79PZNTRQH4YGFJD.identity-registry-v2"
     }
   ],
   "supportedTrust": [
@@ -1319,7 +1319,15 @@ Reference implementations are available at:
 
 ## Testnet Deployments
 
-The following contracts are deployed on Stacks testnet:
+The following contracts are deployed on Stacks testnet at `ST3YT0XW92E6T2FE59B2G5N2WNNFSBZ6MZKQS5D18`:
+
+**Traits:**
+
+- Identity Registry Trait: `ST3YT0XW92E6T2FE59B2G5N2WNNFSBZ6MZKQS5D18.identity-registry-trait-v2`
+- Reputation Registry Trait: `ST3YT0XW92E6T2FE59B2G5N2WNNFSBZ6MZKQS5D18.reputation-registry-trait-v2`
+- Validation Registry Trait: `ST3YT0XW92E6T2FE59B2G5N2WNNFSBZ6MZKQS5D18.validation-registry-trait-v2`
+
+**Contracts:**
 
 - Identity Registry: `ST3YT0XW92E6T2FE59B2G5N2WNNFSBZ6MZKQS5D18.identity-registry-v2`
 - Reputation Registry: `ST3YT0XW92E6T2FE59B2G5N2WNNFSBZ6MZKQS5D18.reputation-registry-v2`
@@ -1327,7 +1335,19 @@ The following contracts are deployed on Stacks testnet:
 
 ## Mainnet Deployments
 
-Mainnet deployment addresses will be added upon activation.
+The following contracts are deployed on Stacks mainnet at `SP1NMR7MY0TJ1QA7WQBZ6504KC79PZNTRQH4YGFJD`:
+
+**Traits:**
+
+- Identity Registry Trait: `SP1NMR7MY0TJ1QA7WQBZ6504KC79PZNTRQH4YGFJD.identity-registry-trait-v2`
+- Reputation Registry Trait: `SP1NMR7MY0TJ1QA7WQBZ6504KC79PZNTRQH4YGFJD.reputation-registry-trait-v2`
+- Validation Registry Trait: `SP1NMR7MY0TJ1QA7WQBZ6504KC79PZNTRQH4YGFJD.validation-registry-trait-v2`
+
+**Contracts:**
+
+- Identity Registry: `SP1NMR7MY0TJ1QA7WQBZ6504KC79PZNTRQH4YGFJD.identity-registry-v2`
+- Reputation Registry: `SP1NMR7MY0TJ1QA7WQBZ6504KC79PZNTRQH4YGFJD.reputation-registry-v2`
+- Validation Registry: `SP1NMR7MY0TJ1QA7WQBZ6504KC79PZNTRQH4YGFJD.validation-registry-v2`
 
 # References
 

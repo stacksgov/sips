@@ -8,6 +8,7 @@ Members:
 - Juliet Oberding <juliet.oberding@gmail.com>
 - Orlando Cosme <orlando@stackerdaos.com>
 - Zero.btc <zero@zeroauthority.xyz>
+- Stephen Perrino (PeaceLoveMusic.btc) <perrinoproperties@gmail.com>
 - Jason Schrader <jason@joinfreehold.com>
 
 Discussions-to: https://github.com/stacksgov/sips
@@ -24,7 +25,7 @@ Created-by: SIP-000
 
 **Zero.btc**: Zero has been involved with the Stacks community since the BlockStack days and he learned about Stacks during the regulated ICO. He is the co-founder of Zero Authority DAO, and he and his co-founder Hodlstx created the Cerulean Marketplace for creators and builders to offer a service and for people to pay for Web3 gigs in a trustless and permissionless way. Being a part of the governance CAB is an honor and he has spent lots of time working on governance for the DAO they have built.
 
-**Stephen Perrino**: A father of seven, Realtor, and servant on my local and state government affairs committee. I strongly advocate for consent-based, permissionless exchange, decentralized networks, and the right to transact, and I’ve been a Stacks holder since early 2023 (starting with the Hiro wallet before it became Leather). The prospect of smart contracts on Bitcoin initially drew me in, and the ethos and people I’ve encountered have kept me captivated. My goal is to help shape a new paradigm where decentralized, trustless, and borderless exchange—grounded in immutability and censorship resistance—offers a better way to organize society with a focus on consent, and I see Stacks as a key part of this vision.
+**Stephen Perrino (PeaceLoveMusic.btc)**: A father of seven, Realtor, and servant on my local and state government affairs committee. I strongly advocate for consent-based, permissionless exchange, decentralized networks, and the right to transact, and I’ve been a Stacks holder since early 2023 (starting with the Hiro wallet before it became Leather). The prospect of smart contracts on Bitcoin initially drew me in, and the ethos and people I’ve encountered have kept me captivated. My goal is to help shape a new paradigm where decentralized, trustless, and borderless exchange—grounded in immutability and censorship resistance—offers a better way to organize society with a focus on consent, and I see Stacks as a key part of this vision.
 
 **Jason Schrader (Chairperson)**: Stacks community member since 2019, engineer at Freehold and a core developer of the CityCoins protocol. Participated in the formation of the Stacks Governance Working Group and helps with research, tooling, and project management. An open source advocate and teacher at heart - we're all learning together!
 

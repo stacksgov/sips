@@ -3,8 +3,9 @@
 Members:
 
 - AcrossFire <acrossfirebtc@protonmail.com>
-- j2p2 <i.digg.tech@gmail.com>
-- Rafael Cárdenas <rafael@hiro.so>
+- Jesse Wiley <jesse@stacks.org>
+- Claire Gadd <claire@stacks.org>
+- werner.btc <werner@trustmachines.co>
 
 
 Discussions-to: https://github.com/stacksgov/sips
@@ -17,15 +18,18 @@ Invite tree:
      * AcrossFire
      * j2p2
      * Rafael Cárdenas
+     * werner.btc
 
 
 ## Biographies
 
 **AcrossFire**: AcrossFire has experience as a DevOps engineer, Linux enthusiast, and a passionate Bitcoiner. He has experience with systems administration and enjoys automating maintenance tasks using tools like Puppet, Ansible, Docker, Kubernetes and others. He likes to bring this experience to Bitcoin by running Bitcoin and Stacks nodes and doing what he can to optimize the experience.
 
-**j2p2**: Computer Engineer, Clarity Developer. Won First and Second place in Clarity Course Cohort #2 Hackathon. Before joining the Stacks ecosystem, worked 18+ years building software for wireless communication systems products. 
+**Jesse Wiley**: Jesse Wiley is a seasoned DevOps expert - he makes sure all systems are running smoothly and the right security considerations have been made.
 
-**Rafael Cárdenas**: Rafael is a Staff Software Engineer at Hiro, focused on building and maintaining Hiro’s API infrastructure which includes the Stacks Blockchain API, Ordinals API, Token Metadata API and others, all of which power dozens of apps and wallets built on Stacks and Bitcoin. Rafael has also been an active member and contributor of the Stacks ecosystem since 2021, involved with the development of the core blockchain through the SIP process and participating as a reviewer at the Stacks Accelerator.
+**Claire Gadd**: Director of communications for the Stacks Foundation.
+
+**werner.btc**: Since 2021, Werner has been an active Stacks community member and helper. As an artist, tester, and jack of many traits, my contributions are rooted in a passion for supporting the Stacks ecosystem. Werner is dedicated to working towards a more equitable, open internet that is inherently safe through the adoption of Bitcoin technology.
 
 ## About this SIP Editor Committee
 

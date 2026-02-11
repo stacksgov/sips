@@ -102,6 +102,27 @@ downsides:
 With the upgrade to epoch 3.4, all known reachable "rejectable" errors, will
 become includable errors.
 
+## Allow trait use in same contract (see issue [6831](https://github.com/stacks-network/stacks-core/issues/6831))
+
+Currently, a trait defined in a contract cannot be used at the top-level of that
+contract. For example, the code below will result in a `NoSuchContract` error.
+
+```clarity
+(define-trait trait-1 (
+    (foo
+        ()
+        (response int int)
+    )
+))
+(define-private (bar (F <trait-1>))
+    (unwrap-panic (contract-call? F foo))
+)
+(bar .c-foo)
+```
+
+This behavior is a bit surprising. Beginning in Clarity 5, this usage will be
+supported.
+
 # Related Work
 
 This SIP is focused on fixing consensus issues discovered in previous

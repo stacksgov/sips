@@ -2,5 +2,5 @@
 .DS_Store
 *.orig
 *.rej
-
+.idea
 .aider*

@@ -1,4 +1,7 @@
-;; ERC-8001 Agent Coordination Protocol - Stacks Implementation
+;; SIP-037 Agent Coordination Protocol - Stacks Implementation
+;;
+;; SIP-037 is a Stacks implementation of ERC-8001
+;; Canonised version found at https://eips.ethereum.org/EIPS/eip-8001
 ;;
 ;; Trustless multi-party coordination for AI agents and humans.
 ;; Flow: PROPOSE - ACCEPT (signatures) - EXECUTE or CANCEL
@@ -35,7 +38,7 @@
 
 ;; SIP-018 Structured Data Signing
 (define-constant SIP018_PREFIX 0x534950303138)
-(define-constant DOMAIN_NAME "ERC-8001-Agent-Coordination")
+(define-constant DOMAIN_NAME "SIP-037-Agent-Coordination")
 (define-constant DOMAIN_VERSION "1")
 (define-constant MSG_TYPE_INTENT "AgentIntent")
 (define-constant MSG_TYPE_ACCEPTANCE "AcceptanceAttestation")

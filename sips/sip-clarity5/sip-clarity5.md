@@ -1,6 +1,6 @@
 # Preamble
 
-SIP Number: TBD
+SIP Number: 039
 
 Title: Clarity 5: Fixing known issues in Clarity
 

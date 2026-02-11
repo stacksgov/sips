@@ -62,6 +62,12 @@ originally intended.
 
 ## Bug with `burn-block-height` inside an `at-block` expression (see issue [#6123](https://github.com/stacks-network/stacks-core/issues/6123))
 
+From issue [#6123](https://github.com/stacks-network/stacks-core/issues/6123):
+
+> Epoch 3 introduced a bug which causes `burn-block-height` to always return the
+> current burn block height, even if inside of an `at-block` expression. This
+> should be fixed to behave as expected in the next hard-fork.
+
 In Clarity 5 and above, `burn-block-height` will return the correct value when
 used inside of an `at-block` expression.
 

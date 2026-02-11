@@ -14,7 +14,7 @@ Consideration: Governance, Technical
 
 Type: Consensus
 
-Layer: Consensus
+Layer: Consensus (hard fork)
 
 Created: 2025-02-06
 

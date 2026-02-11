@@ -2,7 +2,7 @@
 
 ## **Preamble**
 
-SIP Number: SIP-03X   
+SIP Number: 036   
 Title: BTC Addresses for Stacks Transactions   
 Authors: Larry Salibra [larry@newinternetlabs.com](mailto:larry@newinternetlabs.com) (New Internet Labs Limited)
 Consideration: Technical   

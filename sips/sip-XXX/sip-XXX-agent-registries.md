@@ -1,6 +1,6 @@
 # Preamble
 
-SIP Number: XXX
+SIP Number: 041
 
 Title: Standard Trait Definition for Agent Registries
 

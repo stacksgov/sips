@@ -894,11 +894,31 @@ The v2.0.0 contracts implement a strict authorization model based on transaction
 
 ### tx-sender vs contract-caller
 
-All ownership and authorization checks in v2.0.0 use `tx-sender` exclusively, never `contract-caller`. This is a critical security decision that prevents delegation attacks.
+All ownership and authorization checks in v2.0.0 use `tx-sender` exclusively, never `contract-caller`. This design provides both composability and security by leveraging how Clarity's sender context propagates across contract call boundaries.
+
+**How sender context works in Clarity:**
+
+In Clarity, `tx-sender` and `contract-caller` behave differently as execution crosses contract boundaries:
+
+| Call pattern | `tx-sender` at callee | `contract-caller` at callee |
+|---|---|---|
+| User calls A directly | User | User |
+| User calls B, B calls A via `contract-call?` | User | B |
+| User calls B, B calls A via `as-contract` | B | B |
+| User calls C, C calls B, B calls A (chain) | User | B |
+| User calls C, C uses `as-contract` to call B, B calls A | C | B |
+
+Key observations:
+- **`tx-sender`** remains the original transaction sender through normal `contract-call?` chains. It only changes when a contract explicitly uses `as-contract`, which resets both `tx-sender` and `contract-caller` to the calling contract's principal.
+- **`contract-caller`** always reflects the immediate caller, changing at every contract boundary regardless of whether `as-contract` is used.
 
 **Why tx-sender?**
 
-Using `tx-sender` ensures that only the actual transaction originator can perform privileged operations. If contracts used `contract-caller` instead, a malicious intermediary contract could impersonate the owner by calling registry functions on behalf of users, even without explicit permission.
+Using `tx-sender` for authorization provides two benefits:
+
+1. **Composability**: Because `tx-sender` passes through normal `contract-call?` chains unchanged, intermediary helper contracts can exist between the user and the registry without breaking authorization. If the registries checked `contract-caller` instead, every intermediary contract would need to be explicitly approved as an operator, preventing composable contract architectures.
+
+2. **Security**: A contract cannot change `tx-sender` to another user's principal—it can only change `tx-sender` to its own principal via `as-contract`. This means a malicious intermediary contract cannot impersonate a user; it can only act as itself.
 
 **Example from identity-registry.clar:**
 
@@ -912,7 +932,7 @@ Using `tx-sender` ensures that only the actual transaction originator can perfor
 )
 ```
 
-The `is-authorized` helper checks if `tx-sender` (not `contract-caller`) is either the NFT owner or an approved operator:
+The `is-authorized` helper checks if `tx-sender` is either the NFT owner or an approved operator:
 
 ```clarity
 (define-private (is-authorized (agent-id uint) (caller principal))
@@ -930,7 +950,9 @@ The `is-authorized` helper checks if `tx-sender` (not `contract-caller`) is eith
 )
 ```
 
-**Trade-off:** This approach prevents delegation through intermediary contracts. For delegated operations, owners must use `set-approval-for-all` to explicitly grant operator permissions instead of relying on contract-level delegation.
+Because this checks `tx-sender`, a user can call the registry through any number of intermediary contracts via `contract-call?` and authorization still succeeds. If an intermediary contract uses `as-contract`, `tx-sender` changes to that contract's principal—which would fail the authorization check unless that contract is an approved operator.
+
+**Trade-off:** Contracts that need to act on behalf of an agent owner cannot use `as-contract` to relay calls, since that changes `tx-sender`. Instead, owners must use `set-approval-for-all` to explicitly grant operator permissions to contracts that need to manage agents on their behalf.
 
 ### is-authorized-or-owner Pattern
 
@@ -1198,33 +1220,46 @@ The v2.0.0 `validation-response` function allows validators to submit multiple u
 )
 ```
 
-## tx-sender Authorization and Delegation
+## tx-sender Authorization and Composability
 
-The exclusive use of `tx-sender` for authorization checks provides strong security guarantees but limits delegation patterns.
+The exclusive use of `tx-sender` for authorization checks provides both composability and security, but requires understanding how Clarity's sender context changes across contract boundaries.
+
+**Composability Benefit:**
+
+Because `tx-sender` remains unchanged through normal `contract-call?` chains, users can interact with agent registries through intermediary contracts (wrappers, routers, batch operations) without breaking authorization. If the registries checked `contract-caller` instead, each intermediary contract would become the caller and would need to be explicitly approved as an operator—preventing composable contract architectures.
 
 **Security Benefit:**
 
-By checking `tx-sender` instead of `contract-caller`, the registries prevent intermediary contract attacks. A malicious contract cannot impersonate the owner by forwarding calls, because `tx-sender` always represents the transaction originator, not the immediate caller.
+A contract cannot set `tx-sender` to an arbitrary principal. The only way a contract can change `tx-sender` is via `as-contract`, which sets it to the contract's own principal. This means:
+- A malicious intermediary contract cannot impersonate a user—it can only act as itself
+- If a malicious contract uses `as-contract` to call the registry, `tx-sender` becomes the malicious contract's principal, which is not the agent owner and fails authorization
 
 **Example Attack (prevented by tx-sender):**
 
-If contracts used `contract-caller`:
 1. Alice owns agent #42
 2. Bob deploys a malicious contract that calls `set-agent-uri(42, "evil-uri")`
 3. Bob tricks Alice into calling his contract for an unrelated purpose
-4. The malicious contract's call to `set-agent-uri` would have `contract-caller = malicious-contract`
-5. If authorization checked `contract-caller`, the call would fail (good)
-6. But if the malicious contract first called another intermediary that then called the registry, `contract-caller` could be spoofed
+4. The malicious contract calls `set-agent-uri` — but `tx-sender` is still Alice (the original transaction sender), not the malicious contract
+5. However, Alice IS the owner, so this call would succeed if the malicious contract uses `contract-call?`
 
-Using `tx-sender` prevents this entire class of attacks because `tx-sender` always equals Alice regardless of call chain depth.
+This illustrates an important nuance: `tx-sender` authorization does not prevent a malicious contract from performing authorized actions within a transaction that Alice initiates. The protection is that Alice must sign the transaction—a malicious contract cannot forge `tx-sender` to be Alice's principal from Bob's transaction. If Bob calls the malicious contract, `tx-sender` is Bob, not Alice.
+
+If the registries used `contract-caller` instead, they would check the immediate caller (the malicious contract's principal), which would fail. However, `contract-caller` has its own trade-off: legitimate intermediary contracts would also fail, requiring each helper contract to be pre-approved as an operator. This makes `contract-caller` less composable—it restricts to specific direct callers only.
+
+**as-contract Boundary:**
+
+When a contract uses `as-contract` to call the registry, both `tx-sender` and `contract-caller` change to that contract's principal. This means:
+- The contract acts on its own behalf, not the user's
+- The call only succeeds if the contract itself is an approved operator for the agent
+- This is the correct behavior: `as-contract` is an explicit opt-in to change sender context
 
 **Trade-off:**
 
-The downside is that delegation through smart contracts is not supported. For example, a DAO contract cannot directly manage agents on behalf of members. However, the `set-approval-for-all` function provides an alternative: owners can explicitly grant operator permissions to contracts, enabling controlled delegation.
+Contracts that need to manage agents on behalf of owners cannot use `as-contract` to relay calls, since that changes `tx-sender` to the contract's principal. Instead, owners must use `set-approval-for-all` to explicitly grant operator permissions to contracts that need to act on their behalf.
 
 **Recommendation:**
 
-For DAO or multisig agent management, use `set-approval-for-all` to grant the DAO/multisig contract operator privileges. This provides explicit, revocable delegation without compromising the tx-sender security model.
+For DAO or multisig agent management, use `set-approval-for-all` to grant the DAO/multisig contract operator privileges. This provides explicit, revocable delegation while preserving composability for normal `contract-call?` chains.
 
 ## Agent Wallet Security
 

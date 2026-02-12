@@ -24,7 +24,7 @@ Sign-offs:
 Layer: Traits
 
 Discussions-To:
-- SIP pull request: https://github.com/stacksgov/sips/pull/XXX
+- SIP pull request: https://github.com/stacksgov/sips/pull/258
 
 # Abstract
 

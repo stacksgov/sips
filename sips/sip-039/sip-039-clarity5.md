@@ -99,7 +99,7 @@ downsides:
 - These unmineable transactions remain in the mempool, unprocessed, until they
   age out
 
-With the upgrade to epoch 3.4, all known reachable "rejectable" errors, will
+With the upgrade to epoch 3.4, all known reachable "rejectable" errors will
 become includable errors.
 
 ## Allow trait use in same contract (see issue [6831](https://github.com/stacks-network/stacks-core/issues/6831))

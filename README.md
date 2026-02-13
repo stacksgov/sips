@@ -46,6 +46,9 @@ may submit a SIP.
 * [SIP-028](./sips/sip-028/sip-028-sbtc_peg.md): Signer Criteria for sBTC, A Decentralized and Programmable Asset Backed 1:1 with BTC
 * [SIP-029](./sips/sip-029/sip-029-halving-alignment.md): Bootstrapping sBTC Liquidity and Nakamoto Signer Incentives
 * [SIP-031](./sips/sip-031/sip-031.md): Five-Year Stacks Growth Emissions
+* [SIP-033](./sips/sip-033/sip-033-clarity4.md): Clarity Smart Contract Language, version 4
+* [SIP-034](./sips/sip-034/sip-034.md): Dimension-Specific Tenure Extend Variants
+* [SIP-035](./sips/sip-035/sip-secp256r1-verify.md): Clarification of Clarity's `secp256r1-verify` Behavior
 
 ## How to Get Involved
 

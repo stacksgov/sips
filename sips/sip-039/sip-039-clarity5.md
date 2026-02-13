@@ -53,14 +53,15 @@ VM, without making any changes to its intended behavior.
 In Clarity 5 and above, `secp256r1-verify` will no longer double-hash its input.
 See [SIP-035](/sips/sip-035/sip-secp256r1-verify.md) for details.
 
-## Runtime error when passing an empty buffer to `from-consensus-buff?` (see issue [#6683](https://github.com/stacks-network/stacks-core/issues/6683))
+## Runtime error when passing an empty buffer to `from-consensus-buff?`
 
 Beginning in Clarity 5, computing the cost of passing an empty buffer to
 `from-consensus-buff?` will no longer trigger a runtime error. Instead, the cost
 will be charged appropriately, and the expression will return `none`, as
-originally intended.
+originally intended. See issue
+[#6683](https://github.com/stacks-network/stacks-core/issues/6683).
 
-## Bug with `burn-block-height` inside an `at-block` expression (see issue [#6123](https://github.com/stacks-network/stacks-core/issues/6123))
+## Bug with `burn-block-height` inside an `at-block` expression
 
 From issue [#6123](https://github.com/stacks-network/stacks-core/issues/6123):
 
@@ -102,7 +103,7 @@ downsides:
 With the upgrade to epoch 3.4, all known reachable "rejectable" errors will
 become includable errors.
 
-## Allow trait use in same contract (see issue [6831](https://github.com/stacks-network/stacks-core/issues/6831))
+## Allow trait use in same contract
 
 Currently, a trait defined in a contract cannot be used at the top-level of that
 contract. For example, the code below will result in a `NoSuchContract` error.
@@ -121,7 +122,8 @@ contract. For example, the code below will result in a `NoSuchContract` error.
 ```
 
 This behavior is a bit surprising. Beginning in Clarity 5, this usage will be
-supported.
+supported. See issue
+[6831](https://github.com/stacks-network/stacks-core/issues/6831).
 
 # Related Work
 

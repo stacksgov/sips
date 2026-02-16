@@ -178,8 +178,9 @@ condition code `0x12`.
 This change adds new functionality that is backwards compatible and optional to
 use. To activate, it should only require approval from the Technical CAB and the
 Steering Committee. If approved, it should go live together with Clarity 5 in
-epoch 3.4. Transactions using `Originator` mode or `MAY SEND` MUST be rejected
-prior to activation.
+epoch 3.4, as described in [SIP-039](../sip-039/sip-039-clarity5.md).
+Transactions using `Originator` mode or `MAY SEND` MUST be rejected prior to
+activation.
 
 # Reference Implementation
 

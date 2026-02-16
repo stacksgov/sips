@@ -61,12 +61,13 @@ contracts, and users should be in the habit of never signing a transaction in
 between a variety of contracts as part of one contract call. The movements may
 be dynamic and difficult or impossible to predict in advance, so users end up
 reverting to signing `Allow` mode transactions, just to make it work. This is a
-very bad habit to teach our users, and we can do better. What the user really
-cares about is something like, "When I call contract X, at most `m` STX and `n`
-USDCx may be moved from my wallet." They don't care if contract X sends sBTC to
-contract Y, which sends USDCx to contract Z, etc. `Originator` mode allows the
-user to specify only the restrictions on their own assets, allowing any
-movements of assets amongst other principals.
+very bad habit to teach our users, and we can do better. The concern of the user
+is typically about assets moving out of their own wallet, and they are not
+concerned about assets moving in and out of contracts, triggered by their call.
+Contracts that they do care about should be protected internally, using the
+contract-level post-conditions supported by `as-contract?`. `Originator` mode
+allows the user to specify only the restrictions on their own assets, allowing
+any movements of assets amongst other principals.
 
 `MAY SEND` fills an obvious gap in the existing post-condition implementation,
 and does not require any more introduction or motivation.
@@ -161,7 +162,7 @@ index 64d3a5d..253164b 100644
 - This SIP adds to the existing specification for post-conditions in
   [SIP-005](../sip-005/sip-005-blocks-and-transactions.md)
 - This SIP will activate in epoch 3.4 together with
-  [SIP-clarity5](../sip-clarity5/sip-clarity5.md)
+  [SIP-039](../sip-039/sip-039-clarity5.md)
 
 # Backwards Compatibility
 

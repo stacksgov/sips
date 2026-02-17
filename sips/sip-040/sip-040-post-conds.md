@@ -159,10 +159,8 @@ index 64d3a5d..253164b 100644
 
 # Related Work
 
-- This SIP adds to the existing specification for post-conditions in
-  [SIP-005](../sip-005/sip-005-blocks-and-transactions.md)
-- This SIP will activate in epoch 3.4 together with
-  [SIP-039](../sip-039/sip-039-clarity5.md)
+- This SIP adds to the existing specification for post-conditions in SIP-005
+- This SIP will activate in epoch 3.4 together with SIP-039
 
 # Backwards Compatibility
 
@@ -178,9 +176,8 @@ condition code `0x12`.
 This change adds new functionality that is backwards compatible and optional to
 use. To activate, it should only require approval from the Technical CAB and the
 Steering Committee. If approved, it should go live together with Clarity 5 in
-epoch 3.4, as described in [SIP-039](../sip-039/sip-039-clarity5.md).
-Transactions using `Originator` mode or `MAY SEND` MUST be rejected prior to
-activation.
+epoch 3.4, as described in SIP-039. Transactions using `Originator` mode or
+`MAY SEND` MUST be rejected prior to activation.
 
 # Reference Implementation
 

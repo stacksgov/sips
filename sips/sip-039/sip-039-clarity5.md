@@ -28,12 +28,11 @@ Discussions-To:
 
 # Abstract
 
-The goal of this version of Clarity is not to add any new features, but to
-resolve known issues with existing functionality, specifically those that
-require a hard-fork to change. The implementation for this SIP should only
-resolve problems in the current Clarity implementation or make beneficial
-changes to under-specified aspects of the Clarity language and virtual machine
-(VM).
+This version of Clarity is being proposed solely to address and resolve
+documented issues with existing functionality, specifically those that require a
+hard-fork to change. The implementation for this SIP should only resolve
+problems in the current Clarity implementation or make beneficial changes to
+under-specified aspects of the Clarity language and virtual machine (VM).
 
 # Copyright
 
@@ -44,14 +43,14 @@ is held by the Stacks Open Internet Foundation.
 # Introduction
 
 This SIP intends to solve the known issues in the implementation of the Clarity
-VM, without making any changes to its intended behavior.
+VM, without making any changes to the intended behavior of the Clarity language.
 
 # Specification
 
 ## Resolve the discrepancy in `secp256r1-verify` described in SIP-035
 
 In Clarity 5 and above, `secp256r1-verify` will no longer double-hash its input.
-See [SIP-035](/sips/sip-035/sip-secp256r1-verify.md) for details.
+See [SIP-035](./sips/sip-035/sip-secp256r1-verify.md) for details.
 
 ## Runtime error when passing an empty buffer to `from-consensus-buff?`
 

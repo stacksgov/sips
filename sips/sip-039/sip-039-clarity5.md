@@ -124,6 +124,22 @@ This behavior is a bit surprising. Beginning in Clarity 5, this usage will be
 supported. See issue
 [6831](https://github.com/stacks-network/stacks-core/issues/6831).
 
+## Allow `contract-call?` to constant
+
+Effective in Clarity 2, the type-checker does not complain about using a
+constant as the target of a `contract-call?`, for example:
+
+```clarity
+(define-constant MY_CONTRACT .contract-a)
+(define-public (call-foo)
+  (contract-call? MY_CONTRACT foo)
+)
+```
+
+Despite passing type-checking, this contract would fail during runtime, with an
+error, `RuntimeCheckErrorKind::ContractCallExpectName`. This again is surprising
+behavior. Beginning in epoch 3.4, this usage will be supported.
+
 # Related Work
 
 This SIP is focused on fixing consensus issues discovered in previous

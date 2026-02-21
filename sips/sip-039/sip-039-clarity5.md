@@ -1,0 +1,177 @@
+# Preamble
+
+SIP Number: 039
+
+Title: Clarity 5: Fixing known issues in Clarity
+
+Author(s):
+
+- Brice Dobry <brice@stackslabs.com>
+
+Status: Draft
+
+Consideration: Governance, Technical
+
+Type: Consensus
+
+Layer: Consensus (hard fork)
+
+Created: 2025-01-16
+
+License: BSD-2-Clause
+
+Sign-off:
+
+Discussions-To:
+
+- https://forum.stacks.org/t/clarity-5-and-epoch-3-4/18659
+
+# Abstract
+
+This version of Clarity is being proposed solely to address and resolve
+documented issues with existing functionality, specifically those that require a
+hard-fork to change. The implementation for this SIP should only resolve
+problems in the current Clarity implementation or make beneficial changes to
+under-specified aspects of the Clarity language and virtual machine (VM).
+
+# Copyright
+
+This SIP is made available under the terms of the BSD-2-Clause license,
+available at https://opensource.org/licenses/BSD-2-Clause. This SIP’s copyright
+is held by the Stacks Open Internet Foundation.
+
+# Introduction
+
+This SIP intends to solve the known issues in the implementation of the Clarity
+VM, without making any changes to the intended behavior of the Clarity language.
+
+# Specification
+
+## Resolve the discrepancy in `secp256r1-verify` described in SIP-035
+
+In Clarity 5 and above, `secp256r1-verify` will no longer double-hash its input.
+See [SIP-035](./sips/sip-035/sip-secp256r1-verify.md) for details.
+
+## Runtime error when passing an empty buffer to `from-consensus-buff?`
+
+Beginning in Clarity 5, computing the cost of passing an empty buffer to
+`from-consensus-buff?` will no longer trigger a runtime error. Instead, the cost
+will be charged appropriately, and the expression will return `none`, as
+originally intended. See issue
+[#6683](https://github.com/stacks-network/stacks-core/issues/6683).
+
+## Bug with `burn-block-height` inside an `at-block` expression
+
+From issue [#6123](https://github.com/stacks-network/stacks-core/issues/6123):
+
+> Epoch 3 introduced a bug which causes `burn-block-height` to always return the
+> current burn block height, even if inside of an `at-block` expression. This
+> should be fixed to behave as expected in the next hard-fork.
+
+In Clarity 5 and above, `burn-block-height` will return the correct value when
+used inside of an `at-block` expression.
+
+## Increased stack depth
+
+Currently, the Clarity VM limits the call stack of a transaction execution to a
+depth of 64 and several user applications have been hitting this limit recently.
+This value was not specified in any previous SIPs, but was chosen to constrain
+memory usage by the VM. Upon further testing, it has been determined that this
+value can safely be increased to 128 without imposing unreasonable requirements
+on Stacks node runners. Effective in epoch 3.4, the stack depth will be set
+to 128.
+
+## Rejectable transactions
+
+Several kinds of errors have been avoided in the Clarity VM via a soft-fork
+mechanism, causing transactions that trigger these problematic situations to be
+rejected, not allowed to be included in a block. This strategy is useful for
+quickly patching issues without requiring a hard-fork. However, once the
+soft-fork is in place, the next time a hard-fork is executed, these errors can
+all be transitioned to errors that can be included in a block. This is much
+better for the network, since not including a transaction in a block has several
+downsides:
+
+- Miners cannot charge a fee for processing the transaction
+- Users may be confused as to why their transaction is not being included,
+  causing that transaction and all later transactions (with higher nonces) to
+  stall
+- These unmineable transactions remain in the mempool, unprocessed, until they
+  age out
+
+With the upgrade to epoch 3.4, all known reachable "rejectable" errors will
+become includable errors.
+
+## Allow trait use in same contract
+
+Currently, a trait defined in a contract cannot be used at the top-level of that
+contract. For example, the code below will result in a `NoSuchContract` error.
+
+```clarity
+(define-trait trait-1 (
+    (foo
+        ()
+        (response int int)
+    )
+))
+(define-private (bar (F <trait-1>))
+    (unwrap-panic (contract-call? F foo))
+)
+(bar .c-foo)
+```
+
+This behavior is a bit surprising. Beginning in Clarity 5, this usage will be
+supported. See issue
+[6831](https://github.com/stacks-network/stacks-core/issues/6831).
+
+## Allow `contract-call?` to constant
+
+Effective in Clarity 2, the type-checker does not complain about using a
+constant as the target of a `contract-call?`, for example:
+
+```clarity
+(define-constant MY_CONTRACT .contract-a)
+(define-public (call-foo)
+  (contract-call? MY_CONTRACT foo)
+)
+```
+
+Despite passing type-checking, this contract would fail during runtime, with an
+error, `RuntimeCheckErrorKind::ContractCallExpectName`. This again is surprising
+behavior. Beginning in epoch 3.4, this usage will be supported.
+
+# Related Work
+
+This SIP is focused on fixing consensus issues discovered in previous
+implementations of Clarity, or improving behavior which is unspecified in prior
+SIPs. The existing SIPs defining Clarity are:
+
+- [SIP-002 (Clarity)](../sip-002/sip-002-smart-contract-language.md)
+- [SIP-015 (Clarity 2)](../sip-015/sip-015-network-upgrade.md)
+- [SIP-021 (Clarity 3)](../sip-021/sip-021-nakamoto.md)
+- [SIP-033 (Clarity 4)](../sip-033/sip-033-clarity4.md)
+
+# Backwards Compatibility
+
+Clarity 5 will be implemented with these changes while maintaining backwards
+compatibility for previous versions of Clarity. Existing contracts will continue
+to execute with the existing behavior, but new contracts will default to
+Clarity 5.
+
+# Activation
+
+Since this SIP only proposes fixes to the existing Clarity designs, it will not
+require a community vote. In order to activate epoch 3.4 and Clarity 5, this SIP
+must be approved by the Technical CAB and the Steering Committee. Once approved,
+an activation height must be selected, allowing ample time for the changes to be
+implemented, a release published, and community members to update. This block
+height may be decided jointly by the Steering Committee, Technical CAB, and
+Stacks core engineers implementing the changes.
+
+# Reference Implementation
+
+At the time of this writing, the following public implementations are available
+so far:
+
+- [`secp256r1-verify?` change](https://github.com/stacks-network/stacks-core/pull/6763)
+- [`from-consensus-buff?` change](https://github.com/stacks-network/stacks-core/pull/6820)

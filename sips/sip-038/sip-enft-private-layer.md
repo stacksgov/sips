@@ -11,15 +11,16 @@ Type: Standard
 Created: 2026-01-10  
 License: CC0-1.0  
 Sign-off:  
+Layer: Trait   
 Discussions-To: https://forum.stacks.org/t/encrypted-nfts-on-stacks-a-standard-trait-for-commitment-based-private-layers-enft/18560  
 
 # Abstract
 
 This SIP proposes a minimal, composable trait interface for “Encrypted NFTs” (eNFTs): NFTs that commit on-chain to a private off-chain payload (“private metadata”) while keeping the payload itself off-chain. The standard defines:
 
-1) a public commitment interface,  
-2) an optional owner-gated envelope descriptor for wallet User Experience, and  
-3) indexer-friendly event conventions.
+1) A public commitment interface,  
+2) An optional owner-gated envelope descriptor for wallet user experience.
+3) Indexer-friendly event conventions.
 
 This enables interoperable private-metadata NFT patterns across contracts, wallets, marketplaces, and indexers without requiring consensus changes.
 
@@ -37,7 +38,7 @@ This SIP’s copyright is waived to the extent possible under law.
 This SIP standardizes a minimal interface for commitment-based private metadata on SIP-009 NFTs:
 
 - A **public commitment** (hash) to the payload (or ciphertext), enabling anyone to verify integrity after reveal.
-- An optional **owner-gated envelope descriptor** to guide wallet User Experience (e.g., show “Reveal” only to the owner).
+- An optional **owner-gated envelope descriptor** to guide wallet user experience (e.g., show “Reveal” only to the owner).
 - A recommended **event format** so indexers can detect updates efficiently.
 
 ### Relationship to SIP-009
@@ -56,6 +57,8 @@ This trait is designed to be implemented **alongside** SIP-009-compliant NFT con
 - Mandating a specific storage network, encryption scheme, or reveal flow.
 - Defining a full game/puzzle “answer verification” protocol (out of scope).
 
+**Note on encryption flexibility:** This SIP intentionally does not mandate a specific encryption scheme. Wallets and indexers interact only with the commitment layer — they verify `hash(payload) == on-chain commitment` and never perform decryption. Decryption occurs off-chain between the application and the asset owner, outside the trait scope. Different projects require different threat models (server-assisted reveal vs. client-side decryption with embedded key blob vs. proxy re-encryption). To prevent fragmentation, implementers using any non-default algorithm id (other than `u0`) **must** publish a stable, publicly available algorithm specification. Wallets **may** support only `u0` (SHA-256) and treat unknown algorithm ids as unsupported for verification while still supporting discovery.
+
 # Specification
 
 ## 1. Terminology
@@ -66,7 +69,8 @@ This trait is designed to be implemented **alongside** SIP-009-compliant NFT con
 - **Envelope**: A small off-chain descriptor used for UX/access (e.g., retrieval URI, encrypted key blob, signed URL descriptor).
 - **Reveal**: Off-chain delivery of payload/envelope to the user; the client verifies integrity by comparing hash(payload_bytes) to the on-chain commitment.
 - **Algo ID**: An integer identifier that indicates how the commitment hash is computed.
-- **Scheme Version**: A monotonically increasing version number for commitment/envelope encoding.
+- **Version**: A monotonically increasing version number for commitment/envelope encoding.
+- **Token-id**: The SIP-009 NFT token identifier (`uint`). Each token-id uniquely identifies a single NFT within a contract.
 
 ### 2. Commitment Semantics
 
@@ -84,6 +88,8 @@ Implementations **must** expose a commitment for a given token-id.
 | u0 | SHA-256 | Recommended default |
 | u1-u99 | Reserved | For future standardization |
 | u100+ | Application-defined | Projects may define custom algorithms |
+
+**Wallet implementation guidance:** Wallets and indexers are not required to support all algorithm ids. A conforming wallet may support only `u0` (SHA-256) and display a warning or informational notice for tokens using unrecognized algorithms. The registry enables organic ecosystem convergence without requiring a new SIP for each algorithm.
 
 **Notes**
 - If the payload is JSON, implementers should treat the committed object as raw bytes of a canonical encoding chosen by the application (this SIP does not standardize canonicalization). Consumers must verify against the exact bytes they receive on reveal.
@@ -126,7 +132,7 @@ Contracts may implement the baseline trait alone, or both traits.
 ```clarity
 (define-trait enft-owner-envelope-trait
   (
-    ;; User Experience oriented: returns an owner-gated envelope descriptor.
+    ;; user experience oriented: returns an owner-gated envelope descriptor.
     ;; Implementations SHOULD check ownership for consistent wallet UX.
     (get-owner-envelope (uint)
       (response
@@ -155,7 +161,7 @@ Contracts may implement the baseline trait alone, or both traits.
 Implementations **may** choose their own error codes. This SIP **recommends**:
 
 - `err u404` => token-id not found / no commitment set
-- `err u100` => not authorized for `get-owner-envelope` (only relevant if `enft-owner-envelope-trait` is implemented)
+- `err u401` => not authorized for `get-owner-envelope` (only relevant if `enft-owner-envelope-trait` is implemented)
 
 
 ### 4. Events (Indexer Conventions)
@@ -212,6 +218,9 @@ Assuming collision-resistant hash functions, the on-chain commitment ensures the
 ### Phishing / malicious URIs
 Wallets should treat envelope URIs as untrusted input and apply standard URL safety practices (origin warnings, link previews sandboxing, and user confirmation flows where appropriate).
 
+### MIME type validation
+The `mime` field is informational and does not instruct clients to execute content. Clients **should** validate MIME types before processing payloads and **should** reject executable types (e.g., `application/x-executable`, `application/x-msdownload`) by default. This follows standard content-security practices.
+
 ---
 
 ## Reference Implementation (Informative)
@@ -248,7 +257,7 @@ represents approximately 3 months:
    proving interoperability independent of the authors.
 
 A trait that follows this specification will be made available 
-on mainnet upon ratification, and its deployed address will be 
+on mainnet upon status update to activation-in-progress, and its deployed address will be 
 recorded here.
 
 Until activation, the SIP remains Draft, and implementers may 

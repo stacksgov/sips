@@ -165,13 +165,15 @@ Clarity 5.
 
 # Activation
 
-Since this SIP only proposes fixes to the existing Clarity designs, it will not
-require a community vote. In order to activate epoch 3.4 and Clarity 5, this SIP
-must be approved by the Technical CAB and the Steering Committee. Once approved,
-an activation height must be selected, allowing ample time for the changes to be
-implemented, a release published, and community members to update. This block
-height may be decided jointly by the Steering Committee, Technical CAB, and
-Stacks core engineers implementing the changes.
+In order for this SIP to activate, the following criteria must be met:
+
+- At least 80 million stacked STX must vote, with at least 80% of all stacked
+  STX committed by voting must be in favor of the proposal (vote "yes").
+- At least 80% of all liquid STX committed by voting must be in favor of the
+  proposal (vote "yes").
+
+If the SIP is approved, epoch 3.4 will activate at Bitcoin block height 943000,
+targeting March 30, 2026.
 
 # Reference Implementation
 

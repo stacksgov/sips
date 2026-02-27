@@ -60,13 +60,18 @@ will be charged appropriately, and the expression will return `none`, as
 originally intended. See issue
 [#6683](https://github.com/stacks-network/stacks-core/issues/6683).
 
-## Bug with `burn-block-height` inside an `at-block` expression
+## Bug inside `at-block` expressions
 
 From issue [#6123](https://github.com/stacks-network/stacks-core/issues/6123):
 
 > Epoch 3 introduced a bug which causes `burn-block-height` to always return the
 > current burn block height, even if inside of an `at-block` expression. This
 > should be fixed to behave as expected in the next hard-fork.
+
+In addition to `burn-block-height`, it was also determined that this same error
+effects `stx-account` and `stx-get-balance`. These two functions can return an
+incorrect value inside of an `at-block` since the incorrect burn block height is
+used to determine the locked status of the STX.
 
 In Clarity 5 and above, `burn-block-height` will return the correct value when
 used inside of an `at-block` expression.

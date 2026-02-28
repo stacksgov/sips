@@ -28,7 +28,7 @@ Discussions-To:
 
 # Abstract
 
-This SIP deprecates the `at-block` built-in in Clarity. Starting from Epoch 3.4, all invocations of `at-block` will fail unconditionally, regardless of which block is referenced or which Clarity version the contract was deployed with. New contracts that use `at-block` will fail static analysis and cannot be deployed. Existing contracts that invoke `at-block` will receive a runtime error.
+This SIP deprecates the at-block built-in in Clarity, effective from Epoch 3.4. After activation, new contracts that reference at-block will fail during static analysis, and existing contracts that invoke it will fail at runtime. This removes the only mechanism that requires nodes to retain the full historical MARF, enabling future chainstate pruning.
 
 # Copyright
 
@@ -46,9 +46,9 @@ Where `id-block-hash` is a 32-byte buffer identifying a Stacks block, and `expr`
 
 Currently, `at-block` can reference any block in the chain's history, all the way back to the genesis block. This unbounded lookback forces every Stacks node to maintain the full historical MARF, tracking the value of every key at every point in history.
 
-On mainnet, the chainstate has grown to approximately 1 TB, of which roughly 95% is consumed by the MARF's historical data. This growth has accelerated significantly since the activation of Nakamoto, making chainstate storage an increasingly urgent concern for node operators. As of 02/20/26, the chain grows by \~2.73GB/day.
+On mainnet, the chainstate has grown to approximately 1 TB, of which roughly 95% is consumed by the MARF's historical data. This growth has accelerated significantly since the activation of Nakamoto, making chainstate storage an increasingly urgent concern for node operators. As of 02/20/26, the chain grows by ~2.73 GB/day.
 
-Deprecating `at-block` entirely removes the only mechanism that requires nodes to retain the full MARF history. This is a prerequisite for future MARF pruning and will enable aggressive chainstate reduction.
+Deprecating `at-block` entirely removes the only mechanism that requires nodes to retain this history and is a prerequisite for future MARF pruning.
 
 ## Design Goals
 
@@ -57,26 +57,30 @@ Deprecating `at-block` entirely removes the only mechanism that requires nodes t
 
 # Specification
 
-Starting from Epoch 3.4, the `at-block` built-in is **disabled entirely**. This is enforced at two levels:
+Starting from Epoch 3.4, `at-block` is disabled across all Clarity versions. The enforcement mechanism differs depending on the Clarity version and execution phase.
 
-**Static analysis (new deployments):** When a contract is deployed in Epoch 3.4 or later, the type checker rejects any use of `at-block` with a `StaticCheckError` of kind `AtBlockUnavailable`. The deployment transaction is included in the block, it fails, and the miner collects the fee.
+## Static Analysis (New Deployments)
 
-**Runtime (existing contracts):** When an already deployed contract invokes `at-block` during Epoch 3.4 or later, the VM immediately aborts with a `RuntimeCheckError` of kind `AtBlockUnavailable`, without evaluating the block hash argument or the closure. The enclosing transaction is included in the block, it fails, and the miner collects the fee.
+In Epoch 3.4+, any contract that references `at-block` will be rejected during analysis:
+
+- **Clarity 1–4:** The type checker rejects `at-block` with `StaticCheckErrorKind::AtBlockUnavailable`. The keyword remains syntactically present in the language surface, but is gated by epoch.
+- **Clarity 5+:** `at-block` is removed from the set of registered native functions entirely, so the analyzer rejects it as `UnknownFunction("at-block")`.
+
+In both cases, the deployment transaction is included in the block, it fails, and the miner collects the fee.
+
+## Runtime (Existing Contracts)
+
+When an already-deployed Clarity 1–4 contract invokes `at-block` during Epoch 3.4 or later, the VM immediately aborts with a `RuntimeCheckError` of kind `AtBlockUnavailable`, without evaluating the block hash argument or the closure. The enclosing transaction is included in the block, it fails, and the miner collects the fee.
+
+This only applies to Clarity 1–4, since Clarity 5+ contracts cannot contain `at-block` references (they would have been rejected at deploy time).
 
 ## Epoch Gating
 
-The deprecation is **only enforced in Epoch 3.4 and later**. For all prior epochs, the existing behavior is preserved. This means:
-
-- Blocks produced before the Epoch 3.4 activation height are validated using the old rules, regardless of when they are replayed.
-- Starting at the Epoch 3.4 activation height, any invocation of `at-block`, including from contracts deployed in earlier epochs and earlier Clarity versions, will fail with `AtBlockUnavailable`.
-
-This is an epoch-level behavioral change, not a Clarity-version-level change. A contract deployed using Clarity 1 that calls `at-block` will still be subject to the deprecation when executed during Epoch 3.4. This is necessary because the deprecation is a property of the node's storage guarantees, not a property of the contract's language version.
+The `AtBlockUnavailable` behavior is enforced exclusively in Epoch 3.4 and later. Blocks produced before the activation height are validated using the prior rules, regardless of when they are replayed. No previously valid block is invalidated by this change.
 
 ## Impact on Existing Contracts
 
-Any deployed contract that calls `at-block` will begin receiving runtime errors after Epoch 3.4 activates. This is a semantic change to existing contract behavior.
-
-Based on analysis of historical mainnet transactions, the number of contracts affected is expected to be very small. The practical usage of `at-block` on mainnet is limited, and contracts that do use it can be redeployed without `at-block` calls prior to Epoch 3.4 activation.
+Any deployed contract that calls `at-block` will begin receiving runtime errors after Epoch 3.4 activates. The practical usage of `at-block` on mainnet is limited, and affected contracts can be redeployed without `at-block` calls prior to activation.
 
 # Related Work
 
@@ -85,11 +89,7 @@ Based on analysis of historical mainnet transactions, the number of contracts af
 
 # Backwards Compatibility
 
-This SIP introduces a breaking change to the existing `at-block` built-in for all Clarity versions when executed in Epoch 3.4 or later.
-
-All contracts that use `at-block`, regardless of the target block, will fail after Epoch 3.4 activates. This is an intentional and necessary trade-off to enable future chainstate pruning.
-
-There are no changes to the chainstate database schemas in this SIP. Everyone who runs a Stacks node today will be able to upgrade to the Epoch 3.4 release and continue operating from their existing chainstate.
+This SIP introduces a breaking change: after Epoch 3.4 activates, `at-block` cannot be used successfully in any Clarity version. This is an intentional and necessary trade-off to enable future chainstate pruning.
 
 # Activation
 
@@ -97,4 +97,4 @@ This SIP will be a rider on SIP-039. It will be considered activated if and only
 
 # Reference Implementation
 
-Implementation of this SIP is in [at-blcok deprecation](https://github.com/stacks-network/stacks-core/pull/6937).
+Implementation of this SIP is in [at-block deprecation](https://github.com/stacks-network/stacks-core/pull/6937).

@@ -2,7 +2,7 @@
 
 SIP Number: TBD
 
-Title: Deprecation of `at-block`
+Title: Removal of `at-block`
 
 Author(s):
 
@@ -28,7 +28,7 @@ Discussions-To:
 
 # Abstract
 
-This SIP deprecates the at-block built-in in Clarity, effective from Epoch 3.4. After activation, new contracts that reference at-block will fail during static analysis, and existing contracts that invoke it will fail at runtime. This removes the only mechanism that requires nodes to retain the full historical MARF, enabling future chainstate pruning.
+This SIP proposes to removal of the `at-block` built-in in Clarity, effective from Epoch 3.4. After activation, new contracts that reference `at-block` will fail during static analysis, and existing contracts that invoke it will fail at runtime. This removes the only mechanism that requires nodes to retain the full historical MARF, enabling future chainstate pruning.
 
 # Copyright
 
@@ -48,7 +48,7 @@ Currently, `at-block` can reference any block in the chain's history, all the wa
 
 On mainnet, the chainstate has grown to approximately 1 TB, of which roughly 95% is consumed by the MARF's historical data. This growth has accelerated significantly since the activation of Nakamoto, making chainstate storage an increasingly urgent concern for node operators. As of 02/20/26, the chain grows by ~2.73 GB/day.
 
-Deprecating `at-block` entirely removes the only mechanism that requires nodes to retain this history and is a prerequisite for future MARF pruning.
+Removing `at-block` eliminates the only mechanism that requires nodes to retain this history and is a prerequisite for future MARF pruning.
 
 ## Design Goals
 
@@ -97,4 +97,4 @@ This SIP will be a rider on SIP-039. It will be considered activated if and only
 
 # Reference Implementation
 
-Implementation of this SIP is in [at-block deprecation](https://github.com/stacks-network/stacks-core/pull/6937).
+Implementation of this SIP is in [at-block removal](https://github.com/stacks-network/stacks-core/pull/6937).

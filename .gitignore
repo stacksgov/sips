@@ -4,5 +4,3 @@
 *.rej
 
 .aider*
-
-node_modules/

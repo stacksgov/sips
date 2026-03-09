@@ -172,6 +172,23 @@ In order for this SIP to activate, the following criteria must be met:
 - At least 80% of all liquid STX committed by voting must be in favor of the
   proposal (vote "yes").
 
+All STX holders vote by sending Stacks dust to the corresponding Stacks address
+from the account where their Stacks are held (stacked or liquid). To simplify
+things, users can create their votes by visiting the
+[ballot.gg](https://ballot.gg/67a34537-0375-4046-a4b7-432e8dfd4eb3/1MP9LjMBZRKXWq3tRio6nGwFyUoboozEQx)
+platform. Voting power is determined by a snapshot of the amount of STX (stacked
+and unstacked) at the block height at which the voting started (preventing the
+same STX from being transferred between accounts and used to effectively double
+vote). The voting addresses are also shared below.
+
+Solo stackers only can also vote by sending a bitcoin dust transaction (6000
+sats) to the corresponding bitcoin address.
+
+| Vote | Bitcoin                        | Stacks                              | ASCII Encoding                           | Msg        |
+| ---- | ------------------------------ | ----------------------------------- | ---------------------------------------- | ---------- |
+| yes  | 11111111111mdWK2VXcrA1eceSntcp | SP00000000001WPAWSDEDMQ0B9K76XTZ79N | 000000000000000000007965732d7369702d3339 | yes-sip-39 |
+| no   | 111111111111ACW5wa4RwyepZ84byy | SP000000000006WVSDEDMQ0B9K76JZVAKY  | 00000000000000000000006e6f2d7369702d3339 | no-sip-39  |
+
 If the SIP is approved, epoch 3.4 will activate at Bitcoin block height 943000,
 targeting March 30, 2026.
 

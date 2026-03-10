@@ -60,11 +60,11 @@ contracts, and users should be in the habit of never signing a transaction in
 `Allow` mode. The reality is that some applications, e.g. DeFi apps, move assets
 between a variety of contracts as part of one contract call. The movements may
 be dynamic and difficult or impossible to predict in advance, so users end up
-reverting to signing `Allow` mode transactions, just to make it work. This is a
-very bad habit to teach our users, and we can do better. The concern of the user
-is typically about assets moving out of their own wallet, and they are not
+reverting to signing `Allow` mode transactions, just to make it work, which
+erodes the security habits we want users to build. The concern of the user is
+typically about assets moving out of their own wallet, and they are not
 concerned about assets moving in and out of contracts, triggered by their call.
-Contracts that they do care about should be protected internally, using the
+Contracts that users do care about should be protected internally, using the
 contract-level post-conditions supported by `as-contract?`. `Originator` mode
 allows the user to specify only the restrictions on their own assets, allowing
 any movements of assets amongst other principals.
@@ -167,9 +167,9 @@ index 64d3a5d..253164b 100644
 These new post-condition additions are backwards compatible for transactions
 that do not use the new mode or condition code. Nodes need to be updated to
 accept transactions with these new features, but existing SIP-005
-post-conditions will continue to operate as they do now. Pre-upgrade nodes will
-reject transactions that use post-condition mode `0x03` or non-fungible
-condition code `0x12`.
+post-conditions will continue to operate as they do now. Prior to activation,
+nodes will reject transactions that use post-condition mode `0x03` or
+non-fungible condition code `0x12`.
 
 # Activation
 

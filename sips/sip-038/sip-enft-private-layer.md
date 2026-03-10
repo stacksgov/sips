@@ -5,7 +5,7 @@
 SIP Number: 038  
 Title: Standard Trait Definition for Commitment-Based Private Metadata (Encrypted NFTs)   
 Authors: Xenitron nortinex@gmail.com, Bogachev ogres2009anton@gmail.com  
-Status: Draft  
+Status: Accepted   
 Consideration: Technical  
 Type: Standard  
 Created: 2026-01-10  

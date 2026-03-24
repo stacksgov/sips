@@ -189,8 +189,15 @@ sats) to the corresponding bitcoin address.
 | yes  | 11111111111mdWK2VXcrA1eceSntcp | SP00000000001WPAWSDEDMQ0B9K76XTZ79N | 000000000000000000007965732d7369702d3339 | yes-sip-39 |
 | no   | 111111111111ACW5wa4RwyepZ84byy | SP000000000006WVSDEDMQ0B9K76JZVAKY  | 00000000000000000000006e6f2d7369702d3339 | no-sip-39  |
 
-If the SIP is approved, epoch 3.4 will activate at Bitcoin block height 943333,
-targeting April 2, 2026.
+If the SIP is approved, epoch 3.4 will activate at Bitcoin block height 943000,
+targeting March 30, 2026.
+
+## Note (2026-03-24)
+
+Due to an issue identified in the late stages of testing before the release, the
+activation height has been postponed to Bitcoin block height 943,333, targeting
+20:00 UTC on April 2, 2026 to ensure that all network participants have
+sufficient time to upgrade their stacks-node software.
 
 # Reference Implementation
 

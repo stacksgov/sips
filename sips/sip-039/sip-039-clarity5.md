@@ -199,6 +199,32 @@ activation height has been postponed to Bitcoin block height 943,333, targeting
 20:00 UTC on April 2, 2026 to ensure that all network participants have
 sufficient time to upgrade their stacks-node software.
 
+## Activation Status
+
+At the end of Bitcoin block height 941,639, the following vote was recorded: A
+total of 97,497,945 STX participated, with 97,497,945 STX (100%) voting 'Yes'
+and 0 STX (0%) voting 'No'.
+
+A breakdown of the onchain vote is as follows:
+
+- For STX locked in stacking, a total of 86,325,407 STX participated.
+  - Of this, 86,325,407 STX (100%) voted 'Yes'.
+  - While 0 STX (0%) voted 'No'.
+
+- For unlocked STX, a total of 11,172,535 STX participated.
+  - Of this, 11,172,535 STX (100%) voted 'Yes'.
+  - While 0 STX (0%) voted 'No'.
+
+Total of 67 addresses participated, a breakdown is as follows:
+
+- Via Ballot.gg website: 32 addresses
+- STX Dust Transactions: 25 addresses
+- Bitcoin Address Votes: 10 addresses
+
+The open-source Ballot.gg repository, which includes the tally process and the
+audit script used to process and verify the results, can be found here:
+https://github.com/BlockSurvey/ballot/tree/main?tab=readme-ov-file#poll-results-auditor
+
 # Reference Implementation
 
 At the time of this writing, the following public implementations are available

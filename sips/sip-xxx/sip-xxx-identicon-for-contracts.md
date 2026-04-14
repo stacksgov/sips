@@ -30,7 +30,7 @@ Discussions-To:
 
 This SIP specifies a deterministic way to derive a visual identifier (an "identicon") for any Clarity smart contract deployed to the Stacks blockchain. The identicon is a pure function of the contract's source code after canonicalization: two deployments of the same source — on any address, at any height, on any network — render the same icon. Wallets, explorers, and apps that implement the specification allow users to recognize known code at a glance and to notice when contracts that share a name or author address do not share code.
 
-The specification pins three things: the canonical form of the source (the output of `clarinet fmt` with default settings), the hash function (`SHA-512/256` over the UTF-8 bytes of the canonical form), and the rendering library and configuration (`minidenticons`, default options, seeded with the lowercase hex-encoded hash). The output is an SVG suitable for inline rendering.
+The specification pins three things: the canonical form of the source (the output of `clarinet format` with default settings), the hash function (`SHA-512/256` over the UTF-8 bytes of the canonical form), and the rendering library and configuration (`minidenticons`, default options, seeded with the lowercase hex-encoded hash). The output is an SVG suitable for inline rendering.
 
 # Copyright
 
@@ -48,16 +48,16 @@ This SIP proposes that consensus. It does not propose any consensus change to th
 
 ## 1. Canonical source
 
-The canonical form of a contract's source code is the byte-for-byte output of `clarinet fmt` invoked with default settings, against the contract's `.clar` source file.
+The canonical form of a contract's source code is the byte-for-byte output of `clarinet format` invoked with default settings, against the contract's `.clar` source file.
 
 - Formatters MUST normalize line endings to `\n` (LF).
 - Formatters MUST produce a final trailing `\n`.
-- Comments (`;;` and `;;;`) are part of the source and are preserved by `clarinet fmt`. They are hashed.
+- Comments (`;;` and `;;;`) are part of the source and are preserved by `clarinet format`. They are hashed.
 - The canonical form is UTF-8 encoded.
 
-Implementations that do not have access to a Clarinet formatter (for example, browser-only apps fetching source from `/v2/contracts/source`) SHOULD hash the source as returned by the node, assuming the contract author deployed `clarinet fmt`-formatted source. Implementations MAY display a "source not canonicalized" warning next to the identicon when the returned source deviates from a heuristic check (trailing whitespace, mixed line endings, tabs mixed with spaces).
+Implementations that do not have access to a Clarinet formatter (for example, browser-only apps fetching source from `/v2/contracts/source`) SHOULD hash the source as returned by the node, assuming the contract author deployed `clarinet format`-formatted source. Implementations MAY display a "source not canonicalized" warning next to the identicon when the returned source deviates from a heuristic check (trailing whitespace, mixed line endings, tabs mixed with spaces).
 
-Contract authors who wish to participate in the identicon convention MUST run `clarinet fmt` before deploying. Two authors deploying identical logic with different whitespace will produce different identicons.
+Contract authors who wish to participate in the identicon convention MUST run `clarinet format` before deploying. Two authors deploying identical logic with different whitespace will produce different identicons.
 
 ## 2. Hash
 
@@ -120,13 +120,7 @@ This SIP activates once 10 ecosystem participants who display a set of contracts
 
 ## TypeScript / browser
 
-A reference implementation lives in this repository at `src/utils/contractIdenticon.ts` and is wired into the wallet selector at `src/components/wallet-selector/WalletCard.tsx`. The module:
-
-1. fetches contract source via `GET /v2/contracts/source/{address}/{name}` against the appropriate Hiro API host for the network;
-2. hashes the returned source with `sha512_256` from `@noble/hashes/sha2`;
-3. renders via `minidenticonSvg` from the `minidenticons` package.
-
-Canonicalization via `clarinet fmt` is not performed in the browser implementation; see §1 on assumptions and heuristic warnings.
+TODO
 
 ## Clarity (self-declaration)
 

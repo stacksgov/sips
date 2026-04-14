@@ -152,7 +152,7 @@ The amount of stacked STX does not decrease during the automatic extension. If t
 
 When signers verify and accept proposed blocks by miners, their voting power corresponds to the amount of stacked Stacks tokens (see SIP-021). The new stacking process changes the delegation flow as follows:
 
-- `delegate-stx` shall be renamed to `designate`. The function takes the arguments: `amount`, `signature`, optional bitcoin `block-height` defining the end of stacking and auto extending, optional `pox-addr` defining that pox-address that the signer must use, optional `amount-allowance`. The `amount` defines how many Stacks tokens are locked immediately. The `amount-allowance` defines the maximum of Stacks tokens that can be locked in the future through auto extending. If provided, the minimum of the user's stx balance and `amount-allowance` is locked. If omitted, the `amount` is used as `amount-allowance`. Users can use sponsored transactions to call revoke-delegate-stx in case there is no unlocked stx in the account. The argument `signature` is a signature of the signer indicating that the signer accepted the delegation of voting power. The signing follows the structured message signing with the parameters and topic `designate` as message. The public key of the signature can be used to identify the signer similar to the Stacks address of the pool operator in the previous PoX design.
+- `delegate-stx` shall be renamed to `designate`. The function takes the arguments: `amount`, `signature`, optional bitcoin `end-burn-block-height` defining the end of stacking and auto extending, optional `pox-addr` defining that pox-address that the signer must use, optional `amount-allowance`. The `amount` defines how many Stacks tokens are locked immediately. The `amount-allowance` defines the maximum of Stacks tokens that can be locked in the future through auto extending. If provided, the minimum of the user's stx balance and `amount-allowance` is locked. If omitted, the `amount` is used as `amount-allowance`. Users can use sponsored transactions to call revoke-delegate-stx in case there is no unlocked stx in the account. The argument `signature` is a signature of the signer indicating that the signer accepted the delegation of voting power. The signing follows the structured message signing with the parameters and topic `designate` as message. The public key of the signature can be used to identify the signer similar to the Stacks address of the pool operator in the previous PoX design.
 
 - `revoke-delegate-stx` shall be renamed to `revoke-designation`. After calling this function, auto extension is stopped and Stacks tokens are unlocked for the user at the end of the current cycle. If a signer does not aggregate enough Stacks tokens to receive at least one reward slot (or does not commit at all) then the user's Stacks token are unlocked immediately through this call.
 
@@ -209,9 +209,89 @@ Note, for solo Stackers these keys could be theoretically just a single key. For
 
 The voting power for a signer is the sum of the accepted stacked STX, not the sum of the currently stacked STX because users can have descreased the stacking amount.
 
+## Stacking flow
+
+### Typical stacking flow
+1. Signer published PoX address to use for the next cycles (until changed).
+2. Stacker requests signature from Signer A.
+3. Stacker stacks STX with that signature.
+4. Auto-extend is performed by nodes.
+
+### Change of Signer
+Stacker wants to change the Signer B, after the typical stacking flow.
+
+5. Stacker requests signature from Signer B.
+6. Stacker stacks STX with the new signature, STX are locked
+7. Auto-extend changes the voting power of Stacker from Signer A to signer B.
+
+### Change of PoX address
+Signer wants to change the PoX address.
+
+5. Signer A publishes new PoX address to use for the next cycles (until changed).
+6. Stackers who requested a specific PoX address to be used, need to re-stack.
+7. Auto-extend uses the new PoX address for all stackers who did not provide a PoX address during stacking or did not re-stack with the new PoX address.
+
+### Increase of Stacking Amount
+Stacker wants to increase the stacking amount.
+
+5. Stacker requests signature from Signer A
+6. Stacker increases the STX stacked, higher amount is locked.
+7. Auto-extend uses the new amount for Signer A
+
+### Decrease of Stacking Amount
+Stacker wants to decrease stacking amount.
+
+5. Stacker indicates reduction of STX stacked.
+6. Auto-extend uses the new lower amount, unlocks the difference to the previous amount.
+
+### Revoke Stacking
+5. Stacker revokes stacking
+6. Auto-extend excludes Stacker for next cycle and unlocks Stacker's STX
+
+### Exclude Stacker
+Signer wants to exclude a stacker
+
+5. Signer A revokes for Stacker
+6. Auto-exend excluses Stacker for next cycle and unlocks Stacker's STX
+
+### Split Rewards to Different PoX Addresses
+Signer wants to receive parts of the rewards at PoX address A and parts at PoX address B.
+
+1. Signer A publishes a list PoX addresses.
+2. Stacker chooses on PoX address, requests a signature from Ssigner A.
+3. Stacker stacks STX.
+4. Auto-extend uses the corresponding amounts per PoX address, if the sum is above the amount required for 1 reward slot.
+
 ## Transition to PoX-5
 
 A new PoX contract requires that all stacked Stacks tokens are unlocked and Stackers need to lock their Stacks token again using the new PoX-5 contract. The process shall be similar to the previous upgrades of the PoX contract. The PoX-4 contract shall be deactivated and the PoX-5 contract shall be activated at the beginning of epoch 3.3. All locked Stacks tokens shall be unlocked automatically one block after the beginning of epoch 3.3. Nevertheless, these tokens will earn rewards until the end of the cycle.
+
+## Method Signatures PoX-5
+
+```
+(define-public
+    (designate
+        ;; The amount of uSTX to be locked immediately
+        (amount uint)
+        ;; Reward cycle
+        (reward-cycle uint)
+        ;; Signature of the signer indicating that the signer accepted the delegation of voting power
+        (signer-sig (buff 65))
+        ;;
+        (signer-key (buff 33))
+        ;;
+        (max-amount uint)
+        ;;
+        (auth-id uint)
+        ;; The Bitcoin block height at which this designation ends, if any.
+        (end-burn-block-height (optional uint))
+        ;; PoX address that the signer must use, to which PoX yield accrues
+        (pox-addr (optional { version: (buff 1), hashbytes: (buff 32) }))
+        ;; Maximum amount of uSTX that can be locked through future auto-extending
+        (max-amount (optional uint))
+    )
+)
+```
 
 ## Reference implementation
 

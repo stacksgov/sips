@@ -27,8 +27,8 @@ Discussions-To:
 # Abstract
 
 This SIP specifies Version 6 of the Clarity smart contract language. It
-introduces quality-of-life improvements to the language syntax, relaxes
-unnecessarily strict naming and typing rules, and adds a new cryptographic
+introduces quality-of-life improvements to the language syntax, relaxes naming rules
+to work better with the new Clarity linter, and adds a new cryptographic
 built-in function. These changes are motivated by real-world developer experience
 and address long-standing requests from the Clarity developer community.
 
@@ -40,24 +40,23 @@ is held by the Stacks Open Internet Foundation.
 
 # Introduction
 
-Through years of production use, Clarity developers have encountered several
-unnecessary limitations in the language that hinder readability, ergonomics, and
-functionality. This SIP addresses five specific areas:
+This SIP addresses several limitations and inconveniences that have been reported
+by Clarity developers. Specifically, it makes the following changes:
 
-1. **Constants in type positions.** Clarity currently requires literal values in
-   type definitions (such as list lengths) and in certain built-in functions
-   (such as `as-max-len?`), even though constants are equally fixed at compile
-   time. This forces developers to duplicate magic numbers throughout their code,
-   increasing the risk of inconsistencies.
-2. **Numeric separators.** Large numeric literals are common in Clarity contracts
+1. **Allow constants in place of literal values:** Clarity currently requires
+   literal values in type definitions (such as list lengths) and in certain
+   built-in functions (such as `as-max-len?`), even though constants are also known
+   during deployment. This forces developers to duplicate magic numbers throughout
+   their code, increasing the risk of inconsistencies.
+2. **Numeric separators:** Large numeric literals are common in Clarity contracts
    (especially when working with micro-denominated tokens), but they are
    difficult to read without visual grouping. Many modern languages support
    underscore separators in numeric literals for this purpose.
-3. **Underscore-prefixed variable names.** The current naming rules prohibit
+3. **Underscore-prefixed variable names:** The current naming rules prohibit
    identifiers from starting with `_`, preventing developers from using a
    widely-adopted convention for indicating intentionally unused variables. This
    limitation affects developer tooling such as linters.
-4. **secp256k1 public key decompression.** There is currently no way to
+4. **secp256k1 public key decompression:** There is currently no way to
    decompress a secp256k1 public key in Clarity. This forces protocols like
    Wormhole to use cumbersome workarounds involving uncompressed keys, leading to
    operational downtime when guardian sets change.
@@ -71,7 +70,7 @@ https://github.com/clarity-lang/reference/issues/78
 
 Currently, Clarity requires literal values when specifying type parameters such
 as list lengths. Constants cannot be used in these positions, even though their
-values are fixed at compile time and known during analysis.
+values are known during analysis.
 
 Beginning in Clarity 6, constants defined with `define-constant` may be used
 wherever a literal unsigned integer is required in a type specification. This
@@ -102,8 +101,8 @@ https://github.com/clarity-lang/reference/issues/80
 
 The `as-max-len?` function currently requires a literal unsigned integer for its
 second argument, which specifies the target maximum length. Constants cannot be
-substituted for this literal, even though the value is equally fixed and known at
-analysis time.
+substituted for this literal, even though the value is equally fixed and known
+during analysis.
 
 Beginning in Clarity 6, a constant defined with `define-constant` may be used as
 the second argument to `as-max-len?`, provided the constant evaluates to a
@@ -134,8 +133,8 @@ dealing with micro-denominated values (e.g. uSTX). These large numbers are
 difficult to read and error-prone to write.
 
 Beginning in Clarity 6, the underscore character (`_`) may be used as a visual
-separator within integer and unsigned integer literals. The underscores are
-purely cosmetic and have no effect on the value of the literal. They are stripped
+separator within signed and unsigned integer literals. The underscores are
+purely cosmetic and have no effect on the value of the literal: They are stripped
 during parsing.
 
 ### Rules
@@ -217,15 +216,15 @@ feasible to implement in Clarity's 128-bit integer system.
 
 This limitation has real-world consequences. For example, the Wormhole bridge
 protocol on Stacks needs to store uncompressed public keys during guardian set
-updates because there is no way to derive them on-chain from the compressed
-form. Obtaining these uncompressed keys is operationally difficult, leading to
+updates because there is no way to derive them on-chain from the VAA signatures.
+Obtaining these uncompressed keys has proven to be difficult, and has led to
 protocol downtime during guardian rotations.
 
 Beginning in Clarity 6, a new built-in function `secp256k1-decompress?` is
 available.
 
-- **Input**: `(buff 33)` -- a compressed secp256k1 public key
-- **Output**: `(optional (buff 65))` -- the uncompressed public key, or `none`
+- **Input**: `(buff 33)`: a compressed secp256k1 public key
+- **Output**: `(optional (buff 65))`: the uncompressed public key, or `none`
   if the input is not a valid compressed public key
 - **Signature**: `(secp256k1-decompress? compressed-public-key)`
 - **Description**: Takes a 33-byte compressed secp256k1 public key (where the

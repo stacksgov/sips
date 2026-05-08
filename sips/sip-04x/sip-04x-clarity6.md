@@ -28,9 +28,11 @@ Discussions-To:
 
 This SIP specifies Version 6 of the Clarity smart contract language. It
 introduces quality-of-life improvements to the language syntax, relaxes naming rules
-to work better with the new Clarity linter, and adds a new cryptographic
-built-in function. These changes are motivated by real-world developer experience
-and address long-standing requests from the Clarity developer community.
+to work better with the new Clarity linter, adds a new cryptographic
+built-in function, and adds new built-ins for trustlessly verifying Bitcoin
+transaction outputs on-chain. These changes are motivated by real-world
+developer experience and address long-standing requests from the Clarity
+developer community.
 
 # Copyright
 
@@ -60,6 +62,13 @@ by Clarity developers. Specifically, it makes the following changes:
    decompress a secp256k1 public key in Clarity. This forces protocols like
    Wormhole to use cumbersome workarounds involving uncompressed keys, leading to
    operational downtime when guardian sets change.
+5. **Trustless Bitcoin transaction verification:** Clarity contracts have no
+   native way to verify that a Bitcoin transaction output exists on the Bitcoin
+   chain. Protocols that need this capability (such as BTC bridges and sBTC-style
+   peg systems) must currently rely on off-chain oracles or trusted relayers, or
+   reimplement Bitcoin transaction parsing and merkle-proof verification in
+   user-space Clarity code, which is expensive, error-prone, and difficult to
+   audit.
 
 # Specification
 
@@ -260,6 +269,100 @@ compressed public key on-chain:
     none))
 ```
 
+## Bitcoin Transaction Verification Built-ins
+
+Clarity contracts currently have no first-class way to verify that a Bitcoin
+transaction output exists on the Bitcoin chain. Protocols such as BTC bridges
+and sBTC-style peg systems must either rely on trusted off-chain relayers or
+reimplement Bitcoin transaction parsing and merkle-proof verification in
+user-space Clarity, where the cost of double-SHA-256 hashing and byte-level
+parsing on large transactions is prohibitive and the risk of subtle bugs (such
+as CVE-2012-2459-style merkle malleability) is high.
+
+Beginning in Clarity 6, two new built-in functions, `get-bitcoin-tx-output?`
+and `verify-merkle-proof`, are available. They are designed as a pair: the
+`txid` returned by `get-bitcoin-tx-output?` is in the internal (raw) byte
+order expected by `verify-merkle-proof` as a leaf hash. Together with the
+existing `get-burn-block-info?` built-in (which exposes burn-block merkle
+roots), they enable contracts to verify that a Bitcoin output exists on-chain
+without trusting the caller to have correctly stripped witness data or hashed
+the transaction.
+
+### `get-bitcoin-tx-output?`
+
+- **Input**: `buff, uint`: a serialized Bitcoin transaction (with or without
+  SegWit witness data), and the output index (`vout`) to extract.
+- **Output**: `(response (tuple (script (buff 1024)) (amount uint) (txid (buff 32))) uint)`
+- **Signature**: `(get-bitcoin-tx-output? tx-bytes vout)`
+- **Description**: Parses a serialized Bitcoin transaction and returns the
+  output at the given `vout` index, along with the canonical (non-witness)
+  `txid` of the transaction. The returned `txid` is in *internal* byte order
+  (the raw double-SHA-256 result), ready to be passed directly to
+  `verify-merkle-proof` as the leaf hash. The `script` field contains the raw
+  `scriptPubKey` bytes of the output, so contracts can pattern-match on script
+  prefixes to recognize P2WSH (`0x00 0x20 ...`), P2TR (`0x51 0x20 ...`),
+  P2WPKH (`0x00 0x14 ...`), `OP_RETURN` (`0x6a ...`), or any other output
+  script. Returns one of three error codes on failure:
+  - `(err u1)` — `tx-bytes` did not deserialize as a Bitcoin transaction.
+  - `(err u2)` — `vout` is out of range for this transaction.
+  - `(err u3)` — the output's `scriptPubKey` exceeds the 1024-byte cap.
+- **Example**:
+  ```clarity
+  ;; Parse the Bitcoin genesis block coinbase tx and return its sole output.
+  (get-bitcoin-tx-output?
+    0x01000000010000000000000000000000000000000000000000000000000000000000000000ffffffff4d04ffff001d0104455468652054696d65732030332f4a616e2f32303039204368616e63656c6c6f72206f6e206272696e6b206f66207365636f6e64206261696c6f757420666f722062616e6b73ffffffff0100f2052a01000000434104678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef38c4f35504e51ec112de5c384df7ba0b8d578a4c702b6bf11d5fac00000000
+    u0)
+  ;; Returns (ok (tuple
+  ;;   (amount u5000000000)
+  ;;   (script 0x4104678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef38c4f35504e51ec112de5c384df7ba0b8d578a4c702b6bf11d5fac)
+  ;;   (txid 0x3ba3edfd7a7b12b27ac72c3e67768f617fc81bc3888a51323a9fb8aa4b1e5e4a)))
+
+  (get-bitcoin-tx-output? 0x00 u0) ;; Returns (err u1)
+  ```
+
+### `verify-merkle-proof`
+
+- **Input**: `(buff 32), (buff 32), uint, uint, (list 24 (buff 32))`: the leaf
+  hash, the merkle root hash, the leaf's index in the tree, the total
+  transaction count of the block, and the list of sibling hashes along the
+  path from the leaf to the root.
+- **Output**: `bool`
+- **Signature**: `(verify-merkle-proof leaf-hash root-hash tx-index tx-count sibling-hashes)`
+- **Description**: Verifies a Bitcoin-style merkle inclusion proof using
+  double-SHA-256 hashing with the "duplicate the last node on odd-sized rows"
+  rule. Given a `leaf-hash` (typically a Bitcoin txid), the merkle `root-hash`
+  of a block, the `tx-index` of the leaf within the tree (0-indexed), the
+  `tx-count` of transactions in the block, and the `sibling-hashes` along the
+  path from the leaf to the root, the function returns `true` iff hashing
+  pairwise up the tree in the order described by `tx-index` produces
+  `root-hash`.
+
+  The `tx-count` argument pins down the canonical Bitcoin tree shape and is
+  required to defend against
+  [CVE-2012-2459](https://bitcointalk.org/?topic=102395)-style attacks, where
+  an intermediate node in an odd-row-padded tree could otherwise be passed off
+  as a leaf. The function rejects any proof whose path length does not match
+  `ceil(log2(tx-count))` and any `tx-index` not less than `tx-count`. It
+  returns `false` for any malformed proof and `true` for a valid proof.
+
+  All 32-byte hashes (leaf, root, siblings) are passed in *internal* (raw)
+  byte order, not the display (reversed) order conventionally used for
+  Bitcoin txids and block hashes. The `txid` returned by
+  `get-bitcoin-tx-output?` is already in internal byte order and can be
+  passed directly as `leaf-hash`.
+- **Example**:
+  ```clarity
+  ;; The Bitcoin genesis block contains a single tx, so its coinbase txid
+  ;; (in internal byte order) is also the block's merkle root. A proof
+  ;; with an empty sibling list verifies trivially.
+  (verify-merkle-proof
+    0x3ba3edfd7a7b12b27ac72c3e67768f617fc81bc3888a51323a9fb8aa4b1e5e4a
+    0x3ba3edfd7a7b12b27ac72c3e67768f617fc81bc3888a51323a9fb8aa4b1e5e4a
+    u0
+    u1
+    (list)) ;; Returns true
+  ```
+
 # Related Work
 
 This SIP builds upon the existing definitions of the Clarity language:
@@ -273,7 +376,8 @@ This SIP builds upon the existing definitions of the Clarity language:
 # Backwards Compatibility
 
 Because this SIP introduces new syntax (numeric separators, underscore-prefixed
-identifiers) and a new built-in function (`secp256k1-decompress?`), it is a
+identifiers) and new built-in functions (`secp256k1-decompress?`,
+`get-bitcoin-tx-output?`, and `verify-merkle-proof`), it is a
 consensus-breaking change. A contract that uses any of these new features would
 be invalid before this SIP is activated, and valid after it is activated.
 

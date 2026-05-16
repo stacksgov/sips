@@ -40,9 +40,9 @@ This SIP is made available under the terms of the Creative Commons CC0 1.0 Unive
 
 Clarity contracts are addressed by `{deployer}.{name}`. That pair is useful for on-chain references but is a poor user-facing identifier: a user reading `SP2J….transfer-helper` cannot tell from the name alone whether this is the audited, widely-deployed helper they have used before, a fork with a subtle change, or a phishing lookalike deployed to a confusable address.
 
-Hash-based identicons are a well-understood solution to this problem (see `identicon`, `jdenticon`, `blockies`, the GitHub default avatar). What is missing on Stacks is a consensus on *which* bytes get hashed and *which* renderer is used, so that the same contract produces the same icon everywhere it is shown.
+Hash-based identicons are a well-understood solution to this problem (see `identicon`, `jdenticon`, `blockies`, the GitHub default avatar). What is missing on Stacks is a convention on *which* bytes get hashed and *which* renderer is used, so that the same contract produces the same icon everywhere it is shown.
 
-This SIP proposes that consensus. It does not propose any consensus change to the Stacks blockchain — the specification is an off-chain convention followed by wallets, explorers, and apps.
+This SIP proposes adoption of this convention as a standard across the Stacks ecosystem. It does not propose any consensus change to the Stacks blockchain — the specification is an off-chain convention followed by wallets, explorers, and apps.
 
 # Specification
 
@@ -55,7 +55,7 @@ The canonical form of a contract's source code is the byte-for-byte output of `c
 - Comments (`;;` and `;;;`) are part of the source and are preserved by `clarinet format`. They are hashed.
 - The canonical form is UTF-8 encoded.
 
-Implementations that do not have access to a Clarinet formatter (for example, browser-only apps fetching source from `/v2/contracts/source`) SHOULD hash the source as returned by the node, assuming the contract author deployed `clarinet format`-formatted source. Implementations MAY display a "source not canonicalized" warning next to the identicon when the returned source deviates from a heuristic check (trailing whitespace, mixed line endings, tabs mixed with spaces).
+Implementations without access to a local Clarinet formatter SHOULD attempt to retrieve pre-formatted source and SHOULD emit a warning if the source deviates from the canonical heuristic (trailing whitespace, line-ending consistency, tab usage).
 
 Contract authors who wish to participate in the identicon convention MUST run `clarinet format` before deploying. Two authors deploying identical logic with different whitespace will produce different identicons.
 
@@ -78,7 +78,8 @@ This is the same hash exposed in Clarity as the `sha512/256` function, so a cont
   (sha512/256 source))
 ```
 
-Off-chain implementations MUST NOT rely on any on-chain value; the hash is always derived from the deployed source.
+Off-chain implementations MUST compute the identicon hash directly from the canonical source code fetched via /v2/contracts/source, 
+not from any contract copy or on-chain-published or cached hash value. The source, once deployed, is immutable and authoritative.
 
 ## 3. Rendering
 
@@ -90,7 +91,7 @@ The identicon is rendered with the **`minidenticons`** library, used in its defa
   - `seed`: the lowercase hex-encoded identicon hash from §2.
   - `saturation`: default (`50`).
   - `lightness`: default (`50`).
-- Output: an SVG string, 5×5 symmetric grid.
+- Output: an SVG element (default viewBox) rendering a 5×5 symmetric pixel grid.
 
 Implementations MAY override saturation and lightness to match their theme, but the seed MUST remain the hex-encoded hash so the grid pattern stays constant. A light and a dark theme that agree on the seed will display the same silhouette in different colors, which is the intended behavior.
 
@@ -114,13 +115,13 @@ This is a new off-chain convention. There is no on-chain consensus change and no
 
 # Activation
 
-This SIP activates once 10 ecosystem participants who display a set of contracts have implemented this specification.
+This SIP activates once 10 ecosystem participants (wallets, explorers, developer tools or dApps) have publicly implemented and deployed this specification in production.
 
 # Reference Implementations
 
 ## TypeScript / browser
 
-TODO
+JavaScript/TypeScript: Forthcoming (target: May 2026).
 
 ## Clarity (self-declaration)
 

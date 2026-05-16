@@ -95,9 +95,16 @@ The identicon is rendered with the **`minidenticons`** library, used in its defa
 
 Implementations MAY override saturation and lightness to match their theme, but the seed MUST remain the hex-encoded hash so the grid pattern stays constant. A light and a dark theme that agree on the seed will display the same silhouette in different colors, which is the intended behavior.
 
-## 4. Contract ID display
+## 4. Contract identifier display
 
-When space permits, implementations SHOULD display the identicon adjacent to the contract principal (`{deployer}.{name}`). The identicon is advisory: it supplements, not replaces, the full principal.
+When space permits, implementations SHOULD display the identicon adjacent to the qualified contract identifier (contract principal, `{deployer}.{name}`). The identicon is advisory: it supplements, not replaces, the identifier.
+
+To prevent visual conflation of code identity with contract principal, implementations:
+
+* SHOULD display the contract identicon adjacent to the contract identifier ({deployer}.{name}) with a clear visual hierarchy or label indicating it represents source code, not contract address.
+
+* MAY display a separate visual representation of the contract identifier to make address divergence visually apparent. The visual representation MAY be derived from the BNS name owned by the contract principal (e.g. profile image), a minidenticon derived from SHA-256(contract principal) or SHA-256(deployer), or a similar representation. Two deployments of identical code to different principals would then show: identical code icons, distinct contract identifier icons.
+
 
 ## 5. Network isolation
 

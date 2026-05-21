@@ -282,11 +282,12 @@ as CVE-2012-2459-style merkle malleability) is high.
 Beginning in Clarity 6, two new built-in functions, `get-bitcoin-tx-output?`
 and `verify-merkle-proof`, are available. They are designed as a pair: the
 `txid` returned by `get-bitcoin-tx-output?` is in the internal (raw) byte
-order expected by `verify-merkle-proof` as a leaf hash. Together with the
-existing `get-burn-block-info?` built-in (which exposes burn-block merkle
-roots), they enable contracts to verify that a Bitcoin output exists on-chain
-without trusting the caller to have correctly stripped witness data or hashed
-the transaction.
+order expected by `verify-merkle-proof` as a leaf hash. Combined with the
+existing `get-burn-block-info?` built-in — whose `header-hash` property lets
+a contract authenticate a user-supplied Bitcoin block header (and thereby
+extract its merkle root) — they enable contracts to verify that a Bitcoin
+output exists on-chain without trusting the caller to have correctly stripped
+witness data or hashed the transaction.
 
 ### `get-bitcoin-tx-output?`
 

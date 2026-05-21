@@ -27,12 +27,12 @@ Discussions-To:
 # Abstract
 
 This SIP specifies Version 6 of the Clarity smart contract language. It
-introduces quality-of-life improvements to the language syntax, relaxes naming rules
-to work better with the new Clarity linter, adds a new cryptographic
-built-in function, and adds new built-ins for trustlessly verifying Bitcoin
-transaction outputs on-chain. These changes are motivated by real-world
-developer experience and address long-standing requests from the Clarity
-developer community.
+introduces quality-of-life improvements to the language syntax, relaxes naming
+rules to work better with the new Clarity linter, adds new cryptographic
+built-in functions, and adds new built-ins for trustlessly verifying Bitcoin
+transaction outputs on-chain.
+These changes are motivated by real-world developer experience and address
+long-standing requests from the Clarity developer community.
 
 # Copyright
 
@@ -62,7 +62,14 @@ by Clarity developers. Specifically, it makes the following changes:
    decompress a secp256k1 public key in Clarity. This forces protocols like
    Wormhole to use cumbersome workarounds involving uncompressed keys, leading to
    operational downtime when guardian sets change.
-5. **Trustless Bitcoin transaction verification:** Clarity contracts have no
+5. **Ed25519 signature verification:** Clarity currently supports signature
+   verification only on the secp256k1 curve (used by Bitcoin and Ethereum) and
+   the secp256r1 curve (used by Apple's Secure Enclave and WebAuthn). There is
+   no way to verify Ed25519 signatures, which are the standard for many other
+   ecosystems (including Solana, Cardano, Polkadot, Stellar, Tor, SSH, and
+   Signal). This blocks cross-chain bridges and attestation/identity systems
+   that need to verify signatures produced by those ecosystems.
+6. **Trustless Bitcoin transaction verification:** Clarity contracts have no
    native way to verify that a Bitcoin transaction output exists on the Bitcoin
    chain. Protocols that need this capability (such as BTC bridges and sBTC-style
    peg systems) must currently rely on off-chain oracles or trusted relayers, or
@@ -269,6 +276,49 @@ compressed public key on-chain:
     none))
 ```
 
+## Add `ed25519-verify` Function
+
+Clarity currently provides signature verification only on the secp256k1 curve
+(via `secp256k1-verify`) and the secp256r1 curve (via `secp256r1-verify`, added
+in Clarity 5). There is no built-in for verifying Ed25519 signatures, even
+though Ed25519 is the dominant signature scheme outside of the Bitcoin and
+Ethereum ecosystems and is used by Solana, Cardano, Polkadot, Stellar, Tor,
+SSH, and Signal, among many other systems.
+
+This omission prevents Clarity contracts from natively verifying messages
+signed by participants in any of those ecosystems, which is a hard requirement
+for cross-chain bridges and for identity/attestation systems that rely on
+Ed25519-keyed credentials.
+
+Beginning in Clarity 6, a new built-in function `ed25519-verify` is available.
+
+- **Input**: `buff, (buff 64), (buff 32)`: the message, the 64-byte Ed25519
+  signature, and the 32-byte Ed25519 public key.
+- **Output**: `bool`
+- **Signature**: `(ed25519-verify message signature public-key)`
+- **Description**: Verifies that `signature` is a valid Ed25519 signature of
+  `message` under `public-key`, per
+  [RFC 8032](https://datatracker.ietf.org/doc/html/rfc8032). Returns `true` if
+  the signature is valid and `false` otherwise. Verification is performed in
+  strict mode: non-canonical signatures (for example, signatures whose
+  `s`-component is not in canonical range) are rejected, which prevents
+  signature malleability.
+- **Example** (using the standard test vector from RFC 8032 §7.1, TEST 2):
+  ```clarity
+  (ed25519-verify
+    0x72
+    0x92a009a9f0d4cab8720e820b5f642540a2b27b5416503f8fb3762223ebdb69da085ac1e43e15996e458f3613d0f11d8c387b2eaeb4302aeeb00d291612bb0c00
+    0x3d4017c3e843895a92b70aa74d1b7ebc9c982ccf2ec4968cc0cd55f12af4660c)
+  ;; Returns true
+
+  ;; Same signature/key, but a different message: verification fails.
+  (ed25519-verify
+    0x00
+    0x92a009a9f0d4cab8720e820b5f642540a2b27b5416503f8fb3762223ebdb69da085ac1e43e15996e458f3613d0f11d8c387b2eaeb4302aeeb00d291612bb0c00
+    0x3d4017c3e843895a92b70aa74d1b7ebc9c982ccf2ec4968cc0cd55f12af4660c)
+  ;; Returns false
+  ```
+
 ## Bitcoin Transaction Verification Built-ins
 
 Clarity contracts currently have no first-class way to verify that a Bitcoin
@@ -378,7 +428,7 @@ This SIP builds upon the existing definitions of the Clarity language:
 
 Because this SIP introduces new syntax (numeric separators, underscore-prefixed
 identifiers) and new built-in functions (`secp256k1-decompress?`,
-`get-bitcoin-tx-output?`, and `verify-merkle-proof`), it is a
+`ed25519-verify`, `get-bitcoin-tx-output?`, and `verify-merkle-proof`), it is a
 consensus-breaking change. A contract that uses any of these new features would
 be invalid before this SIP is activated, and valid after it is activated.
 

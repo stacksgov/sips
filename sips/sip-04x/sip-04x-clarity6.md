@@ -79,6 +79,11 @@ by Clarity developers. Specifically, it makes the following changes:
 
 # Specification
 
+This SIP requires a hard fork. Clarity 6 will activate at the onset of Stacks
+Epoch 4.0. New contracts deployed in Epoch 4.0 will default to Clarity 6, but
+contract authors can override this by specifying an earlier version in the
+deploy transaction.
+
 ## Allow Constants in Type Positions
 
 Originally proposed here:

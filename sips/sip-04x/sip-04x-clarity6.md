@@ -58,18 +58,22 @@ by Clarity developers. Specifically, it makes the following changes:
    identifiers from starting with `_`, preventing developers from using a
    widely-adopted convention for indicating intentionally unused variables. This
    limitation affects developer tooling such as linters.
-4. **secp256k1 public key decompression:** There is currently no way to
+4. **Variadic `concat`:** The `concat` function currently accepts only two
+   arguments, so assembling a sequence from more than two parts requires deeply
+   nested calls. This is verbose and hard to read, particularly in code that
+   builds multi-field binary payloads (such as cross-chain bridge serialization).
+5. **secp256k1 public key decompression:** There is currently no way to
    decompress a secp256k1 public key in Clarity. This forces protocols like
    Wormhole to use cumbersome workarounds involving uncompressed keys, leading to
    operational downtime when guardian sets change.
-5. **Ed25519 signature verification:** Clarity currently supports signature
+6. **Ed25519 signature verification:** Clarity currently supports signature
    verification only on the secp256k1 curve (used by Bitcoin and Ethereum) and
    the secp256r1 curve (used by Apple's Secure Enclave and WebAuthn). There is
    no way to verify Ed25519 signatures, which are the standard for many other
    ecosystems (including Solana, Cardano, Polkadot, Stellar, Tor, SSH, and
    Signal). This blocks cross-chain bridges and attestation/identity systems
    that need to verify signatures produced by those ecosystems.
-6. **Trustless Bitcoin transaction verification:** Clarity contracts have no
+7. **Trustless Bitcoin transaction verification:** Clarity contracts have no
    native way to verify that a Bitcoin transaction output exists on the Bitcoin
    chain. Protocols that need this capability (such as BTC bridges and sBTC-style
    peg systems) must currently rely on off-chain oracles or trusted relayers, or
@@ -224,6 +228,34 @@ reference `_` as a variable will result in an analysis error.
 This convention is familiar to developers coming from Rust, TypeScript, Python,
 and many other languages. It also enables linters and static analysis tools to
 automatically detect genuinely unused variables without false positives.
+
+## Variadic `concat`
+
+Originally proposed here:
+https://github.com/stacks-network/stacks-core/issues/7112
+
+The `concat` function currently accepts exactly two sequences (buffers, ASCII
+strings, UTF-8 strings, or lists) and returns their concatenation. To combine
+more than two sequences, developers must write nested `concat` calls, which
+produce verbose, hard-to-read code — particularly in code that assembles
+multi-field binary payloads such as cross-chain bridge serializations.
+
+Beginning in Clarity 6, `concat` accepts two or more arguments. All arguments
+must share the same sequence type (all buffers, all ASCII strings, all UTF-8
+strings, or all lists with the same element type), and the result has a maximum
+length equal to the sum of the maximum lengths of the inputs, subject to
+Clarity's overall sequence-length limits. Calling `concat` with fewer than two
+arguments remains an analysis error.
+
+### Example
+
+```clarity
+;; Clarity 5 and below: nested calls required
+(concat (concat (concat 0x11 amount-bytes) fee-bytes) chain-id)
+
+;; Clarity 6: flat, variadic call
+(concat 0x11 amount-bytes fee-bytes chain-id)
+```
 
 ## Add `secp256k1-decompress?` Function
 

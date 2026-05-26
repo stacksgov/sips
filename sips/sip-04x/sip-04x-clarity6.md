@@ -54,9 +54,9 @@ by Clarity developers. Specifically, it makes the following changes:
    (especially when working with micro-denominated tokens), but they are
    difficult to read without visual grouping. Many modern languages support
    underscore separators in numeric literals for this purpose.
-3. **Underscore-prefixed variable names:** The current naming rules prohibit
+3. **Underscore-prefixed identifiers:** The current naming rules prohibit
    identifiers from starting with `_`, preventing developers from using a
-   widely-adopted convention for indicating intentionally unused variables. This
+   widely-adopted convention for indicating intentionally unused bindings. This
    limitation affects developer tooling such as linters.
 4. **Variadic `concat`:** The `concat` function currently accepts only two
    arguments, so assembling a sequence from more than two parts requires deeply
@@ -189,7 +189,7 @@ during parsing.
 This feature is supported by many popular programming languages including Rust,
 JavaScript, Solidity, and Go.
 
-## Allow Variables to Start with `_`
+## Allow Identifiers to Start with `_`
 
 Originally proposed here:
 https://github.com/clarity-lang/reference/issues/101
@@ -197,22 +197,22 @@ https://github.com/clarity-lang/reference/issues/101
 Currently, Clarity identifiers cannot begin with the underscore character (`_`),
 although underscores are permitted in other positions within a name. This
 prevents developers from using the widely-adopted convention of prefixing unused
-variables with `_` to indicate that they are intentionally unused.
+bindings with `_` to indicate that they are intentionally unused.
 
-Beginning in Clarity 6, identifiers (including variable names, function names,
-map names, data variable names, and other named definitions) may begin with an
-underscore.
+Beginning in Clarity 6, identifiers (including function, constant, map, and
+data var names, function arguments, `let` and `match` bindings, and other named
+definitions) may begin with an underscore.
 
-Additionally, the bare identifier `_` (a single underscore) is allowed as a
-variable name in `let` and `match` bindings. This serves as a discard pattern,
-indicating that the value is intentionally unused. Unlike other variable names,
-`_` does not create a binding that can be referenced later; attempting to
-reference `_` as a variable will result in an analysis error.
+Additionally, the bare identifier `_` (a single underscore) is allowed in
+`let` and `match` bindings as a discard pattern, indicating that the bound
+value is intentionally unused. Unlike other identifiers, `_` does not create
+a binding that can be referenced later; attempting to reference `_` will
+result in an analysis error.
 
 ### Examples
 
 ```clarity
-;; Prefixing an unused variable
+;; Prefixing an unused binding
 (define-public (remove-admin (address principal))
   (let ((_admin (try! (check-admin)))
         (deleted (map-delete admins address)))
@@ -227,7 +227,7 @@ reference `_` as a variable will result in an analysis error.
 
 This convention is familiar to developers coming from Rust, TypeScript, Python,
 and many other languages. It also enables linters and static analysis tools to
-automatically detect genuinely unused variables without false positives.
+automatically detect genuinely unused bindings without false positives.
 
 ## Variadic `concat`
 

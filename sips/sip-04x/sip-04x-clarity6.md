@@ -27,7 +27,7 @@ Discussions-To:
 # Abstract
 
 This SIP specifies Version 6 of the Clarity smart contract language. It
-introduces quality-of-life improvements to the language syntax, relaxes naming
+extends the `concat` function to accept more than two arguments, relaxes naming
 rules to work better with the new Clarity linter, adds new cryptographic
 built-in functions, and adds new built-ins for trustlessly verifying Bitcoin
 transaction outputs on-chain.
@@ -45,35 +45,26 @@ is held by the Stacks Open Internet Foundation.
 This SIP addresses several limitations and inconveniences that have been reported
 by Clarity developers. Specifically, it makes the following changes:
 
-1. **Allow constants in place of literal values:** Clarity currently requires
-   literal values in type definitions (such as list lengths) and in certain
-   built-in functions (such as `as-max-len?`), even though constants are also known
-   during deployment. This forces developers to duplicate magic numbers throughout
-   their code, increasing the risk of inconsistencies.
-2. **Numeric separators:** Large numeric literals are common in Clarity contracts
-   (especially when working with micro-denominated tokens), but they are
-   difficult to read without visual grouping. Many modern languages support
-   underscore separators in numeric literals for this purpose.
-3. **Underscore-prefixed identifiers:** The current naming rules prohibit
+1. **Underscore-prefixed identifiers:** The current naming rules prohibit
    identifiers from starting with `_`, preventing developers from using a
    widely-adopted convention for indicating intentionally unused bindings. This
    limitation affects developer tooling such as linters.
-4. **Variadic `concat`:** The `concat` function currently accepts only two
+2. **Variadic `concat`:** The `concat` function currently accepts only two
    arguments, so assembling a sequence from more than two parts requires deeply
    nested calls. This is verbose and hard to read, particularly in code that
    builds multi-field binary payloads (such as cross-chain bridge serialization).
-5. **secp256k1 public key decompression:** There is currently no way to
+3. **secp256k1 public key decompression:** There is currently no way to
    decompress a secp256k1 public key in Clarity. This forces protocols like
    Wormhole to use cumbersome workarounds involving uncompressed keys, leading to
    operational downtime when guardian sets change.
-6. **Ed25519 signature verification:** Clarity currently supports signature
+4. **Ed25519 signature verification:** Clarity currently supports signature
    verification only on the secp256k1 curve (used by Bitcoin and Ethereum) and
    the secp256r1 curve (used by Apple's Secure Enclave and WebAuthn). There is
    no way to verify Ed25519 signatures, which are the standard for many other
    ecosystems (including Solana, Cardano, Polkadot, Stellar, Tor, SSH, and
    Signal). This blocks cross-chain bridges and attestation/identity systems
    that need to verify signatures produced by those ecosystems.
-7. **Trustless Bitcoin transaction verification:** Clarity contracts have no
+5. **Trustless Bitcoin transaction verification:** Clarity contracts have no
    native way to verify that a Bitcoin transaction output exists on the Bitcoin
    chain. Protocols that need this capability (such as BTC bridges and sBTC-style
    peg systems) must currently rely on off-chain oracles or trusted relayers, or
@@ -87,107 +78,6 @@ This SIP requires a hard fork. Clarity 6 will activate at the onset of Stacks
 Epoch 4.0. New contracts deployed in Epoch 4.0 will default to Clarity 6, but
 contract authors can override this by specifying an earlier version in the
 deploy transaction.
-
-## Allow Constants in Type Positions
-
-Originally proposed here:
-https://github.com/clarity-lang/reference/issues/78
-
-Currently, Clarity requires literal values when specifying type parameters such
-as list lengths. Constants cannot be used in these positions, even though their
-values are known during analysis.
-
-Beginning in Clarity 6, constants defined with `define-constant` may be used
-wherever a literal unsigned integer is required in a type specification. This
-includes list length parameters in type definitions, function signatures, and
-anywhere else a literal is currently expected for a type parameter.
-
-### Example
-
-```clarity
-(define-constant MAX_SIZE u30)
-
-(define-read-only (foo (l (list MAX_SIZE int)))
-  (len l)
-)
-```
-
-In Clarity 5 and below, the above would produce an error. In Clarity 6, it is
-valid and equivalent to writing `(list 30 int)`.
-
-The constant must evaluate to an unsigned integer (`uint`) value. Using a
-constant that evaluates to any other type in a type position will result in an
-analysis error.
-
-## Allow Constants in `as-max-len?`
-
-Originally proposed here:
-https://github.com/clarity-lang/reference/issues/80
-
-The `as-max-len?` function currently requires a literal unsigned integer for its
-second argument, which specifies the target maximum length. Constants cannot be
-substituted for this literal, even though the value is equally fixed and known
-during analysis.
-
-Beginning in Clarity 6, a constant defined with `define-constant` may be used as
-the second argument to `as-max-len?`, provided the constant evaluates to a
-`uint`.
-
-### Example
-
-```clarity
-(define-constant GOV_MAX_GUARDIANS u30)
-
-(unwrap-panic (as-max-len? updated-public-keys GOV_MAX_GUARDIANS))
-```
-
-In Clarity 5 and below, this would produce an error. In Clarity 6, it is valid
-and equivalent to writing `(as-max-len? updated-public-keys u30)`.
-
-This change, combined with the previous change allowing constants in type
-positions, enables developers to define a single constant for a length limit and
-use it consistently throughout their contract.
-
-## Numeric Separator with `_`
-
-Originally proposed here:
-https://github.com/clarity-lang/reference/issues/92
-
-Large numeric literals are common in Clarity smart contracts, particularly when
-dealing with micro-denominated values (e.g. uSTX). These large numbers are
-difficult to read and error-prone to write.
-
-Beginning in Clarity 6, the underscore character (`_`) may be used as a visual
-separator within signed and unsigned integer literals. The underscores are
-purely cosmetic and have no effect on the value of the literal: They are stripped
-during parsing.
-
-### Rules
-
-- Underscores may appear between any two digits in an integer or unsigned integer
-  literal.
-- Underscores may not appear at the beginning or end of a numeric literal, nor
-  adjacent to the `u` prefix for unsigned integers.
-- Multiple consecutive underscores are not allowed.
-- The presence or absence of underscores does not affect the type or value of the
-  literal.
-
-### Examples
-
-```clarity
-;; With separators (Clarity 6)
-(define-constant INITIAL_MINT_AMOUNT u200_000_000_000_000) ;; 200,000,000 STX
-
-;; Equivalent to (Clarity 5 and below)
-(define-constant INITIAL_MINT_AMOUNT u200000000000000)
-
-;; Additional examples
-(define-constant ONE_MILLION 1_000_000)
-(define-constant SOME_VALUE u1_234_567)
-```
-
-This feature is supported by many popular programming languages including Rust,
-JavaScript, Solidity, and Go.
 
 ## Allow Identifiers to Start with `_`
 
@@ -468,11 +358,12 @@ This SIP builds upon the existing definitions of the Clarity language:
 
 # Backwards Compatibility
 
-Because this SIP introduces new syntax (numeric separators, underscore-prefixed
-identifiers) and new built-in functions (`secp256k1-decompress?`,
-`ed25519-verify`, `get-bitcoin-tx-output?`, and `verify-merkle-proof`), it is a
-consensus-breaking change. A contract that uses any of these new features would
-be invalid before this SIP is activated, and valid after it is activated.
+Because this SIP introduces new syntax (underscore-prefixed identifiers),
+extends the `concat` function to accept more than two arguments, and adds new
+built-in functions (`secp256k1-decompress?`, `ed25519-verify`,
+`get-bitcoin-tx-output?`, and `verify-merkle-proof`), it is a consensus-breaking
+change. A contract that uses any of these new features would be invalid before
+this SIP is activated, and valid after it is activated.
 
 All new keywords introduced in Clarity 6 can no longer be used as identifiers in
 a Clarity 6 smart contract. Smart contracts can continue to be published using

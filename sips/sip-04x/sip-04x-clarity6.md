@@ -203,11 +203,15 @@ Beginning in Clarity 6, identifiers (including function, constant, map, and
 data var names, function arguments, `let` and `match` bindings, and other named
 definitions) may begin with an underscore.
 
-Additionally, the bare identifier `_` (a single underscore) is allowed in
-`let` and `match` bindings as a discard pattern, indicating that the bound
-value is intentionally unused. Unlike other identifiers, `_` does not create
-a binding that can be referenced later; attempting to reference `_` will
-result in an analysis error.
+Additionally, the bare identifier `_` (a single underscore) is allowed only
+in `let` and `match` bindings as a discard pattern, indicating that the bound
+value is intentionally unused. Using a bare `_` as a name in any other
+position (for example, as a constant, function, function argument, trait,
+map, or data var name) is a parse error. Unlike other identifiers, `_` does
+not create a binding that can be referenced later; attempting to reference
+`_` will result in an analysis error. Because `_` does not introduce a name,
+multiple `_` bindings may appear in the same `let` expression — each simply
+discards the value of its bound expression.
 
 ### Examples
 
@@ -218,9 +222,10 @@ result in an analysis error.
         (deleted (map-delete admins address)))
     (ok deleted)))
 
-;; Using _ as a discard pattern
+;; Using _ as a discard pattern (multiple discards in one let)
 (define-public (remove-admin (address principal))
   (let ((_ (try! (check-admin)))
+        (_ (try! (log-admin-action address)))
         (deleted (map-delete admins address)))
     (ok deleted)))
 ```

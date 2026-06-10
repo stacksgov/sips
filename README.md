@@ -41,7 +41,7 @@ and get it ratified.  Anyone in the Stacks community may submit a SIP.
 | [032](https://github.com/stacksgov/sips/pull/211)|Improved stacking| Draft|
 | [033](./sips/sip-033/sip-033-clarity4.md)|Clarity Smart Contract Language, version 4| Activation-In-Progress|
 | [034](./sips/sip-034/sip-034.md)|Dimension-Specific Tenure Extend Variants| Activation-in-Progress|
-| [035](./sips/sip-031/sip-031.md)|Clarification of Clarity's secp256r1-verify Behavior| Ratified|
+| [035](./sips/sip-035/sip-secp256r1-verify.md)|Clarification of Clarity's secp256r1-verify Behavior| Ratified|
 | [036](https://github.com/stacksgov/sips/pull/219)|BTC addresses for Stacks transactions| Draft|
 | [037](https://github.com/stacksgov/sips/pull/246)|Agent Coordination Framework| Draft|
 | [038](https://github.com/stacksgov/sips/pull/250)|Standard Trait Definition for Commitment-Based Private Metadata (Encrypted NFTs)| Draft|

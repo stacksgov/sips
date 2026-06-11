@@ -53,7 +53,7 @@ and get it ratified.  Anyone in the Stacks community may submit a SIP.
 | [039](https://github.com/stacksgov/sips/pull/256)|Clarity 5 and Epoch 3.4| Draft|
 | [040](https://github.com/stacksgov/sips/pull/257)|SIP for improved post-conditions| Draft|
 | [041](https://github.com/stacksgov/sips/pull/258)|Agent Registries (ERC-8004 on Stacks)| Draft|
-| [042](https://github.com/stacksgov/sips/pull/258)|Removal of at-block| Activation-In-Progress|
+| [042](sips/sip-042/sip-042.md)|Removal of at-block| Activation-In-Progress|
 | [043](https://github.com/stacksgov/sips/pull/266)|Identicons for contracts| Draft|
 
 ## How to Get Involved

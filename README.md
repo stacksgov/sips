@@ -11,7 +11,7 @@ and get it ratified.  Anyone in the Stacks community may submit a SIP.
 
 | SIP Number | SIP Title | Status |
 | :---------------------| :-------------------- | :----------- | 
-|[000](./sips/sip-000/sip-000-stacks-improvement-proposal-process.md)| The Stacks Improvement Proposal Process | Ratified |
+| [000](./sips/sip-000/sip-000-stacks-improvement-proposal-process.md)| The Stacks Improvement Proposal Process | Ratified |
 | [001](./sips/sip-001/sip-001-burn-election.md) | The Clarity Smart Contract Language | Ratified |
 | [002](./sips/sip-002/sip-002-smart-contract-language.md) |  The Clarity Smart Contract Language | Ratified|
 | [003](./sips/sip-003/sip-003-peer-network.md)|Stacks P2P Network|Ratified|
@@ -22,10 +22,13 @@ and get it ratified.  Anyone in the Stacks community may submit a SIP.
 | [008](./sips/sip-008/sip-008-analysis-cost-assessment.md)|Clarity| Ratified| Parsing and Analysis Cost Assessment| Ratified|
 | [009](./sips/sip-009/sip-009-nft-standard.md)|Standard Trait Definition for Non-Fungible Tokens| Ratified|
 | [010](./sips/sip-010/sip-010-fungible-token-standard.md)|Standard Trait Definition for Fungible Tokens| Ratified|
+| [011](https://github.com/stacksgov/sips/pull/119)|The buy-in-ustx Standard for non-custodial Marketplace traits| Rejected|
 | [012](./sips/sip-012/sip-012-cost-limits-network-upgrade.md)|Burn Height Selection for a Network Upgrade to Introduce New Cost-Limits| Ratified|
 | [013](./sips/sip-013/sip-013-semi-fungible-token-standard.md)|Standard Trait Definition for Semi-Fungible Tokens| Ratified|
+| [014](https://github.com/stacksgov/sips/pull/32)|Contract Documentation Standard| Withdrawn|
 | [015](./sips/sip-015/sip-015-network-upgrade.md)|Stacks Upgrade of Proof-of-Transfer and Clarity| Ratified|
 | [016](./sips/sip-016/sip-016-token-metadata.md)|Metadata for Tokens| Ratified|
+| [017](https://github.com/stacksgov/sips/pull/56)|Schnorr Signatures| Withdrawn|
 | [018](./sips/sip-018/sip-018-signed-structured-data.md)|Signed Structured Data| Ratified|
 | [019](./sips/sip-019/sip-019-token-metadata-update-notifications.md)|Notifications for Token Metadata Updates| Ratified|
 | [020](./sips/sip-020/sip-020-bitwise-ops.md)|Bitwise Operations in Clarity| Ratified|
@@ -34,9 +37,11 @@ and get it ratified.  Anyone in the Stacks community may submit a SIP.
 | [023](./sips/sip-023/sip-023-emergency-fix-traits.md)|Emergency Fix to Trait Invocation Behavior| Ratified|
 | [024](./sips/sip-024/sip-024-least-supertype-fix.md)|Emergency Fix to Data Validation and Serialization Behavior| Ratified|
 | [025](./sips/sip-025/sip-025-iterating-towards-weighted-schnorr-threshold-signatures.md)|Iterating Towards WSTS| Ratified|
+| [026](https://github.com/stacksgov/sips/pull/153)|Clarity DeFi Vault SIP| Accepted|
 | [027](./sips/sip-027/sip-027-non-sequential-multisig-transactions.md)|Non-sequential Multisig Transactions| Ratified|
 | [028](./sips/sip-028/sip-028-sbtc_peg.md)|Signer Criteria for sBTC, A Decentralized and Programmable Asset Backed 1:1 with BTC| Ratified|
 | [029](./sips/sip-029/sip-029-halving-alignment.md)|Bootstrapping sBTC Liquidity and Nakamoto Signer Incentives| Ratified|
+| [030](./sips/sip-029/sip-029-halving-alignment.md)|Wallet RPC Standards| Recommended|
 | [031](./sips/sip-031/sip-031.md)|Five-Year Stacks Growth Emissions| Ratified|
 | [032](https://github.com/stacksgov/sips/pull/211)|Improved stacking| Draft|
 | [033](./sips/sip-033/sip-033-clarity4.md)|Clarity Smart Contract Language, version 4| Activation-In-Progress|
@@ -48,7 +53,8 @@ and get it ratified.  Anyone in the Stacks community may submit a SIP.
 | [039](https://github.com/stacksgov/sips/pull/256)|Clarity 5 and Epoch 3.4| Draft|
 | [040](https://github.com/stacksgov/sips/pull/257)|SIP for improved post-conditions| Draft|
 | [041](https://github.com/stacksgov/sips/pull/258)|Agent Registries (ERC-8004 on Stacks)| Draft|
-
+| [042](https://github.com/stacksgov/sips/pull/258)|Removal of at-block| Activation-In-Progress|
+| [043](https://github.com/stacksgov/sips/pull/266)|Identicons for contracts| Draft|
 
 ## How to Get Involved
 
@@ -80,4 +86,3 @@ Once they are in the process of being activated,
 they use a SIP's Activation section to determine whether or not the Stacks
 ecosystem has ratified or rejected the SIP.  Joining this committee requires the
 consent of the Stacks Foundation board.
-

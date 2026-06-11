@@ -41,7 +41,7 @@ and get it ratified.  Anyone in the Stacks community may submit a SIP.
 | [027](./sips/sip-027/sip-027-non-sequential-multisig-transactions.md)|Non-sequential Multisig Transactions| Ratified|
 | [028](./sips/sip-028/sip-028-sbtc_peg.md)|Signer Criteria for sBTC, A Decentralized and Programmable Asset Backed 1:1 with BTC| Ratified|
 | [029](./sips/sip-029/sip-029-halving-alignment.md)|Bootstrapping sBTC Liquidity and Nakamoto Signer Incentives| Ratified|
-| [030](./sips/sip-029/sip-029-halving-alignment.md)|Wallet RPC Standards| Recommended|
+| [030](sips/sip-030/sip-030-wallet-interface.md)|Wallet RPC Standards| Recommended|
 | [031](./sips/sip-031/sip-031.md)|Five-Year Stacks Growth Emissions| Ratified|
 | [032](https://github.com/stacksgov/sips/pull/211)|Improved stacking| Draft|
 | [033](./sips/sip-033/sip-033-clarity4.md)|Clarity Smart Contract Language, version 4| Activation-In-Progress|

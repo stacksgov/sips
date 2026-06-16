@@ -2,7 +2,7 @@
 
 SIP Number: 044
 
-Title: Clarity 6 and Network Improvements
+Title: Stacks Epoch 4.0 (Clarity 6 + Network Improvements)
 
 Author(s):
 
@@ -27,12 +27,20 @@ Discussions-To:
 
 # Abstract
 
-This SIP specifies Version 6 of the Clarity smart contract language. It extends
-the `concat` function to accept more than two arguments, relaxes naming rules to
-work better with the new Clarity linter, adds new cryptographic built-in
-functions, and adds new built-ins for trustlessly verifying Bitcoin transaction
-outputs on-chain. These changes are motivated by real-world developer experience
-and address long-standing requests from the Clarity developer community.
+This SIP defines the consensus changes that activate with Stacks Epoch 4.0.
+
+First, it introduces Clarity 6, which extends the `concat` function to accept
+more than two arguments, relaxes identifier naming rules to work better with
+the new Clarity linter, adds new cryptographic built-in functions, adds
+built-ins for trustlessly verifying Bitcoin transaction outputs on-chain, and
+adds new Clarity allowances for the PoX-5 staking model.
+
+In addition to the Clarity changes, this SIP introduces new transaction-level
+post-conditions for protecting staking state, a mechanism for handling
+problematic transactions in blocks, and the deprecation of the long-unused
+`cost-voting` contract. These changes are motivated by real-world developer
+experience, operational concerns from miners and signers, and the ongoing
+evolution of the PoX staking model.
 
 # Copyright
 
@@ -94,10 +102,10 @@ new Bitcoin-staking model, described in SIP-xyz, on which this SIP is a rider:
 
 # Specification
 
-This SIP requires a hard fork. Clarity 6 will activate at the onset of Stacks
-Epoch 4.0. New contracts deployed in Epoch 4.0 will default to Clarity 6, but
-contract authors can override this by specifying an earlier version in the
-deploy transaction.
+This SIP requires a hard fork. The changes specified below all activate
+together at the onset of Stacks Epoch 4.0. New contracts deployed in Epoch 4.0
+will default to Clarity 6, though contract authors can override this by
+specifying an earlier version in the deploy transaction.
 
 ## Clarity 6
 
@@ -371,7 +379,7 @@ hashed the transaction.
     (list)) ;; Returns true
   ```
 
-### `with-stacking`
+### `with-staking`
 
 - **Input**:
   - `amount`: `uint`: The amount of uSTX that can be locked.
@@ -434,7 +442,7 @@ hashed the transaction.
 ## Staking Post-Conditions
 
 Built on the same foundations as the new Clarity allowances, `with-staking` and
-`with-pox`, with epoch 4.0, new transaction level post-conditions will activate,
+`with-pox`, with Epoch 4.0, new transaction-level post-conditions will activate
 that allow users to protect their STX from unexpected staking changes. Previous
 PoX contracts have used the `allow-contract-caller` mechanism to restrict which
 contracts are allowed to indirectly call into the PoX contract on behalf of the
@@ -463,23 +471,6 @@ PoX condition code has the following encodings:
 - `0x30`: "The account must not perform any PoX actions"
 - `0x31`: "The account may perform PoX actions"
 - `0x32`: "The account must perform a PoX action"
-
-# Related Work
-
-This SIP builds upon the existing definitions of the Clarity language:
-
-- [SIP-002 (Clarity 1)](../sip-002/sip-002-smart-contract-language.md)
-- [SIP-015 (Clarity 2)](../sip-015/sip-015-network-upgrade.md)
-- [SIP-021 (Clarity 3)](../sip-021/sip-021-nakamoto.md)
-- [SIP-033 (Clarity 4)](../sip-033/sip-033-clarity4.md)
-- [SIP-039 (Clarity 5)](../sip-039/sip-039-clarity5.md)
-
-Parts of this SIP depend upon
-[SIP-xyz (Bitcoin Staking)](https://github.com/adriano-stacks/sips/blob/dfaaa4200123374bff84f6a7049d5602bf19c223/sips/sip-xxx/sip-0XX-pox-5-bitcoin-staking.md)
-and intends to activate together with it.
-
-The new transaction-level post-conditions build upon the post-conditions defined
-in [SIP-005](../sip-005/sip-005-blocks-and-transactions.md).
 
 ## Problematic Transactions
 
@@ -610,19 +601,36 @@ All other transactions execute normally.
 
 ## Disable `cost-voting`
 
-At the launch of epoch 2.0, the
+At the launch of Epoch 2.0, the
 [`cost-voting` contract](https://explorer.hiro.so/txid/SP000000000000000000002Q6VF78.cost-voting?chain=mainnet)
 was deployed to provide a mechanism to change the cost charged for the execution
 of a contract call without requiring any hard-fork. While the idea was sound,
 the functionality has not been used in the 8-million+ blocks that have since
 been mined. During that time, the community has clarified and successfully
-exercised the SIP process several time to make changes to Clarity costs, making
+exercised the SIP process several times to make changes to Clarity costs, making
 this mechanism no longer necessary. By disabling the functionality of the
 `cost-voting` contract, the code in the `stacks-node` can be made more
 performant and at the same time, simplified.
 
-Once epoch 4.0 activates, the `cost-voting` contract will no longer have any
+Once Epoch 4.0 activates, the `cost-voting` contract will no longer have any
 effect on consensus and can be ignored.
+
+# Related Work
+
+This SIP builds upon the existing definitions of the Clarity language:
+
+- [SIP-002 (Clarity 1)](../sip-002/sip-002-smart-contract-language.md)
+- [SIP-015 (Clarity 2)](../sip-015/sip-015-network-upgrade.md)
+- [SIP-021 (Clarity 3)](../sip-021/sip-021-nakamoto.md)
+- [SIP-033 (Clarity 4)](../sip-033/sip-033-clarity4.md)
+- [SIP-039 (Clarity 5)](../sip-039/sip-039-clarity5.md)
+
+Parts of this SIP depend upon
+[SIP-xyz (Bitcoin Staking)](https://github.com/adriano-stacks/sips/blob/dfaaa4200123374bff84f6a7049d5602bf19c223/sips/sip-xxx/sip-0XX-pox-5-bitcoin-staking.md)
+and intends to activate together with it.
+
+The new transaction-level post-conditions build upon the post-conditions defined
+in [SIP-005](../sip-005/sip-005-blocks-and-transactions.md).
 
 # Backwards Compatibility
 

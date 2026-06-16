@@ -661,15 +661,16 @@ transferred between accounts and used to effectively double vote).
 Solo stackers only can also vote by sending a bitcoin dust transaction (6000
 sats) to the corresponding bitcoin address.
 
-| Vote | Bitcoin | Stacks | ASCII Encoding | Msg        |
-| ---- | ------- | ------ | -------------- | ---------- |
-| yes  | TBD     | TBD    | TBD            | yes-sip-44 |
-| no   | TBD     | TBD    | TBD            | no-sip-44  |
+| Vote | Bitcoin                          | Stacks                                | ASCII Encoding         | Msg        |
+| ---- | -------------------------------- | ------------------------------------- | ---------------------- | ---------- |
+| yes  | `11111111111mdWK2VXcrA1f72DmUku` | `SP00000000001WPAWSDEDMQ0B9M6HQVS7Q6` | `7965732d7369702d3434` | yes-sip-44 |
+| no   | `111111111111ACW5wa4RwyfJspnNhu` | `SP000000000006WVSDEDMQ0B9M6K3NTSJK`  | `6e6f2d7369702d3434`   | no-sip-44  |
 
 If the SIP is approved, a Bitcoin block height will be selected to activate the
 new behavior.
 
 # Reference Implementation
 
-No reference implementation is available at the time of writing. Links to
-implementation PRs will be added here as they become available.
+All functionality proposed in this SIP is implemented or in progress in the
+[`pox-wf-integration` branch](https://github.com/stacks-network/stacks-core/tree/pox-wf-integration)
+on https://github.com/stacks-network/stacks-core.

@@ -1,8 +1,8 @@
 # Preamble
 
-SIP Number: 043
+SIP Number: 044
 
-Title: Clarity 6: Language Improvements and New Built-ins
+Title: Clarity 6 and Network Improvements
 
 Author(s):
 

@@ -2,7 +2,7 @@
 
 SIP Number: 044
 
-Title: Stacks Epoch 4.0 (Clarity 6 + Network Improvements)
+Title: Clarity 6, staking and PoX post-conditions, and removal of the cost-voting contract
 
 Author(s):
 

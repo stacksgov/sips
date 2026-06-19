@@ -2,7 +2,7 @@
 
 ## Preamble
 
-**SIP Number:** 0XX
+**SIP Number:** 045
 
 **Title:** PoX-5: Bitcoin Staking and Emission Schedule Alignment
 
@@ -703,10 +703,10 @@ multiple UTXOs into a single transaction reduces auto-bridging cost.
 * A3. [Inflation Impact][appendix-3]
 * A4. [Competitive Landscape][appendix-4]
 
-[appendix-1]: ./sip-xxx-1.pdf
-[appendix-2]: ./sip-xxx-2.pdf
-[appendix-3]: ./sip-xxx-3.pdf
-[appendix-4]: ./sip-xxx-4.pdf
+[appendix-1]: ./sip-045-1.pdf
+[appendix-2]: ./sip-045-2.pdf
+[appendix-3]: ./sip-045-3.pdf
+[appendix-4]: ./sip-x045-4.pdf
 
 [0]: https://forum.stacks.org/t/introducing-the-bitcoin-staking-sip-v1-draft/18862/8
 [1]: https://forum.stacks.org/t/the-bitcoin-staking-whitepaper/18834/9

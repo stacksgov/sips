@@ -116,18 +116,56 @@ participants pair a BTC timelock on Bitcoin with a corresponding STX lock on
 Stacks for a 6-month bonding period, targeting a fixed yield subject to the
 risks inherent to the protocol.
 
-The L1 commitment is a timelocked UTXO on Bitcoin, constructed using a P2WSH
-script that includes OP_CHECKLOCKTIMEVERIFY (BIP-65). The participant locks BTC
-under their own keys with a timelock expiring at the end of their committed
-bonding period. The unlock script encodes the participant's Stacks principal
-address in its metadata, linking the Bitcoin lock to a Stacks identity. The
-full script format will be specified in subsequent community-refined SIP draft.
+The L1 commitment is a timelocked Bitcoin UTXO that the participant funds under
+their own keys. It pays to a P2WSH output whose witness script has two spend
+paths and binds the participant's Stacks identity by commitment:
 
-The L2 commitment is a call to the Bitcoin Staking smart contract on Stacks.
-The participant locks STX for the full bonding period and specifies the BTC
-address at which the L1 lock will appear. The Stacks node monitors and indexes
-Bitcoin, matching observed timelocked UTXOs against registered L2 commitments
-to determine eligibility and compute reward allocation.
+```
+OP_IF
+    <unlock-burn-height> OP_CHECKLOCKTIMEVERIFY
+OP_ELSE
+    OP_SIZE <32> OP_EQUALVERIFY
+    OP_SHA256 <H> OP_EQUALVERIFY
+    <early-unlock-script>
+OP_ENDIF
+OP_VERIFY
+<staker-unlock-script>
+```
+
+- **Timelock path (OP_IF).** After `unlock-burn-height`, OP_CHECKLOCKTIMEVERIFY
+  (BIP-65) gates the spend and the participant reclaims the BTC by satisfying
+  `<staker-unlock-script>` (e.g. `<pubkey> OP_CHECKSIG`, or an M-of-N
+  CHECKMULTISIG template). This is the normal end-of-bond return of principal.
+- **Early-exit path (OP_ELSE).** Before the timelock, the output can be spent
+  only by revealing the 32-byte preimage `sha256(to-consensus-buff? staker)`
+  whose hash equals the committed value
+  `<H> = sha256(sha256(to-consensus-buff? staker))`, and by satisfying both
+  `<early-unlock-script>` and `<staker-unlock-script>`. Early exit therefore
+  requires the cooperation of both the participant and the bond's designated
+  early-exit signer set (Section 3.1.2).
+
+The participant's Stacks principal is bound to the output through the commitment
+`<H>` rather than stored as cleartext metadata: the P2WSH address itself commits
+to the participant's identity, so a given UTXO can be credited only to the
+principal it names. `<staker-unlock-script>` is supplied by the participant;
+`<early-unlock-script>` is fixed per bonding period and published on-chain when
+the period is created.
+
+The L2 commitment is a call to the Bitcoin Staking smart contract on Stacks, in
+which the participant locks STX for the full bonding period and presents proof
+of the paired L1 lock. The contract verifies the L1 lock directly from a
+simplified-payment-verification (SPV) proof supplied with the registration call.
+For each locked output the participant provides the funding transaction, the
+80-byte Bitcoin block header and its height, and a Merkle branch. The contract
+confirms the header is the canonical Bitcoin header at that height as already
+tracked by the Stacks node, verifies the Merkle branch binds the transaction to
+that header, reconstructs the expected P2WSH script from the calling principal
+and the bond's parameters and requires the named output to match it in both
+script and amount, and enforces that the output's timelock does not expire
+before the bond's minimum unlock height. Eligibility and the bonded sat amount
+are thus established deterministically on-chain at registration, with no trusted
+off-chain indexer. The full proof and script encoding is given by the reference
+implementation [6].
 
 The Bitcoin side of a protocol bond may be satisfied either as native BTC held
 under the participant's own keys on Bitcoin L1, or as sBTC held on Stacks. Both
@@ -165,7 +203,7 @@ the committed bonding period ends, and a participant may stake continuously by
 extending before expiry. On L1, automatic re-enrollment is not possible:
 because a timelocked UTXO cannot be re-committed until its timelock expires,
 renewal requires a new Bitcoin transaction. The L1 timelock is therefore set to
-expire approximately 1,400 Bitcoin blocks (10 days) before the bonding period
+expire 1,050 Bitcoin blocks (~7 days) before the bonding period
 ends, giving participants a window to construct and broadcast the renewal
 transaction before the L2 lock releases.
 
@@ -233,8 +271,10 @@ reserve. The protocol targets a coverage multiple of 2.0x (acceptable range
 * **Distribution failure risk (< 0.8x):** deploy the reserve fully; activate
   the distribution priority cascade.
 
-The coverage ratio and band-driven responses are computed deterministically
-on-chain from miner revenue, reserve balances, and active obligations.
+During the bootstrap phase, this is managed manually, off-chain, by the Stacks
+Endowment (see section 3.3.1). In the final design, the coverage ratio and
+band-driven responses are computed deterministically on-chain from miner
+revenue, reserve balances, and active obligations.
 
 ### 3.2 Emission Schedule Alignment
 
@@ -290,9 +330,9 @@ on to meet institutional demand.
 
 Any additional launch incentive, if deemed necessary to bootstrap participation
 during the early growth phase, would be funded directly by the Stacks Endowment
-in sBTC through a dedicated smart contract function, rather than through new
-STX issuance. This keeps the coinbase schedule unchanged and has no effect on
-STX inflation.
+in sBTC through direct payments to the PoX-5 smart contract, rather than
+through new STX issuance. This keeps the coinbase schedule unchanged and has no
+effect on STX inflation.
 
 ##### 3.2.3.2 Network Security
 
@@ -353,7 +393,7 @@ capacity, the target yield rate, the BTC:STX ratio, and the capacity
 allocation. The Endowment computes BTC yield capacity for each period and
 allocates it to whitelisted partners before the period begins, so that each
 period launches with committed and known counterparties. Approximately 10% of
-Tranche 1 capacity is reserved for open access on a first come, first serve
+Tranche 1 capacity is reserved for open access on a first come, first served
 basis through selected pooling partners. The proposed initial program
 conditions are 3,000 BTC capacity, a 5% minimum STX ratio held static for
 program-management simplicity, and a 3% BTC target APY at launch. Exact values
@@ -398,7 +438,7 @@ period. Gating all reserve spending behind a consensus change enforces these
 principles while preserving the ability to distribute funds according to the
 protocol's intended design if circumstances require it.
 
-Trust assumption. PoX-5 rewards and reserve fund accumulations auto-bridge into
+Trust assumption: PoX-5 rewards and reserve fund accumulations auto-bridge into
 sBTC (Section 3.6.2). This introduces a dependency on the sBTC signer set: if
 the signer set were compromised, the underlying BTC could be at risk, and a
 hard fork on the Stacks side alone could not recover it. This is an accepted
@@ -507,10 +547,7 @@ The PoX-5 contract replaces PoX-4 and implements:
 * **Event emission** enabling the Stacks node to match L1 timelocked UTXOs
   against L2 commitments.
 * **Signer association and pool registration.**
-* **Coverage Ratio monitoring** with deterministic state transitions between
-  response bands.
-* **Reserve fund tracking** exposing the current coverage ratio, band status,
-  and BTC and USD balances.
+* **Reserve fund tracking** exposing the current sBTC balance in the reserve.
 
 During PoX-5 the principal parameters are Endowment-set and the contract
 records and enforces them; algorithmic computation of yield rate, capacity, and
@@ -569,7 +606,8 @@ per-cycle commitment transaction required under PoX-4 is no longer needed.
 Custodians and wallets integrate the PoX-5 staking interface, which uses one
 flow for solo and delegated participation. For BTC participation, integrators
 support constructing the timelocked P2WSH UTXO described in Section 3.1.1 and
-the renewal transaction described in Section 3.1.2.
+support spending that UTXO, either after the timelock expires, or via the Early
+Exit path described in Section 3.1.2.
 
 ### 5.3 Existing Stackers
 
@@ -608,7 +646,7 @@ implementation follows:
 
 * At the epoch 4.0 activation height, the pox-5 contract is automatically
   deployed. Any STX locked in pox-4 gets unlocked at that time for participants
-  to re-stack in PoX-5.
+  to re-stake in PoX-5.
 * All stackers continue to receive rewards during that reward cycle. Once the
   next reward cycle happens, PoX-5 becomes the active PoX contract.
 

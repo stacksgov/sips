@@ -30,8 +30,7 @@ Discussions-To:
 This SIP defines the consensus changes that activate with Stacks Epoch 4.0.
 
 First, it introduces Clarity 6, which extends the `concat` function to accept
-more than two arguments, relaxes identifier naming rules to work better with
-the new Clarity linter, adds new cryptographic built-in functions, adds
+more than two arguments, adds new cryptographic built-in functions, adds
 built-ins for trustlessly verifying Bitcoin transaction outputs on-chain, and
 adds new Clarity allowances for the PoX-5 staking model.
 
@@ -53,27 +52,23 @@ is held by the Stacks Open Internet Foundation.
 This SIP addresses several limitations and inconveniences that have been
 reported by Clarity developers. Specifically, it makes the following changes:
 
-1. **Underscore-prefixed identifiers:** The current naming rules prohibit
-   identifiers from starting with `_`, preventing developers from using a
-   widely-adopted convention for indicating intentionally unused bindings. This
-   limitation affects developer tooling such as linters.
-2. **Variadic `concat`:** The `concat` function currently accepts only two
+1. **Variadic `concat`:** The `concat` function currently accepts only two
    arguments, so assembling a sequence from more than two parts requires deeply
    nested calls. This is verbose and hard to read, particularly in code that
    builds multi-field binary payloads (such as cross-chain bridge
    serialization).
-3. **secp256k1 public key decompression:** There is currently no way to
+2. **secp256k1 public key decompression:** There is currently no way to
    decompress a secp256k1 public key in Clarity. This forces protocols like
    Wormhole to use cumbersome workarounds involving uncompressed keys, leading
    to operational downtime when guardian sets change.
-4. **Ed25519 signature verification:** Clarity currently supports signature
+3. **Ed25519 signature verification:** Clarity currently supports signature
    verification only on the secp256k1 curve (used by Bitcoin and Ethereum) and
    the secp256r1 curve (used by Apple's Secure Enclave and WebAuthn). There is
    no way to verify Ed25519 signatures, which are the standard for many other
    ecosystems (including Solana, Cardano, Polkadot, Stellar, Tor, SSH, and
    Signal). This blocks cross-chain bridges and attestation/identity systems
    that need to verify signatures produced by those ecosystems.
-5. **Trustless Bitcoin transaction verification:** Clarity contracts have no
+4. **Trustless Bitcoin transaction verification:** Clarity contracts have no
    native way to verify that a Bitcoin transaction output exists on the Bitcoin
    chain. Protocols that need this capability (such as BTC bridges and
    sBTC-style peg systems) must currently rely on off-chain oracles or trusted
@@ -108,50 +103,6 @@ will default to Clarity 6, though contract authors can override this by
 specifying an earlier version in the deploy transaction.
 
 ## Clarity 6
-
-### Allow Identifiers to Start with `_`
-
-Originally proposed here: https://github.com/clarity-lang/reference/issues/101
-
-Currently, Clarity identifiers cannot begin with the underscore character (`_`),
-although underscores are permitted in other positions within a name. This
-prevents developers from using the widely-adopted convention of prefixing unused
-bindings with `_` to indicate that they are intentionally unused.
-
-Beginning in Clarity 6, identifiers (including function, constant, map, and data
-var names, function arguments, `let` and `match` bindings, and other named
-definitions, but excluding contract names) may begin with an underscore.
-
-Additionally, the bare identifier `_` (a single underscore) is allowed only in
-`let` and `match` bindings as a discard pattern, indicating that the bound value
-is intentionally unused. Using a bare `_` as a name in any other position (for
-example, as a constant, function, function argument, trait, map, or data var
-name) is rejected at contract analysis. Unlike other identifiers, `_` does not
-create a binding that can be referenced later; attempting to reference `_` will
-result in an analysis error. Because `_` does not introduce a name, multiple `_`
-bindings may appear in the same `let` expression — each simply discards the
-value of its bound expression.
-
-#### Examples
-
-```clarity
-;; Prefixing an unused binding
-(define-public (remove-admin (address principal))
-  (let ((_admin (try! (check-admin)))
-        (deleted (map-delete admins address)))
-    (ok deleted)))
-
-;; Using _ as a discard pattern (multiple discards in one let)
-(define-public (remove-admin (address principal))
-  (let ((_ (try! (check-admin)))
-        (_ (try! (log-admin-action address)))
-        (deleted (map-delete admins address)))
-    (ok deleted)))
-```
-
-This convention is familiar to developers coming from Rust, TypeScript, Python,
-and many other languages. It also enables linters and static analysis tools to
-automatically detect genuinely unused bindings without false positives.
 
 ### Variadic `concat`
 
@@ -634,12 +585,11 @@ in [SIP-005](../sip-005/sip-005-blocks-and-transactions.md).
 
 # Backwards Compatibility
 
-Because this SIP introduces new syntax (underscore-prefixed identifiers),
-extends the `concat` function to accept more than two arguments, and adds new
-built-in functions (`secp256k1-decompress?`, `ed25519-verify`,
-`get-bitcoin-tx-output?`, and `verify-merkle-proof`), it is a consensus-breaking
-change. A contract that uses any of these new features would be invalid before
-this SIP is activated, and valid after it is activated.
+Because this SIP extends the `concat` function to accept more than two
+arguments and adds new built-in functions (`secp256k1-decompress?`,
+`ed25519-verify`, `get-bitcoin-tx-output?`, and `verify-merkle-proof`), it is a
+consensus-breaking change. A contract that uses any of these new features would
+be invalid before this SIP is activated, and valid after it is activated.
 
 All new keywords introduced in Clarity 6 can no longer be used as identifiers in
 a Clarity 6 smart contract. Smart contracts can continue to be published using

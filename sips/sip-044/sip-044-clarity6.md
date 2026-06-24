@@ -77,7 +77,7 @@ reported by Clarity developers. Specifically, it makes the following changes:
    difficult to audit.
 
 Additionally, it addresses the need for new functionality, as a result of the
-new Bitcoin-staking model, described in SIP-xyz, on which this SIP is a rider:
+new Bitcoin-staking model, described in SIP-045, on which this SIP is a rider:
 
 1. **Staking post-conditions** To enhance the security and user-friendliness of
    staking, this proposal adds two new transaction level post-conditions, which
@@ -577,7 +577,7 @@ This SIP builds upon the existing definitions of the Clarity language:
 - [SIP-039 (Clarity 5)](../sip-039/sip-039-clarity5.md)
 
 Parts of this SIP depend upon
-[SIP-xyz (Bitcoin Staking)](https://github.com/adriano-stacks/sips/blob/dfaaa4200123374bff84f6a7049d5602bf19c223/sips/sip-xxx/sip-0XX-pox-5-bitcoin-staking.md)
+[SIP-045 (Bitcoin Staking)](https://github.com/adriano-stacks/sips/blob/main/sips/sip-xxx/sip-0XX-pox-5-bitcoin-staking.md)
 and intends to activate together with it.
 
 The new transaction-level post-conditions build upon the post-conditions defined

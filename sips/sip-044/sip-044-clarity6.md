@@ -557,7 +557,8 @@ At the launch of Epoch 2.0, the
 was deployed to provide a mechanism to change the cost charged for the execution
 of a contract call without requiring any hard-fork. While the idea was sound,
 the functionality has not been used in the 8-million+ blocks that have since
-been mined. During that time, the community has clarified and successfully
+been mined, likely because it requires locking STX, which cannot be stacked.
+During that time, the community has clarified and successfully
 exercised the SIP process several times to make changes to Clarity costs, making
 this mechanism no longer necessary. By disabling the functionality of the
 `cost-voting` contract, the code in the `stacks-node` can be made more

@@ -707,7 +707,7 @@ multiple UTXOs into a single transaction reduces auto-bridging cost.
 [appendix-1]: ./sip-045-1.pdf
 [appendix-2]: ./sip-045-2.pdf
 [appendix-3]: ./sip-045-3.pdf
-[appendix-4]: ./sip-x045-4.pdf
+[appendix-4]: ./sip-045-4.pdf
 
 [0]: https://forum.stacks.org/t/introducing-the-bitcoin-staking-sip-v1-draft/18862/8
 [1]: https://forum.stacks.org/t/the-bitcoin-staking-whitepaper/18834/9

@@ -9,7 +9,8 @@
 **Authors:** Adriano Di Luzio
 ([adriano@stackslabs.com](mailto:adriano@stackslabs.com)), Alexis Radcliff
 ([alexis@stackslabs.com](mailto:alexis@stackslabs.com)), Aaron Blankstein
-([aaron@stackslabs.com](mailto:aaron@stackslabs.com)), Sam Lee
+([aaron@stackslabs.com](mailto:aaron@stackslabs.com)), Brice Dobry
+([brice@stackslabs.com](mailto:brice@stackslabs.com)), Sam Lee
 ([sam@stackslabs.com](mailto:sam@stackslabs.com)), Tanguy Girault
 ([tangchan0x@gmail.com](mailto:tangchan0x@gmail.com))
 

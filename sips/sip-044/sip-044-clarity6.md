@@ -34,12 +34,11 @@ more than two arguments, adds new cryptographic built-in functions, adds
 built-ins for trustlessly verifying Bitcoin transaction outputs on-chain, and
 adds new Clarity allowances for the PoX-5 staking model.
 
-In addition to the Clarity changes, this SIP introduces new transaction-level
-post-conditions for protecting staking state, a mechanism for handling
-problematic transactions in blocks, and the deprecation of the long-unused
-`cost-voting` contract. These changes are motivated by real-world developer
-experience, operational concerns from miners and signers, and the ongoing
-evolution of the PoX staking model.
+In addition to the Clarity changes, this SIP introduces a mechanism for
+handling problematic transactions in blocks, and the deprecation of the
+long-unused `cost-voting` contract. These changes are motivated by real-world
+developer experience, operational concerns from miners and signers, and the
+ongoing evolution of the PoX staking model.
 
 # Copyright
 
@@ -75,20 +74,20 @@ reported by Clarity developers. Specifically, it makes the following changes:
    relayers, or reimplement Bitcoin transaction parsing and merkle-proof
    verification in user-space Clarity code, which is expensive, error-prone, and
    difficult to audit.
+5. **PoX allowance:** A new in-contract allowance, `with-pox`, is added, for
+   use in `as-contract?` and `restrict-assets?` expressions. This new allowance
+   controls whether the protected body is allowed to modify state in the active
+   PoX contract. This is an addition to the existing `with-stacking`, which is
+   also renamed to `with-staking`, which allows the body to stake (or update)
+   a specific amount of STX.
 
 Additionally, it addresses the need for new functionality, as a result of the
 new Bitcoin-staking model, described in SIP-045, on which this SIP is a rider:
 
-1. **Staking post-conditions** To enhance the security and user-friendliness of
-   staking, this proposal adds two new transaction level post-conditions, which
-   allow users to ensure that the contract calls they make cannot affect their
-   staking status without explicit authorization. This applies both to
-   transaction-level post-conditions and in-contract (`as-contract?` and
-   `restrict-assets?`) post-conditions.
-2. **Problematic transactions** Transactions that are deemed to be problematic
+1. **Problematic transactions** Transactions that are deemed to be problematic
    by agreement between miners and signers should be included in a block, with
    their fees taken.
-3. **Disable `cost-voting`** This contract was originally designed as a
+2. **Disable `cost-voting`** This contract was originally designed as a
    mechanism to allow the cost of a specific function call to be overwritten
    without the need for a hard-fork. The handling of this contract complicates
    the code and slows down execution, but it has never been used, so it is

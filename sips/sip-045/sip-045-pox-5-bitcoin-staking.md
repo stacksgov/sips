@@ -264,9 +264,9 @@ reserve. The protocol targets a coverage multiple of 2.0x (acceptable range
 
 * **Excess capacity (≥ 2.0x):** offer new bonds at increased target size (yield
   and/or capacity).
-* **Healthy (1.5–2.0x):** offer new bonds at current target size.
-* **Caution (1.0–1.5x):** reduce new bond sizes and monitor closely.
-* **Stressed (0.8–1.0x):** halt new bonds; deploy the reserve to cover any
+* **Healthy (1.5–<2.0x):** offer new bonds at current target size.
+* **Caution (1.0–<1.5x):** reduce new bond sizes and monitor closely.
+* **Stressed (0.8–<1.0x):** halt new bonds; deploy the reserve to cover any
   shortfall.
 * **Distribution failure risk (< 0.8x):** deploy the reserve fully; activate
   the distribution priority cascade.

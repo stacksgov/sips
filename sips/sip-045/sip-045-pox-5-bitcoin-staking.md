@@ -502,27 +502,77 @@ community's approval of this SIP is limited to the PoX-5 design above.
 
 ### 3.4 Staking Process Improvements
 
-As part of the PoX-5 contract, this proposal introduces two improvements to the
-staking process. Both apply across paired and STX-only participation and are
-independent of BTC participation.
+As part of the PoX-5 contract, this proposal introduces several improvements to
+the staking process. These changes were originally proposed in
+[SIP-032](https://github.com/stacksgov/sips/pull/211), but that proposal has
+been absorbed into this SIP, since this SIP already required a significant PoX
+overhaul. These improvements apply across paired and STX-only participation.
+They are encoded in the PoX-5 contract (Section 3.6.1) and into Stacks
+consensus, and will carry forward into the algorithmic phase described in
+Section 3.3.3.
 
-The first improvement removes the cooldown cycle. Under PoX-4, a staker who
-changes their reward address forfeits eligibility for the following cycle while
-the change settles, costing a cycle of rewards. PoX-5 allows a staker to update
-their reward address before the next preparation phase and remain eligible in
-the upcoming cycle, so an address change no longer requires sitting out a
-cycle.
+#### 3.4.1 Remove the cooldown cycle
 
-The second improvement streamlines solo and pooled staking. Under PoX-4, pool
-operators must submit a commitment transaction every cycle to register locked
-STX for rewards, which creates recurring operational overhead and exposes a
-pool to a missed cycle if the commitment is not resubmitted in time. PoX-5
-persists a pool's commitment across cycles until the operator changes it,
-removing the per-cycle commitment requirement and the missed-cycle risk that
-accompanies it.
+Under PoX-4, a stacker could not switch the pool (signer) they stack through, or
+move between solo and pooled stacking, without first letting their existing lock
+fully expire: the re-registration path rejected any stacker whose lock had not
+yet ended and always began at the next reward cycle, leaving the intervening
+cycle unrewarded. PoX-5 lets a staker change signer in a single transaction that
+carries their position straight into the next cycle, so switching no longer
+costs a cycle of rewards. As long as the change is submitted before the upcoming
+preparation phase, the staker remains eligible without interruption. Stakers can
+also increase the amount, extend the lock, or change the data passed to the
+signer without a cooldown cycle. Reducing the staked amount (STX-only staking)
+does still require missing one cycle of rewards.
 
-These improvements are encoded in the PoX-5 contract (Section 3.6.1) and carry
-forward into the algorithmic phase described in Section 3.3.3.
+#### 3.4.2 Streamline solo and pooled staking
+
+PoX-5 flattens solo staking into the pooled model: rather than the two separate
+mechanisms PoX-4 maintained, all participation now flows through a single
+signer-based path, with solo staking simply being the case of staking to a
+signer one runs oneself. This removes the duplicated logic that distinguished
+the two and simplifies the process for stakers and operators alike.
+Additionally, under PoX-4, pool operators had to submit a commitment transaction
+every cycle to register locked STX for rewards, creating recurring operational
+overhead and exposing a pool to a missed cycle whenever a commitment was not
+resubmitted in time. PoX-5 registers a staker across all of their staked cycles
+when they stake, so a pool's participation persists across cycles in a single
+transaction, so neither the staker nor the operator needs to act each cycle to
+keep that stake in the reward set, removing both the per-cycle commitment
+requirement and the missed-cycle risk that accompanied it.
+
+#### 3.4.3 Staking Post-Conditions
+
+Built on the same foundations as the new Clarity allowances, `with-staking` and
+`with-pox`, with Epoch 4.0, new transaction-level post-conditions will activate
+that allow users to protect their STX from unexpected staking changes. Previous
+PoX contracts have used the `allow-contract-caller` mechanism to restrict which
+contracts are allowed to indirectly call into the PoX contract on behalf of the
+`tx-sender`. This improves upon that, by allowing users to protect this behavior
+with a post-condition on each transaction.
+
+##### Staking
+
+A new post-condition with identifier `0x03` specifies that the transaction may
+stake STX (or modify existing staking parameters) for the specified principal.
+This post-condition specifies a principal, a **fungible condition code** (as
+described in [SIP-005](../sip-005/sip-005-blocks-and-transactions.md)), and an
+amount. Calls to `stake`, `register-for-bond`, and `stake-update`, will be
+evaluated against these post-conditions, and the transaction will be rejected if
+the conditions are not met.
+
+##### PoX
+
+A new post-condition with identifier `0x04` specifies that the transaction may
+modify state in the active PoX contract that does not directly change locking
+status. This includes calls to `unstake`, `unstake-sbtc`,
+`update-bond-registration`, and `announce-l1-early-exit` in the pox-5 contract.
+This post-condition specifies a principal and a new **PoX condition code**. A
+PoX condition code has the following encodings:
+
+- `0x30`: "The account must not perform any PoX actions"
+- `0x31`: "The account may perform PoX actions"
+- `0x32`: "The account must perform a PoX action"
 
 ### 3.5 Burn Mechanism Alignment
 
@@ -591,6 +641,7 @@ model that PoX-6 carries forward under consensus control.
 * **SIP-029:** [Current emissions schedule (explicitly superseded for
   post-activation periods)](../sip-029/)
 * **SIP-031:** [Stacks Endowment](../sip-031/)
+* **SIP-032:** [Improved stacking](https://github.com/stacksgov/sips/pull/211) (absorbed into this SIP)
 * [Bitcoin Staking Whitepaper][appendix-5]
 
 ## 5. Backwards Compatibility

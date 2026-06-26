@@ -26,6 +26,8 @@
 
 **License:** BSD 2-Clause
 
+**Sign-off:**
+
 **Discussions-To:** [SIP Draft][0] & [Whitepaper Forum post][1]
 
 ## 1. Abstract

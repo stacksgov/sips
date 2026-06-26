@@ -4,8 +4,8 @@ Chairperson: Jesse Wiley
 
 Members:
 
-- Aaron Blankstein <aaron@hiro.so>
-- Brice Dobry <brice@hiro.so>
+- Aaron Blankstein <aaron@stackslabs.com>
+- Brice Dobry <brice@stackslabs.com>
 - j2p2 <i.digg.tech@gmail.com>
 - Friedger <mail@friedger.de>
 - Jesse Wiley <jesse@stacks.org>

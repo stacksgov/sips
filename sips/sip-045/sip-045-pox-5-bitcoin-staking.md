@@ -357,7 +357,7 @@ anchoring productive BTC capital. Until that activity matures, premature
 reduction of the coinbase block rewards would constrain the economic base the
 transition depends on.
 
-##### 3.2.3.4 Inflation Alignment & Market Impact
+##### 3.2.3.4 Inflation Alignment and Market Impact
 
 With the proposed emission alignment, the emissions rate remains below the
 five-year median emission rate of the 50 largest networks by market

@@ -32,6 +32,12 @@
 
 ## 1. Abstract
 
+This SIP specifies PoX-5 (Bitcoin Staking): a consensus change letting
+participants pair a self-custodial BTC timelock with an STX lock to earn BTC
+yield, and it restores the coinbase reward to 1,000 STX per Bitcoin block,
+removing the step-down schedule set by SIP-029 (which had lowered it to 500 STX
+in April 2026).
+
 Stacks exists to activate the Bitcoin economy: to bring Bitcoin into productive
 use while preserving the security properties that define it. There are several
 desirable features on other crypto networks that Bitcoin currently lacks, which

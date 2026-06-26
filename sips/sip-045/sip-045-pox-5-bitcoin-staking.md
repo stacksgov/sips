@@ -50,7 +50,7 @@ capital on Stacks. Bitcoin Staking is a proposed upgrade to Stacks' existing
 Proof-of-Transfer (PoX) consensus mechanism that enables participants to lock
 BTC on the Bitcoin blockchain and STX on the Stacks blockchain and earn BTC
 yield without giving up custody of their coins. This SIP and the companion
-Bitcoin Staking [white paper][3] specify the consensus changes required for
+Bitcoin Staking [whitepaper][appendix-5] specify the consensus changes required for
 Bitcoin Staking. This SIP proposes both the technical and economic
 implementation of Bitcoin Staking, including an alignment of the STX emissions
 schedule.
@@ -107,7 +107,7 @@ Bitcoin Staking follows three design principles.
 ### 3.1 Bitcoin Staking Mechanism
 
 This section outlines key specifications for the Bitcoin Staking mechanism. For
-a detailed overview, please refer to the [white paper][3].
+a detailed overview, please refer to the [whitepaper][appendix-5].
 
 #### 3.1.1 Protocol Bonds
 
@@ -174,7 +174,7 @@ Bitcoin sits during the bonding period and which participation flows are
 available. STX-only staking remains available as a separate path with no BTC
 commitment, no capacity constraint, and no auction, carrying forward the
 existing PoX participation model under an updated reward distribution. The
-participation paths are specified in full in the white paper.
+participation paths are specified in full in the [whitepaper][appendix-5].
 
 #### 3.1.2 Bonding Periods and Timing
 
@@ -252,7 +252,7 @@ conditions: it has been allocated capacity through the Stacks Endowment or
 through an open-access pool; its full BTC amount is locked on L1 before the
 start of the bonding period; and its paired STX meets the ratio requirement.
 Detailed scenarios in the event of miner revenue excess and prolonged drawdowns
-are specified in the [white paper][3].
+are specified in the [whitepaper][appendix-5].
 
 #### 3.1.5 Coverage Ratio Requirements
 
@@ -577,13 +577,13 @@ model that PoX-6 carries forward under consensus control.
 
 ## 4. Related Work
 
-* **SIP-007:** Original PoX mechanism
-* **SIP-015:** Stacks 2.1 upgrade
-* **SIP-021:** Nakamoto Release
-* **SIP-029:** Current emissions schedule (explicitly superseded for
-  post-activation periods)
-* **SIP-031:** Stacks Endowment
-* Bitcoin Staking Whitepaper
+* **SIP-007:** [Original PoX mechanism](../sip-007/)
+* **SIP-015:** [Stacks 2.1 upgrade](../sip-015/)
+* **SIP-021:** [Nakamoto Release](../sip-021/)
+* **SIP-029:** [Current emissions schedule (explicitly superseded for
+  post-activation periods)](../sip-029/)
+* **SIP-031:** [Stacks Endowment](../sip-031/)
+* [Bitcoin Staking Whitepaper][appendix-5]
 
 ## 5. Backwards Compatibility
 
@@ -745,16 +745,17 @@ multiple UTXOs into a single transaction reduces auto-bridging cost.
 * A2. [Risk Profile Comparison][appendix-2]
 * A3. [Inflation Impact][appendix-3]
 * A4. [Competitive Landscape][appendix-4]
+* A5. [Bitcoin Staking Whitepaper][appendix-5]
 
 [appendix-1]: ./sip-045-1.pdf
 [appendix-2]: ./sip-045-2.pdf
 [appendix-3]: ./sip-045-3.pdf
 [appendix-4]: ./sip-045-4.pdf
+[appendix-5]: ./sip-045-5.pdf
 
 [0]: https://forum.stacks.org/t/introducing-the-bitcoin-staking-sip-v1-draft/18862/8
 [1]: https://forum.stacks.org/t/the-bitcoin-staking-whitepaper/18834/9
 [2]: https://www.stacks.co/roadmap
-[3]: https://cdn.prod.website-files.com/618b0aafa4afde65f2fe38fe/6a046453621aeb10783f9079_5179c4752d4c999ef57ef49c5e6de186_Bitcoin%20Staking%20on%20Stacks%20Whitepaper.pdf
 [4]: https://opensource.org/licenses/BSD-2-Clause
 [5]: https://github.com/stacks-network/stacks-core/tree/pox-wf-integration
 [6]: https://github.com/stacks-network/stacks-core/blob/pox-wf-integration/stackslib/src/chainstate/stacks/boot/pox-5.clar

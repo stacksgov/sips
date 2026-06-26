@@ -664,9 +664,9 @@ implementation follows:
 
 ## 7. Reference Implementations
 
-* **Stacks-core implementation branch:** [5]
-* **PoX-5 contract (pox-5.clar):** [6]
-* **Reference signer manager contract:** [7]
+* [Stacks-core implementation branch][5]
+* [PoX-5 contract (`pox-5.clar`)][6]
+* [Reference signer manager contract][7]
   * Provided so existing signers can adopt PoX-5 with minimal customization
 
 ### 7.1 Security Audits

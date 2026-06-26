@@ -618,11 +618,15 @@ the cooldown described in Section 3.4.
 
 ## 6. Activation
 
+Activation requires ≥80% of votes from stacked STX in favor with a minimum 80M
+STX quorum, measured over a voting window of `4` reward cycles. If the
+threshold is not met within that window, the SIP is Rejected.
+
 ### 6.1 Voting Parameters
 
-* **Voting threshold for stacked STX:** 80% (recommended based on SIP-021/029
-  precedent for hard forks)
-* **Minimum quorum:** 80M STX recommended
+* **Voting threshold for stacked STX:** 80% (based on SIP-021/029 precedent for
+  hard forks)
+* **Minimum quorum:** 80M STX
 * **Voting window:** The voting window will be identified and shared publicly
   during the community review period, allowing sufficient time to address
   critical feedback before a public vote is established.

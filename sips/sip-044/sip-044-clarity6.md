@@ -9,7 +9,7 @@ Author(s):
 - Jeff Bencin <jeff.bencin@gmail.com>
 - Brice Dobry <brice@stackslabs.com>
 
-Status: Draft
+Status: Accepted
 
 Consideration: Technical
 

@@ -670,8 +670,12 @@ threshold is not met within that window, the SIP is Rejected.
 * **Snapshot block:** (Bitcoin block height for voter eligibility): Block
   heights will be determined following the community review period as part of
   the vote preparation process.
-* **Hard fork activation:** Activation block heights will be determined
-  following the community review period.
+* **Hard fork activation:** The expected hard fork date is July 29, 2026.
+  Specific activation block heights will be determined and communicated closer
+  to activation, once the vote outcome allows them to be set precisely against
+  Bitcoin block drift. This follows the precedent of SIP-021 and SIP-029, both
+  of which finalized activation heights during vote preparation rather than in
+  the proposal text.
 * **PoX-5 program launch:** PoX-5 program parameters and timeline will be
   finalized following community review.
 

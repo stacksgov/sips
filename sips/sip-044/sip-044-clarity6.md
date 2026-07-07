@@ -94,6 +94,10 @@ new Bitcoin-staking model, described in SIP-045, on which this SIP is a rider:
    better for the network to disable this functionality and continue to make
    cost changes through the SIP process, which has been working smoothly.
 
+As with every Clarity upgrade, cost computations and budgets are re-evaluated
+alongside the language changes. The updated costs take effect when this SIP
+activates.
+
 # Specification
 
 This SIP requires a hard fork. The changes specified below all activate

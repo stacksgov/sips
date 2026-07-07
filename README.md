@@ -49,14 +49,14 @@ and get it ratified.  Anyone in the Stacks community may submit a SIP.
 | [035](./sips/sip-035/sip-secp256r1-verify.md)|Clarification of Clarity's `secp256r1-verify` Behavior| Ratified|
 | [036](https://github.com/stacksgov/sips/pull/219)|BTC addresses for Stacks transactions| Draft|
 | [037](https://github.com/stacksgov/sips/pull/246)|Agent Coordination Framework| Draft|
-| [038](https://github.com/stacksgov/sips/pull/250)|Standard Trait Definition for Commitment-Based Private Metadata (Encrypted NFTs)| Draft|
+| [038](./sips/sip-038/sip-enft-private-layer.md)|Standard Trait Definition for Commitment-Based Private Metadata (Encrypted NFTs)| Draft|
 | [039](https://github.com/stacksgov/sips/pull/256)|Clarity 5 and Epoch 3.4| Ratified|
-| [040](https://github.com/stacksgov/sips/pull/257)|SIP for improved post-conditions| Ratified|
+| [040](./sips/sip-040/sip-040-post-conds.md)|SIP for improved post-conditions| Ratified|
 | [041](https://github.com/stacksgov/sips/pull/258)|Agent Registries (ERC-8004 on Stacks)| Draft|
 | [042](./sips/sip-042/sip-042.md)|Removal of at-block| Ratified|
 | [043](https://github.com/stacksgov/sips/pull/266)|Identicons for contracts| Draft|
 | [044](https://github.com/stacksgov/sips/pull/267)|Clarity 6, staking and PoX post-conditions, and removal of the cost-voting contract| Accepted|
-| [045](https://github.com/stacksgov/sips/pull/272)|PoX-5: Bitcoin Staking and Emission Schedule Alignment| Accepted|
+| [045](./sips/sip-045/sip-045-pox-5-bitcoin-staking.md)|PoX-5: Bitcoin Staking and Emission Schedule Alignment| Accepted|
 
 ## How to Get Involved
 

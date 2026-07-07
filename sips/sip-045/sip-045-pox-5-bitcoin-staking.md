@@ -36,7 +36,8 @@ This SIP specifies PoX-5 (Bitcoin Staking): a consensus change letting
 participants pair a self-custodial BTC timelock with an STX lock to earn BTC
 yield, and it restores the coinbase reward to 1,000 STX per Bitcoin block,
 removing the step-down schedule set by SIP-029 (which had lowered it to 500 STX
-in April 2026).
+in April 2026) as a provisional rate for the bootstrap phase, with reassessment
+specified for PoX-6.
 
 Stacks exists to activate the Bitcoin economy: to bring Bitcoin into productive
 use while preserving the security properties that define it. There are several
@@ -308,9 +309,12 @@ This SIP restores the coinbase block reward to 1,000 STX per Bitcoin block,
 effective at hard fork activation, and removes the reduction schedule
 established under SIP-029. The 1,000 STX rate carries no scheduled reductions.
 
-Any future change to the rate would be proposed through a separate SIP, with
-Bitcoin halving events serving as natural organic milestones at which the
-community may reassess issuance. This SIP does not alter or defer SIP-031
+The 1,000 STX rate is provisional for the PoX-5 bootstrap phase. The PoX-6 SIP
+will include an explicit reassessment of the emission schedule, informed by a
+new economic study based on observed PoX-5 performance, including coverage
+ratios, fee flows, and participation levels. That study will be evaluated with
+the Economic CAB as part of the PoX-6 SIP process to determine the appropriate
+emission level going forward. This SIP does not alter or defer SIP-031
 emissions.
 
 #### 3.2.3 Justification
@@ -472,6 +476,9 @@ Because PoX-6 alters consensus-encoded behavior, it will be specified and
 ratified through its own SIP, informed by real participation data from PoX-5.
 This SIP does not commit to a PoX-6 activation date or its parameters, and the
 community's approval of this SIP is limited to the PoX-5 design above.
+
+The PoX-6 SIP will also include the emission schedule reassessment specified in
+Section 3.2.2.
 
 ### 3.4 Staking Process Improvements
 

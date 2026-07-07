@@ -2,7 +2,8 @@
 
 SIP Number: 044
 
-Title: Clarity 6, staking and PoX post-conditions, and removal of the cost-voting contract
+Title: Clarity 6, staking and PoX post-conditions, and removal of the
+cost-voting contract
 
 Author(s):
 
@@ -34,11 +35,11 @@ more than two arguments, adds new cryptographic built-in functions, adds
 built-ins for trustlessly verifying Bitcoin transaction outputs on-chain, and
 adds new Clarity allowances for the PoX-5 staking model.
 
-In addition to the Clarity changes, this SIP introduces a mechanism for
-handling problematic transactions in blocks, and the deprecation of the
-long-unused `cost-voting` contract. These changes are motivated by real-world
-developer experience, operational concerns from miners and signers, and the
-ongoing evolution of the PoX staking model.
+In addition to the Clarity changes, this SIP introduces a mechanism for handling
+problematic transactions in blocks, and the deprecation of the long-unused
+`cost-voting` contract. These changes are motivated by real-world developer
+experience, operational concerns from miners and signers, and the ongoing
+evolution of the PoX staking model.
 
 # Copyright
 
@@ -74,12 +75,12 @@ reported by Clarity developers. Specifically, it makes the following changes:
    relayers, or reimplement Bitcoin transaction parsing and merkle-proof
    verification in user-space Clarity code, which is expensive, error-prone, and
    difficult to audit.
-5. **PoX allowance:** A new in-contract allowance, `with-pox`, is added, for
-   use in `as-contract?` and `restrict-assets?` expressions. This new allowance
+5. **PoX allowance:** A new in-contract allowance, `with-pox`, is added, for use
+   in `as-contract?` and `restrict-assets?` expressions. This new allowance
    controls whether the protected body is allowed to modify state in the active
    PoX contract. This is an addition to the existing `with-stacking`, which is
-   also renamed to `with-staking`, which allows the body to stake (or update)
-   a specific amount of STX.
+   also renamed to `with-staking`, which allows the body to stake (or update) a
+   specific amount of STX.
 
 Additionally, it addresses the need for new functionality, as a result of the
 new Bitcoin-staking model, described in SIP-045, on which this SIP is a rider:
@@ -100,10 +101,10 @@ activates.
 
 # Specification
 
-This SIP requires a hard fork. The changes specified below all activate
-together at the onset of Stacks Epoch 4.0. New contracts deployed in Epoch 4.0
-will default to Clarity 6, though contract authors can override this by
-specifying an earlier version in the deploy transaction.
+This SIP requires a hard fork. The changes specified below all activate together
+at the onset of Stacks Epoch 4.0. New contracts deployed in Epoch 4.0 will
+default to Clarity 6, though contract authors can override this by specifying an
+earlier version in the deploy transaction.
 
 ## Clarity 6
 
@@ -561,11 +562,11 @@ was deployed to provide a mechanism to change the cost charged for the execution
 of a contract call without requiring any hard-fork. While the idea was sound,
 the functionality has not been used in the 8-million+ blocks that have since
 been mined, likely because it requires locking STX, which cannot be stacked.
-During that time, the community has clarified and successfully
-exercised the SIP process several times to make changes to Clarity costs, making
-this mechanism no longer necessary. By disabling the functionality of the
-`cost-voting` contract, the code in the `stacks-node` can be made more
-performant and at the same time, simplified.
+During that time, the community has clarified and successfully exercised the SIP
+process several times to make changes to Clarity costs, making this mechanism no
+longer necessary. By disabling the functionality of the `cost-voting` contract,
+the code in the `stacks-node` can be made more performant and at the same time,
+simplified.
 
 Once Epoch 4.0 activates, the `cost-voting` contract will no longer have any
 effect on consensus and can be ignored.
@@ -589,11 +590,11 @@ in [SIP-005](../sip-005/sip-005-blocks-and-transactions.md).
 
 # Backwards Compatibility
 
-Because this SIP extends the `concat` function to accept more than two
-arguments and adds new built-in functions (`secp256k1-decompress?`,
-`ed25519-verify`, `get-bitcoin-tx-output?`, and `verify-merkle-proof`), it is a
-consensus-breaking change. A contract that uses any of these new features would
-be invalid before this SIP is activated, and valid after it is activated.
+Because this SIP extends the `concat` function to accept more than two arguments
+and adds new built-in functions (`secp256k1-decompress?`, `ed25519-verify`,
+`get-bitcoin-tx-output?`, and `verify-merkle-proof`), it is a consensus-breaking
+change. A contract that uses any of these new features would be invalid before
+this SIP is activated, and valid after it is activated.
 
 All new keywords introduced in Clarity 6 can no longer be used as identifiers in
 a Clarity 6 smart contract. Smart contracts can continue to be published using

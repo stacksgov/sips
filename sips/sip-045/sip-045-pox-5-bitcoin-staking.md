@@ -140,11 +140,11 @@ OP_VERIFY
 <staker-unlock-script>
 ```
 
-- **Timelock path (OP_IF).** After `unlock-burn-height`, OP_CHECKLOCKTIMEVERIFY
+* **Timelock path (OP_IF).** After `unlock-burn-height`, OP_CHECKLOCKTIMEVERIFY
   (BIP-65) gates the spend and the participant reclaims the BTC by satisfying
   `<staker-unlock-script>` (e.g. `<pubkey> OP_CHECKSIG`, or an M-of-N
   CHECKMULTISIG template). This is the normal end-of-bond return of principal.
-- **Early-exit path (OP_ELSE).** Before the timelock, the output can be spent
+* **Early-exit path (OP_ELSE).** Before the timelock, the output can be spent
   only by revealing the 32-byte preimage `sha256(to-consensus-buff? staker)`
   whose hash equals the committed value
   `<H> = sha256(sha256(to-consensus-buff? staker))`, and by satisfying both
@@ -419,9 +419,7 @@ measures are security, testing, and stability mechanisms with defined limits,
 not discretionary control over participant funds, which remain self-custodial
 and recoverable in full at timelock expiry regardless of Endowment action.
 
-#### 3.3.2 Pre-Authorized Hard Fork Procedure
-
-##### 3.3.2.1 Reserve Fund Access During the Bootstrap Phase
+#### 3.3.2 Reserve Fund Access During the Bootstrap Phase
 
 The reserve fund accumulates in accrual-only mode during PoX-5. As noted in
 Section 3.3.1, the contract exposes no function that can spend reserve funds;
@@ -446,44 +444,19 @@ period. Gating all reserve spending behind a consensus change enforces these
 principles while preserving the ability to distribute funds according to the
 protocol's intended design if circumstances require it.
 
+If a reserve fund draw becomes necessary during PoX-5, it would be proposed and
+ratified through a standard SIP with full community review. This is not
+expected: the bootstrap phase is unlikely to produce coverage-ratio shortfalls
+large enough to warrant a draw (Section 3.1.5). A complete reserve governance
+model, including any coordination mechanisms, will be specified as part of the
+PoX-6 SIP.
+
 Trust assumption: PoX-5 rewards and reserve fund accumulations auto-bridge into
 sBTC (Section 3.6.2). This introduces a dependency on the sBTC signer set: if
 the signer set were compromised, the underlying BTC could be at risk, and a
 hard fork on the Stacks side alone could not recover it. This is an accepted
 risk of the bootstrap architecture and is not unique to the reserve fund. It
 applies to the Bitcoin Staking mechanism broadly.
-
-##### 3.3.2.2 Pre-Authorized Vote
-
-To reduce coordination latency in the event that a reserve fund draw becomes
-necessary, STX holders may cast a pre-authorization vote signaling advance
-consent to a future hard fork that accesses the reserve fund.
-
-The following properties define the pre-authorization vote:
-
-* **Not a trigger.** A pre-authorization vote does not release funds or
-  initiate a hard fork. Any hard fork to access the reserve still requires the
-  full consensus process, including a node upgrade and network adoption.
-* **Shortens coordination.** A sufficient pre-authorization threshold signals
-  that community consensus is achievable, allowing node operators and ecosystem
-  participants to prepare before a formal vote begins.
-* **Revocable at any time.** A pre-authorization vote may be withdrawn by the
-  voting STX holder at any point before the corresponding hard fork is adopted.
-  Consent cannot be irrevocably committed in advance.
-* **Narrowly scoped.** A pre-authorization vote applies to hard forks that
-  access the reserve fund only. It does not constitute authorization for any
-  other consensus change.
-
-The specific voting mechanism, on-chain representation, and quorum threshold
-for pre-authorization votes are to be defined in a companion specification
-prior to PoX-5 activation.
-
-##### 3.3.2.3 Sunset
-
-The pre-authorized hard fork procedure described in this section is a
-bootstrap-phase measure specific to PoX-5. It is no longer required upon
-transition to PoX-6, at which point reserve deployment is governed
-algorithmically under fully decentralized consensus rules (Section 3.3.3).
 
 #### 3.3.3 Algorithmic Phase (PoX-6)
 

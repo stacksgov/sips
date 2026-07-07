@@ -10,16 +10,16 @@ and get it ratified.  Anyone in the Stacks community may submit a SIP.
 
 
 | SIP Number | SIP Title | Status |
-| :---------------------| :-------------------- | :----------- | 
+| :---------------------| :-------------------- | :----------- |
 | [000](./sips/sip-000/sip-000-stacks-improvement-proposal-process.md)| The Stacks Improvement Proposal Process | Ratified |
-| [001](./sips/sip-001/sip-001-burn-election.md) | The Clarity Smart Contract Language | Ratified |
+| [001](./sips/sip-001/sip-001-burn-election.md) | Burn Election | Ratified |
 | [002](./sips/sip-002/sip-002-smart-contract-language.md) |  The Clarity Smart Contract Language | Ratified|
 | [003](./sips/sip-003/sip-003-peer-network.md)|Stacks P2P Network|Ratified|
 | [004](./sips/sip-004/sip-004-materialized-view.md)|Cryptographic Commitment to Materialized Views| Ratified|
 | [005](./sips/sip-005/sip-005-blocks-and-transactions.md)|Blocks, Transactions, and Accounts| Ratified|
 | [006](./sips/sip-006/sip-006-runtime-cost-assessment.md)|Clarity Cost Execution Assessment| Ratified|
 | [007](./sips/sip-007/sip-007-stacking-consensus.md)|Stacking Consensus| Ratified|
-| [008](./sips/sip-008/sip-008-analysis-cost-assessment.md)|Clarity| Ratified| Parsing and Analysis Cost Assessment| Ratified|
+| [008](./sips/sip-008/sip-008-analysis-cost-assessment.md)|Clarity Parsing and Analysis Cost Assessment| Ratified|
 | [009](./sips/sip-009/sip-009-nft-standard.md)|Standard Trait Definition for Non-Fungible Tokens| Ratified|
 | [010](./sips/sip-010/sip-010-fungible-token-standard.md)|Standard Trait Definition for Fungible Tokens| Ratified|
 | [011](https://github.com/stacksgov/sips/pull/119)|The buy-in-ustx Standard for non-custodial Marketplace traits| Rejected|
@@ -41,20 +41,22 @@ and get it ratified.  Anyone in the Stacks community may submit a SIP.
 | [027](./sips/sip-027/sip-027-non-sequential-multisig-transactions.md)|Non-sequential Multisig Transactions| Ratified|
 | [028](./sips/sip-028/sip-028-sbtc_peg.md)|Signer Criteria for sBTC, A Decentralized and Programmable Asset Backed 1:1 with BTC| Ratified|
 | [029](./sips/sip-029/sip-029-halving-alignment.md)|Bootstrapping sBTC Liquidity and Nakamoto Signer Incentives| Ratified|
-| [030](sips/sip-030/sip-030-wallet-interface.md)|Wallet RPC Standards| Recommended|
+| [030](./sips/sip-030/sip-030-wallet-interface.md)|Wallet RPC Standards| Recommended|
 | [031](./sips/sip-031/sip-031.md)|Five-Year Stacks Growth Emissions| Ratified|
 | [032](https://github.com/stacksgov/sips/pull/211)|Improved stacking| Draft|
-| [033](./sips/sip-033/sip-033-clarity4.md)|Clarity Smart Contract Language, version 4| Activation-In-Progress|
-| [034](./sips/sip-034/sip-034.md)|Dimension-Specific Tenure Extend Variants| Activation-in-Progress|
-| [035](./sips/sip-035/sip-secp256r1-verify.md)|Clarification of Clarity's secp256r1-verify Behavior| Ratified|
+| [033](./sips/sip-033/sip-033-clarity4.md)|Clarity Smart Contract Language, version 4| Ratified|
+| [034](./sips/sip-034/sip-034.md)|Dimension-Specific Tenure Extend Variants| Ratified|
+| [035](./sips/sip-035/sip-secp256r1-verify.md)|Clarification of Clarity's `secp256r1-verify` Behavior| Ratified|
 | [036](https://github.com/stacksgov/sips/pull/219)|BTC addresses for Stacks transactions| Draft|
 | [037](https://github.com/stacksgov/sips/pull/246)|Agent Coordination Framework| Draft|
 | [038](https://github.com/stacksgov/sips/pull/250)|Standard Trait Definition for Commitment-Based Private Metadata (Encrypted NFTs)| Draft|
-| [039](https://github.com/stacksgov/sips/pull/256)|Clarity 5 and Epoch 3.4| Draft|
-| [040](https://github.com/stacksgov/sips/pull/257)|SIP for improved post-conditions| Draft|
+| [039](https://github.com/stacksgov/sips/pull/256)|Clarity 5 and Epoch 3.4| Ratified|
+| [040](https://github.com/stacksgov/sips/pull/257)|SIP for improved post-conditions| Ratified|
 | [041](https://github.com/stacksgov/sips/pull/258)|Agent Registries (ERC-8004 on Stacks)| Draft|
-| [042](sips/sip-042/sip-042.md)|Removal of at-block| Activation-In-Progress|
+| [042](./sips/sip-042/sip-042.md)|Removal of at-block| Ratified|
 | [043](https://github.com/stacksgov/sips/pull/266)|Identicons for contracts| Draft|
+| [044](https://github.com/stacksgov/sips/pull/267)|Clarity 6, staking and PoX post-conditions, and removal of the cost-voting contract| Accepted|
+| [045](https://github.com/stacksgov/sips/pull/272)|PoX-5: Bitcoin Staking and Emission Schedule Alignment| Accepted|
 
 ## How to Get Involved
 

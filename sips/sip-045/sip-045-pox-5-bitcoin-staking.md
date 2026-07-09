@@ -36,7 +36,8 @@ This SIP specifies PoX-5 (Bitcoin Staking): a consensus change letting
 participants pair a self-custodial BTC timelock with an STX lock to earn BTC
 yield, and it restores the coinbase reward to 1,000 STX per Bitcoin block,
 removing the step-down schedule set by SIP-029 (which had lowered it to 500 STX
-in April 2026).
+in April 2026) as a provisional rate for the bootstrap phase, with reassessment
+specified for PoX-6.
 
 Stacks exists to activate the Bitcoin economy: to bring Bitcoin into productive
 use while preserving the security properties that define it. There are several
@@ -140,11 +141,11 @@ OP_VERIFY
 <staker-unlock-script>
 ```
 
-- **Timelock path (OP_IF).** After `unlock-burn-height`, OP_CHECKLOCKTIMEVERIFY
+* **Timelock path (OP_IF).** After `unlock-burn-height`, OP_CHECKLOCKTIMEVERIFY
   (BIP-65) gates the spend and the participant reclaims the BTC by satisfying
   `<staker-unlock-script>` (e.g. `<pubkey> OP_CHECKSIG`, or an M-of-N
   CHECKMULTISIG template). This is the normal end-of-bond return of principal.
-- **Early-exit path (OP_ELSE).** Before the timelock, the output can be spent
+* **Early-exit path (OP_ELSE).** Before the timelock, the output can be spent
   only by revealing the 32-byte preimage `sha256(to-consensus-buff? staker)`
   whose hash equals the committed value
   `<H> = sha256(sha256(to-consensus-buff? staker))`, and by satisfying both
@@ -308,9 +309,12 @@ This SIP restores the coinbase block reward to 1,000 STX per Bitcoin block,
 effective at hard fork activation, and removes the reduction schedule
 established under SIP-029. The 1,000 STX rate carries no scheduled reductions.
 
-Any future change to the rate would be proposed through a separate SIP, with
-Bitcoin halving events serving as natural organic milestones at which the
-community may reassess issuance. This SIP does not alter or defer SIP-031
+The 1,000 STX rate is provisional for the PoX-5 bootstrap phase. The PoX-6 SIP
+will include an explicit reassessment of the emission schedule, informed by a
+new economic study based on observed PoX-5 performance, including coverage
+ratios, fee flows, and participation levels. That study will be evaluated with
+the Economic CAB as part of the PoX-6 SIP process to determine the appropriate
+emission level going forward. This SIP does not alter or defer SIP-031
 emissions.
 
 #### 3.2.3 Justification
@@ -419,9 +423,7 @@ measures are security, testing, and stability mechanisms with defined limits,
 not discretionary control over participant funds, which remain self-custodial
 and recoverable in full at timelock expiry regardless of Endowment action.
 
-#### 3.3.2 Pre-Authorized Hard Fork Procedure
-
-##### 3.3.2.1 Reserve Fund Access During the Bootstrap Phase
+#### 3.3.2 Reserve Fund Access During the Bootstrap Phase
 
 The reserve fund accumulates in accrual-only mode during PoX-5. As noted in
 Section 3.3.1, the contract exposes no function that can spend reserve funds;
@@ -446,44 +448,19 @@ period. Gating all reserve spending behind a consensus change enforces these
 principles while preserving the ability to distribute funds according to the
 protocol's intended design if circumstances require it.
 
+If a reserve fund draw becomes necessary during PoX-5, it would be proposed and
+ratified through a standard SIP with full community review. This is not
+expected: the bootstrap phase is unlikely to produce coverage-ratio shortfalls
+large enough to warrant a draw (Section 3.1.5). A complete reserve governance
+model, including any coordination mechanisms, will be specified as part of the
+PoX-6 SIP.
+
 Trust assumption: PoX-5 rewards and reserve fund accumulations auto-bridge into
 sBTC (Section 3.6.2). This introduces a dependency on the sBTC signer set: if
 the signer set were compromised, the underlying BTC could be at risk, and a
 hard fork on the Stacks side alone could not recover it. This is an accepted
 risk of the bootstrap architecture and is not unique to the reserve fund. It
 applies to the Bitcoin Staking mechanism broadly.
-
-##### 3.3.2.2 Pre-Authorized Vote
-
-To reduce coordination latency in the event that a reserve fund draw becomes
-necessary, STX holders may cast a pre-authorization vote signaling advance
-consent to a future hard fork that accesses the reserve fund.
-
-The following properties define the pre-authorization vote:
-
-* **Not a trigger.** A pre-authorization vote does not release funds or
-  initiate a hard fork. Any hard fork to access the reserve still requires the
-  full consensus process, including a node upgrade and network adoption.
-* **Shortens coordination.** A sufficient pre-authorization threshold signals
-  that community consensus is achievable, allowing node operators and ecosystem
-  participants to prepare before a formal vote begins.
-* **Revocable at any time.** A pre-authorization vote may be withdrawn by the
-  voting STX holder at any point before the corresponding hard fork is adopted.
-  Consent cannot be irrevocably committed in advance.
-* **Narrowly scoped.** A pre-authorization vote applies to hard forks that
-  access the reserve fund only. It does not constitute authorization for any
-  other consensus change.
-
-The specific voting mechanism, on-chain representation, and quorum threshold
-for pre-authorization votes are to be defined in a companion specification
-prior to PoX-5 activation.
-
-##### 3.3.2.3 Sunset
-
-The pre-authorized hard fork procedure described in this section is a
-bootstrap-phase measure specific to PoX-5. It is no longer required upon
-transition to PoX-6, at which point reserve deployment is governed
-algorithmically under fully decentralized consensus rules (Section 3.3.3).
 
 #### 3.3.3 Algorithmic Phase (PoX-6)
 
@@ -499,6 +476,9 @@ Because PoX-6 alters consensus-encoded behavior, it will be specified and
 ratified through its own SIP, informed by real participation data from PoX-5.
 This SIP does not commit to a PoX-6 activation date or its parameters, and the
 community's approval of this SIP is limited to the PoX-5 design above.
+
+The PoX-6 SIP will also include the emission schedule reassessment specified in
+Section 3.2.2.
 
 ### 3.4 Staking Process Improvements
 
@@ -691,14 +671,22 @@ threshold is not met within that window, the SIP is Rejected.
   critical feedback before a public vote is established.
 * **Voting addresses:** Voting addresses will be generated by the voting
   platform and shared publicly once the voting block height is reached.
+* **CAB review**: Consistent with its Consideration designation, this SIP
+  proceeds through formal review and a vote by the relevant Consideration
+  Advisory Boards, including the Economic CAB, prior to the public voting
+  window.
 
 ### 6.2 Activation Timeline
 
 * **Snapshot block:** (Bitcoin block height for voter eligibility): Block
   heights will be determined following the community review period as part of
   the vote preparation process.
-* **Hard fork activation:** Activation block heights will be determined
-  following the community review period.
+* **Hard fork activation:** The expected hard fork date is July 29, 2026.
+  Specific activation block heights will be determined and communicated closer
+  to activation, once the vote outcome allows them to be set precisely against
+  Bitcoin block drift. This follows the precedent of SIP-021 and SIP-029, both
+  of which finalized activation heights during vote preparation rather than in
+  the proposal text.
 * **PoX-5 program launch:** PoX-5 program parameters and timeline will be
   finalized following community review.
 

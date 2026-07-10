@@ -358,9 +358,9 @@ hashed the transaction.
       none
     ))
   );; Returns (err u0)
-  (restrict-assets? tx-sender ((with-stacking u1000000000000))
+  (restrict-assets? tx-sender ((with-staking u1000000000000))
     (try! (contract-call? 'SP000000000000000000002Q6VF78.pox-5 stake
-      'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.signer u1100000000000 u12 u1000
+      'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.signer u1000000000000 u12 u1000
       none
     ))
   );; Returns (ok true)
@@ -393,39 +393,6 @@ hashed the transaction.
     ))
   );; Returns (ok true)
   ```
-
-## Staking Post-Conditions
-
-Built on the same foundations as the new Clarity allowances, `with-staking` and
-`with-pox`, with Epoch 4.0, new transaction-level post-conditions will activate
-that allow users to protect their STX from unexpected staking changes. Previous
-PoX contracts have used the `allow-contract-caller` mechanism to restrict which
-contracts are allowed to indirectly call into the PoX contract on behalf of the
-`tx-sender`. This improves upon that, by allowing users to protect this behavior
-with a post-condition on each transaction.
-
-### Staking
-
-A new post-condition with identifier `0x03` specifies that the transaction may
-stake STX (or modify existing staking parameters) for the specified principal.
-This post-condition specifies a principal, a **fungible condition code** (as
-described in [SIP-005](../sip-005/sip-005-blocks-and-transactions.md)), and an
-amount. Calls to `stake`, `register-for-bond`, and `stake-update`, will be
-evaluated against these post-conditions, and the transaction will be rejected if
-the conditions are not met.
-
-### PoX
-
-A new post-condition with identifier `0x04` specifies that the transaction may
-modify state in the active PoX contract that does not directly change locking
-status. This includes calls to `unstake`, `unstake-sbtc`,
-`update-bond-registration`, and `announce-l1-early-exit` in the pox-5 contract.
-This post-condition specifies a principal and a new **PoX condition code**. A
-PoX condition code has the following encodings:
-
-- `0x30`: "The account must not perform any PoX actions"
-- `0x31`: "The account may perform PoX actions"
-- `0x32`: "The account must perform a PoX action"
 
 ## Problematic Transactions
 
@@ -583,7 +550,7 @@ This SIP builds upon the existing definitions of the Clarity language:
 
 Parts of this SIP depend upon
 [SIP-045 (Bitcoin Staking)](https://github.com/adriano-stacks/sips/blob/main/sips/sip-xxx/sip-0XX-pox-5-bitcoin-staking.md)
-and intends to activate together with it.
+and this SIP is intended to activate together with it.
 
 The new transaction-level post-conditions build upon the post-conditions defined
 in [SIP-005](../sip-005/sip-005-blocks-and-transactions.md).
@@ -610,8 +577,9 @@ unlocked/liquid STX, or both.
 
 In order for this SIP to activate, the following criteria must be met:
 
-- At least 80 million stacked STX must vote, with at least 80% of all stacked
-  STX committed by voting must be in favor of the proposal (vote "yes").
+- At least 80 million stacked STX must participate in the vote, and at least 80%
+  of all stacked STX committed by voting must be in favor of the proposal (vote
+  "yes").
 - At least 80% of all liquid STX committed by voting must be in favor of the
   proposal (vote "yes").
 
@@ -621,16 +589,21 @@ is determined by a snapshot of the amount of STX (stacked and unstacked) at the
 block height at which the voting started (preventing the same STX from being
 transferred between accounts and used to effectively double vote).
 
-Solo stackers only can also vote by sending a bitcoin dust transaction (6000
-sats) to the corresponding bitcoin address.
+Solo stackers can also vote by sending a bitcoin dust transaction (6000 sats) to
+the corresponding bitcoin address, from their PoX address.
 
 | Vote | Bitcoin                          | Stacks                                | ASCII Encoding         | Msg        |
 | ---- | -------------------------------- | ------------------------------------- | ---------------------- | ---------- |
 | yes  | `11111111111mdWK2VXcrA1f72DmUku` | `SP00000000001WPAWSDEDMQ0B9M6HQVS7Q6` | `7965732d7369702d3434` | yes-sip-44 |
 | no   | `111111111111ACW5wa4RwyfJspnNhu` | `SP000000000006WVSDEDMQ0B9M6K3NTSJK`  | `6e6f2d7369702d3434`   | no-sip-44  |
 
-If the SIP is approved, a Bitcoin block height will be selected to activate the
-new behavior.
+Voting will take place over the same voting window as SIP-045, to be identified
+during the community review period, following the precedent of SIP-021 and
+SIP-029 of finalizing block heights during vote preparation. If the criteria are
+not met within that window, the SIP is Rejected.
+
+If approved, the activation block height will be finalized during vote
+preparation, together with SIP-045.
 
 # Reference Implementation
 

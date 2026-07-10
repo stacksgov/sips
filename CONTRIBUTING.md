@@ -89,5 +89,11 @@ as defined in SIP-000:
   and receives the next free SIP number like any other SIP.
 - The new SIP lists `Replaces:` in its preamble. Once ratified, the old SIP's
   status becomes Replaced and it receives a `Superseded-By:` field.
+- The replaced SIP keeps its number, filename and location, so existing links
+  keep working. Besides the preamble update, a notice is added at the top of
+  the replaced SIP pointing to its replacement:
+
+  > [!IMPORTANT]
+  > This SIP has been replaced by [SIP-XYZ](./link-to-new-sip.md).  
 
 This also applies to SIP-000 itself.

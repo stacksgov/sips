@@ -24,6 +24,8 @@ License: BSD-2-Clause
 
 Sign-off:
 
+- Brice Dobry <brice@stackslabs.com>, Interim Chairperson, Technical CAB; [minutes](../../considerations/minutes/technical-cab/2026-07-10-sip-044-and-045.md)
+
 Discussions-To:
 
 # Abstract

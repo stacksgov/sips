@@ -55,8 +55,8 @@ and get it ratified.  Anyone in the Stacks community may submit a SIP.
 | [041](https://github.com/stacksgov/sips/pull/258)|Agent Registries (ERC-8004 on Stacks)| Draft|
 | [042](./sips/sip-042/sip-042.md)|Removal of at-block| Ratified|
 | [043](https://github.com/stacksgov/sips/pull/266)|Identicons for contracts| Draft|
-| [044](https://github.com/stacksgov/sips/pull/267)|Clarity 6, staking and PoX post-conditions, and removal of the cost-voting contract| Accepted|
-| [045](./sips/sip-045/sip-045-pox-5-bitcoin-staking.md)|PoX-5: Bitcoin Staking and Emission Schedule Alignment| Accepted|
+| [044](./sips/sip-044/sip-044-clarity6.md)|Clarity 6, staking and PoX post-conditions, and removal of the cost-voting contract| Ratified|
+| [045](./sips/sip-045/sip-045-pox-5-bitcoin-staking.md)|PoX-5: Bitcoin Staking and Emission Schedule Alignment| Ratified|
 
 ## How to Get Involved
 

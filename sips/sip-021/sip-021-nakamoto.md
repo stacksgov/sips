@@ -21,7 +21,7 @@ Consideration: Governance, Technical, Economics
 
 Type: Consensus
 
-Status: Accepted
+Status: Ratified
 
 Created: 2023-09-28
 

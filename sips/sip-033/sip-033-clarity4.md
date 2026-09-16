@@ -12,7 +12,7 @@ Author(s):
 - Rapha.btc <ra@fak.fun>
 - Adriano Di Luzio <adriano@bitcoinl2labs.com>
 
-Status: Activation-In-Progress
+Status: Ratified
 
 Consideration: Technical
 

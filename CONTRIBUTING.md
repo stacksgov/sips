@@ -54,7 +54,7 @@ actions:
 ## SIP numbers and status labels
 
 - SIP numbers are assigned once and never reused, even if the SIP never
-  advances past Draft. This prevents one number from referring to two
+  advances past Accepted. This prevents one number from referring to two
   different proposals. Numbers need not be assigned in chronological order,
   and gaps in the numbering (such as 011, 014, 017) stay as they are.
 - **Withdrawn Draft** is used in the README and SIP tables as a label for a

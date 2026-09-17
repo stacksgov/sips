@@ -492,11 +492,9 @@ Clarity values should be represented in the following format for use in Stacks.j
 }
 ```
 
-```
 > **Note**: `'maybe-sent'` is the `MAY SEND` condition code (`0x12`) added by
 > [SIP-040](../sip-040/sip-040-post-conds.md). It always passes, and it counts as covering that
 > token instance for that principal when `'deny'` or `'originator'` mode checks allowlist coverage.
-```
 
 `0x03` Staking
 
@@ -525,7 +523,6 @@ Clarity values should be represented in the following format for use in Stacks.j
 > PoX state changes that do not alter locking status, such as `unstake`, `unstake-sbtc`,
 > `update-bond-registration`, and `announce-l1-early-exit`. The PoX condition codes are `0x30`,
 > `0x31`, and `0x32` respectively.
-```
 
 #### Test vectors
 
@@ -570,7 +567,7 @@ Listed below are some examples of the potentially unclear representations:
     condition: "not-sent"
   }
   ```
-  - "may stake at most 100 STX" =
+- "may stake at most 100 STX" =
   ```
   {
     type: "staking-postcondition",

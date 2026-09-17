@@ -520,7 +520,7 @@ Clarity values should be represented in the following format for use in Stacks.j
 > **Note**: Both types are added by [SIP-045](../sip-045/sip-045-pox-5-bitcoin-staking.md) and
 > activate with Epoch 4.0. A staking post-condition guards calls that stake STX or change staking
 > parameters, such as `stake`, `register-for-bond`, and `stake-update`. A PoX post-condition guards
-> PoX state changes that do not alter locking status, such as `unstake`, `unstake-sbtc`,
+> PoX state changes that do not change the amount locked, such as `unstake`, `unstake-sbtc`,
 > `update-bond-registration`, and `announce-l1-early-exit`. The PoX condition codes are `0x30`,
 > `0x31`, and `0x32` respectively.
 

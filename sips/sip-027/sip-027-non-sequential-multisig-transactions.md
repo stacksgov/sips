@@ -17,6 +17,7 @@ Created: 2023-08-30
 License: BSD 2-Clause
 
 Sign-off:
+- Brice Dobry brice@stackslabs.com (Technical CAB); [minutes](../../considerations/minutes/technical-cab/2023-10-27-pr-152-153.md)
 
 Discussions-To: https://github.com/stacksgov/sips
 
@@ -272,9 +273,9 @@ If the majority vote is **YES**, order-independent multisig transactions will be
 # Activation Status
 At the end of cycle 90, the following vote was calculated. A total of 118,632,231 STX participated.
 
-- For solo stacking, 100% voted 'Yes.' Total voting power is 3,449,000 STX balance with votes cast from 1 account. 
-- For pool stacking, 100% voted 'Yes.' Total voting power is 114,914,556 STX balance with votes cast from 75 accounts. 
-- For non-stackers, 99.9933% voted 'Yes.' Total voting power of ‘Yes’ is 268,674 STX balance with votes cast from 157 accounts.  For non-stackers, 0.0067% voted ’No.’ Total voting power of ‘No’ is 17 STX balance from 3 account.
+- For solo stacking, 100% voted 'Yes.' Total voting power is 3,449,000 STX balance with votes cast from 1 account.
+- For pool stacking, 100% voted 'Yes.' Total voting power is 114,914,556 STX balance with votes cast from 75 accounts.
+- For non-stackers, 99.9933% voted 'Yes.' Total voting power of ‘Yes’ is 268,674 STX balance with votes cast from 157 accounts. For non-stackers, 0.0067% voted ’No.’ Total voting power of ‘No’ is 17 STX balance from 3 account.
     268,691.89
 
 All voting criteria from STX holders have been met. A breakdown of the transactions can be found [here](https://stx.eco/dao/proposals/SP3JP0N1ZXGASRJ0F7QAHWFPGTVK9T2XNXDB908Z.sip-027-multisig-transactions/results).

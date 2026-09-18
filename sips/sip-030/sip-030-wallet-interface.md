@@ -91,7 +91,8 @@ Parameter properties
 - `nonce?`: `number | string` BigInt constructor compatible value
 - `postConditions?`: `PostCondition[]`, defaults to `[]`
   - where `PostCondition` is `string | object` hex-encoded or JSON representation
-- `postConditionMode?`: `'allow' | 'deny'`
+- `postConditionMode?`: `'allow' | 'deny' | 'originator'`
+  - where `'originator'` ([SIP-040](../sip-040/sip-040-post-conds.md)) denies unspecified asset transfers from the transaction's origin account and allows them for every other principal. Nodes reject this mode before SIP-040 activates in Epoch 3.4.
 - `sponsored?`: `boolean`, defaults to `false`
 - `broadcast?`: boolean whether transaction is to be broadcast, defaults to `true`
 - ~~`attachment?`~~ _removed_
@@ -485,11 +486,43 @@ Clarity values should be represented in the following format for use in Stacks.j
 {
   type: 'nft-postcondition',
   address: 'origin' | string | `${string}.${string}`, // Stacks c32-encoded, with optional contract name suffix
-  condition: 'sent' | 'not-sent',
+  condition: 'sent' | 'not-sent' | 'maybe-sent',
   asset: `${string}.${string}::${string}` // address with contract name suffix with asset suffix, Stacks c32-encoded
   assetId: ClarityValue, // Clarity value
 }
 ```
+
+> **Note**: `'maybe-sent'` is the `MAY SEND` condition code (`0x12`) added by
+> [SIP-040](../sip-040/sip-040-post-conds.md). It always passes, and it counts as covering that
+> token instance for that principal when `'deny'` or `'originator'` mode checks allowlist coverage.
+
+`0x03` Staking
+
+```ts
+{
+  type: 'staking-postcondition',
+  address: 'origin' | string | `${string}.${string}`, // Stacks c32-encoded, with optional contract name suffix
+  condition: 'eq' | 'gt' | 'gte' | 'lt' | 'lte',
+  amount: string // `bigint` compatible, amount in micro-STX
+}
+```
+
+`0x04` PoX
+
+```ts
+{
+  type: 'pox-postcondition',
+  address: 'origin' | string | `${string}.${string}`, // Stacks c32-encoded, with optional contract name suffix
+  condition: 'will-not-perform' | 'may-perform' | 'will-perform'
+}
+```
+
+> **Note**: Both types are added by [SIP-045](../sip-045/sip-045-pox-5-bitcoin-staking.md) and
+> activate with Epoch 4.0. A staking post-condition guards calls that stake STX or change staking
+> parameters, such as `stake`, `register-for-bond`, and `stake-update`. A PoX post-condition guards
+> PoX state changes that do not change the amount locked, such as `unstake`, `unstake-sbtc`,
+> `update-bond-registration`, and `announce-l1-early-exit`. The PoX condition codes are `0x30`,
+> `0x31`, and `0x32` respectively.
 
 #### Test vectors
 
@@ -532,6 +565,23 @@ Listed below are some examples of the potentially unclear representations:
     asset: "STB44HYPYAT2BB2QE513NSP81HTMYWBJP02HPGK6.tokencoin::tkn",
     assetId: { type: "uint", value: "12" }
     condition: "not-sent"
+  }
+  ```
+- "may stake at most 100 STX" =
+  ```
+  {
+    type: "staking-postcondition",
+    address: "STB44HYPYAT2BB2QE513NSP81HTMYWBJP02HPGK6",
+    condition: "lte",
+    amount: "100000000"
+  }
+  ```
+- "performs no PoX action" =
+  ```
+  {
+    type: "pox-postcondition",
+    address: "STB44HYPYAT2BB2QE513NSP81HTMYWBJP02HPGK6",
+    condition: "will-not-perform"
   }
   ```
 

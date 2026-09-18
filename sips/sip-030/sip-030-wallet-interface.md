@@ -16,6 +16,9 @@ Created: 10 October 2023
 
 License: BSD 2-Clause
 
+Sign-off:
+- Brice Dobry brice@stackslabs.com (Technical CAB); [minutes](../../considerations/minutes/technical-cab/2025-03-05-sip-030.md)
+
 ## Abstract
 
 This SIP proposes common RPC methods to use for the Stacks blockchain's "Connect" and "Auth" systems.

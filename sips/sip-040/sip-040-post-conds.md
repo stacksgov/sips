@@ -8,7 +8,7 @@ Author(s):
 
 - Brice Dobry <brice@stackslabs.com>
 
-Status: Activation-In-Progress
+Status: Ratified
 
 Consideration: Governance, Technical
 

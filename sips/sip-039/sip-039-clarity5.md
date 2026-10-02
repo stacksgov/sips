@@ -21,6 +21,7 @@ Created: 2025-01-16
 License: BSD-2-Clause
 
 Sign-off:
+- Brice Dobry brice@stackslabs.com (Technical CAB); [minutes](../../considerations/minutes/technical-cab/2026-03-09-sip-039.md)
 
 Discussions-To:
 

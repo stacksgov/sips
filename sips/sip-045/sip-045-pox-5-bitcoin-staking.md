@@ -27,6 +27,7 @@
 **License:** BSD 2-Clause
 
 **Sign-off:**
+- Brice Dobry brice@stackslabs.com (Technical CAB); [minutes](../../considerations/minutes/technical-cab/2026-07-10-sip-044-and-045.md)
 
 **Discussions-To:** [SIP Draft][0] & [Whitepaper Forum post][1]
 
@@ -703,15 +704,15 @@ implementation follows:
 
 ### 6.4 Activation Status
 
-The vote concluded at Bitcoin block height 958,925, with SIP-045 passing by a decisive margin. 
-Counting each wallet once, a total of 181,488,504 STX participated (87 unique voters), 
-with all but 2 STX (1 wallet) voting 'Yes' — effectively unanimous approval. 
+The vote concluded at Bitcoin block height 958,925, with SIP-045 passing by a decisive margin.
+Counting each wallet once, a total of 181,488,504 STX participated (87 unique voters),
+with all but 2 STX (1 wallet) voting 'Yes' — effectively unanimous approval.
 
-Note: ballot.gg's raw headline figures (201,488,530 STX, 88 voting entries) double-count one 
-20M-STX stacker who voted through both the STX dust and BTC dust channels; 
-the total above reflects each wallet counted once. 
+Note: ballot.gg's raw headline figures (201,488,530 STX, 88 voting entries) double-count one
+20M-STX stacker who voted through both the STX dust and BTC dust channels;
+the total above reflects each wallet counted once.
 
-Results were independently audited directly against the Stacks and Bitcoin 
+Results were independently audited directly against the Stacks and Bitcoin
 blockchains using `sip045-audit.mjs` (cloned from the proven SIP-039
 audit script). The audit script can be found [here](https://github.com/BlockSurvey/ballot/commit/a3c1a297568f644caaac22c73c6782e5b14a79ee).
 

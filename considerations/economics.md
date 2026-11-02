@@ -1,30 +1,21 @@
 # Consideration for Economics SIPs
 
-Chairperson: MattySTX
+_Note: New Chairperson and members in this PR were voted on and approved by the Economics CAB over email on October 13, 2026_
+
+Chairperson: Xan Ditkoff
 
 Members:
 
-- Hadan Esperidiao <Hadan@alexlab.co>
-- Leeor Shimron <leeorshimron@gmail.com>
-- MattySTX <mattystx@gmail.com>
-- Pieter Aerts <pieter@arkadiko.finance>
 - Xan Ditkoff <xan@daemontechnologies.co>
+- Hadan Esperidiao <Hadan@alexlab.co>
+- Shakti Pradhan <shakti@stacks.org>
+- Sam Lee <sam@stackslabs.com>
+- Andrea Ballesteros <andrea@stacksendowment.co>
+- Mark Kilaghbian <mark@dataing.io>
 
 Discussions-to: https://github.com/stacksgov/sips
 
 Created-by: SIP-000
-
-## Biographies
-
-**Hadan Esperidiao**: Hadan Esperidiao is the BD Lead for the ALEX Lab Foundation. ALEX is the Bitcoin finance layer, seamlessly merging L1 assets with L2s capabilities and omni-chain bridging. Hadan has been with ALEX Lab for the three years; prior experience include fixed income trading at Goldman Sachs and Physics at Harvard.
-
-**Leeor Shimron**: Leeor Shimron is Head of Growth at Stacking DAO, a leading Stacks DeFi platform, and a Senior Contributor at Forbes covering crypto and blockchain. Since 2017, Leeor has held roles across business development, strategy, and partnerships at dRPC, Kraken, Fundstrat, and as Founder/CEO of NovaBlock Capital, a digital asset venture firm.
-
-**MattySTX (Chairperson)**: Matty has more than a decade of experience designing, simulating, and optimizing economic models for hedge funds and VC funded machine learning startups. He has been in crypto since 2015, and Stacks since 2017. In the Stacks ecosystem, his simulation analysis of Stacks’ economic model has helped evaluate PoX consensus mechanism improvements, he authored the first ever community contributed governance proposal for Arkadiko’s tokenomics, he publishes the quarterly ‘STX Mining Report’, and he mentors teams at the Stacks incubator.
-
-**Pieter Aerts**: Pieter is a computer scientist and core contributor at Arkadiko Finance. The birth of Decentralized Finance at the start of 2020 is what made Pieter rediscover the cryptocurrency space. Excited by the possibilities of DeFi, he came to Stacks to bootstrap a DeFi revolution by contributing to Arkadiko, an important building block on the road to a financial ecosystem on Stacks and Bitcoin.
-
-**Xan Ditkoff**: Xan became part of the Stack’s ecosystem in 2017 as an early core team member focused on growing the developer ecosystem. He now runs Daemon Technologies, a Hong Kong based company focused on community growth, project funding, and partnerships for Stack’s technology primarily in Asia.
 
 ## About this CAB
 

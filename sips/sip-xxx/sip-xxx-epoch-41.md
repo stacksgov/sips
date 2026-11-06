@@ -32,6 +32,8 @@ The SIP introduces Clarity 7, which includes a number of changes to how contract
 
 The SIP also defines the move away from using a threshold-based deposit address for sBTC, which miners use to send BTC to the `pox-5` contract. After activation, miners will deposit to a pay-to-taproot (P2TR) multisig address.
 
+Finally, the SIP rejects the `stack-stx`, `delegate-stx` and `vote-for-aggregate-key` Bitcoin operations, which target PoX contracts that `pox-5` has superseded.
+
 # Copyright
 
 This SIP is made available under the terms of the BSD-2-Clause license,
@@ -150,6 +152,21 @@ Since epoch 4.0, miners send BTC to the `pox-5` contract by spending to an sBTC 
 After activation, in the first reward cycle that starts after epoch 4.1, miners will use the v2 sBTC deposit address format. This new format utilizes the public keys of sBTC signers to generate a k-of-n multisig pay-to-taproot address.
 
 For more information on the v2 deposit address format, refer to [sbtc#2142](https://github.com/stacks-sbtc/sbtc/issues/2142).
+
+## Rejection of defunct Bitcoin operations
+
+Stacks supports a set of operations that are sent as Bitcoin transactions. Three of these were designed for `pox-4` and `.signers-voting`, and have no purpose under `pox-5`:
+
+- `stack-stx`
+- `delegate-stx`
+- `vote-for-aggregate-key`
+
+Before epoch 4.1, these operations are accepted by the sortition DB and processed by the Stacks chainstate:
+
+- `stack-stx` and `delegate-stx` call the active PoX contract, `pox-5`, which doesn't define these functions. The call fails and is rolled back without a receipt, so the operation has no effect.
+- `vote-for-aggregate-key` calls `.signers-voting`, which still executes and produces a receipt, but nothing uses the result.
+
+After activation, these operations are rejected if the Bitcoin block they're mined in is in epoch 4.1 or later. They aren't recorded in the sortition DB, so they're excluded from the burn block's consensus hash and the Stacks chainstate never processes them. As a result, `vote-for-aggregate-key` operations no longer produce receipts. Operations mined before epoch 4.1 are still accepted, so replaying the chain history gives the same results.
 
 # Related Work
 

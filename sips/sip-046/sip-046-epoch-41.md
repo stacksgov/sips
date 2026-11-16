@@ -219,7 +219,7 @@ In order for this SIP to activate, the following criteria must be met:
 All STX holders vote by sending Stacks dust to the corresponding Stacks address
 from the account where their STX are held (staked or liquid). Voting power is
 determined by a snapshot of the amount of STX (staked and liquid) in that
-account at Bitcoin block height 976,850, the height at which voting starts.
+account at Bitcoin block height 976,450, the height at which voting starts.
 This prevents the same STX from being transferred between accounts and used to
 vote twice.
 
@@ -232,9 +232,9 @@ Bitcoin voting transaction for this vote.
 | yes  | `SP00000000001WPAWSDEDMQ0B9M6VRF7M9A` | `7965732d7369702d3436` | yes-sip-46 |
 | no   | `SP000000000006WVSDEDMQ0B9M6VQKRB6B`  | `6e6f2d7369702d3436`   | no-sip-46  |
 
-Voting starts at Bitcoin block height 976,850 and ends at Bitcoin block height
-978,350. Votes confirmed outside this window are not counted. If the criteria
-are not met at the end of Bitcoin block height 978,350, the SIP is Rejected.
+Voting starts at Bitcoin block height 976,450 and ends at Bitcoin block height
+978,450. Votes confirmed outside this window are not counted. If the criteria
+are not met at the end of Bitcoin block height 978,450, the SIP is Rejected.
 
 ## Activation Height
 

@@ -2,7 +2,7 @@
 
 SIP Number: 046
 
-Title: Epoch 4.1 and Clarity 7
+Title: Epoch 4.1: Clarity 7, sBTC deposit address v2, and rejection of defunct Bitcoin operations
 
 Author(s):
 
@@ -57,6 +57,10 @@ This SIP fixes known issues in the implementation of the Clarity VM. Except wher
 
 To provide better guarantees about type safety and consistency in the future, this SIP also defines that contracts deployed after activation may only be deployed with the latest Clarity version.
 
+This SIP also changes the sBTC deposit address that miners use to send BTC to the `pox-5` contract, from an address derived from the sBTC signers' aggregate key to a k-of-n multisig pay-to-taproot (P2TR) address.
+
+Finally, this SIP rejects the `stack-stx`, `delegate-stx` and `vote-for-aggregate-key` Bitcoin operations, which have no purpose under `pox-5`.
+
 # Specification
 
 ## Clarity type soundness and runtime consistency
@@ -69,7 +73,7 @@ After activation, contracts may only be deployed with the latest Clarity version
 
 ### Joining tuples with different fields
 
-The type checker let tuples with different fields unify to a narrower type, so a value could carry fields its static type did not have. Before activation, `fetch` is typed `{a: uint}` but returns `{a: u1, b: true}`, and the hidden `b` then shows up through `merge`, `is-eq` and list construction. After activation, this fails analysis.
+The type checker let tuples with different fields unify to a narrower type, so a value could carry fields its static type did not have. Before activation, `fetch` is typed `{a: uint}` but returns `{a: u1, b: true}`, and the hidden `b` then shows up through `merge`, `is-eq` and list construction. After activation, tuple types with different fields no longer unify, so this fails analysis.
 
 ```clarity
 (define-read-only (fetch)
@@ -78,7 +82,7 @@ The type checker let tuples with different fields unify to a narrower type, so a
 
 ### `fold` results
 
-An empty sequence makes `fold` return its initial value unchanged, but the result type only came from the callback's return type. Here the callback's type is `(optional ...)` with only `none`, so `default-to u1` is typed `uint`. At runtime, `fetch` returns `"hello"`. After activation, this will fail analysis.
+An empty sequence makes `fold` return its initial value unchanged, but the result type only came from the callback's return type. Here the callback's type is `(optional ...)` with only `none`, so `default-to u1` is typed `uint`. At runtime, `fetch` returns `"hello"`. After activation, the result type of `fold` is the least supertype of the initial value's type and the callback's return type. Here that is `(optional (string-ascii 5))`, so `default-to u1` fails analysis.
 
 ```clarity
 (define-private (keep-none (x (buff 1)) (acc (optional (string-ascii 5)))) none)
@@ -99,7 +103,7 @@ Extra arguments to user-defined functions were never type-checked, but they were
     (ok false)))
 ```
 
-This also applies to native Clarity functions, where the user could provide extra arguments. For example, `(map-set m u1 u2 u3)` will now fail analysis.
+After activation, a call with the wrong number of arguments fails analysis. This also applies to native Clarity functions, where the user could provide extra arguments. For example, `(map-set m u1 u2 u3)` will now fail analysis.
 
 ### `replace-at?` with zero-length values
 
@@ -125,12 +129,12 @@ Previously, trait lookups always used a database lookup, so calling a self-defin
 
 ### 40-byte contract names
 
-This SIP amends the Clarity value encoding of contract principals in [SIP-005](../sip-005/sip-005-blocks-and-transactions.md), which allows contract names of up to 128 bytes. After activation, contract principals inside Clarity values, including token-transfer and coinbase recipients, are limited to 40 bytes. Values already stored in chainstate stay readable. Contract-name fields encoded as a bare contract name (call targets, deploys, post-condition principals and asset identifiers) have been limited to 40 bytes since Stacks 2.0, despite the 128-byte limit stated in SIP-005.
+This SIP amends the Clarity value encoding of contract principals in [SIP-005](../sip-005/sip-005-blocks-and-transactions.md), which allows contract names of up to 128 bytes. After activation, contract names in contract principals inside Clarity values, including token-transfer and coinbase recipients, are limited to 40 bytes. Values already stored in chainstate stay readable. Contract-name fields encoded as a bare contract name (call targets, deploys, post-condition principals and asset identifiers) have been limited to 40 bytes since Stacks 2.0, despite the 128-byte limit stated in SIP-005.
 
 Contract names longer than 40 bytes are now rejected everywhere:
 
 - transaction arguments and recipients
-- NFT post-conditions
+- the asset value in NFT post-conditions
 - `from-consensus-buff?` (returns `none`)
 - `principal-destruct?` (errors)
 
@@ -188,9 +192,9 @@ This SIP builds upon the existing definitions of the Clarity language:
 - [SIP-039 (Clarity 5)](../sip-039/sip-039-clarity5.md)
 - [SIP-044 (Clarity 6)](../sip-044/sip-044-clarity6.md)
 
-It also builds upon the introduction of Bitcoin Staking as it relates to how miners send funds through sBTC, as defined in [SIP-045](../sip-045/sip-045-pox-5-bitcoin-staking.md).
+It also builds upon the introduction of Bitcoin Staking as it relates to how miners send funds through sBTC, introduced in [SIP-045](../sip-045/sip-045-pox-5-bitcoin-staking.md).
 
-It amends the contract name length defined in
+It amends the Clarity value encoding of contract principals in
 [SIP-005](../sip-005/sip-005-blocks-and-transactions.md) and removes the
 Versioned Smart Contract transaction payload defined in
 [SIP-015](../sip-015/sip-015-network-upgrade.md).

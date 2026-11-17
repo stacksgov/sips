@@ -144,7 +144,7 @@ Previously, contract analysis ran the read-only check first. That check incurs n
 
 ### Changes to costs for contract and trait identifiers
 
-Trait values and contract principals carry identifiers (such as a contract name and trait name), and those identifiers did not contribute to cost and memory charges. After epoch 4.1, these are charged appropriately. This also affects cost computations for existing values.
+Trait values and contract principals carry identifiers (such as a contract name and trait name), and those identifiers did not contribute to cost and memory charges. After epoch 4.1, these are charged appropriately. This also affects cost computations for existing values. See [stacks-core#7742](https://github.com/stacks-network/stacks-core/pull/7742) for how these sizes are computed.
 
 ### Reserved names
 

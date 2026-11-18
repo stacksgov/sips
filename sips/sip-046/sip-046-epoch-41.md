@@ -210,7 +210,7 @@ The new deposit address format for sBTC that will be used by miners may require 
 # Activation
 
 Users can vote to approve this SIP with either their staked STX or with liquid
-STX, or both.
+STX, or both. The SIP voting page can be found at https://stx.is/sip046.
 
 In order for this SIP to activate, the following criteria must be met:
 
@@ -221,7 +221,10 @@ In order for this SIP to activate, the following criteria must be met:
   proposal (vote "yes").
 
 All STX holders vote by sending Stacks dust to the corresponding Stacks address
-from the account where their STX are held (staked or liquid). Voting power is
+from the account where their STX are held (staked or liquid). To simplify
+things, users can create their votes by visiting the
+[ballot.gg](https://ballot.gg/8add8bbe-fe20-40be-be11-3a01a08c9400/1NGYzWDPW6xN9sRfn9N1vivEQrGCj93ZEx)
+platform. Voting power is
 determined by a snapshot of the amount of STX (staked and liquid) in that
 account at Bitcoin block height 976,560, the height at which voting starts.
 This prevents the same STX from being transferred between accounts and used to

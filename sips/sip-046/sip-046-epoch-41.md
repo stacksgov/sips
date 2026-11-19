@@ -234,10 +234,10 @@ Bitcoin stakers vote the same way, from the Stacks account that registered
 their bond. The STX locked in that account counts as staked STX. There is no
 Bitcoin voting transaction for this vote.
 
-| Vote | Stacks                                | ASCII Encoding         | Msg        |
-| ---- | ------------------------------------- | ---------------------- | ---------- |
-| yes  | `SP00000000001WPAWSDEDMQ0B9M6VRF7M9A` | `7965732d7369702d3436` | yes-sip-46 |
-| no   | `SP000000000006WVSDEDMQ0B9M6VQKRB6B`  | `6e6f2d7369702d3436`   | no-sip-46  |
+| Vote | Stacks                                | ASCII Encoding           | Msg         |
+| ---- | ------------------------------------- | ------------------------ | ----------- |
+| yes  | `SP000000000F5JQ6BAK9582TC1M6TSKKZWS` | `7965732d5349502d303436` | yes-SIP-046 |
+| no   | `SP00000000001Q6YBAK9582TC1M6VRVGWW6` | `6e6f2d5349502d303436`   | no-SIP-046  |
 
 Voting starts at Bitcoin block height 976,560 and ends at Bitcoin block height
 978,350. Votes confirmed outside this window are not counted. If the criteria
